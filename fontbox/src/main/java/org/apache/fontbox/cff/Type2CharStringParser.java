@@ -139,24 +139,21 @@ public class Type2CharStringParser
 
     private CharStringCommand readCommand(int b0, DataInput input) throws IOException
     {
-
-        if (b0 == 1 || b0 == 18)
+        switch (b0)
         {
+        case 1:
+        case 18:
             hstemCount += countNumbers() / 2;
-        } 
-        else if (b0 == 3 || b0 == 19 || b0 == 20 || b0 == 23)
-        {
+            return CharStringCommand.getInstance(b0);
+        case 3:
+        case 23:
             vstemCount += countNumbers() / 2;
-        } // End if
-
-        if (b0 == 12)
-        {
-            int b1 = input.readUnsignedByte();
-
-            return CharStringCommand.getInstance(b0, b1);
-        } 
-        else if (b0 == 19 || b0 == 20)
-        {
+            return CharStringCommand.getInstance(b0);
+        case 12:
+            return CharStringCommand.getInstance(b0, input.readUnsignedByte());
+        case 19:
+        case 20:
+            vstemCount += countNumbers() / 2;
             int[] value = new int[1 + getMaskLength()];
             value[0] = b0;
 
@@ -166,9 +163,9 @@ public class Type2CharStringParser
             }
 
             return CharStringCommand.getInstance(value);
+        default:
+            return CharStringCommand.getInstance(b0);
         }
-
-        return CharStringCommand.getInstance(b0);
     }
 
     private Number readNumber(int b0, DataInput input) throws IOException
