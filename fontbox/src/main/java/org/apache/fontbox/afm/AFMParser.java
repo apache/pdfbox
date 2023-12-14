@@ -996,10 +996,9 @@ public class AFMParser
      *
      * @return true If the character is whitespace as defined by the AFM spec.
      */
-    private boolean isEOL( int character )
+    private static boolean isEOL( int character )
     {
-        return character == 0x0D ||
-               character == 0x0A;
+        return character == 0x0D || character == 0x0A;
     }
 
     /**
@@ -1009,11 +1008,17 @@ public class AFMParser
      *
      * @return true If the character is whitespace as defined by the AFM spec.
      */
-    private boolean isWhitespace( int character )
+    private static boolean isWhitespace( int character )
     {
-        return character == ' ' ||
-               character == '\t' ||
-               character == 0x0D ||
-               character == 0x0A;
+        switch (character)
+        {
+        case ' ':
+        case '\t':
+        case 0x0D:
+        case 0x0A:
+            return true;
+        default:
+            return false;
+        }
     }
 }
