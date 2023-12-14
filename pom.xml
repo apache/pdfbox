@@ -331,7 +331,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>9.0.4</version>
+                    <version>9.0.5</version>
                     <configuration>
                         <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                         <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
