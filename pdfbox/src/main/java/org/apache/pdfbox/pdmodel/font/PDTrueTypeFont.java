@@ -401,8 +401,8 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             if (!encoding.contains(getGlyphList().codePointToName(unicode)))
             {
                 throw new IllegalArgumentException(
-                    String.format("U+%04X is not available in this font's encoding: %s",
-                                  unicode, encoding.getEncodingName()));
+                    String.format("U+%04X is not available in font %s encoding: %s",
+                                  unicode, getName(), encoding.getEncodingName()));
             }
 
             String name = getGlyphList().codePointToName(unicode);
@@ -438,7 +438,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             if (code == null)
             {
                 throw new IllegalArgumentException(
-                    String.format("U+%04X is not available in this font's Encoding", unicode));
+                    String.format("U+%04X is not available in font %s encoding", unicode, getName()));
             }
             
             return new byte[] { (byte)(int)code };
