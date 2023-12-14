@@ -758,9 +758,27 @@ public abstract class BaseParser
      */
     protected boolean isEndOfName(int ch)
     {
-        return ch == ASCII_SPACE || ch == ASCII_CR || ch == ASCII_LF || ch == 9 || ch == '>' ||
-               ch == '<' || ch == '[' || ch =='/' || ch ==']' || ch ==')' || ch =='(' || 
-               ch == 0 || ch == '\f' || ch == '%';
+        switch (ch)
+        {
+        case ASCII_SPACE:
+        case ASCII_CR:
+        case ASCII_LF:
+        case 9:
+        case '>':
+        case '<':
+        case '[':
+        case '/':
+        case ']':
+        case ')':
+        case '(':
+        case 0:
+        case '\f':
+        case '%':
+        case -1:
+            return true;
+        default:
+            return false;
+        }
     }
 
     /**
@@ -774,9 +792,9 @@ public abstract class BaseParser
         readExpectedChar('/');
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int c = source.read();
-        while (c != -1)
+        while (!isEndOfName(c))
         {
-            int ch = c;
+            final int ch = c;
             if (ch == '#')
             {
                 int ch1 = source.read();
@@ -813,10 +831,6 @@ public abstract class BaseParser
                     c = ch1;
                     buffer.write(ch);
                 }
-            }
-            else if (isEndOfName(ch))
-            {
-                break;
             }
             else
             {
@@ -967,7 +981,7 @@ public abstract class BaseParser
         skipSpaces();
         StringBuilder buffer = new StringBuilder();
         int c = source.read();
-        while( !isEndOfName((char)c) && c != -1 )
+        while (!isEndOfName(c))
         {
             buffer.append( (char)c );
             c = source.read();
@@ -1174,10 +1188,20 @@ public abstract class BaseParser
      * @param c The character to check against whitespace
      * @return true if the character is a whitespace character.
      */
-    protected boolean isWhitespace( int c )
+    protected static boolean isWhitespace( int c )
     {
-        return c == 0 || c == 9 || c == 12  || c == ASCII_LF
-        || c == ASCII_CR || c == ASCII_SPACE;
+        switch (c)
+        {
+        case 0:
+        case 9:
+        case 12:
+        case ASCII_LF:
+        case ASCII_CR:
+        case ASCII_SPACE:
+            return true;
+        default:
+            return false;
+        }
     }
 
     /**

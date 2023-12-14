@@ -1752,7 +1752,7 @@ public class COSParser extends BaseParser implements ICOSParser
             skipSpaces();
             for(int i = 0; i < count; i++)
             {
-                if(source.isEOF() || isEndOfName((char)source.peek()))
+                if (source.isEOF() || isEndOfName(source.peek()))
                 {
                     break;
                 }
