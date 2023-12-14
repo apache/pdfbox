@@ -757,13 +757,22 @@ public class CMapParser
         }
     }
 
-    private boolean isWhitespaceOrEOF(int aByte)
+    private static boolean isWhitespaceOrEOF(int aByte)
     {
-        return aByte == -1 || aByte == 0x20 || aByte == 0x0D || aByte == 0x0A;
+        switch (aByte)
+        {
+        case -1:
+        case 0x20:
+        case 0x0D:
+        case 0x0A:
+            return true;
+        default:
+            return false;
+        }
     }
 
     /** Is this a standard PDF delimiter character? */
-    private boolean isDelimiter(int aByte) 
+    private static boolean isDelimiter(int aByte)
     {
         switch (aByte) 
         {
@@ -783,7 +792,7 @@ public class CMapParser
         }
     }
 
-    private boolean increment(byte[] data, int position, boolean useStrictMode)
+    private static boolean increment(byte[] data, int position, boolean useStrictMode)
     {
         if (position > 0 && (data[position] & 0xFF) == 255)
         {
@@ -803,7 +812,7 @@ public class CMapParser
         return true;
     }
 
-    private String createStringFromBytes(byte[] bytes)
+    private static String createStringFromBytes(byte[] bytes)
     {
         return new String(bytes, bytes.length == 1 ? StandardCharsets.ISO_8859_1 : StandardCharsets.UTF_16BE);
     }
