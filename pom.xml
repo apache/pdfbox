@@ -318,7 +318,7 @@
                   <artifactId>dependency-check-maven</artifactId>
                   <version>9.0.5</version>
                   <configuration>
-                      <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+                      <failBuildOnCVSS>0</failBuildOnCVSS>
                       <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
                       <skipSystemScope>true</skipSystemScope>
                   </configuration>
