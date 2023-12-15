@@ -114,10 +114,10 @@ class TestToUnicodeWriter
     @Test
     void testAllowCIDToUnicodeRange()
     {
-        Map.Entry<Integer, String> six = new AbstractMap.SimpleEntry<Integer, String>(0x03FF, "6");
-        Map.Entry<Integer, String> seven = new AbstractMap.SimpleEntry<Integer, String>(0x0400,
+        Map.Entry<Integer, String> six = new AbstractMap.SimpleEntry<>(0x03FF, "6");
+        Map.Entry<Integer, String> seven = new AbstractMap.SimpleEntry<>(0x0400,
                 "7");
-        Map.Entry<Integer, String> eight = new AbstractMap.SimpleEntry<Integer, String>(0x0401,
+        Map.Entry<Integer, String> eight = new AbstractMap.SimpleEntry<>(0x0401,
                 "8");
 
         assertFalse(ToUnicodeWriter.allowCIDToUnicodeRange(null, seven));
