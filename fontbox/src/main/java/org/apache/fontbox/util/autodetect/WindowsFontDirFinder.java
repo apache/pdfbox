@@ -45,14 +45,17 @@ public class WindowsFontDirFinder implements FontDirFinder
     {
         Process process;
         Runtime runtime = Runtime.getRuntime();
+        String cmd;
         if (osName.startsWith("Windows 9"))
         {
-            process = runtime.exec("command.com /c echo %windir%");
+            cmd = "command.com";
         }
         else
         {
-            process = runtime.exec("cmd.exe /c echo %windir%");
+            cmd = "cmd.exe";
         }
+        String[] cmdArray = { cmd, "/c", "echo", "%windir%" };
+        process = runtime.exec(cmdArray);
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
                 process.getInputStream(), StandardCharsets.ISO_8859_1)))
         {
