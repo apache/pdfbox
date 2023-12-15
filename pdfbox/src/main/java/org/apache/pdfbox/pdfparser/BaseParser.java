@@ -18,16 +18,20 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -49,20 +53,41 @@ import org.apache.pdfbox.io.RandomAccessRead;
  */
 public abstract class BaseParser
 {
+    /**
+     * Log instance.
+     */
+    private static final Logger LOG = LogManager.getLogger(BaseParser.class);
+
     private static final long OBJECT_NUMBER_THRESHOLD = 10000000000L;
 
     private static final long GENERATION_NUMBER_THRESHOLD = 65535;
 
     static final int MAX_LENGTH_LONG = Long.toString(Long.MAX_VALUE).length();
 
-    private final CharsetDecoder utf8Decoder = StandardCharsets.UTF_8.newDecoder();
+    private static final Charset ALTERNATIVE_CHARSET;
 
     private final Map<Long, COSObjectKey> keyCache = new HashMap<>();
 
-    /**
-     * Log instance.
-     */
-    private static final Logger LOG = LogManager.getLogger(BaseParser.class);
+    static
+    {
+        Charset cs;
+        String charsetName = "Windows-1252";
+        try
+        {
+            cs = Charset.forName(charsetName);
+        }
+        catch (IllegalArgumentException | UnsupportedOperationException e)
+        {
+            cs = StandardCharsets.ISO_8859_1;
+            LOG.warn("Charset is not supported: {}, falling back to {}", charsetName, cs.name(), e);
+        }
+        ALTERNATIVE_CHARSET = cs;
+    }
+
+    // CharSetDecoders are not threadsafe so not static
+    private final CharsetDecoder utf8Decoder = StandardCharsets.UTF_8.newDecoder()
+            .onMalformedInput(CodingErrorAction.REPORT)
+            .onUnmappableCharacter(CodingErrorAction.REPORT);
 
     protected static final int E = 'e';
     protected static final int N = 'n';
@@ -842,35 +867,27 @@ public abstract class BaseParser
         {
             source.rewind(1);
         }
-        
-        byte[] bytes = buffer.toByteArray();
-        String string;
-        if (isValidUTF8(bytes))
-        {
-            string = new String(bytes, StandardCharsets.UTF_8);
-        }
-        else
-        {
-            // some malformed PDFs don't use UTF-8 see PDFBOX-3347
-            string = new String(bytes, Charset.forName("Windows-1252"));
-        }
-        return COSName.getPDFName(string);
+
+        return COSName.getPDFName(decodeBuffer(buffer));
     }
 
     /**
-     * Returns true if a byte sequence is valid UTF-8.
+     * Tries to decode the buffer cotent to an UTF-8 String.
+     * If that fails, tries the alternative Encoding.
+     * @param buffer the {@link ByteArrayOutputStream} containing the bytes to decode
+     * @return the decoded String
      */
-    private boolean isValidUTF8(byte[] input)
+    private String decodeBuffer(ByteArrayOutputStream buffer)
     {
         try
         {
-            utf8Decoder.decode(ByteBuffer.wrap(input));
-            return true;
+            return utf8Decoder.decode(ByteBuffer.wrap(buffer.toByteArray())).toString();
         }
         catch (CharacterCodingException e)
         {
-            LOG.debug("Character could not be decoded using StandardCharsets.UTF_8 - returning false", e);
-            return false;
+            // some malformed PDFs don't use UTF-8 see PDFBOX-3347
+            LOG.debug("Buffer could not be decoded using StandardCharsets.UTF_8 - trying {}", ALTERNATIVE_CHARSET.name(), e);
+            return buffer.toString(ALTERNATIVE_CHARSET);
         }
     }
     
