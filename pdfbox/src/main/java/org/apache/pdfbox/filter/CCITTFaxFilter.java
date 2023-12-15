@@ -70,6 +70,10 @@ final class CCITTFaxFilter extends Filter
             type = TIFFExtension.COMPRESSION_CCITT_T4; // Group 3 1D
             byte[] streamData = new byte[20];
             int bytesRead = encoded.read(streamData);
+            if (bytesRead == -1)
+            {
+                throw new IOException("EOF while reading CCITT header");
+            }
             PushbackInputStream pushbackInputStream = new PushbackInputStream(encoded, streamData.length);
             pushbackInputStream.unread(streamData, 0, bytesRead);
             encoded = pushbackInputStream;
