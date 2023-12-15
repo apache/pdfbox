@@ -18,11 +18,17 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -37,9 +43,6 @@ import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.util.Charsets;
 
-
-import static org.apache.pdfbox.util.Charsets.ISO_8859_1;
-
 /**
  * This class is used to contain parsing logic that will be used by both the
  * PDFParser and the COSStreamParser.
@@ -48,18 +51,44 @@ import static org.apache.pdfbox.util.Charsets.ISO_8859_1;
  */
 public abstract class BaseParser
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(BaseParser.class);
+
     private static final long OBJECT_NUMBER_THRESHOLD = 10000000000L;
 
     private static final long GENERATION_NUMBER_THRESHOLD = 65535;
 
     static final int MAX_LENGTH_LONG = Long.toString(Long.MAX_VALUE).length();
 
-    private final CharsetDecoder utf8Decoder = Charsets.UTF_8.newDecoder();
+    private static final Charset ALTERNATIVE_CHARSET;
 
-    /**
-     * Log instance.
-     */
-    private static final Log LOG = LogFactory.getLog(BaseParser.class);
+    static
+    {
+        Charset cs;
+        String charsetName = "Windows-1252";
+        try
+        {
+            cs = Charset.forName(charsetName);
+        }
+        catch (IllegalArgumentException e)
+        {
+            cs = Charsets.ISO_8859_1;
+            LOG.warn("Charset is not supported: " + charsetName + ", falling back to " + cs.name(), e);
+        }
+        catch (UnsupportedOperationException e)
+        {
+            cs = Charsets.ISO_8859_1;
+            LOG.warn("Charset is not supported: " + charsetName + ", falling back to " + cs.name(), e);
+        }
+        ALTERNATIVE_CHARSET = cs;
+    }
+
+    // CharSetDecoders are not threadsafe so not static
+    private final CharsetDecoder utf8Decoder = Charsets.UTF_8.newDecoder()
+            .onMalformedInput(CodingErrorAction.REPORT)
+            .onUnmappableCharacter(CodingErrorAction.REPORT);
 
     protected static final int E = 'e';
     protected static final int N = 'n';
@@ -694,7 +723,7 @@ public abstract class BaseParser
                 {
                     return po;
                 }
-                seqSource.unread(isThisTheEnd.getBytes(ISO_8859_1));
+                seqSource.unread(isThisTheEnd.getBytes(Charsets.ISO_8859_1));
                 // This could also be an "endobj" or "endstream" which means we can assume that
                 // the array has ended.
                 if(ENDOBJ_STRING.equals(isThisTheEnd) || ENDSTREAM_STRING.equals(isThisTheEnd))
@@ -788,37 +817,31 @@ public abstract class BaseParser
         {
             seqSource.unread(c);
         }
-        
-        byte[] bytes = buffer.toByteArray();
-        String string;
-        if (isValidUTF8(bytes))
-        {
-            string = new String(bytes, Charsets.UTF_8);
-        }
-        else
-        {
-            // some malformed PDFs don't use UTF-8 see PDFBOX-3347
-            string = new String(bytes, Charsets.WINDOWS_1252);
-        }
-        return COSName.getPDFName(string);
+
+        return COSName.getPDFName(decodeBuffer(buffer));
     }
 
     /**
-     * Returns true if a byte sequence is valid UTF-8.
+     * Tries to decode the buffer cotent to an UTF-8 String.
+     * If that fails, tries the alternative Encoding.
+     * @param buffer the {@link ByteArrayOutputStream} containing the bytes to decode
+     * @return the decoded String
      */
-    private boolean isValidUTF8(byte[] input)
+    private String decodeBuffer(ByteArrayOutputStream buffer) throws UnsupportedEncodingException
     {
         try
         {
-            utf8Decoder.decode(ByteBuffer.wrap(input));
-            return true;
+            return utf8Decoder.decode(ByteBuffer.wrap(buffer.toByteArray())).toString();
         }
         catch (CharacterCodingException e)
         {
-            return false;
+            // some malformed PDFs don't use UTF-8 see PDFBOX-3347
+            LOG.debug("Buffer could not be decoded using StandardCharsets.UTF_8 - "
+                    + "trying " + ALTERNATIVE_CHARSET.name(), e);
+            return buffer.toString(ALTERNATIVE_CHARSET.name());
         }
     }
-    
+
     /**
      * This will parse a boolean object from the stream.
      *
@@ -832,7 +855,7 @@ public abstract class BaseParser
         char c = (char) seqSource.peek();
         if( c == 't' )
         {
-            String trueString = new String( seqSource.readFully( 4 ), ISO_8859_1 );
+            String trueString = new String( seqSource.readFully( 4 ), Charsets.ISO_8859_1 );
             if( !trueString.equals( TRUE ) )
             {
                 throw new IOException( "Error parsing boolean: expected='true' actual='" + trueString 
@@ -845,7 +868,7 @@ public abstract class BaseParser
         }
         else if( c == 'f' )
         {
-            String falseString = new String( seqSource.readFully( 5 ), ISO_8859_1 );
+            String falseString = new String( seqSource.readFully( 5 ), Charsets.ISO_8859_1 );
             if( !falseString.equals( FALSE ) )
             {
                 throw new IOException( "Error parsing boolean: expected='true' actual='" + falseString 
@@ -897,7 +920,7 @@ public abstract class BaseParser
             readExpectedString(NULL);
             return COSNull.NULL;
         case 't':
-            String trueString = new String( seqSource.readFully(4), ISO_8859_1 );
+            String trueString = new String( seqSource.readFully(4), Charsets.ISO_8859_1 );
             if( trueString.equals( TRUE ) )
             {
                 return COSBoolean.TRUE;
@@ -908,7 +931,7 @@ public abstract class BaseParser
                         "' at offset " + seqSource.getPosition());
             }
         case 'f':
-            String falseString = new String( seqSource.readFully(5), ISO_8859_1 );
+            String falseString = new String( seqSource.readFully(5), Charsets.ISO_8859_1 );
             if( falseString.equals( FALSE ) )
             {
                 return COSBoolean.FALSE;
@@ -946,7 +969,7 @@ public abstract class BaseParser
             // if it's an endstream/endobj, we want to put it back so the caller will see it
             if (ENDOBJ_STRING.equals(badString) || ENDSTREAM_STRING.equals(badString))
             {
-                seqSource.unread(badString.getBytes(ISO_8859_1));
+                seqSource.unread(badString.getBytes(Charsets.ISO_8859_1));
             }
             else
             {
@@ -1332,7 +1355,7 @@ public abstract class BaseParser
         }
         catch( NumberFormatException e )
         {
-            seqSource.unread(intBuffer.toString().getBytes(ISO_8859_1));
+            seqSource.unread(intBuffer.toString().getBytes(Charsets.ISO_8859_1));
             throw new IOException("Error: Expected an integer type at offset " +
                                   seqSource.getPosition() +
                                   ", instead got '" + intBuffer + "'", e);
@@ -1361,7 +1384,7 @@ public abstract class BaseParser
         }
         catch( NumberFormatException e )
         {
-            seqSource.unread(longBuffer.toString().getBytes(ISO_8859_1));
+            seqSource.unread(longBuffer.toString().getBytes(Charsets.ISO_8859_1));
             throw new IOException( "Error: Expected a long type at offset "
                     + seqSource.getPosition() + ", instead got '" + longBuffer + "'", e);
         }
