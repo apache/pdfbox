@@ -169,6 +169,20 @@
                       <sha512>a5f3a12a02d096337cefd82a352a9d4f43555283873211c4ed0ac63eb1e722514dbd97dc959208e38643784b007ef27a96280f57ef01355fdbd8884b84d13d4c</sha512>
                   </configuration>
               </execution>
+              <execution>
+                  <id>PDFBOX-4106</id>
+                  <phase>generate-test-resources</phase>
+                  <goals>
+                      <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                      <url>https://moji.or.jp/wp-content/ipafont/IPAfont/ipag00303.zip</url>
+                      <outputDirectory>${project.build.directory}/fonts</outputDirectory>
+                      <outputFileName>ipag00303.zip</outputFileName>
+                      <unpack>true</unpack>
+                      <sha512>59535137c649a2f8bdbb463cd716426811a6003a65883ca6e45bb0af1d526b3889af0fba3a353e90bc8d373cd32b90a27ff9ff6916ecbccb42e922c09e9b046a</sha512>
+                  </configuration>
+              </execution>
           </executions>
       </plugin>
     </plugins>
