@@ -42,7 +42,7 @@ public class EmbeddedVerticalFonts
         document.addPage(page);
 
         // The actual font file
-        // Download: https://ipafont.ipa.go.jp/ipafont/ipag00303.zip
+        // Download: https://moji.or.jp/wp-content/ipafont/IPAfont/ipag00303.zip
         // (free license: https://www.gnu.org/licenses/license-list.html#IPAFONT)
         File ipafont = new File("ipag.ttf");
 
