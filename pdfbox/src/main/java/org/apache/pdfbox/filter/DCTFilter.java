@@ -139,6 +139,7 @@ final class DCTFilter extends Filter
                         break;
                     case 1:
                         LOG.warn("There is no 4 channel YCbCr, using YCCK");
+                        // fallthrough
                     case 2:
                         raster = fromYCCKtoCMYK(raster);
                         break;
