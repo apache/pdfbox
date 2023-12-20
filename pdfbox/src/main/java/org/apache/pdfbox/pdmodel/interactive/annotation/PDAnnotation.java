@@ -98,7 +98,7 @@ public abstract class PDAnnotation implements COSObjectable
      * Create the correct annotation from the base COS object.
      *
      * @param base The COS object that is the annotation.
-     * @return The correctly typed annotation object.
+     * @return The correctly typed annotation object, never null.
      *
      * @throws IOException If the annotation type is unknown.
      */
