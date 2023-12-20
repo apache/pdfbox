@@ -89,17 +89,21 @@ public class PDAnnotationPopup extends PDAnnotation
      */
     public PDAnnotationMarkup getParent()
     {
-        PDAnnotationMarkup am = null;
         try
         {
-            am = (PDAnnotationMarkup) PDAnnotation.createAnnotation(getCOSObject()
+            PDAnnotation ann = PDAnnotation.createAnnotation(getCOSObject()
                     .getDictionaryObject(COSName.PARENT, COSName.P));
+            if (!(ann instanceof PDAnnotationMarkup))
+            {
+                return null;
+            }
+            return (PDAnnotationMarkup) ann;
         }
         catch (IOException ioe)
         {
             // Couldn't construct the annotation, so return null i.e. do nothing
+            return null;
         }
-        return am;
     }
 
 }
