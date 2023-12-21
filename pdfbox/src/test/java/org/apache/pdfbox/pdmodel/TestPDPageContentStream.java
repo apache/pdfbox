@@ -21,12 +21,20 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.List;
+
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType1;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
+import org.apache.pdfbox.util.Matrix;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -46,6 +54,15 @@ class TestPDPageContentStream
             {
                 // pass a non-stroking color in CMYK color space
                 contentStream.setNonStrokingColor(0.1f, 0.2f, 0.3f, 0.4f);
+
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setNonStrokingColor(1.1f, 0, 0, 0));
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setNonStrokingColor(0, 1.1f, 0, 0));
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setNonStrokingColor(0, 0, 1.1f, 0));
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setNonStrokingColor(0, 0, 0, 1.1f));
             }
 
             // now read the PDF stream and verify that the CMYK values are correct
@@ -69,8 +86,17 @@ class TestPDPageContentStream
 
             try ( PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false))
             {
-                // pass a non-stroking color in CMYK color space
+                // pass a stroking color in CMYK color space
                 contentStream.setStrokingColor(0.5f, 0.6f, 0.7f, 0.8f);
+                
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setStrokingColor(1.1f, 0, 0, 0));
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setStrokingColor(0, 1.1f, 0, 0));
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setStrokingColor(0, 0, 1.1f, 0));
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setStrokingColor(0, 0, 0, 1.1f));                
             }
 
             // now read the PDF stream and verify that the CMYK values are correct
@@ -103,6 +129,16 @@ class TestPDPageContentStream
                 // pass a non-stroking color in RGB and Gray color space
                 contentStream.setNonStrokingColor(0.1f, 0.2f, 0.3f);
                 contentStream.setNonStrokingColor(0.8f);
+
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setNonStrokingColor(1.1f, 0, 0));
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setNonStrokingColor(0, 1.1f, 0));
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setNonStrokingColor(0, 0, 1.1f));
+
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setNonStrokingColor(1.1f));
             }
 
             // now read the PDF stream and verify that the values are correct
@@ -121,9 +157,19 @@ class TestPDPageContentStream
 
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false))
             {
-                // pass a non-stroking color in RGB and Gray color space
+                // pass a stroking color in RGB and Gray color space
                 contentStream.setStrokingColor(0.5f, 0.6f, 0.7f);
                 contentStream.setStrokingColor(0.8f);
+
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setStrokingColor(1.1f, 0, 0));
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setStrokingColor(0, 1.1f, 0));
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setStrokingColor(0, 0, 1.1f));
+
+                Assertions.assertThrows(IllegalArgumentException.class,
+                        () -> contentStream.setStrokingColor(1.1f));
             }
 
             // now read the PDF stream and verify that the values are correct
@@ -184,6 +230,52 @@ class TestPDPageContentStream
             doc.addPage(page);
             PDPageContentStream contentStream = new PDPageContentStream(doc, page);
             contentStream.beginText();
+
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.drawImage(new PDImageXObject(doc), 0f, 0f, 1f, 1f));
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.drawImage(new PDImageXObject(doc), new Matrix()));
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.drawImage(new PDInlineImage(new COSDictionary(), new byte[0], new PDResources()), 0f, 0f, 1f, 1f));
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.addRect(0, 0, 1, 1));
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.curveTo(0, 0, 1, 1, 2, 2));
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.curveTo1(0, 0, 1, 1));
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.curveTo2(0, 0, 1, 1));
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.moveTo(0, 0));
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.lineTo(1, 1));
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.stroke());
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.closeAndStroke());
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.closeAndFillAndStroke());
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.closeAndFillAndStrokeEvenOdd());
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.fill());
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.fillAndStroke());
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.fillAndStrokeEvenOdd());
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.fillEvenOdd());
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.fill());
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.shadingFill(new PDShadingType1(new COSDictionary())));
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.closePath());
+            Assertions.assertThrows(IllegalStateException.class, 
+                    () -> contentStream.clip());
+            Assertions.assertThrows(IllegalStateException.class,
+                    () -> contentStream.clipEvenOdd());
+            
             // J
             contentStream.setLineCapStyle(0);
             // j
