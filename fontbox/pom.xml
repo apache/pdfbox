@@ -92,7 +92,7 @@
                   </goals>
                   <configuration>
                       <url>https://issues.apache.org/jira/secure/attachment/12684264/SourceSansProBold.otf</url>
-                      <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                      <outputDirectory>${project.build.directory}/fonts</outputDirectory>
                       <sha512>28a044a2685fbc8da7810d9ac7b6b93a95542d504d7d8e671f009b8ebb2f5b70c974be7ea78974b188d8e6ab17d65b08f276c054927857315d5aad26f6fe36fc</sha512>
                   </configuration>
               </execution>
@@ -104,7 +104,7 @@
                   </goals>
                   <configuration>
                       <url>https://issues.apache.org/jira/secure/attachment/12896461/NotoEmoji-Regular.ttf</url>
-                      <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                      <outputDirectory>${project.build.directory}/fonts</outputDirectory>
                       <sha512>51b01ab0794be9f92c59679f6d56d4ce09ed959daeb9ec945bb837eb15a82ab302e83b29aab1972ac9cb648f7196a5f5ff4488a4622b36bedbc9cd0cab6dc3de</sha512>
                   </configuration>
               </execution>
@@ -116,7 +116,7 @@
                   </goals>
                   <configuration>
                       <url>https://issues.apache.org/jira/secure/attachment/12809395/DejaVuSansMono.ttf</url>
-                      <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                      <outputDirectory>${project.build.directory}/fonts</outputDirectory>
                       <sha512>1af1ce3e6d34a0b89c93072d8646e92cceb45b276389d2dd0d84457ec1193394d2bcc49bf3ce99c9c6b2658cd1337fc40ee5c61957f74cd45dbc3d51b6aef417</sha512>
                   </configuration>
               </execution>
@@ -128,7 +128,7 @@
                   </goals>
                   <configuration>
                       <url>https://issues.apache.org/jira/secure/attachment/13036376/NotoSansSC-Regular.otf</url>
-                      <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                      <outputDirectory>${project.build.directory}/fonts</outputDirectory>
                       <sha512>cbdd317d16099d24736457eef631353c7830a1a3c132b01f2cdc1e6a0c21a78e3b1fe8479b3f40179e7630a15cc23a093775bb22d521dba39376bb367d497b21</sha512>
                   </configuration>
               </execution>

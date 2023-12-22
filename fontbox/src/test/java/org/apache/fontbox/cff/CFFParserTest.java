@@ -40,7 +40,7 @@ class CFFParserTest
     @BeforeAll
     static void loadCFFFont() throws IOException
     {
-        List<CFFFont> fonts = readFont("target/pdfs/SourceSansProBold.otf");
+        List<CFFFont> fonts = readFont("target/fonts/SourceSansProBold.otf");
         testCFFType1Font = (CFFType1Font) fonts.get(0);
     }
 
