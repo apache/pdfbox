@@ -39,7 +39,7 @@ class TestCMapSubtable
     {
         List<Integer> expectedCharCodes = Arrays.asList(19981, 63847);
         int gid = 8712;
-        File fontFile = new File("target/pdfs", "NotoSansSC-Regular.otf");
+        File fontFile = new File("target/fonts", "NotoSansSC-Regular.otf");
         OTFParser otfParser = new OTFParser(false);
         OpenTypeFont otf = otfParser.parse(new RandomAccessReadBufferedFile(fontFile));
 

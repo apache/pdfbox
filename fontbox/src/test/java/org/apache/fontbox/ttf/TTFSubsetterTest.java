@@ -207,7 +207,7 @@ class TTFSubsetterTest
     void testPDFBox3379() throws IOException
     {
         TrueTypeFont full = new TTFParser()
-                .parse(new RandomAccessReadBufferedFile("target/pdfs/DejaVuSansMono.ttf"));
+                .parse(new RandomAccessReadBufferedFile("target/fonts/DejaVuSansMono.ttf"));
         TTFSubsetter ttfSubsetter = new TTFSubsetter(full);
         ttfSubsetter.add('A');
         ttfSubsetter.add(' ');
