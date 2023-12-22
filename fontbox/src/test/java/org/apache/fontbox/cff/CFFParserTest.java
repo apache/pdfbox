@@ -38,7 +38,7 @@ public class CFFParserTest
     @Test
     public void testDeltaLists() throws IOException
     {
-        List<CFFFont> fonts = readFont(new FileInputStream("target/pdfs/SourceSansProBold.otf"));
+        List<CFFFont> fonts = readFont(new FileInputStream("target/fonts/SourceSansProBold.otf"));
         CFFType1Font font = (CFFType1Font) fonts.get(0);
         @SuppressWarnings("unchecked")
         List<Number> blues = (List<Number>)font.getPrivateDict().get("BlueValues");

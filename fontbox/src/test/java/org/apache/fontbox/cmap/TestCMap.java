@@ -53,7 +53,7 @@ public class TestCMap extends TestCase
      */
     public void testPDFBox3997() throws IOException
     {
-        TrueTypeFont ttf = new TTFParser().parse("target/pdfs/NotoEmoji-Regular.ttf");
+        TrueTypeFont ttf = new TTFParser().parse("target/fonts/NotoEmoji-Regular.ttf");
         CmapLookup cmap = ttf.getUnicodeCmapLookup(false);
         assertEquals(886, cmap.getGlyphId(0x1F681));
         ttf.close();
