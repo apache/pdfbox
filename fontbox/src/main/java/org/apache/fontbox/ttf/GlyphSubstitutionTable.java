@@ -340,31 +340,28 @@ public class GlyphSubstitutionTable extends TTFTable
             // https://learn.microsoft.com/en-us/typography/opentype/spec/gsub#ES
             for (int i = 0; i < subTableCount; i++)
             {
-                long baseOffset = data.getCurrentPosition();
+                data.seek(offset + subTableOffsets[i]);
                 int substFormat = data.readUnsignedShort(); // always 1
+                if (substFormat != 1)
+                {
+                    LOG.error(
+                            "The expected SubstFormat for ExtensionSubstFormat1 subtable is {} but should be 1 at offset {}",
+                            substFormat, offset + subTableOffsets[i]);
+                    continue;
+                }
                 int extensionLookupType = data.readUnsignedShort();
                 if (lookupType != 7 && lookupType != extensionLookupType)
                 {
                     // "If a lookup table uses extension subtables, then all of the extension
                     //  subtables must have the same extensionLookupType"
-                    LOG.error("extensionLookupType changed from {} to {}",
-                            lookupType, extensionLookupType);
-                    data.seek(baseOffset + 8);
+                    LOG.error("extensionLookupType changed from {} to {} at offset {}",
+                            lookupType, extensionLookupType, offset + subTableOffsets[i] + 2);
                     continue;
                 }
                 lookupType = extensionLookupType;
                 long extensionOffset = data.readUnsignedInt();
-                if (substFormat != 1)
-                {
-                    LOG.error(
-                            "The expected SubstFormat for ExtensionSubstFormat1 subtable is {} but should be 1",
-                            substFormat);
-                }
-                else
-                {
-                    subTables[i] = readLookupSubtable(data, baseOffset + extensionOffset, extensionLookupType);
-                }
-                data.seek(baseOffset + 8);
+                long extensionLookupTableAddress = offset + subTableOffsets[i] + extensionOffset;
+                subTables[i] = readLookupSubtable(data, extensionLookupTableAddress, extensionLookupType);
             }
             break;
         default:
