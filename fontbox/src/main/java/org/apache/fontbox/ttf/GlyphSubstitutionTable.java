@@ -99,7 +99,16 @@ public class GlyphSubstitutionTable extends TTFTable
 
         scriptList = readScriptList(data, start + scriptListOffset);
         featureListTable = readFeatureList(data, start + featureListOffset);
-        lookupListTable = readLookupList(data, start + lookupListOffset);
+        if (lookupListOffset > 0)
+        {
+            lookupListTable = readLookupList(data, start + lookupListOffset);
+        }
+        else
+        {
+            // happened with NotoSansNewTaiLue-Regular.ttf in noto-fonts-20201206-phase3.zip
+            LOG.warn("lookupListOffset is 0, LookupListTable is considered empty");
+            lookupListTable = new LookupListTable(0, new LookupTable[0]);
+        }
 
         GlyphSubstitutionDataExtractor glyphSubstitutionDataExtractor = new GlyphSubstitutionDataExtractor();
 
@@ -240,6 +249,14 @@ public class GlyphSubstitutionTable extends TTFTable
         for (int i = 0; i < lookupCount; i++)
         {
             lookups[i] = data.readUnsignedShort();
+            if (lookups[i] == 0)
+            {
+                LOG.error("lookups[" + i + "] is 0 at offset " + (data.getCurrentPosition() - 2));
+            }
+            else if (offset + lookups[i] > data.getOriginalDataSize())
+            {
+                LOG.error((offset + lookups[i]) + " > " + data.getOriginalDataSize());
+            }
         }
         LookupTable[] lookupTables = new LookupTable[lookupCount];
         for (int i = 0; i < lookupCount; i++)
@@ -293,6 +310,14 @@ public class GlyphSubstitutionTable extends TTFTable
         for (int i = 0; i < subTableCount; i++)
         {
             subTableOffsets[i] = data.readUnsignedShort();
+            if (subTableOffsets[i] == 0)
+            {
+                LOG.error("subTableOffsets[" + i + "] is 0 at offset " + (data.getCurrentPosition() - 2));
+            }
+            else if (offset + subTableOffsets[i] > data.getOriginalDataSize())
+            {
+                LOG.error((offset + subTableOffsets[i]) + " > " + data.getOriginalDataSize());
+            }                
         }
 
         int markFilteringSet;
