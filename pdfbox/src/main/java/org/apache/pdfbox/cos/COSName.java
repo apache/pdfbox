@@ -34,7 +34,8 @@ import org.apache.pdfbox.util.Hex;
 public final class COSName extends COSBase implements Comparable<COSName>
 {
     // using ConcurrentHashMap because this can be accessed by multiple threads
-    private static final Map<String, WeakReference<COSName>> NAME_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, WeakReference<COSName>> NAME_MAP = //
+            new ConcurrentHashMap<>(8192);
     private static final Cleaner CLEANER = Cleaner.create();
 
     //
