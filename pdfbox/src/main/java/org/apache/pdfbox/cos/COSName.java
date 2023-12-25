@@ -666,7 +666,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static COSName getPDFName(String aName)
     {
         WeakReference<COSName> weakRef = NAME_MAP.get(aName);
-        COSName name = (weakRef != null) ? weakRef.get() : null;
+        COSName name = weakRef != null ? weakRef.get() : null;
 
         if (name == null)
         {
@@ -676,7 +676,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
             synchronized (NAME_MAP)
             {
                 weakRef = NAME_MAP.get(aName);
-                name = (weakRef != null) ? weakRef.get() : null;
+                name = weakRef != null ? weakRef.get() : null;
                 if (name == null)
                 {
                     name = new COSName(aName);
@@ -785,11 +785,4 @@ public final class COSName extends COSBase implements Comparable<COSName>
         }
     }
 
-    /**
-     * Not usually needed except if resources need to be reclaimed in a long running process.
-     */
-    public static void clearResources()
-    {
-        NAME_MAP.entrySet().removeIf(entry -> entry.getValue().get() == null);
-    }
 }
