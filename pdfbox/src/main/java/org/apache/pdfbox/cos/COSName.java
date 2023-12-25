@@ -803,7 +803,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
 
     /**
      * Not usually needed except if resources need to be reclaimed in a long running process.
+     * 
+     * @deprecated will be removed in 4.0.0
      */
+    @Deprecated
     public static void clearResources()
     {
         // Clear them all
