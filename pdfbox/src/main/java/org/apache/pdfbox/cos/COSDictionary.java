@@ -1462,7 +1462,6 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             }
             if (cosBase instanceof COSObject)
             {
-                indirectObjects.add(cosBaseKey);
                 // dereference object
                 cosBase = ((COSObject) cosBase).getObject();
             }
@@ -1475,6 +1474,11 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             {
                 // descend to included array to collect all included indirect objects
                 ((COSArray) cosBase).getIndirectObjectKeys(indirectObjects);
+            }
+            else if (cosBaseKey != null)
+            {
+                // add key for all indirect objects other than COSDictionary/COSArray
+                indirectObjects.add(cosBaseKey);
             }
         }
     }
