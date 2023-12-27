@@ -79,6 +79,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     // initialize to MAX_VALUE as we prefer lower subsampling when keeping/replacing cache.
     private int cachedImageSubsampling = Integer.MAX_VALUE;
+    // indicates whether this image has an JPX-based filter applied
+    private boolean hasJPXFilter = false;
 
     /**
      * current resource dictionary (has color spaces)
@@ -142,18 +144,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         List<COSName> filters = stream.getFilters();
         if (filters != null && !filters.isEmpty() && COSName.JPX_DECODE.equals(filters.get(filters.size()-1)))
         {
-            COSInputStream is = null;
-            try
-            {
-                is = stream.createInputStream();
-                DecodeResult decodeResult = is.getDecodeResult();
-                stream.getCOSObject().addAll(decodeResult.getParameters());
-                this.colorSpace = decodeResult.getJPXColorSpace();
-            }
-            finally
-            {
-                IOUtils.closeQuietly(is);
-            }
+            hasJPXFilter = true;
         }
     }
 
@@ -878,9 +869,25 @@ public final class PDImageXObject extends PDXObject implements PDImage
             else if (isStencil())
             {
                 // stencil mask color space must be gray, it is often missing
-                return PDDeviceGray.INSTANCE;
+                colorSpace = PDDeviceGray.INSTANCE;
             }
-            else
+            else if (hasJPXFilter)
+            {
+                PDStream stream = getStream();
+                COSInputStream is = null;
+                try
+                {
+                    is = stream.createInputStream();
+                    DecodeResult decodeResult = is.getDecodeResult();
+                    stream.getCOSObject().addAll(decodeResult.getParameters());
+                    colorSpace = decodeResult.getJPXColorSpace();
+                }
+                finally
+                {
+                    IOUtils.closeQuietly(is);
+                }
+            }
+            if (colorSpace == null)
             {
                 // an image without a color space is always broken
                 throw new IOException("could not determine color space");
