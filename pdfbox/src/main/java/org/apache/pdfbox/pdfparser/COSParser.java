@@ -624,10 +624,12 @@ public class COSParser extends BaseParser implements ICOSParser
     public COSBase dereferenceCOSObject(COSObject obj) throws IOException
     {
         long currentPos = source.getPosition();
-        COSBase parsedObj = parseObjectDynamically(obj.getKey(), false);
+        COSObjectKey key = obj.getKey();
+        COSBase parsedObj = parseObjectDynamically(key, false);
         if (parsedObj != null)
         {
             parsedObj.setDirect(false);
+            parsedObj.setKey(key);
         }
         if (currentPos > 0)
         {
