@@ -101,11 +101,11 @@ class BidiTest
     {
         if(bSort)
         {
-            LOG.info("Preparing to parse " + inFile.getName() + " for sorted test");
+            LOG.info("Preparing to parse {} for sorted test", inFile.getName());
         }
         else
         {
-            LOG.info("Preparing to parse " + inFile.getName() + " for standard test");
+            LOG.info("Preparing to parse {} for standard test", inFile.getName());
         }
 
         File outFile;
@@ -134,7 +134,7 @@ class BidiTest
 
         if (bLogResult)
         {
-            LOG.info("Text for " + inFile.getName() + ":");
+            LOG.info("Text for {}:", inFile.getName());
             LOG.info(stripper.getText(document));
         }
 
@@ -212,9 +212,9 @@ class BidiTest
                 if( expectedArray[expectedIndex] != actualArray[actualIndex] )
                 {
                     equals = false;
-                    LOG.warn("Lines differ at index"
-                     + " expected:" + expectedIndex + "-" + (int)expectedArray[expectedIndex]
-                     + " actual:" + actualIndex + "-" + (int)actualArray[actualIndex] );
+                    LOG.warn("Lines differ at index expected: {}-{} actual: {}-{}", expectedIndex,
+                            (int) expectedArray[expectedIndex], actualIndex,
+                            (int) actualArray[actualIndex]);
                     break;
                 }
                 expectedIndex = skipWhitespace( expectedArray, expectedIndex );
@@ -227,12 +227,12 @@ class BidiTest
                 if( expectedIndex != expectedArray.length )
                 {
                     equals = false;
-                    LOG.warn("Expected line is longer at:" + expectedIndex );
+                    LOG.warn("Expected line is longer at: {}", expectedIndex);
                 }
                 if( actualIndex != actualArray.length )
                 {
                     equals = false;
-                    LOG.warn("Actual line is longer at:" + actualIndex );
+                    LOG.warn("Actual line is longer at: {}", actualIndex);
                 }
             }
         }

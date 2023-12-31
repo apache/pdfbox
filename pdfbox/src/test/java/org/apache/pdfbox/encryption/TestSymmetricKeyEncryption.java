@@ -452,7 +452,7 @@ class TestSymmetricKeyEncryption
         Map<String, PDComplexFileSpecification> embeddedFileNames = embeddedFiles.getNames();
         assertEquals(1, embeddedFileNames.size());
         Map.Entry<String, PDComplexFileSpecification> entry = embeddedFileNames.entrySet().iterator().next();
-        LOG.info("Processing embedded file " + entry.getKey() + ":");
+        LOG.info("Processing embedded file {}:", entry.getKey());
         PDComplexFileSpecification complexFileSpec = entry.getValue();
         PDEmbeddedFile embeddedFile = complexFileSpec.getEmbeddedFile();
 
@@ -463,7 +463,7 @@ class TestSymmetricKeyEncryption
             is.transferTo(fos);
         }
 
-        LOG.info("  size: " + embeddedFile.getSize());
+        LOG.info("  size: {}", embeddedFile.getSize());
         assertEquals(embeddedFile.getSize(), resultFile.length());
 
         return resultFile;

@@ -166,9 +166,9 @@ class TestTextStripper
                 if( expectedArray[expectedIndex] != actualArray[actualIndex] )
                 {
                     equals = false;
-                    LOG.warn("Lines differ at index"
-                     + " expected:" + expectedIndex + "-" + (int)expectedArray[expectedIndex]
-                     + " actual:" + actualIndex + "-" + (int)actualArray[actualIndex] );
+                    LOG.warn("Lines differ at index expected: {}-{ } actual: {}-{}", expectedIndex,
+                            (int) expectedArray[expectedIndex], actualIndex,
+                            (int) actualArray[actualIndex]);
                     break;
                 }
                 expectedIndex = skipWhitespace( expectedArray, expectedIndex );
@@ -181,17 +181,18 @@ class TestTextStripper
                 if( expectedIndex != expectedArray.length )
                 {
                     equals = false;
-                    LOG.warn("Expected line is longer at:" + expectedIndex );
+                    LOG.warn("Expected line is longer at: {}", expectedIndex);
                 }
                 if( actualIndex != actualArray.length )
                 {
                     equals = false;
-                    LOG.warn("Actual line is longer at:" + actualIndex );
+                    LOG.warn("Actual line is longer at: {}", actualIndex);
                 }
                 if (expectedArray.length != actualArray.length)
                 {
                     equals = false;
-                    LOG.warn("Expected lines: " + expectedArray.length + ", actual lines: " + actualArray.length);
+                    LOG.warn("Expected lines: {}, actual lines: {}", expectedArray.length,
+                            actualArray.length);
                 }
             }
         }
@@ -236,11 +237,11 @@ class TestTextStripper
     {
         if(bSort)
         {
-            LOG.info("Preparing to parse " + inFile.getName() + " for sorted test");
+            LOG.info("Preparing to parse {} for sorted test", inFile.getName());
         }
         else
         {
-            LOG.info("Preparing to parse " + inFile.getName() + " for standard test");
+            LOG.info("Preparing to parse {} for standard test", inFile.getName());
         }
 
         Files.createDirectories(outDir.toPath());
@@ -284,18 +285,17 @@ class TestTextStripper
 
             if (bLogResult)
             {
-                LOG.info("Text for " + inFile.getName() + ":");
+                LOG.info("Text for {}:", inFile.getName());
                 LOG.info(stripper.getText(document));
             }
 
             if (!expectedFile.exists())
             {
                 this.bFail = true;
-                LOG.error("FAILURE: Input verification file: " + expectedFile.getAbsolutePath() +
-                        " did not exist");
+                LOG.error("FAILURE: Input verification file: {} does not exist",
+                        expectedFile.getAbsolutePath());
                 return;
             }
-            
             compareResult(expectedFile, outFile, inFile, bSort, diffFile);
         }
     }
@@ -326,13 +326,10 @@ class TestTextStripper
                 {
                     this.bFail = true;
                     localFail = true;
-                    LOG.error("FAILURE: Line mismatch for file " + inFile.getName() +
-                            " (sort = "+bSort+")" +
-                                    " at expected line: " + expectedReader.getLineNumber() +
-                            " at actual line: " + actualReader.getLineNumber() +
-                            "\nexpected line was: \"" + expectedLine + "\"" +
-                                    "\nactual line was:   \"" + actualLine + "\"" + "\n");
-                    
+                    LOG.error(
+                            "FAILURE: Line mismatch for file {} (sort = {}) at expected line: {} at actual line: {}\nexpected line was: \"{}\"\nactual line was: \"{}\"\n",
+                            expectedFile.getAbsolutePath(), bSort, expectedReader.getLineNumber(),
+                            actualReader.getLineNumber(), expectedLine, actualLine);
                     //lets report all lines, even though this might produce some verbose logging
                     //break;
                 }

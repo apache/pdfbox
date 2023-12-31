@@ -169,7 +169,7 @@ public class TestPDFToImage
         PDDocument document = null;
         boolean failed = false;
 
-        LOG.info("Opening: " + file.getName());
+        LOG.info("Opening: {}", file.getName());
         try
         {
             new FileOutputStream(new File(outDir, file.getName() + ".parseerror")).close();
@@ -178,7 +178,7 @@ public class TestPDFToImage
             if (numPages < 1)
             {
                 failed = true;
-                LOG.error("file " + file.getName() + " has < 1 page");
+                LOG.error("file {} has < 1 page", file.getName());
             }
             else
             {
@@ -186,7 +186,7 @@ public class TestPDFToImage
                 new File(outDir, file.getName() + ".parseerror").deleteOnExit();
             }
 
-            LOG.info("Rendering: " + file.getName());
+            LOG.info("Rendering: {}", file.getName());
             PDFRenderer renderer = new PDFRenderer(document);
             for (int i = 0; i < numPages; i++)
             {
@@ -195,7 +195,7 @@ public class TestPDFToImage
                 BufferedImage image = renderer.renderImageWithDPI(i, 96); // Windows native DPI
                 new File(outDir, fileName + ".rendererror").delete();
                 new File(outDir, fileName + ".rendererror").deleteOnExit();
-                LOG.info("Writing: " + fileName);
+                LOG.info("Writing: {}", fileName);
                 new FileOutputStream(new File(outDir, fileName + ".writeerror")).close();
                 boolean writeSuccess = ImageIO.write(image, "PNG", new File(outDir, fileName));
                 if (writeSuccess)
@@ -222,7 +222,7 @@ public class TestPDFToImage
         catch (IOException e)
         {
             failed = true;
-            LOG.error("Error converting file " + file.getName());
+            LOG.error("Error converting file {}", file.getName());
             throw e;
         }
         finally
@@ -233,7 +233,7 @@ public class TestPDFToImage
             }
         }
 
-        LOG.info("Comparing: " + file.getName());
+        LOG.info("Comparing: {}", file.getName());
 
         //Now check the resulting files ... did we get identical PNG(s)?
         try
@@ -253,7 +253,7 @@ public class TestPDFToImage
             if (outFiles.length == 0)
             {
                 failed = true;
-                LOG.warn("*** TEST FAILURE *** Output missing for file: " + file.getName());
+                LOG.warn("*** TEST FAILURE *** Output missing for file: {}", file.getName());
             }
             for (File outFile : outFiles)
             {
@@ -262,7 +262,7 @@ public class TestPDFToImage
                 if (!inFile.exists())
                 {
                     failed = true;
-                    LOG.warn("*** TEST FAILURE *** Input missing for file: " + inFile.getName());
+                    LOG.warn("*** TEST FAILURE *** Input missing for file: {}", inFile.getName());
                 }
                 else if (!filesAreIdentical(outFile, inFile))
                 {
@@ -272,23 +272,24 @@ public class TestPDFToImage
                     if (bim3 != null)
                     {
                         failed = true;
-                        LOG.warn("*** TEST FAILURE *** Input and output not identical for file: " + inFile.getName());
+                        LOG.warn("*** TEST FAILURE *** Input and output not identical for file: {}",
+                                inFile.getName());
                         ImageIO.write(bim3, "png", new File(outFile.getAbsolutePath() + "-diff.png"));
                         System.err.println("Files differ: "  + inFile.getAbsolutePath() + "\n" +
                                            "              " + outFile.getAbsolutePath());
                     }
                     else
                     {
-                        LOG.info("*** TEST OK *** for file: " + inFile.getName());
-                        LOG.info("Deleting: " + outFile.getName());
+                        LOG.info("*** TEST OK *** for file: {}", inFile.getName());
+                        LOG.info("Deleting: {}", outFile.getName());
                         outFile.delete();
                         outFile.deleteOnExit();
                     }
                 }
                 else
                 {
-                    LOG.info("*** TEST OK *** for file: " + inFile.getName());
-                    LOG.info("Deleting: " + outFile.getName());
+                    LOG.info("*** TEST OK *** for file: {}", inFile.getName());
+                    LOG.info("Deleting: {}", outFile.getName());
                     outFile.delete();
                     outFile.deleteOnExit();
                 }
