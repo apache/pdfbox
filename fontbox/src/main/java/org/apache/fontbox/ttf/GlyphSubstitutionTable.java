@@ -271,11 +271,11 @@ public class GlyphSubstitutionTable extends TTFTable
             lookups[i] = data.readUnsignedShort();
             if (lookups[i] == 0)
             {
-                LOG.error("lookups[" + i + "] is 0 at offset " + (data.getCurrentPosition() - 2));
+                LOG.error("lookups[{}] is 0 at offset {}", i, data.getCurrentPosition() - 2);
             }
             else if (offset + lookups[i] > data.getOriginalDataSize())
             {
-                LOG.error((offset + lookups[i]) + " > " + data.getOriginalDataSize());
+                LOG.error("{} > {}", offset + lookups[i], data.getOriginalDataSize());
             }
         }
         LookupTable[] lookupTables = new LookupTable[lookupCount];
@@ -332,11 +332,12 @@ public class GlyphSubstitutionTable extends TTFTable
             subTableOffsets[i] = data.readUnsignedShort();
             if (subTableOffsets[i] == 0)
             {
-                LOG.error("subTableOffsets[" + i + "] is 0 at offset " + (data.getCurrentPosition() - 2));
+                LOG.error("subTableOffsets[{}] is 0 at offset {}", i,
+                        data.getCurrentPosition() - 2);
             }
             else if (offset + subTableOffsets[i] > data.getOriginalDataSize())
             {
-                LOG.error((offset + subTableOffsets[i]) + " > " + data.getOriginalDataSize());
+                LOG.error("{} > {}", offset + subTableOffsets[i], data.getOriginalDataSize());
             }
         }
 
