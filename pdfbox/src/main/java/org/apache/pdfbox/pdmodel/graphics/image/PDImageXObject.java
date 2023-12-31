@@ -81,6 +81,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
     private int cachedImageSubsampling = Integer.MAX_VALUE;
     // indicates whether this image has an JPX-based filter applied
     private boolean hasJPXFilter = false;
+    // is set to true after reading some values from a JPX-based image
+    private boolean jpxValuesInitialized = false;
 
     /**
      * current resource dictionary (has color spaces)
@@ -482,7 +484,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
                 return cached;
             }
         }
-
+        initJPXValues();
         // get RGB image w/o reference because applyMask might modify it, take long time and a lot of memory. 
         final BufferedImage image;
         final PDImageXObject softMask = getSoftMask();
@@ -726,6 +728,40 @@ public final class PDImageXObject extends PDXObject implements PDImage
         return color < 0 ? 0 : color > 255 ? 255 : color;
     }
 
+    private void initJPXValues()
+    {
+        if (!hasJPXFilter || jpxValuesInitialized)
+        {
+            return;
+        }
+        // some of the dictionary values of the COSStream may be overwritten by values which are extracted from the
+        // image itself, such as
+        // width and height of the image
+        // bits per component
+        // the colorspace of the image is used if the dictionary doesn't provide any value
+        PDStream stream = getStream();
+        COSInputStream is = null;
+        try
+        {
+            is = stream.createInputStream();
+            DecodeResult decodeResult = is.getDecodeResult();
+            stream.getCOSObject().addAll(decodeResult.getParameters());
+            if (colorSpace == null)
+            {
+                colorSpace = decodeResult.getJPXColorSpace();
+            }
+            jpxValuesInitialized = true;
+        }
+        catch (IOException exception)
+        {
+            LOG.debug("Can't initialize JPX based values", exception);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(is);
+        }
+    }
+
     /**
      * High-quality image scaling.
      */
@@ -829,6 +865,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
         else
         {
+            initJPXValues();
             return getCOSObject().getInt(COSName.BITS_PER_COMPONENT, COSName.BPC);
         }
     }
@@ -871,21 +908,9 @@ public final class PDImageXObject extends PDXObject implements PDImage
                 // stencil mask color space must be gray, it is often missing
                 colorSpace = PDDeviceGray.INSTANCE;
             }
-            else if (hasJPXFilter)
+            else
             {
-                PDStream stream = getStream();
-                COSInputStream is = null;
-                try
-                {
-                    is = stream.createInputStream();
-                    DecodeResult decodeResult = is.getDecodeResult();
-                    stream.getCOSObject().addAll(decodeResult.getParameters());
-                    colorSpace = decodeResult.getJPXColorSpace();
-                }
-                finally
-                {
-                    IOUtils.closeQuietly(is);
-                }
+                initJPXValues();
             }
             if (colorSpace == null)
             {
@@ -931,6 +956,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     @Override
     public int getHeight()
     {
+        initJPXValues();
         return getCOSObject().getInt(COSName.HEIGHT);
     }
 
@@ -943,6 +969,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     @Override
     public int getWidth()
     {
+        initJPXValues();
         return getCOSObject().getInt(COSName.WIDTH);
     }
 
