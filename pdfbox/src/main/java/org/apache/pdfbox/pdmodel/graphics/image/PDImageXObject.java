@@ -94,9 +94,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * }.
      *
      * @param document the current document
-     * @throws java.io.IOException if there is an error creating the XObject.
      */
-    public PDImageXObject(PDDocument document) throws IOException
+    public PDImageXObject(PDDocument document)
     {
         this(new PDStream(document), null);
     }
@@ -136,9 +135,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
      *
      * @param stream the XObject stream to read
      * @param resources the current resources
-     * @throws java.io.IOException if there is an error creating the XObject.
      */
-    public PDImageXObject(PDStream stream, PDResources resources) throws IOException
+    public PDImageXObject(PDStream stream, PDResources resources)
     {
         super(stream, COSName.IMAGE);
         this.resources = resources;
@@ -153,9 +151,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * Creates a thumbnail Image XObject from the given COSBase and name.
      * @param cosStream the COS stream
      * @return an XObject
-     * @throws IOException if there is an error creating the XObject.
      */
-    public static PDImageXObject createThumbnail(COSStream cosStream) throws IOException
+    public static PDImageXObject createThumbnail(COSStream cosStream)
     {
         // thumbnails are special, any non-null subtype is treated as being "Image"
         PDStream pdStream = new PDStream(cosStream);
