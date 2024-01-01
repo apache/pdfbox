@@ -877,11 +877,11 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
 
     private boolean isSpecialColorSpace(Object selectedNode)
     {
-        selectedNode = getUnderneathObject(selectedNode);
+        COSBase underneathObject = getUnderneathObject(selectedNode);
 
-        if (selectedNode instanceof COSArray && ((COSArray) selectedNode).size() > 0)
+        if (underneathObject instanceof COSArray && ((COSArray) underneathObject).size() > 0)
         {
-            COSBase arrayEntry = ((COSArray)selectedNode).get(0);
+            COSBase arrayEntry = ((COSArray) underneathObject).get(0);
             if (arrayEntry instanceof COSName)
             {
                 COSName name = (COSName) arrayEntry;
@@ -893,11 +893,11 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
 
     private boolean isOtherColorSpace(Object selectedNode)
     {
-        selectedNode = getUnderneathObject(selectedNode);
+        COSBase underneathObject = getUnderneathObject(selectedNode);
 
-        if (selectedNode instanceof COSArray && ((COSArray) selectedNode).size() > 0)
+        if (underneathObject instanceof COSArray && ((COSArray) underneathObject).size() > 0)
         {
-            COSBase arrayEntry = ((COSArray)selectedNode).get(0);
+            COSBase arrayEntry = ((COSArray) underneathObject).get(0);
             if (arrayEntry instanceof COSName)
             {
                 COSName name = (COSName) arrayEntry;
@@ -909,20 +909,16 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
 
     private boolean isPage(Object selectedNode)
     {
-        selectedNode = getUnderneathObject(selectedNode);
+        COSBase underneathObject = getUnderneathObject(selectedNode);
 
-        if (selectedNode instanceof COSDictionary)
+        if (underneathObject instanceof COSDictionary)
         {
-            COSDictionary dict = (COSDictionary) selectedNode;
+            COSDictionary dict = (COSDictionary) underneathObject;
             COSBase typeItem = dict.getItem(COSName.TYPE);
             if (COSName.PAGE.equals(typeItem))
             {
                 return true;
             }
-        }
-        else if (selectedNode instanceof PageEntry)
-        {
-            return true;
         }
         return false;
     }
@@ -954,14 +950,14 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
 
     private boolean isFontDescriptor(Object obj)
     {
-        Object underneathObject = getUnderneathObject(obj);
+        COSBase underneathObject = getUnderneathObject(obj);
         return underneathObject instanceof COSDictionary &&
                 COSName.FONT_DESC.equals(((COSDictionary) underneathObject).getCOSName(COSName.TYPE));
     }
 
     private boolean isAnnot(Object obj)
     {
-        Object underneathObject = getUnderneathObject(obj);
+        COSBase underneathObject = getUnderneathObject(obj);
         return underneathObject instanceof COSDictionary &&
                 COSName.ANNOT.equals(((COSDictionary) underneathObject).getCOSName(COSName.TYPE));
     }
@@ -978,10 +974,10 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
 
     private boolean isFont(Object selectedNode)
     {
-        selectedNode = getUnderneathObject(selectedNode);
-        if (selectedNode instanceof COSDictionary)
+        COSBase underneathObject = getUnderneathObject(selectedNode);
+        if (underneathObject instanceof COSDictionary)
         {
-            COSDictionary dic = (COSDictionary) selectedNode;
+            COSDictionary dic = (COSDictionary) underneathObject;
             return COSName.FONT.equals(dic.getCOSName(COSName.TYPE)) && !isCIDFont(dic);
         }
         return false;
@@ -999,11 +995,11 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
      */
     private void showColorPane(Object csNode) throws IOException
     {
-        csNode = getUnderneathObject(csNode);
+        COSBase underneathObject = getUnderneathObject(csNode);
 
-        if (csNode instanceof COSArray && ((COSArray) csNode).size() > 0)
+        if (underneathObject instanceof COSArray && ((COSArray) underneathObject).size() > 0)
         {
-            COSArray array = (COSArray)csNode;
+            COSArray array = (COSArray) underneathObject;
             COSBase arrayEntry = array.get(0);
             if (arrayEntry instanceof COSName)
             {
@@ -1030,36 +1026,28 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
 
     private void showPage(Object selectedNode)
     {
-        selectedNode = getUnderneathObject(selectedNode);
-
-        COSDictionary page;
-        if (selectedNode instanceof COSDictionary)
+        COSBase underneathObject = getUnderneathObject(selectedNode);
+        if (underneathObject instanceof COSDictionary)
         {
-            page = (COSDictionary) selectedNode;
-        }
-        else
-        {
-            page = ((PageEntry) selectedNode).getDict();
-        }
-
-        COSBase typeItem = page.getItem(COSName.TYPE);
-        if (COSName.PAGE.equals(typeItem))
-        {
-            PagePane pagePane = new PagePane(document, page, statusBar.getStatusLabel());
-            replaceRightComponent(new JScrollPane(pagePane.getPanel()));
+            COSDictionary page = (COSDictionary) underneathObject;
+            COSBase typeItem = page.getItem(COSName.TYPE);
+            if (COSName.PAGE.equals(typeItem))
+            {
+                PagePane pagePane = new PagePane(document, page, statusBar.getStatusLabel());
+                replaceRightComponent(new JScrollPane(pagePane.getPanel()));
+            }
         }
     }
 
     private void showFlagPane(Object parentNode, Object selectedNode)
     {
-        parentNode = getUnderneathObject(parentNode);
-        if (parentNode instanceof COSDictionary)
+        COSBase underneathParentObject = getUnderneathObject(parentNode);
+        if (underneathParentObject instanceof COSDictionary)
         {
-            selectedNode = ((MapEntry)selectedNode).getKey();
-            selectedNode = getUnderneathObject(selectedNode);
+            COSName selectedNodeName = ((MapEntry) selectedNode).getKey();
             FlagBitsPane flagBitsPane = new FlagBitsPane(document,
-                    (COSDictionary) parentNode,
-                    (COSName) selectedNode);
+                    (COSDictionary) underneathParentObject,
+                    (COSName) selectedNodeName);
             replaceRightComponent(flagBitsPane.getPane());
         }
     }
@@ -1161,42 +1149,40 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         return null;
     }
 
-    private Object getUnderneathObject(Object selectedNode)
+    private COSBase getUnderneathObject(Object selectedNode)
     {
         if (selectedNode instanceof MapEntry)
         {
-            selectedNode = ((MapEntry) selectedNode).getValue();
+            return ((MapEntry) selectedNode).getValue();
         }
         else if (selectedNode instanceof ArrayEntry)
         {
-            selectedNode = ((ArrayEntry) selectedNode).getValue();
+            return ((ArrayEntry) selectedNode).getValue();
         }
         else if (selectedNode instanceof PageEntry)
         {
-            selectedNode = ((PageEntry) selectedNode).getDict();
+            return ((PageEntry) selectedNode).getDict();
         }
         else if (selectedNode instanceof XrefEntry)
         {
-            selectedNode = ((XrefEntry) selectedNode).getCOSObject();
+            return ((XrefEntry) selectedNode).getCOSObject();
         }
-
         if (selectedNode instanceof COSObject)
         {
-            selectedNode = ((COSObject) selectedNode).getObject();
+            return ((COSObject) selectedNode).getObject();
         }
-        return selectedNode;
+        return null;
     }
 
     private String convertToString( Object selectedNode )
     {
-        String data = null;
         if(selectedNode instanceof COSBoolean)
         {
-            return "" + ((COSBoolean) selectedNode).getValue();
+            return Boolean.toString(((COSBoolean) selectedNode).getValue());
         }
         if (selectedNode instanceof COSFloat)
         {
-            return "" + ((COSFloat) selectedNode).floatValue();
+            return Float.toString(((COSFloat) selectedNode).floatValue());
         }
         if (selectedNode instanceof COSNull)
         {
@@ -1204,7 +1190,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         }
         if (selectedNode instanceof COSInteger)
         {
-            return "" + ((COSInteger) selectedNode).intValue();
+            return Integer.toString(((COSInteger) selectedNode).intValue());
         }
         if (selectedNode instanceof COSName)
         {
