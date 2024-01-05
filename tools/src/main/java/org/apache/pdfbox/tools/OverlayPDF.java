@@ -130,6 +130,16 @@ public final class OverlayPDF implements Callable<Integer>
             overlayer.setAllPagesOverlayFile(useAllPages.getAbsolutePath());
         }
 
+        if (defaultOverlay != null)
+        {
+            overlayer.setDefaultOverlayFile(defaultOverlay.getAbsolutePath());
+        }
+
+        if (infile != null)
+        {
+            overlayer.setInputFile(infile.getAbsolutePath());
+        }
+
 
         try (PDDocument result = overlayer.overlay(specificPageOverlayFile))
         {
