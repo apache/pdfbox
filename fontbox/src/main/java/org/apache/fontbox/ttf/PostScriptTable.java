@@ -69,7 +69,11 @@ public class PostScriptTable extends TTFTable
         mimMemType1 = data.readUnsignedInt();
         maxMemType1 = data.readUnsignedInt();
 
-        if (formatType == 1.0f)
+        if (data.getCurrentPosition() == data.getOriginalDataSize())
+        {
+            LOG.warn("No PostScript name data is provided for the font " + ttf.getName());
+        }
+        else if (formatType == 1.0f)
         {
             /*
              * This TrueType font file contains exactly the 258 glyphs in the standard Macintosh TrueType.
