@@ -1333,15 +1333,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 int h = Math.round(image.getHeight() * scaleY);
                 if (w < 1 || h < 1)
                 {
-                    try
-                    {
-                        graphics.drawImage(image, imageTransform, null);
-                    }
-                    catch (NegativeArraySizeException | IllegalArgumentException e)
-                    {
-                        // PDFBOX-5749 / JDK-8314112 catch WPathGraphics bug
-                        LOG.debug(e.getMessage(), e);
-                    }
+                    graphics.drawImage(image, imageTransform, null);
                     return;
                 }
                 Image imageToDraw = image.getScaledInstance(w, h, Image.SCALE_SMOOTH);
@@ -1351,15 +1343,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 imageTransform.scale(1f / w * image.getWidth(), 1f / h * image.getHeight());
                 imageTransform.preConcatenate(originalTransform);
                 graphics.setTransform(new AffineTransform());
-                try
-                {
-                    graphics.drawImage(imageToDraw, imageTransform, null);
-                }
-                catch (NegativeArraySizeException | IllegalArgumentException e)
-                {
-                    // PDFBOX-5749 / JDK-8314112 catch WPathGraphics bug
-                    LOG.debug(e.getMessage(), e);
-                }
+                graphics.drawImage(imageToDraw, imageTransform, null);
                 graphics.setTransform(originalTransform);
             }
             else
@@ -1387,15 +1371,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     g.dispose();
                     image = bim;
                 }
-                try
-                {
-                    graphics.drawImage(image, imageTransform, null);
-                }
-                catch (NegativeArraySizeException | IllegalArgumentException e)
-                {
-                    // PDFBOX-5749 / JDK-8314112 catch WPathGraphics bug
-                    LOG.debug(e.getMessage(), e);
-                }
+                graphics.drawImage(image, imageTransform, null);
             }
         }
     }
