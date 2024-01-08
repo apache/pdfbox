@@ -1337,7 +1337,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     {
                         graphics.drawImage(image, imageTransform, null);
                     }
-                    catch (NegativeArraySizeException e)
+                    catch (NegativeArraySizeException | IllegalArgumentException e)
                     {
                         // PDFBOX-5749 / JDK-8314112 catch WPathGraphics bug
                         LOG.debug(e.getMessage(), e);
@@ -1355,7 +1355,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 {
                     graphics.drawImage(imageToDraw, imageTransform, null);
                 }
-                catch (NegativeArraySizeException e)
+                catch (NegativeArraySizeException | IllegalArgumentException e)
                 {
                     // PDFBOX-5749 / JDK-8314112 catch WPathGraphics bug
                     LOG.debug(e.getMessage(), e);
@@ -1391,7 +1391,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 {
                     graphics.drawImage(image, imageTransform, null);
                 }
-                catch (NegativeArraySizeException e)
+                catch (NegativeArraySizeException | IllegalArgumentException e)
                 {
                     // PDFBOX-5749 / JDK-8314112 catch WPathGraphics bug
                     LOG.debug(e.getMessage(), e);
