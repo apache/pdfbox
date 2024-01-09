@@ -1047,7 +1047,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
             COSName selectedNodeName = ((MapEntry) selectedNode).getKey();
             FlagBitsPane flagBitsPane = new FlagBitsPane(document,
                     (COSDictionary) underneathParentObject,
-                    (COSName) selectedNodeName);
+                    selectedNodeName);
             replaceRightComponent(flagBitsPane.getPane());
         }
     }
