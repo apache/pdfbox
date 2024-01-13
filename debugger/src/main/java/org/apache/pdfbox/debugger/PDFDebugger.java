@@ -1027,14 +1027,20 @@ public class PDFDebugger extends JFrame
         {
             Object pageObj = path.getParentPath().getLastPathComponent();
             COSDictionary page = (COSDictionary) getUnderneathObject(pageObj);
-            resourcesDic = (COSDictionary) page.getDictionaryObject(COSName.RESOURCES);
+            if (page != null)
+            {
+                resourcesDic = page.getCOSDictionary(COSName.RESOURCES);
+            }
             isContentStream = true;
         }
         else if (COSName.CONTENTS.equals(parentKey) || COSName.CHAR_PROCS.equals(parentKey))
         {
             Object pageObj = path.getParentPath().getParentPath().getLastPathComponent();
             COSDictionary page = (COSDictionary) getUnderneathObject(pageObj);
-            resourcesDic = (COSDictionary) page.getDictionaryObject(COSName.RESOURCES);
+            if (page != null)
+            {
+                resourcesDic = page.getCOSDictionary(COSName.RESOURCES);
+            }
             isContentStream = true;
         }
         else if (COSName.FORM.equals(stream.getCOSName(COSName.SUBTYPE)) ||
