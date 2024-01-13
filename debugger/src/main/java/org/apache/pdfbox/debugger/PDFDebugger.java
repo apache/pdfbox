@@ -1065,14 +1065,20 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         {
             Object pageObj = path.getParentPath().getLastPathComponent();
             COSDictionary page = (COSDictionary) getUnderneathObject(pageObj);
-            resourcesDic = page.getCOSDictionary(COSName.RESOURCES);
+            if (page != null)
+            {
+                resourcesDic = page.getCOSDictionary(COSName.RESOURCES);
+            }
             isContentStream = true;
         }
         else if (COSName.CONTENTS.equals(parentKey) || COSName.CHAR_PROCS.equals(parentKey))
         {
             Object pageObj = path.getParentPath().getParentPath().getLastPathComponent();
             COSDictionary page = (COSDictionary) getUnderneathObject(pageObj);
-            resourcesDic = page.getCOSDictionary(COSName.RESOURCES);
+            if (page != null)
+            {
+                resourcesDic = page.getCOSDictionary(COSName.RESOURCES);
+            }
             isContentStream = true;
         }
         else if (COSName.FORM.equals(stream.getCOSName(COSName.SUBTYPE)) ||
