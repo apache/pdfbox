@@ -16,6 +16,17 @@
  */
 package org.apache.pdfbox.cos;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.multipdf.Splitter;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -135,5 +146,45 @@ class COSObjectKeyTest
         // different object numbers/different generation numbers/ sum of both numbers are equal 100 0 vs. 99 1
         assertNotEquals(new COSObjectKey(100, 0).hashCode(),
                 new COSObjectKey(99, 1).hashCode());
+    }
+
+    /**
+     * PDFBOX-5742: split and then check that renderings are identical. This is a test of the
+     * changes with handling indirect objects in COSArray, COSDictionary and COSParser.
+     */
+    @Test
+    void testPDFBox5742() throws IOException
+    {
+        ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+        BufferedImage bim1orig;
+        BufferedImage bim2orig;
+        try (PDDocument doc = Loader.loadPDF(new File("target/pdfs","PDFBOX-5742.pdf")))
+        {
+            PDFRenderer renderer = new PDFRenderer(doc);
+            bim1orig = renderer.renderImage(0);
+            bim2orig = renderer.renderImage(1);
+            Splitter splitter = new Splitter();
+            List<PDDocument> splits = splitter.split(doc);
+            Assertions.assertEquals(2, splits.size());
+            try (PDDocument doc1 = splits.get(0);
+                 PDDocument doc2 = splits.get(1))
+            {
+                doc1.save(baos1);
+                doc2.save(baos2);
+            }
+        }
+        try (PDDocument doc1 = Loader.loadPDF(baos1.toByteArray());
+             PDDocument doc2 = Loader.loadPDF(baos2.toByteArray()))
+        {
+            Assertions.assertEquals(1, doc1.getNumberOfPages());
+            Assertions.assertEquals(1, doc2.getNumberOfPages());
+            PDFRenderer renderer1 = new PDFRenderer(doc1);
+            PDFRenderer renderer2 = new PDFRenderer(doc2);
+            BufferedImage bim1new = renderer1.renderImage(0);
+            BufferedImage bim2new = renderer2.renderImage(0);
+            ValidateXImage.checkIdent(bim1orig, bim1new);
+            ValidateXImage.checkIdent(bim2orig, bim2new);
+        }
     }
 }
