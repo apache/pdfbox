@@ -98,6 +98,7 @@ public final class OverlayPDF implements Callable<Integer>
     }
 
 
+    @Override
     public Integer call()
     {
         int retcode = 0;
