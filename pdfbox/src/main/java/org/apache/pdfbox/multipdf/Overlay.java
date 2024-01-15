@@ -205,14 +205,14 @@ public class Overlay implements Closeable
 
     private void loadPDFs() throws IOException
     {
-        if (inputPDFDocument == null)
-        {
-            throw new IllegalArgumentException("No input document");
-        }
         // input PDF
         if (inputFileName != null)
         {
             inputPDFDocument = loadPDF(inputFileName);
+        }
+        if (inputPDFDocument == null)
+        {
+            throw new IllegalArgumentException("No input document");
         }
         // default overlay PDF
         if (defaultOverlayFilename != null)
