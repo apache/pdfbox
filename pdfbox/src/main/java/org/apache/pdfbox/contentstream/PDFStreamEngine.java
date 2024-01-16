@@ -931,17 +931,17 @@ public abstract class PDFStreamEngine
             exception instanceof MissingResourceException ||
             exception instanceof MissingImageReaderException)
         {
-            LOG.error(exception.getMessage());
+            LOG.error(exception.getMessage(), exception);
         }
         else if (exception instanceof EmptyGraphicsStackException)
         {
-            LOG.warn(exception.getMessage());
+            LOG.warn(exception.getMessage(), exception);
         }
         else if (operator.getName().equals("Do"))
         {
             // todo: this too forgiving, but PDFBox has always worked this way for DrawObject
             //       some careful refactoring is needed
-            LOG.warn(exception.getMessage());
+            LOG.warn(exception.getMessage(), exception);
         }
         else
         {
