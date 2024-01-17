@@ -1364,7 +1364,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         if (objs.contains(base))
         {
             // avoid endless recursion
-            return String.valueOf(base.hashCode());
+            return "hash:" + String.valueOf(base.hashCode());
         }
         objs.add(base);
         if (base instanceof COSDictionary)
