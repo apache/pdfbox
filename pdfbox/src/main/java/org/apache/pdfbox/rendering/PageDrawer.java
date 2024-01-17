@@ -179,6 +179,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private final RenderingHints renderingHints;
     private final float imageDownscalingOptimizationThreshold;
     private LookupTable invTable = null;
+    private final Map<COSBase,Boolean> blendModeMap = new HashMap<COSBase,Boolean>();
 
     /**
     * Default annotations filter, returns all annotations
@@ -2042,14 +2043,21 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         if (groupsDone.contains(group.getCOSObject()))
         {
-            // The group was already processed. Avoid endless recursion.
+            // The group is being processed. Avoid endless recursion.
             return false;
         }
         groupsDone.add(group.getCOSObject());
 
+        Boolean val = blendModeMap.get(group.getCOSObject());
+        if (val != null)
+        {
+            return val;
+        }
+
         PDResources resources = group.getResources();
         if (resources == null)
         {
+            blendModeMap.put(group.getCOSObject(), false);
             return false;
         }
         for (COSName name : resources.getExtGStateNames())
@@ -2062,6 +2070,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             BlendMode blendMode = extGState.getBlendMode();
             if (blendMode != BlendMode.NORMAL)
             {
+                blendModeMap.put(group.getCOSObject(), true);
                 return true;
             }
         }
@@ -2081,10 +2090,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             if (xObject instanceof PDTransparencyGroup &&
                 hasBlendMode((PDTransparencyGroup)xObject, groupsDone))
             {
+                blendModeMap.put(group.getCOSObject(), true);
                 return true;
             }
         }
 
+        blendModeMap.put(group.getCOSObject(), false);
         return false;
     }
 
