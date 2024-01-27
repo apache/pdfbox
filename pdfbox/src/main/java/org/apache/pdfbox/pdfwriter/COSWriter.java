@@ -1073,20 +1073,36 @@ public class COSWriter implements ICOSVisitor
         COSBase actual = obj;
         if( actual instanceof COSObject )
         {
+            actual = ((COSObject) obj).getObject();
             if (reuseObjectNumbers)
             {
                 COSObjectKey key = obj.getKey();
                 if (key != null)
                 {
+                    COSObjectKey actualKey = actual != null ? actual.getKey() : null;
+                    // check if the key of the referenced object and the indirect object is the same
+                    if (actualKey != null && !key.equals(actualKey))
+                    {
+                        // update the object key of the indirect object
+                        key = actualKey;
+                        obj.setKey(key);
+                    }
                     objectKeys.put(obj, key);
                     return key;
                 }
             }
-            actual = ((COSObject) obj).getObject();
         }
         // PDFBOX-4540: because objectKeys is accessible from outside, it is possible
         // that a COSObject obj is already in the objectKeys map.
-        return objectKeys.computeIfAbsent(actual, k -> new COSObjectKey(++number, 0));
+        COSObjectKey newKey = objectKeys.computeIfAbsent(actual,
+                k -> new COSObjectKey(++number, 0));
+        COSObjectKey actualKey = actual.getKey();
+        // if the returned key is new update the existing key of the given object
+        if (actualKey != null && !actualKey.equals(newKey))
+        {
+            actual.setKey(newKey);
+        }
+        return newKey;
     }
 
     @Override
