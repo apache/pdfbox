@@ -43,9 +43,9 @@ import java.util.Arrays;
  * @author <a href="https://github.com/Schmidor">Oliver Schmidtmer</a>
  * @author last modified by $Author: haraldk$
  * @version $Id: CCITTFaxDecoderStream.java,v 1.0 23.05.12 15:55 haraldk Exp$
- * 
+ *
  * Taken from commit 24c6682236e5a02151359486aa4075ddc5ab1534 of 18.08.2018 from twelvemonkeys/imageio/plugins/tiff/CCITTFaxDecoderStream.java
- * 
+ *
  * Initial changes for PDFBox, discussed in PDFBOX-3338:
  * - removed Validate() usages
  * - catch VALUE_EOL in decode1D()
@@ -85,6 +85,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
      *             {@code COMPRESSION_CCITT_T4} or {@code COMPRESSION_CCITT_T6}.
      * @param options CCITT T.4 or T.6 options.
      * @param byteAligned enable byte alignment used in PDF files (EncodedByteAlign).
+     * @throws IllegalArgumentException when the stream type is not one of the 3 valid compression types.
      */
     public CCITTFaxDecoderStream(final InputStream stream, final int columns, final int type,
                                  final long options, final boolean byteAligned) {
@@ -363,7 +364,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
 
             white = !white;
         }
-        
+
         if (index != columns) {
             throw new IOException("Sum of run-lengths does not equal scan line width: " + index + " > " + columns);
         }

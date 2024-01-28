@@ -77,7 +77,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 /**
  * This is the in-memory representation of the PDF document.
  * The #close() method must be called once the document is no longer needed.
- * 
+ *
  * @author Ben Litchfield
  */
 public class PDDocument implements Closeable
@@ -109,7 +109,7 @@ public class PDDocument implements Closeable
             LOG.debug("voodoo error", ex);
         }
     }
-    
+
     private final COSDocument document;
 
     // cached values
@@ -120,7 +120,7 @@ public class PDDocument implements Closeable
     // the COSDocument will not have an "Encrypt" dictionary anymore and this object must be used
     private PDEncryption encryption;
 
-    // holds a flag which tells us if we should remove all security from this documents.
+    // holds a flag which tells us if we should remove all security from this document.
     private boolean allSecurityToBeRemoved;
 
     // keep tracking customized documentId for the trailer. If null, a new id will be generated
@@ -132,7 +132,7 @@ public class PDDocument implements Closeable
 
     // the access permissions of the document
     private AccessPermission accessPermission;
-    
+
     // fonts to subset before saving
     private final Set<PDFont> fontsToSubset = new HashSet<>();
 
@@ -192,7 +192,7 @@ public class PDDocument implements Closeable
 
     /**
      * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
-     * 
+     *
      * @param doc The COSDocument that this document wraps.
      */
     public PDDocument(COSDocument doc)
@@ -202,7 +202,7 @@ public class PDDocument implements Closeable
 
     /**
      * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
-     * 
+     *
      * @param doc The COSDocument that this document wraps.
      * @param source input representing the pdf
      */
@@ -213,11 +213,11 @@ public class PDDocument implements Closeable
 
     /**
      * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
-     * 
+     *
      * @param doc The COSDocument that this document wraps.
      * @param source input representing the pdf
-     * @param permission he access permissions of the pdf
-     * 
+     * @param permission the access permissions of the pdf
+     *
      */
     public PDDocument(COSDocument doc, RandomAccessRead source, AccessPermission permission)
     {
@@ -230,7 +230,7 @@ public class PDDocument implements Closeable
     /**
      * This will add a page to the document. This is a convenience method, that will add the page to the root of the
      * hierarchy and set the parent of the page to the root.
-     * 
+     *
      * @param page The page to add to the document.
      */
     public void addPage(PDPage page)
@@ -281,10 +281,10 @@ public class PDDocument implements Closeable
      * <p>
      * Only one signature may be added in a document. To sign several times,
      * load document, add signature, save incremental and close again.
-     * 
+     *
      * @param sigObject is the PDSignatureField model
      * @param signatureInterface is an interface whose implementation provides
-     * signing capabilities. Can be null if external signing if used.
+     * signing capabilities. Can be null if external signing is used.
      * @throws IOException if there is an error creating required fields
      * @throws IllegalStateException if one attempts to add several signature
      * fields.
@@ -304,7 +304,7 @@ public class PDDocument implements Closeable
      *
      * @param sigObject is the PDSignatureField model
      * @param signatureInterface is an interface whose implementation provides
-     * signing capabilities. Can be null if external signing if used.
+     * signing capabilities. Can be null if external signing is used.
      * @param options signature options
      * @throws IOException if there is an error creating required fields
      * @throws IllegalStateException if one attempts to add several signature
@@ -321,7 +321,7 @@ public class PDDocument implements Closeable
 
         // Reserve content
         // We need to reserve some space for the signature. Some signatures including
-        // big certificate chain and we need enough space to store it.
+        // big certificate chain, and we need enough space to store it.
         int preferredSignatureSize = options.getPreferredSignatureSize();
         if (preferredSignatureSize > 0)
         {
@@ -397,7 +397,7 @@ public class PDDocument implements Closeable
         // better make it configurable (not all users need/want PDF/A but their own setting):
 
         // to conform PDF/A-1 requirement:
-        // The /F key's Print flag bit shall be set to 1 and 
+        // The /F key's Print flag bit shall be set to 1 and
         // its Hidden, Invisible and NoView flag bits shall be set to 0
         firstWidget.setPrinted(true);
         // This may be troublesome if several form fields are signed,
@@ -453,12 +453,12 @@ public class PDDocument implements Closeable
             else
             {
                 annotations.add(firstWidget);
-            }   
+            }
         }
 
         // Make /Annots a direct object by reassigning it,
-        // to avoid problem if it is an existing indirect object: 
-        // it would not be updated in incremental save, and if we'd set the /Annots array "to be updated" 
+        // to avoid problem if it is an existing indirect object:
+        // it would not be updated in incremental save, and if we'd set the /Annots array "to be updated"
         // while keeping it indirect, Adobe Reader would claim that the document had been modified.
         page.setAnnotations(annotations);
 
@@ -467,7 +467,7 @@ public class PDDocument implements Closeable
 
     /**
      * Search acroform fields for signature field with specific signature dictionary.
-     * 
+     *
      * @param fieldIterator iterator on all fields.
      * @param sigObject signature object (the /V part).
      * @return a signature field if found, or null if none was found.
@@ -537,7 +537,7 @@ public class PDDocument implements Closeable
         // have an annotation rectangle that has zero height and width."
         // Set rectangle for non-visual signature to rectangle array [ 0 0 0 0 ]
         firstWidget.setRectangle(new PDRectangle());
-        
+
         // The visual appearance must also exist for an invisible signature but may be empty.
         PDAppearanceDictionary appearanceDictionary = new PDAppearanceDictionary();
         PDAppearanceStream appearanceStream = new PDAppearanceStream(this);
@@ -546,7 +546,7 @@ public class PDDocument implements Closeable
         firstWidget.setAppearance(appearanceDictionary);
     }
 
-    private void prepareVisibleSignature(PDAnnotationWidget firstWidget, PDAcroForm acroForm, 
+    private void prepareVisibleSignature(PDAnnotationWidget firstWidget, PDAcroForm acroForm,
             COSDocument visualSignature)
     {
         // Obtain visual signature object
@@ -622,7 +622,7 @@ public class PDDocument implements Closeable
             {
                 acroForm.getCOSObject().setItem(COSName.DR, newDR);
                 newDR.setDirect(true);
-                newDR.setNeedToBeUpdated(true);            
+                newDR.setNeedToBeUpdated(true);
             }
             else
             {
@@ -640,7 +640,7 @@ public class PDDocument implements Closeable
 
     /**
      * Remove the page from the document.
-     * 
+     *
      * @param page The page to remove from the document.
      */
     public void removePage(PDPage page)
@@ -650,7 +650,7 @@ public class PDDocument implements Closeable
 
     /**
      * Remove the page from the document.
-     * 
+     *
      * @param pageNumber 0 based index to page number.
      */
     public void removePage(int pageNumber)
@@ -659,7 +659,7 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * This will import and copy the contents from another location. Currently the content stream is
+     * This will import and copy the contents from another location. Currently, the content stream is
      * stored in a scratch file. The scratch file is associated with the document. If you are adding
      * a page to this document from another document and want to copy the contents to this
      * document's scratch file then use this method otherwise just use the {@link #addPage addPage()}
@@ -703,7 +703,7 @@ public class PDDocument implements Closeable
 
     /**
      * Determine the highest object number from the imported page to avoid mixed up numbers when saving the new pdf.
-     * 
+     *
      * @param importedPage the imported page.
      */
     private void setHighestImportedObjectNumber(PDPage importedPage)
@@ -719,7 +719,7 @@ public class PDDocument implements Closeable
 
     /**
      * This will get the low level document.
-     * 
+     *
      * @return The document that this layer sits on top of.
      */
     public COSDocument getDocument()
@@ -770,7 +770,7 @@ public class PDDocument implements Closeable
 
     /**
      * This will get the document CATALOG. This is guaranteed to not return null.
-     * 
+     *
      * @return The documents /Root dictionary
      */
     public PDDocumentCatalog getDocumentCatalog()
@@ -793,7 +793,7 @@ public class PDDocument implements Closeable
 
     /**
      * This will tell if this document is encrypted or not.
-     * 
+     *
      * @return true If this document is encrypted.
      */
     public boolean isEncrypted()
@@ -820,7 +820,7 @@ public class PDDocument implements Closeable
 
     /**
      * This will set the encryption dictionary for this document.
-     * 
+     *
      * @param encryption The encryption dictionary(most likely a PDStandardEncryption object)
      */
     public void setEncryptionDictionary(PDEncryption encryption)
@@ -831,7 +831,7 @@ public class PDDocument implements Closeable
     /**
      * This will return the last signature from the field tree. Note that this may not be the
      * last in time when empty signature fields are created first but signed after other fields.
-     * 
+     *
      * @return the last signature as <code>PDSignatureField</code>.
      */
     public PDSignature getLastSignatureDictionary()
@@ -847,7 +847,7 @@ public class PDDocument implements Closeable
 
     /**
      * Retrieve all signature fields from the document.
-     * 
+     *
      * @return a <code>List</code> of <code>PDSignatureField</code>s
      */
     public List<PDSignatureField> getSignatureFields()
@@ -869,7 +869,7 @@ public class PDDocument implements Closeable
 
     /**
      * Retrieve all signature dictionaries from the document.
-     * 
+     *
      * @return a <code>List</code> of <code>PDSignatureField</code>s
      */
     public List<PDSignature> getSignatureDictionaries()
@@ -905,7 +905,7 @@ public class PDDocument implements Closeable
     {
         return fontsToSubset;
     }
-    
+
     /**
      * Save the document to a file using default compression.
      * <p>
@@ -930,7 +930,7 @@ public class PDDocument implements Closeable
      * <p>
      * If encryption has been activated (with {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy)
      * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted.
-     * 
+     *
      * @param file The file to save as.
      *
      * @throws IOException if the output could not be written
@@ -992,7 +992,7 @@ public class PDDocument implements Closeable
      * <p>
      * If encryption has been activated (with {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy)
      * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted.
-     * 
+     *
      * @param fileName The file to save as.
      * @param compressParameters The parameters for the document's compression.
      *
@@ -1061,7 +1061,7 @@ public class PDDocument implements Closeable
      * signed</a>. (PDFBox already does this for signature widget annotations)
      * <p>
      * Another problem with page-based modifications can occur if the page tree isn't flat: there
-     * won't be an closed update path from the catalog to the page. To fix this, add code like this:
+     * won't be a closed update path from the catalog to the page. To fix this, add code like this:
      * <pre>{@code
      * COSDictionary parent = page.getCOSObject().getCOSDictionary(COSName.PARENT);
      * while (parent != null)
@@ -1127,7 +1127,7 @@ public class PDDocument implements Closeable
 
     /**
      * Save PDF incrementally without closing for external signature creation scenario. The general sequence is:
-     * 
+     *
      * <pre>
      *    PDDocument pdDocument = ...;
      *    OutputStream outputStream = ...;
@@ -1215,7 +1215,7 @@ public class PDDocument implements Closeable
 
     /**
      * Returns the page tree.
-     * 
+     *
      * @return the page tree
      */
     public PDPageTree getPages()
@@ -1225,7 +1225,7 @@ public class PDDocument implements Closeable
 
     /**
      * This will return the total page count of the PDF document.
-     * 
+     *
      * @return The total number of pages in the PDF document.
      */
     public int getNumberOfPages()
@@ -1235,7 +1235,7 @@ public class PDDocument implements Closeable
 
     /**
      * This will close the underlying COSDocument object.
-     * 
+     *
      * @throws IOException If there is an error releasing resources.
      */
     @Override
@@ -1258,7 +1258,7 @@ public class PDDocument implements Closeable
 
             // close all intermediate I/O streams
             firstException = IOUtils.closeAndLogException(document, LOG, "COSDocument", firstException);
-            
+
             // close the source PDF stream, if we read from one
             if (pdfSource != null)
             {
@@ -1301,7 +1301,7 @@ public class PDDocument implements Closeable
                     + "as protect() implies setAllSecurityToBeRemoved(false)");
             setAllSecurityToBeRemoved(false);
         }
-        
+
         if (!isEncrypted())
         {
             encryption = new PDEncryption();
@@ -1322,7 +1322,7 @@ public class PDDocument implements Closeable
      * method returns the access permission for a document owner (ie can do everything). The returned object is in read
      * only mode so that permissions cannot be changed. Methods providing access to content should rely on this object
      * to verify if the current user is allowed to proceed.
-     * 
+     *
      * @return the access permissions for the current user on the document.
      */
     public AccessPermission getCurrentAccessPermission()
@@ -1336,7 +1336,7 @@ public class PDDocument implements Closeable
 
     /**
      * Indicates if all security is removed or not when writing the pdf.
-     * 
+     *
      * @return returns true if all security shall be removed otherwise false
      */
     public boolean isAllSecurityToBeRemoved()
@@ -1346,7 +1346,7 @@ public class PDDocument implements Closeable
 
     /**
      * Activates/Deactivates the removal of all security when writing the pdf.
-     * 
+     *
      * @param removeAllSecurity remove all security if set to true
      */
     public void setAllSecurityToBeRemoved(boolean removeAllSecurity)
@@ -1366,14 +1366,14 @@ public class PDDocument implements Closeable
 
     /**
      * Sets the document ID to the given value.
-     * 
+     *
      * @param docId the new document ID
      */
     public void setDocumentId(Long docId)
     {
         documentId = docId;
     }
-    
+
     /**
      * Returns the PDF specification version this document conforms to.
      *
@@ -1411,7 +1411,7 @@ public class PDDocument implements Closeable
      * Sets the PDF specification version for this document.
      *
      * @param newVersion the new PDF version (e.g. 1.4f)
-     * 
+     *
      */
     public void setVersion(float newVersion)
     {
@@ -1441,7 +1441,7 @@ public class PDDocument implements Closeable
 
     /**
      * Returns the resource cache associated with this document, or null if there is none.
-     * 
+     *
      * @return the resource cache of the document
      */
     public ResourceCache getResourceCache()
@@ -1451,7 +1451,7 @@ public class PDDocument implements Closeable
 
     /**
      * Sets the resource cache associated with this document.
-     * 
+     *
      * @param resourceCache A resource cache, or null.
      */
     public void setResourceCache(ResourceCache resourceCache)

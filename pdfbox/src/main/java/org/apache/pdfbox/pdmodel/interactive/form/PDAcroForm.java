@@ -173,20 +173,20 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * This will flatten all form fields.
-     * 
+     *
      * <p>
      * Flattening a form field will take the current appearance and make that part of the pages content stream. All form
      * fields and annotations associated are removed.
      * </p>
-     * 
+     *
      * <p>
      * Invisible and hidden fields will be skipped and will not become part of the page content stream
      * </p>
-     * 
+     *
      * <p>
      * The appearances for the form fields widgets will <strong>not</strong> be generated
      * </p>
-     * 
+     *
      * @throws IOException if something went wrong flattening the fields
      */
     public void flatten() throws IOException
@@ -210,16 +210,16 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * This will flatten the specified form fields.
-     * 
+     *
      * <p>
      * Flattening a form field will take the current appearance and make that part of the pages content stream. All form
      * fields and annotations associated are removed.
      * </p>
-     * 
+     *
      * <p>
      * Invisible and hidden fields will be skipped and will not become part of the page content stream
      * </p>
-     * 
+     *
      * @param fields a list of fields to be flattened
      * @param refreshAppearances if set to true the appearances for the form field widgets will be updated
      * @throws IOException if something went wrong flattening the fields
@@ -269,7 +269,7 @@ public final class PDAcroForm implements COSObjectable
             List<PDAnnotation> annotations = new ArrayList<>();
 
             for (PDAnnotation annotation: page.getAnnotations())
-            {                
+            {
                 if (widgetsForPageMap == null || !widgetsForPageMap.contains(annotation.getCOSObject()))
                 {
                     annotations.add(annotation);
@@ -332,7 +332,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Refreshes the appearance streams and appearance dictionaries for the widget annotations of all fields.
-     * 
+     *
      * @throws IOException if the appearance streams could not be refreshed
      */
     public void refreshAppearances() throws IOException
@@ -348,7 +348,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Refreshes the appearance streams and appearance dictionaries for the widget annotations of the specified fields.
-     * 
+     *
      * @param fields a list of fields to be refreshed
      * @throws IOException if the appearance streams could not be refreshed
      */
@@ -365,15 +365,15 @@ public final class PDAcroForm implements COSObjectable
 
 
     /**
-     * This will return all of the documents root fields.
-     * 
+     * This will return all the documents root fields.
+     * <p>
      * A field might have children that are fields (non-terminal field) or does not
      * have children which are fields (terminal fields).
-     * 
-     * The fields within an AcroForm are organized in a tree structure. The documents root fields 
+     * <p>
+     * The fields within an AcroForm are organized in a tree structure. The documents root fields
      * might either be terminal fields, non-terminal fields or a mixture of both. Non-terminal fields
      * mark branches which contents can be retrieved using {@link PDNonTerminalField#getChildren()}.
-     * 
+     *
      * @return A list of the documents root fields, never null. If there are no fields then this
      * method returns an empty list.
      */
@@ -412,7 +412,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Returns an iterator which walks all fields in the field tree, in order.
-     * 
+     *
      * @return an iterator which walks all fields in the field tree
      */
     public Iterator<PDField> getFieldIterator()
@@ -422,7 +422,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Return the field tree representing all form fields
-     * 
+     *
      * @return the field tree representing all form fields
      */
     public PDFieldTree getFieldTree()
@@ -493,7 +493,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Get the default appearance.
-     * 
+     *
      * @return the DA element of the dictionary object
      */
     public String getDefaultAppearance()
@@ -503,7 +503,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Set the default appearance.
-     * 
+     *
      * @param daValue a string describing the default appearance
      */
     public void setDefaultAppearance(String daValue)
@@ -514,7 +514,7 @@ public final class PDAcroForm implements COSObjectable
     /**
      * True if the viewing application should construct the appearances of all field widgets.
      * The default value is false.
-     * 
+     *
      * @return the value of NeedAppearances, false if the value isn't set
      */
     public boolean getNeedAppearances()
@@ -525,7 +525,7 @@ public final class PDAcroForm implements COSObjectable
     /**
      * Set the NeedAppearances value. If this is false, PDFBox will create appearances for all field
      * widget.
-     * 
+     *
      * @param value the value for NeedAppearances
      */
     public void setNeedAppearances(Boolean value)
@@ -598,7 +598,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * This will get the document-wide default value for the quadding/justification of variable text
-     * fields. 
+     * fields.
      * <p>
      * 0 - Left(default)<br>
      * 1 - Centered<br>
@@ -625,7 +625,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Determines if SignaturesExist is set.
-     * 
+     *
      * @return true if the document contains at least one signature.
      */
     public boolean isSignaturesExist()
@@ -645,7 +645,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Determines if AppendOnly is set.
-     * 
+     *
      * @return true if the document contains signatures that may be invalidated if the file is saved.
      */
     public boolean isAppendOnly()
@@ -655,7 +655,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Set a handler to support JavaScript actions in the form.
-     * 
+     *
      * @return scriptingHandler the handler to support JavaScript actions in the form
      */
     public ScriptingHandler getScriptingHandler()
@@ -665,7 +665,7 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Set a handler to support JavaScript actions in the form.
-     * 
+     *
      * @param scriptingHandler a handler to support JavaScript actions in the form
      */
     public void setScriptingHandler(ScriptingHandler scriptingHandler)
@@ -744,10 +744,10 @@ public final class PDAcroForm implements COSObjectable
 
     /**
      * Calculate the transformed appearance box.
-     * 
+     *
      * Apply the Matrix (or an identity transform) to the BBox of
      * the appearance stream
-     * 
+     *
      * @param appearanceStream
      * @return the transformed rectangle
      */
@@ -787,7 +787,7 @@ public final class PDAcroForm implements COSObjectable
             return pagesAnnotationsMap;
         }
 
-        // If there is a widget with a missing page reference we need to build the map reverse i.e. 
+        // If there is a widget with a missing page reference we need to build the map reverse i.e.
         // from the annotations to the widget.
         LOG.warn("There has been a widget with a missing page reference, will check all page annotations");
         for (PDPage page : pages)

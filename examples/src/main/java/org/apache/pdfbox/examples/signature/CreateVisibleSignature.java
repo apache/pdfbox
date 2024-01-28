@@ -98,7 +98,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
 
     /**
      * Open the PDF, create and set the visible signature designer for a new signature field.
-     * 
+     *
      * @param filename path of the PDF file
      * @param x position of the signature field
      * @param y position of the signature field
@@ -107,8 +107,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @param page the signature should be placed on (1-based)
      * @throws IOException
      */
-    public void setVisibleSignDesigner(String filename, int x, int y, int zoomPercent, 
-            InputStream imageStream, int page) 
+    public void setVisibleSignDesigner(String filename, int x, int y, int zoomPercent,
+            InputStream imageStream, int page)
             throws IOException
     {
         doc = Loader.loadPDF(new File(filename), streamCache);
@@ -118,12 +118,12 @@ public class CreateVisibleSignature extends CreateSignatureBase
 
     /**
      * Set visible signature designer for an existing signature field.
-     * 
+     *
      * @param zoomPercent increase (positive value) or decrease (negative value) image with x percent.
      * @param imageStream input stream of an image.
      * @throws IOException
      */
-    public void setVisibleSignDesigner(int zoomPercent, InputStream imageStream) 
+    public void setVisibleSignDesigner(int zoomPercent, InputStream imageStream)
             throws IOException
     {
         visibleSignDesigner = new PDVisibleSignDesigner(imageStream);
@@ -132,7 +132,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
 
     /**
      * Set visible signature properties for new signature fields.
-     * 
+     *
      * @param name
      * @param location
      * @param reason
@@ -140,7 +140,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @param page the signature should be placed on (1-based)
      * @param visualSignEnabled
      */
-    public void setVisibleSignatureProperties(String name, String location, String reason, int preferredSize, 
+    public void setVisibleSignatureProperties(String name, String location, String reason, int preferredSize,
             int page, boolean visualSignEnabled)
     {
         visibleSignatureProperties.signerName(name).signerLocation(location).signatureReason(reason).
@@ -150,7 +150,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
 
     /**
      * Set visible signature properties for existing signature fields.
-     * 
+     *
      * @param name
      * @param location
      * @param reason
@@ -257,7 +257,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm(null);
             if (acroForm != null && acroForm.getNeedAppearances())
             {
-                // PDFBOX-3738 NeedAppearances true results in visible signature becoming invisible 
+                // PDFBOX-3738 NeedAppearances true results in visible signature becoming invisible
                 // with Adobe Reader
                 if (acroForm.getFields().isEmpty())
                 {
@@ -286,7 +286,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
             signature.setName(visibleSignatureProperties.getSignerName());
             signature.setLocation(visibleSignatureProperties.getSignerLocation());
             signature.setReason(visibleSignatureProperties.getSignatureReason());
-            
+
             // the signing date, needed for valid signature
             signature.setSignDate(Calendar.getInstance());
 
@@ -348,11 +348,11 @@ public class CreateVisibleSignature extends CreateSignatureBase
                 doc.saveIncremental(fos);
             }
         }
-        
+
         // Do not close signatureOptions before saving, because some COSStream objects within
         // are transferred to the signed document.
         // Do not allow signatureOptions get out of scope before saving, because then the COSDocument
-        // in signature options might by closed by gc, which would close COSStream objects prematurely.
+        // in signature options might be closed by gc, which would close COSStream objects prematurely.
         // See https://issues.apache.org/jira/browse/PDFBOX-3743
         IOUtils.closeQuietly(signatureOptions);
         IOUtils.closeQuietly(doc);

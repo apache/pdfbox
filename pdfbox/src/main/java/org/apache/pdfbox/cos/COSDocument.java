@@ -36,7 +36,7 @@ import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
  * close() on this object when you are done using it!!
  *
  * @author Ben Litchfield
- * 
+ *
  */
 public class COSDocument extends COSBase implements Closeable
 {
@@ -45,7 +45,7 @@ public class COSDocument extends COSBase implements Closeable
      * Log instance.
      */
     private static final Logger LOG = LogManager.getLogger(COSDocument.class);
-    
+
     private float version = 1.4f;
 
     /**
@@ -65,19 +65,19 @@ public class COSDocument extends COSBase implements Closeable
      * List containing all streams which are created when creating a new pdf.
      */
     private final List<COSStream> streams = new ArrayList<>();
-    
+
     /**
      * Document trailer dictionary.
      */
     private COSDictionary trailer;
-    
+
     /**
      * Signal that document is already decrypted.
      */
     private boolean isDecrypted = false;
-    
+
     private long startXref;
-    
+
     private boolean closed = false;
 
     private boolean isXRefStream;
@@ -92,7 +92,7 @@ public class COSDocument extends COSBase implements Closeable
     private long highestXRefObjectNumber;
 
     private final ICOSParser parser;
-    
+
     private final COSDocumentState documentState = new COSDocumentState();
 
     /**
@@ -105,7 +105,7 @@ public class COSDocument extends COSBase implements Closeable
 
     /**
      * Constructor. Uses main memory to buffer PDF streams.
-     * 
+     *
      * @param parser Parser to be used to parse the document on demand
      */
     public COSDocument(ICOSParser parser)
@@ -117,7 +117,7 @@ public class COSDocument extends COSBase implements Closeable
      * Constructor that will use the provided function to create a stream cache for the storage of the PDF streams.
      *
      * @param streamCacheCreateFunction a function to create an instance of a stream cache
-     * 
+     *
      */
     public COSDocument(StreamCacheCreateFunction streamCacheCreateFunction)
     {
@@ -129,7 +129,7 @@ public class COSDocument extends COSBase implements Closeable
      *
      * @param streamCacheCreateFunction a function to create an instance of a stream cache
      * @param parser Parser to be used to parse the document on demand
-     * 
+     *
      */
     public COSDocument(StreamCacheCreateFunction streamCacheCreateFunction, ICOSParser parser)
     {
@@ -166,7 +166,7 @@ public class COSDocument extends COSBase implements Closeable
 
     /**
      * Creates a new COSStream using the current configuration for scratch files.
-     * 
+     *
      * @return the new COSStream
      */
     public COSStream createCOSStream()
@@ -182,7 +182,7 @@ public class COSDocument extends COSBase implements Closeable
     /**
      * Creates a new COSStream using the current configuration for scratch files. Not for public use.
      * Only COSParser should call this method.
-     * 
+     *
      * @param dictionary    the corresponding dictionary
      * @param startPosition the start position within the source
      * @param streamLength  the stream length
@@ -201,7 +201,7 @@ public class COSDocument extends COSBase implements Closeable
 
     /**
      * Get the dictionary containing the linearization information if the pdf is linearized.
-     * 
+     *
      * @return the dictionary containing the linearization information
      */
     public COSDictionary getLinearizedDictionary()
@@ -254,7 +254,7 @@ public class COSDocument extends COSBase implements Closeable
         List<COSObjectKey> originKeys = new ArrayList<>(xrefTable.keySet());
         List<COSObject> retval = getObjectsByType(originKeys, type1, type2);
         // there might be some additional objects if the brute force parser was triggered
-        // due to a broken cross reference table/stream
+        // due to a broken cross-reference table/stream
         if (originKeys.size() < xrefTable.size())
         {
             List<COSObjectKey> additionalKeys = new ArrayList<>(xrefTable.keySet());
@@ -303,7 +303,7 @@ public class COSDocument extends COSBase implements Closeable
         return version;
     }
 
-    /** 
+    /**
      * Signals that the document is decrypted completely.
      */
     public void setDecrypted()
@@ -311,16 +311,16 @@ public class COSDocument extends COSBase implements Closeable
         isDecrypted = true;
     }
 
-    /** 
+    /**
      * Indicates if a encrypted pdf is already decrypted after parsing.
-     * 
+     *
      *  @return true indicates that the pdf is decrypted.
      */
     public boolean isDecrypted()
     {
         return isDecrypted;
     }
-    
+
     /**
      * This will tell if this is an encrypted document.
      *
@@ -352,7 +352,7 @@ public class COSDocument extends COSBase implements Closeable
     {
         trailer.setItem( COSName.ENCRYPT, encDictionary );
     }
-    
+
     /**
      * This will get the document ID.
      *
@@ -372,7 +372,7 @@ public class COSDocument extends COSBase implements Closeable
     {
         getTrailer().setItem(COSName.ID, id);
     }
-    
+
     /**
      * This will get the document trailer.
      *
@@ -484,7 +484,7 @@ public class COSDocument extends COSBase implements Closeable
 
     /**
      * Returns true if this document has been closed.
-     * 
+     *
      * @return true if the document is already closed, false otherwise
      */
     public boolean isClosed()
@@ -531,9 +531,9 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * This method set the startxref value of the document. This will only 
+     * This method set the startxref value of the document. This will only
      * be needed for incremental updates.
-     * 
+     *
      * @param startXrefValue the value for startXref
      */
     public void setStartXref(long startXrefValue)
@@ -543,7 +543,7 @@ public class COSDocument extends COSBase implements Closeable
 
     /**
      * Return the startXref Position of the parsed document. This will only be needed for incremental updates.
-     * 
+     *
      * @return a long with the old position of the startxref
      */
     public long getStartXref()
@@ -553,14 +553,14 @@ public class COSDocument extends COSBase implements Closeable
 
     /**
      * Determines if the trailer is a XRef stream or not.
-     * 
+     *
      * @return true if the trailer is a XRef stream
      */
     public boolean isXRefStream()
     {
         return isXRefStream;
     }
-    
+
     /**
      * Sets isXRefStream to the given value. You need to take care that the version of your PDF is
      * 1.5 or higher.
@@ -571,11 +571,11 @@ public class COSDocument extends COSBase implements Closeable
     {
         isXRefStream = isXRefStreamValue;
     }
-    
+
     /**
-     * Determines if the pdf has hybrid cross references, both plain tables and streams.
-     * 
-     * @return true if the pdf has hybrid cross references
+     * Determines if the pdf has hybrid cross-references, both plain tables and streams.
+     *
+     * @return true if the pdf has hybrid cross-references
      */
     public boolean hasHybridXRef()
     {
@@ -583,7 +583,7 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * Marks the pdf as document using hybrid cross references.
+     * Marks the pdf as document using hybrid cross-references.
      */
     public void setHasHybridXRef()
     {
@@ -600,5 +600,5 @@ public class COSDocument extends COSBase implements Closeable
     {
         return documentState;
     }
-    
+
 }

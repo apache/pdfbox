@@ -99,7 +99,7 @@ public class AddValidationInformation
 
     /**
      * Signs the given PDF file.
-     * 
+     *
      * @param inFile input PDF file
      * @param outFile output PDF file
      * @throws IOException if the input file could not be read
@@ -205,7 +205,7 @@ public class AddValidationInformation
      * @param clazz the class of the dictionary entry, must implement COSUpdateInfo
      * @param parent where to find the element
      * @param name of the element
-     * @return a Element of given class, new or existing
+     * @return an Element of given class, new or existing
      * @throws IOException when the type of the element is wrong
      */
     private static <T extends COSBase & COSUpdateInfo> T getOrCreateDictionaryEntry(Class<T> clazz,
@@ -267,7 +267,7 @@ public class AddValidationInformation
      *
      * @param certInfo from which to fetch revocation data. Will work recursively through its
      * chains.
-     * @throws IOException when failed to fetch an revocation data.
+     * @throws IOException when failed to fetch a revocation data.
      */
     private void addRevocationDataRecursive(CertSignatureInformation certInfo) throws IOException
     {
@@ -360,7 +360,7 @@ public class AddValidationInformation
 
     /**
      * Fetches and adds OCSP data to storage for the given Certificate.
-     * 
+     *
      * @param certInfo the certificate info, for it to check OCSP data.
      * @throws IOException
      * @throws OCSPException
@@ -429,13 +429,13 @@ public class AddValidationInformation
 
     /**
      * Fetches and adds CRL data to storage for the given Certificate.
-     * 
+     *
      * @param certInfo the certificate info, for it to check CRL data.
      * @throws IOException
      * @throws URISyntaxException
      * @throws RevokedCertificateException
      * @throws GeneralSecurityException
-     * @throws CertificateVerificationException 
+     * @throws CertificateVerificationException
      */
     private void addCrlRevocationInfo(CertSignatureInformation certInfo)
             throws IOException, RevokedCertificateException, GeneralSecurityException,
@@ -577,7 +577,7 @@ public class AddValidationInformation
 
     /**
      * Creates a Flate encoded <code>COSStream</code> object with the given data.
-     * 
+     *
      * @param data to write into the COSStream
      * @return COSStream a COSStream object that can be added to the document
      * @throws IOException

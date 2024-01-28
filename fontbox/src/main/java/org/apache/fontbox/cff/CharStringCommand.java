@@ -23,7 +23,7 @@ import java.util.Objects;
 
 /**
  * This class represents a CharStringCommand.
- * 
+ *
  * @author Villu Ruusmann
  */
 public class CharStringCommand
@@ -122,7 +122,7 @@ public class CharStringCommand
 
     /**
      * Constructor with the CharStringCommand key as value.
-     * 
+     *
      * @param key the key of the char string command
      */
     private CharStringCommand(CharStringCommand.Key key)
@@ -133,7 +133,7 @@ public class CharStringCommand
 
     /**
      * Constructor with two values.
-     * 
+     *
      * @param b0 value1
      * @param b1 value2
      */
@@ -146,7 +146,7 @@ public class CharStringCommand
 
     /**
      * Get an instance of the CharStringCommand represented by the given value.
-     * 
+     *
      * @param b0 value
      * @return CharStringCommand represented by the given value
      */
@@ -158,10 +158,10 @@ public class CharStringCommand
 
     /**
      * Get an instance of the CharStringCommand represented by the given two values.
-     * 
+     *
      * @param b0 value1
      * @param b1 value2
-     * 
+     *
      * @return CharStringCommand represented by the given two values
      */
     public static CharStringCommand getInstance(int b0, int b1)
@@ -172,9 +172,9 @@ public class CharStringCommand
 
     /**
      * Get an instance of the CharStringCommand represented by the given array.
-     * 
+     *
      * @param values array of values
-     * 
+     *
      * @return CharStringCommand represented by the given values
      */
     public static CharStringCommand getInstance(int[] values)
@@ -207,7 +207,7 @@ public class CharStringCommand
 
     /**
      * Return the underlying type1 key word.
-     * 
+     *
      * @return the type1 key word
      */
     public Type1KeyWord getType1KeyWord()
@@ -217,7 +217,7 @@ public class CharStringCommand
 
     /**
      * Return the underlying type2 key word.
-     * 
+     *
      * @return the type2 key word
      */
     public Type2KeyWord getType2KeyWord()
@@ -272,7 +272,7 @@ public class CharStringCommand
     }
 
     /**
-     * Enum of all valid type1 key words
+     * Enum of all valid type1 keywords
      */
     public enum Type1KeyWord
     {
@@ -294,7 +294,7 @@ public class CharStringCommand
         }
 
         private static final Map<Key, Type1KeyWord> BY_KEY = new EnumMap<>(Key.class);
-            
+
         static
         {
             for (Type1KeyWord e : values())
@@ -321,7 +321,7 @@ public class CharStringCommand
     }
 
     /**
-     * Enum of all valid type2 key words
+     * Enum of all valid type2 keywords
      */
     public enum Type2KeyWord
     {
@@ -348,7 +348,7 @@ public class CharStringCommand
         }
 
         private static final Map<Key, Type2KeyWord> BY_KEY = new EnumMap<>(Key.class);
-            
+
         static
         {
             for (Type2KeyWord e : values())
@@ -404,7 +404,7 @@ public class CharStringCommand
         }
 
         private static final Map<Integer, Key> BY_KEY = new HashMap<>();
-        
+
         static
         {
             for (Key e : values())

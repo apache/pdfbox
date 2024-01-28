@@ -48,11 +48,11 @@ class BidiTest
      * Logger instance.
      */
     private static final Logger LOG = LogManager.getLogger(BidiTest.class);
-    
+
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/text/");
     private static final File OUT_DIR = new File("target/test-output");
     private static final String NAME_OF_PDF = "BidiSample.pdf";
-    
+
     private static final String ENCODING = "UTF-8";
 
     private PDDocument document;
@@ -86,14 +86,14 @@ class BidiTest
     {
         document.close();
     }
-    
+
     /**
      * Validate text extraction on a single file.
      *
      * @param inFile The PDF file to validate
      * @param outDir The directory to store the output in
      * @param bLogResult Whether to log the extracted text
-     * @param bSort Whether or not the extracted text is sorted
+     * @param bSort Whether the extracted text is sorted
      * @throws Exception when there is an exception
      */
     private void doTestFile(File inFile, File outDir, boolean bLogResult, boolean bSort)
@@ -153,12 +153,12 @@ class BidiTest
             while (true)
             {
                 String expectedLine = expectedReader.readLine();
-                while( expectedLine != null && expectedLine.trim().length() == 0 )
+                while( expectedLine != null && expectedLine.trim().isEmpty() )
                 {
                     expectedLine = expectedReader.readLine();
                 }
                 String actualLine = actualReader.readLine();
-                while( actualLine != null && actualLine.trim().length() == 0 )
+                while( actualLine != null && actualLine.trim().isEmpty() )
                 {
                     actualLine = actualReader.readLine();
                 }
@@ -171,7 +171,7 @@ class BidiTest
                             "\nexpected line was: \"" + expectedLine + "\"" +
                                     "\nactual line was:   \"" + actualLine + "\"" + "\n");
 
-                    //lets report all lines, even though this might produce some verbose logging
+                    //let's report all lines, even though this might produce some verbose logging
                     //break;
                 }
 
@@ -182,7 +182,7 @@ class BidiTest
             }
         }
     }
-    
+
     /**
      * Determine whether two strings are equal, where two null strings are
      * considered equal.

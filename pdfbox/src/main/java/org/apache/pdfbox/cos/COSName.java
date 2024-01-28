@@ -218,7 +218,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName DOS = getPDFName("DOS");
     public static final COSName DP = getPDFName("DP");
     public static final COSName DR = getPDFName("DR");
-    public static final COSName DS = getPDFName("DS");    
+    public static final COSName DS = getPDFName("DS");
     public static final COSName DUPLEX = getPDFName("Duplex");
     public static final COSName DUR = getPDFName("Dur");
     public static final COSName DV = getPDFName("DV");
@@ -233,7 +233,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName EMBEDDED_FILES = getPDFName("EmbeddedFiles");
     public static final COSName EMPTY = getPDFName("");
     public static final COSName ENCODE = getPDFName("Encode");
-    public static final COSName ENCODED_BYTE_ALIGN = getPDFName("EncodedByteAlign");    
+    public static final COSName ENCODED_BYTE_ALIGN = getPDFName("EncodedByteAlign");
     public static final COSName ENCODING = getPDFName("Encoding");
     public static final COSName ENCODING_90MS_RKSJ_H = getPDFName("90ms-RKSJ-H");
     public static final COSName ENCODING_90MS_RKSJ_V = getPDFName("90ms-RKSJ-V");
@@ -414,17 +414,17 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName OCPROPERTIES = getPDFName("OCProperties");
     public static final COSName OE = getPDFName("OE");
     public static final COSName OID = getPDFName("OID");
-    
+
     /**
      * "OFF", to be used for OCGs, not for Acroform
      */
     public static final COSName OFF = getPDFName("OFF");
-    
+
     /**
      * "Off", to be used for Acroform, not for OCGs
      */
-    public static final COSName Off = getPDFName("Off");    
-    
+    public static final COSName Off = getPDFName("Off");
+
     public static final COSName ON = getPDFName("ON");
     public static final COSName OP = getPDFName("OP");
     public static final COSName OP_NS = getPDFName("op");
@@ -451,7 +451,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName PAGE_MODE = getPDFName("PageMode");
     public static final COSName PAGES = getPDFName("Pages");
     public static final COSName PAINT_TYPE = getPDFName("PaintType");
-    public static final COSName PANOSE = getPDFName("Panose");    
+    public static final COSName PANOSE = getPDFName("Panose");
     public static final COSName PARAMS = getPDFName("Params");
     public static final COSName PARENT = getPDFName("Parent");
     public static final COSName PARENT_TREE = getPDFName("ParentTree");
@@ -534,7 +534,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName SIZE = getPDFName("Size");
     public static final COSName SM = getPDFName("SM");
     public static final COSName SMASK = getPDFName("SMask");
-    public static final COSName SMASK_IN_DATA = getPDFName("SMaskInData");    
+    public static final COSName SMASK_IN_DATA = getPDFName("SMaskInData");
     public static final COSName SOFT_LIGHT = getPDFName("SoftLight");
     public static final COSName SORT = getPDFName("Sort");
     public static final COSName SOUND = getPDFName("Sound");
@@ -658,9 +658,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
 
     /**
      * This will get a COSName object with that name.
-     * 
+     *
      * @param aName The name of the object.
-     * 
+     *
      * @return A COSName with the specified name.
      */
     public static COSName getPDFName(String aName)
@@ -672,7 +672,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
         {
             // Although we use a ConcurrentHashMap, we cannot use computeIfAbsent() because the returned reference
             // might be stale (even the newly created one).
-            // Use double checked locking to make the code thread safe.
+            // Use double-checked locking to make the code thread safe.
             synchronized (NAME_MAP)
             {
                 weakRef = NAME_MAP.get(aName);
@@ -691,7 +691,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
 
     /**
      * Private constructor. This will limit the number of COSName objects that are created.
-     * 
+     *
      * @param aName The name of the COSName object.
      */
     private COSName(String aName)
@@ -701,7 +701,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
 
     /**
      * This will get the name of this COSName object.
-     * 
+     *
      * @return The name of the object.
      */
     public String getName()
@@ -750,7 +750,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
 
     /**
      * This will output this string as a PDF object.
-     * 
+     *
      * @param output The stream to write to.
      * @throws IOException If there is an error writing to the stream.
      */

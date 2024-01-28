@@ -104,7 +104,7 @@ public class AxialShadingContext extends ShadingContext
 
         try
         {
-            // get inverse transform to be independent of current user / device space 
+            // get inverse transform to be independent of current user / device space
             // when handling actual pixels in getRaster()
             rat = matrix.createAffineTransform().createInverse();
             rat.concatenate(xform.createInverse());
@@ -123,11 +123,11 @@ public class AxialShadingContext extends ShadingContext
         double dist = Math.sqrt(Math.pow(deviceBounds.getMaxX() - deviceBounds.getMinX(), 2) +
                                 Math.pow(deviceBounds.getMaxY() - deviceBounds.getMinY(), 2));
         factor = (int) Math.ceil(dist);
-        
+
         // build the color table for the given number of steps
         colorTable = calcColorTable();
     }
-    
+
     /**
      * Calculate the color on the axial line and store them in an array.
      *
@@ -252,7 +252,7 @@ public class AxialShadingContext extends ShadingContext
 
     /**
      * Returns the coords values.
-     * 
+     *
      * @return the coords values
      */
     public float[] getCoords()
@@ -262,7 +262,7 @@ public class AxialShadingContext extends ShadingContext
 
     /**
      * Returns the domain values.
-     * 
+     *
      * @return the domain values
      */
     public float[] getDomain()
@@ -271,9 +271,9 @@ public class AxialShadingContext extends ShadingContext
     }
 
     /**
-     * Returns the extend values.
-     * 
-     * @return the extend values
+     * Returns the extent values.
+     *
+     * @return the extent values
      */
     public boolean[] getExtend()
     {
@@ -284,7 +284,7 @@ public class AxialShadingContext extends ShadingContext
      * Returns the function.
      *
      * @return the function
-     * @throws java.io.IOException if we were not able to create the function.
+     * @throws IOException if we were not able to create the function.
      */
     public PDFunction getFunction() throws IOException
     {

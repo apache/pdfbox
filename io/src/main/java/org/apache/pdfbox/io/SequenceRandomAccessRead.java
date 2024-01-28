@@ -34,7 +34,12 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     private long totalLength = 0;
     private boolean isClosed = false;
     private RandomAccessRead currentRandomAccessRead = null;
-    
+
+    /**
+     *
+     * @param randomAccessReadList
+     * @throws IllegalArgumentException when the randomAccessReadList is <code>null</code>, empty or 'problematic'.
+     */
     public SequenceRandomAccessRead(List<RandomAccessRead> randomAccessReadList)
     {
         if (randomAccessReadList == null)
@@ -60,7 +65,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
         numberOfReader = readerList.size();
         startPositions = new long[numberOfReader];
         endPositions = new long[numberOfReader];
-        for(int i=0;i<numberOfReader;i++) 
+        for(int i=0;i<numberOfReader;i++)
         {
             try
             {
@@ -184,7 +189,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
 
     /**
      * Ensure that the SequenceRandomAccessRead is not closed
-     * 
+     *
      * @throws IOException If RandomAccessBuffer already closed
      */
     private void checkClosed() throws IOException

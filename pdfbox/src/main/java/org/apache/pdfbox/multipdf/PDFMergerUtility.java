@@ -98,17 +98,17 @@ public class PDFMergerUtility
 
     private DocumentMergeMode documentMergeMode = DocumentMergeMode.PDFBOX_LEGACY_MODE;
     private AcroFormMergeMode acroFormMergeMode = AcroFormMergeMode.PDFBOX_LEGACY_MODE;
-    
+
     /**
      * The mode to use when merging documents:
-     * 
+     *
      * <ul>
      * <li>{@link DocumentMergeMode#OPTIMIZE_RESOURCES_MODE} Optimizes resource handling such as
      *      closing documents early. <strong>Not all document elements are merged</strong> compared to
      *      the PDFBOX_LEGACY_MODE. Currently supported are:
      *      <ul>
      *          <li>Page content and resources
-     *      </ul>  
+     *      </ul>
      * <li>{@link DocumentMergeMode#PDFBOX_LEGACY_MODE} Keeps all files open until the
      *      merge has been completed. This is  currently necessary to merge documents
      *      containing a Structure Tree.
@@ -119,13 +119,13 @@ public class PDFMergerUtility
         OPTIMIZE_RESOURCES_MODE,
         PDFBOX_LEGACY_MODE
     }
-    
+
     /**
      * The mode to use when merging AcroForm between documents:
-     * 
+     *
      * <ul>
      * <li>{@link AcroFormMergeMode#JOIN_FORM_FIELDS_MODE} fields with the same fully qualified name
-     *      will be merged into one with the widget annotations of the merged fields 
+     *      will be merged into one with the widget annotations of the merged fields
      *      becoming part of the same field.
      * <li>{@link AcroFormMergeMode#PDFBOX_LEGACY_MODE} fields with the same fully qualified name
      *      will be renamed and treated as independent. This mode was used in versions
@@ -148,9 +148,9 @@ public class PDFMergerUtility
 
     /**
      * Get the merge mode to be used for merging AcroForms between documents
-     * 
+     *
      * {@link AcroFormMergeMode}
-     * 
+     *
      * @return the current AcroFormMergeMode
      */
     public AcroFormMergeMode getAcroFormMergeMode()
@@ -160,22 +160,22 @@ public class PDFMergerUtility
 
     /**
      * Set the merge mode to be used for merging AcroForms between documents
-     * 
+     *
      * {@link AcroFormMergeMode}
-     * 
+     *
      * @param theAcroFormMergeMode AcroFormMergeMode to be used
-     * 
+     *
      */
     public void setAcroFormMergeMode(AcroFormMergeMode theAcroFormMergeMode)
     {
         this.acroFormMergeMode = theAcroFormMergeMode;
     }
-    
+
     /**
      * Get the merge mode to be used for merging documents
-     * 
+     *
      * {@link DocumentMergeMode}
-     * 
+     *
      * @return the current DocumentMergeMode
      */
     public DocumentMergeMode getDocumentMergeMode()
@@ -185,9 +185,9 @@ public class PDFMergerUtility
 
     /**
      * Set the merge mode to be used for merging documents
-     * 
+     *
      * {@link DocumentMergeMode}
-     * 
+     *
      * @param theDocumentMergeMode DocumentMergeMode to be used
      */
     public void setDocumentMergeMode(DocumentMergeMode theDocumentMergeMode)
@@ -287,7 +287,7 @@ public class PDFMergerUtility
      * Add a source file to the list of files to merge.
      *
      * @param source Full path and file name of source document.
-     * 
+     *
      * @throws FileNotFoundException If the file doesn't exist
      */
     public void addSource(String source) throws FileNotFoundException
@@ -299,7 +299,7 @@ public class PDFMergerUtility
      * Add a source file to the list of files to merge.
      *
      * @param source File representing source document
-     * 
+     *
      * @throws FileNotFoundException If the file doesn't exist
      */
     public void addSource(File source) throws FileNotFoundException
@@ -335,7 +335,7 @@ public class PDFMergerUtility
      *
      * @param streamCacheCreateFunction a function to create an instance of a stream cache; in case of <code>null</code>
      * unrestricted main memory is used
-     * 
+     *
      * @throws IOException If there is an error saving the document.
      */
     public void mergeDocuments(StreamCacheCreateFunction streamCacheCreateFunction) throws IOException
@@ -352,7 +352,7 @@ public class PDFMergerUtility
      * @param streamCacheCreateFunction a function to create an instance of a stream cache; in case of <code>null</code>
      * unrestricted main memory is used
      * @param compressParameters defines if compressed object streams are enabled
-     * 
+     *
      * @throws IOException If there is an error saving the document.
      */
     public void mergeDocuments(StreamCacheCreateFunction streamCacheCreateFunction,
@@ -367,7 +367,7 @@ public class PDFMergerUtility
             optimizedMergeDocuments(streamCacheCreateFunction, compressParameters);
         }
     }
-    
+
     private void optimizedMergeDocuments(StreamCacheCreateFunction streamCacheCreateFunction,
             CompressParameters compressParameters) throws IOException
     {
@@ -416,7 +416,7 @@ public class PDFMergerUtility
                     IOUtils.closeQuietly(sourceDoc);
                 }
             }
-            
+
             if (destinationStream == null)
             {
                 destination.save(destinationFileName, compressParameters);
@@ -427,14 +427,14 @@ public class PDFMergerUtility
             }
         }
     }
-    
-    
+
+
     /**
      * Merge the list of source documents, saving the result in the destination file.
      *
      * @param streamCacheCreateFunction a function to create an instance of a stream cache; in case of <code>null</code>
      * unrestricted main memory is used
-     * 
+     *
      * @throws IOException If there is an error saving the document.
      */
     private void legacyMergeDocuments(StreamCacheCreateFunction streamCacheCreateFunction,
@@ -467,7 +467,7 @@ public class PDFMergerUtility
                     tobeclosed.add(sourceDoc);
                     appendDocument(destination, sourceDoc);
                 }
-                
+
                 // optionally set meta data
                 if (destinationDocumentInformation != null)
                 {
@@ -477,7 +477,7 @@ public class PDFMergerUtility
                 {
                     destination.getDocumentCatalog().setMetadata(destinationMetadata);
                 }
-                
+
                 if (destinationStream == null)
                 {
                     destination.save(destinationFileName, compressParameters);
@@ -604,7 +604,7 @@ public class PDFMergerUtility
                 cloner.cloneMerge(srcNames, destNames);
             }
         }
-        
+
         if (destNames != null && destNames.getCOSObject().containsKey(COSName.ID_TREE))
         {
             // found in 001031.pdf from PDFBOX-4417 and doesn't belong there
@@ -720,14 +720,14 @@ public class PDFMergerUtility
         {
             try
             {
-                PDStream newStream = new PDStream(destination, srcMetadata.createInputStream(), (COSName) null);                
+                PDStream newStream = new PDStream(destination, srcMetadata.createInputStream(), (COSName) null);
                 mergeInto(srcMetadata, newStream.getCOSObject(),
-                        new HashSet<>(Arrays.asList(COSName.FILTER, COSName.LENGTH)));                
+                        new HashSet<>(Arrays.asList(COSName.FILTER, COSName.LENGTH)));
                 destCatalog.getCOSObject().setItem(COSName.METADATA, newStream);
             }
             catch (IOException ex)
             {
-                // PDFBOX-4227 cleartext XMP stream with /Flate 
+                // PDFBOX-4227 cleartext XMP stream with /Flate
                 LOG.error("Metadata skipped because it could not be read", ex);
             }
         }
@@ -833,7 +833,7 @@ public class PDFMergerUtility
             }
             if (mergeStructTree)
             {
-                // add the value of the destination ParentTreeNextKey to every source element 
+                // add the value of the destination ParentTreeNextKey to every source element
                 // StructParent(s) value so that these don't overlap with the existing values
                 updateStructParentEntries(newPage, destParentTreeNextKey);
                 objMapping.put(page.getCOSObject(), newPage.getCOSObject());
@@ -846,7 +846,7 @@ public class PDFMergerUtility
                 // TODO update mapping for XObjects
             }
             destinationPageTree.add(newPage);
-            
+
             if (pageIndex == pageIndexOpenActionDest)
             {
                 // PDFBOX-3972: reassign the page.
@@ -1214,12 +1214,12 @@ public class PDFMergerUtility
         {
             PDAcroForm destAcroForm = destCatalog.getAcroForm();
             PDAcroForm srcAcroForm = srcCatalog.getAcroForm();
-            
+
             if (destAcroForm == null && srcAcroForm != null)
             {
                 destCatalog.getCOSObject().setItem(COSName.ACRO_FORM,
-                        cloner.cloneForNewDocument(srcAcroForm.getCOSObject()));       
-                
+                        cloner.cloneForNewDocument(srcAcroForm.getCOSObject()));
+
             }
             else
             {
@@ -1245,7 +1245,7 @@ public class PDFMergerUtility
             }
         }
     }
-    
+
     /*
      * Merge the contents of the source form into the destination form for the
      * destination file.
@@ -1260,7 +1260,7 @@ public class PDFMergerUtility
     {
         acroFormLegacyMode(cloner, destAcroForm, srcAcroForm);
     }
-    
+
     /*
      * Merge the contents of the source form into the destination form for the
      * destination file.
@@ -1279,7 +1279,7 @@ public class PDFMergerUtility
         if (!srcFields.isEmpty())
         {
             // if a form is merged multiple times using PDFBox the newly generated
-            // fields starting with dummyFieldName may already exist. We need to determine the last unique 
+            // fields starting with dummyFieldName may already exist. We need to determine the last unique
             // number used and increment that.
             final String prefix = "dummyFieldName";
             final int prefixLength = prefix.length();
@@ -1308,7 +1308,7 @@ public class PDFMergerUtility
             {
                 destFields = new COSArray();
             }
-            
+
             for (PDField srcField : srcAcroForm.getFields())
             {
                 COSDictionary dstField = cloner.cloneForNewDocument(srcField.getCOSObject());
@@ -1327,7 +1327,7 @@ public class PDFMergerUtility
 
     // copy outputIntents to destination, but avoid duplicate OutputConditionIdentifier,
     // except when it is missing or is named "Custom".
-    private void mergeOutputIntents(PDFCloneUtility cloner, 
+    private void mergeOutputIntents(PDFCloneUtility cloner,
             PDDocumentCatalog srcCatalog, PDDocumentCatalog destCatalog) throws IOException
     {
         List<PDOutputIntent> srcOutputIntents = srcCatalog.getOutputIntents();
@@ -1511,10 +1511,10 @@ public class PDFMergerUtility
         });
         page.setAnnotations(newannots);
     }
-    
+
     /**
      * Test for dynamic XFA content.
-     * 
+     *
      * @param acroForm the AcroForm
      * @return true if there is a dynamic XFA form.
      */
@@ -1524,7 +1524,7 @@ public class PDFMergerUtility
     }
 
     /**
-     * This will add all of the dictionaries keys/values to this dictionary, but
+     * This will add all the dictionaries keys/values to this dictionary, but
      * only if they are not in an exclusion list and if they don't already
      * exist. If a key already exists in this dictionary then nothing is
      * changed.

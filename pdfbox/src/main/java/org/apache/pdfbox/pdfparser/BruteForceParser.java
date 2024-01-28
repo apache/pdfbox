@@ -82,7 +82,7 @@ public class BruteForceParser extends COSParser
      *
      * @param source input representing the pdf.
      * @param document the corresponding COS document
-     * 
+     *
      * @throws IOException if the source data could not be read
      */
     public BruteForceParser(RandomAccessRead source, COSDocument document) throws IOException
@@ -93,7 +93,7 @@ public class BruteForceParser extends COSParser
 
     /**
      * Indicates wether the brute force search for objects was triggered.
-     * 
+     *
      * @return true if the search was triggered
      */
     public boolean bfSearchTriggered()
@@ -103,11 +103,11 @@ public class BruteForceParser extends COSParser
 
     /**
      * Returns all found objects of a brute force search.
-     * 
+     *
      * @return map containing all found objects of a brute force search
-     * 
+     *
      * @throws IOException if something went wrong
-     * 
+     *
      */
     protected Map<COSObjectKey, Long> getBFCOSObjectOffsets() throws IOException
     {
@@ -121,7 +121,7 @@ public class BruteForceParser extends COSParser
 
     /**
      * Brute force search for every object in the pdf.
-     * 
+     *
      * @throws IOException if something went wrong
      */
     private void bfSearchForObjects() throws IOException
@@ -202,7 +202,7 @@ public class BruteForceParser extends COSParser
         } while (currentOffset < lastEOFMarker && !source.isEOF());
         if ((lastEOFMarker < Long.MAX_VALUE || endOfObjFound) && lastObjOffset > 0)
         {
-            // if the pdf wasn't cut off in the middle or if the last object ends with a "endobj" marker
+            // if the pdf wasn't cut off in the middle or if the last object ends with an "endobj" marker
             // the last object id has to be added here so that it can't get lost as there isn't any subsequent object id
             bfSearchCOSObjectKeyOffsets.put(new COSObjectKey(lastObjectId, lastGenID),
                     lastObjOffset);
@@ -213,9 +213,9 @@ public class BruteForceParser extends COSParser
 
     /**
      * Search for the offset of the given xref table/stream among those found by a brute force search.
-     * 
+     *
      * @param xrefOffset the given offset to be searched for
-     * 
+     *
      * @return the offset of the xref entry
      * @throws IOException if something went wrong
      */
@@ -290,7 +290,7 @@ public class BruteForceParser extends COSParser
 
     /**
      * Brute force search for all objects streams of a pdf.
-     * 
+     *
      * @param trailerResolver the trailer resolver of the document
      * @param securityHandler security handler to be used to decrypt encrypted documents
      * @throws IOException if something went wrong
@@ -372,9 +372,9 @@ public class BruteForceParser extends COSParser
 
     /**
      * Brute force search for all trailer marker.
-     * 
+     *
      * @param trailer dictionary to be used as trailer dictionary
-     * 
+     *
      * @throws IOException if something went wrong
      */
     private boolean bfSearchForTrailer(COSDictionary trailer) throws IOException
@@ -452,7 +452,7 @@ public class BruteForceParser extends COSParser
      *
      * @param trailer dictionary to be used as trailer dictionary
      * @return true if the root was found, false if not.
-     * 
+     *
      * @throws IOException if something went wrong
      */
     private boolean searchForTrailerItems(COSDictionary trailer) throws IOException
@@ -516,7 +516,7 @@ public class BruteForceParser extends COSParser
 
     /**
      * Brute force search for the last EOF marker.
-     * 
+     *
      * @throws IOException if something went wrong
      */
     private long bfSearchForLastEOFMarker() throws IOException
@@ -559,7 +559,7 @@ public class BruteForceParser extends COSParser
 
     /**
      * Search for all offsets of object streams within the given pdf
-     * 
+     *
      * @return a map of all offsets for object streams
      * @throws IOException if something went wrong
      */
@@ -634,7 +634,7 @@ public class BruteForceParser extends COSParser
 
     /**
      * Brute force search for all xref entries (tables).
-     * 
+     *
      * @throws IOException if something went wrong
      */
     private List<Long> bfSearchForXRefTables() throws IOException
@@ -660,7 +660,7 @@ public class BruteForceParser extends COSParser
 
     /**
      * Brute force search for all /XRef entries (streams).
-     * 
+     *
      * @throws IOException if something went wrong
      */
     private List<Long> bfSearchForXRefStreams() throws IOException
@@ -736,7 +736,7 @@ public class BruteForceParser extends COSParser
 
     /**
      * Tell if the dictionary is an info dictionary.
-     * 
+     *
      * @param dictionary the dictionary to be checked
      * @return true if the given dictionary is an info dictionary
      */
@@ -758,7 +758,7 @@ public class BruteForceParser extends COSParser
 
     /**
      * Tell if the dictionary is a PDF or FDF catalog.
-     * 
+     *
      * @param dictionary
      * @return true if the given dictionary is a root dictionary
      */
@@ -772,7 +772,7 @@ public class BruteForceParser extends COSParser
      * Search for the given string. The search starts at the current position and returns the start position if the
      * string was found. -1 is returned if there isn't any further occurrence of the given string. After returning the
      * current position is either the end of the string or the end of the input.
-     * 
+     *
      * @param string the string to be searched
      * @return the start position of the found string
      * @throws IOException if something went wrong
@@ -810,11 +810,11 @@ public class BruteForceParser extends COSParser
 
     /**
      * Rebuild the trailer dictionary if startxref can't be found.
-     * 
+     *
      * @param trailerResolver the trailer resolver of the document
      * @param securityHandler security handler to be used to decrypt encrypted documents
      * @return the rebuild trailer dictionary
-     * 
+     *
      * @throws IOException if something went wrong
      */
     protected COSDictionary rebuildTrailer(XrefTrailerResolver trailerResolver,

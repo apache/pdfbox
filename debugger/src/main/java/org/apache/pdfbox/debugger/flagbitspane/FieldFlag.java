@@ -139,7 +139,7 @@ class FieldFlag extends Flag
     /**
      * Check the corresponding flag bit if set or not
      * @param flagValue the flag integer
-     * @param bitPosition bit position to check
+     * @param bitPosition the bit position to check in range 1..32
      * @return if set return true else false
      */
     private Boolean isFlagBitSet(int flagValue, int bitPosition)

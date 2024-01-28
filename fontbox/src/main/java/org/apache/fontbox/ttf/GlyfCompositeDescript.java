@@ -31,7 +31,7 @@ import org.apache.logging.log4j.LogManager;
  * Glyph description for composite glyphs. Composite glyphs are made up of one
  * or more simple glyphs, usually with some sort of transformation applied to
  * each.
- *
+ * </p>
  * This class is based on code from Apache Batik a subproject of Apache
  * XMLGraphics. see http://xmlgraphics.apache.org/batik/ for further details.
  */
@@ -52,7 +52,7 @@ public class GlyfCompositeDescript extends GlyfDescript
 
     /**
      * Constructor.
-     * 
+     *
      * @param bais the stream to be read
      * @param glyphTable the Glyphtable containing all glyphs
      * @throws IOException is thrown if something went wrong
@@ -69,7 +69,7 @@ public class GlyfCompositeDescript extends GlyfDescript
         {
             comp = new GlyfCompositeComp(bais);
             components.add(comp);
-        } 
+        }
         while ((comp.getFlags() & GlyfCompositeComp.MORE_COMPONENTS) != 0);
 
         // Are there hinting instructions to read?
@@ -215,7 +215,7 @@ public class GlyfCompositeDescript extends GlyfDescript
             {
                 pointCount = c.getFirstIndex() + gd.getPointCount();
             }
-        }   
+        }
         return pointCount;
     }
 
@@ -248,7 +248,7 @@ public class GlyfCompositeDescript extends GlyfDescript
 
     /**
      * Get number of components.
-     * 
+     *
      * @return the number of components
      */
     public int getComponentCount()
@@ -258,7 +258,7 @@ public class GlyfCompositeDescript extends GlyfDescript
 
     /**
      * Gets a view to the composite components.
-     * 
+     *
      * @return unmodifiable list of this composite glyph's {@linkplain GlyfCompositeComp components}
      */
     public List<GlyfCompositeComp> getComponents()
@@ -308,7 +308,7 @@ public class GlyfCompositeDescript extends GlyfDescript
             catch (IOException e)
             {
                 LOG.error(e);
-            }            
+            }
         }
     }
 }

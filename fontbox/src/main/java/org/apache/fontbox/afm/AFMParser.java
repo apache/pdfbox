@@ -29,12 +29,12 @@ import org.apache.fontbox.util.BoundingBox;
  * @see <A href="http://partners.adobe.com/asn/developer/type/">AFM Documentation</A>
  *
  * @author Ben Litchfield
- * 
+ *
  */
 public class AFMParser
 {
     /**
-     * This is a comment in a AFM file.
+     * This is a comment in an AFM file.
      */
     public static final String COMMENT = "Comment";
     /**
@@ -303,7 +303,7 @@ public class AFMParser
      * when the parsing is finished.
      *
      * @return the parsed FontMetric
-     * 
+     *
      * @throws IOException If there is an IO error reading the document.
      */
     public FontMetrics parse() throws IOException
@@ -317,7 +317,7 @@ public class AFMParser
      *
      * @param reducedDataset parse a reduced subset of data if set to true
      * @return the parsed FontMetric
-     * 
+     *
      * @throws IOException If there is an IO error reading the document.
      */
     public FontMetrics parse(boolean reducedDataset) throws IOException
@@ -892,7 +892,7 @@ public class AFMParser
 
     /**
      * Read the next string. Throw an exception if it differs from the expected command.
-     * 
+     *
      * @param expectedCommand the expected command
      * @throws IOException IF the read string differs from the expected command
      */

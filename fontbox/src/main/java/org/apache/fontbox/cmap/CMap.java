@@ -78,7 +78,7 @@ public class CMap
 
     /**
      * This will tell if this cmap has any CID mappings.
-     * 
+     *
      * @return true If there are any CID mappings, false otherwise.
      */
     public boolean hasCIDMappings()
@@ -98,7 +98,7 @@ public class CMap
 
     /**
      * Returns the sequence of Unicode characters for the given character code.
-     *
+     * <p>
      * This method exists for convenience. It may return false values as the origin byte length of the input value is
      * unknown and the mapping for some input values aren't unique. <br>
      * Example:<br>
@@ -106,7 +106,7 @@ public class CMap
      * An input value of 0x65 always returns 0x20 even if the value has an origin byte length of 1.
      *
      * @param code character code
-     * @return Unicode characters (may be more than one, e.g "fi" ligature)
+     * @return Unicode characters (maybe more than one, e.g "fi" ligature)
      */
     public String toUnicode(int code)
     {
@@ -123,7 +123,7 @@ public class CMap
      *
      * @param code character code
      * @param length code length
-     * @return Unicode characters (may be more than one, e.g "fi" ligature)
+     * @return Unicode characters (maybe more than one, e.g "fi" ligature)
      */
     public String toUnicode(int code, int length)
     {
@@ -143,7 +143,7 @@ public class CMap
      * Returns the sequence of Unicode characters for the given character code.
      *
      * @param code bytes of the character code
-     * @return Unicode characters (may be more than one, e.g "fi" ligature)
+     * @return Unicode characters (maybe more than one, e.g "fi" ligature)
      */
     public String toUnicode(byte[] code)
     {
@@ -246,7 +246,7 @@ public class CMap
 
     /**
      * Returns the CID for the given character code.
-     * 
+     * <p>
      * This method exists for convenience. It may return false values as the origin byte length of the input value is
      * unknown and the mapping for some input values aren't unique. <br>
      * Example:<br>
@@ -334,7 +334,7 @@ public class CMap
 
     /**
      * Convert the given part of a byte array to an integer.
-     * 
+     *
      * @param data   the byte array
      * @param offset The offset into the byte array.
      * @param length The length of the data we are getting.
@@ -449,11 +449,11 @@ public class CMap
         maxCodeLength = Math.max(maxCodeLength, range.getCodeLength());
         minCodeLength = Math.min(minCodeLength, range.getCodeLength());
     }
-    
+
     /**
      * Implementation of the usecmap operator.  This will
-     * copy all of the mappings from one cmap to another.
-     * 
+     * copy all the mappings from one cmap to another.
+     *
      * @param cmap The cmap to load mappings from.
      */
     void useCmap(CMap cmap)
@@ -484,147 +484,147 @@ public class CMap
      * Returns the WMode of a CMap.
      *
      * 0 represents a horizontal and 1 represents a vertical orientation.
-     * 
+     *
      * @return the wmode
      */
-    public int getWMode() 
+    public int getWMode()
     {
         return wmode;
     }
 
     /**
      * Sets the WMode of a CMap.
-     * 
+     *
      * @param newWMode the new WMode.
      */
-    public void setWMode(int newWMode) 
+    public void setWMode(int newWMode)
     {
         wmode = newWMode;
     }
 
     /**
      * Returns the name of the CMap.
-     * 
+     *
      * @return the CMap name.
      */
-    public String getName() 
+    public String getName()
     {
         return cmapName;
     }
 
     /**
      * Sets the name of the CMap.
-     * 
+     *
      * @param name the CMap name.
      */
-    public void setName(String name) 
+    public void setName(String name)
     {
         cmapName = name;
     }
 
     /**
      * Returns the version of the CMap.
-     * 
+     *
      * @return the CMap version.
      */
-    public String getVersion() 
+    public String getVersion()
     {
         return cmapVersion;
     }
 
     /**
      * Sets the version of the CMap.
-     * 
+     *
      * @param version the CMap version.
      */
-    public void setVersion(String version) 
+    public void setVersion(String version)
     {
         cmapVersion = version;
     }
 
     /**
      * Returns the type of the CMap.
-     * 
+     *
      * @return the CMap type.
      */
-    public int getType() 
+    public int getType()
     {
         return cmapType;
     }
 
     /**
      * Sets the type of the CMap.
-     * 
+     *
      * @param type the CMap type.
      */
-    public void setType(int type) 
+    public void setType(int type)
     {
         cmapType = type;
     }
 
     /**
      * Returns the registry of the CIDSystemInfo.
-     * 
+     *
      * @return the registry.
      */
-    public String getRegistry() 
+    public String getRegistry()
     {
         return registry;
     }
 
     /**
      * Sets the registry of the CIDSystemInfo.
-     * 
+     *
      * @param newRegistry the registry.
      */
-    public void setRegistry(String newRegistry) 
+    public void setRegistry(String newRegistry)
     {
         registry = newRegistry;
     }
 
     /**
      * Returns the ordering of the CIDSystemInfo.
-     * 
+     *
      * @return the ordering.
      */
-    public String getOrdering() 
+    public String getOrdering()
     {
         return ordering;
     }
 
     /**
      * Sets the ordering of the CIDSystemInfo.
-     * 
+     *
      * @param newOrdering the ordering.
      */
-    public void setOrdering(String newOrdering) 
+    public void setOrdering(String newOrdering)
     {
         ordering = newOrdering;
     }
 
     /**
      * Returns the supplement of the CIDSystemInfo.
-     * 
+     *
      * @return the supplement.
      */
-    public int getSupplement() 
+    public int getSupplement()
     {
         return supplement;
     }
 
     /**
      * Sets the supplement of the CIDSystemInfo.
-     * 
+     *
      * @param newSupplement the supplement.
      */
-    public void setSupplement(int newSupplement) 
+    public void setSupplement(int newSupplement)
     {
         supplement = newSupplement;
     }
-    
-    /** 
+
+    /**
      * Returns the mapping for the space character.
-     * 
+     *
      * @return the mapped code for the space character
      */
     public int getSpaceMapping()

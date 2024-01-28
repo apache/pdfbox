@@ -34,7 +34,7 @@ import org.apache.pdfbox.cos.COSString;
  * Date format is described in PDF Reference 1.7 section 3.8.2
  * (www.adobe.com/devnet/acrobat/pdfs/pdf_reference_1-7.pdf)
  * and also in PDF 32000-1:2008
- * (http://www.adobe.com/devnet/acrobat/pdfs/PDF32000_2008.pdf))
+ * (http://www.adobe.com/devnet/acrobat/pdfs/PDF32000_2008.pdf)
  * although the latter inexplicably omits the trailing apostrophe.
  *
  * The interpretation of dates without timezones is unclear.
@@ -43,7 +43,7 @@ import org.apache.pdfbox.cos.COSString;
  *      numerical fields default to zero values.
  * However, the Reference does go on to make the cryptic remark:
  *      If no UT information is specified, the relationship of the specified
- *      time to UT is considered to be unknown. Whether or not the time
+ *      time to UT is considered to be unknown. Whether the time
  *      zone is known, the rest of the date should be specified in local time.
  * I understand this to refer to _creating_ a pdf date value. That is,
  * code that can get the wall clock time and cannot get the timezone
@@ -59,7 +59,7 @@ import org.apache.pdfbox.cos.COSString;
  *
  * @author Ben Litchfield
  * @author Fred Hansen
- * 
+ *
  * TODO Move members of this class elsewhere for shared use in pdfbox and xmpbox.
  */
 public final class DateConverter
@@ -79,33 +79,33 @@ public final class DateConverter
 
     /*
      * The Date format is supposed to be the PDF_DATE_FORMAT, but other
-     * forms appear. These lists offer alternatives to be tried 
-     * if parseBigEndianDate fails.  
-     * 
+     * forms appear. These lists offer alternatives to be tried
+     * if parseBigEndianDate fails.
+     *
      * The time zone offset generally trails the date string, so it is processed
      * separately with parseTZoffset. (This does not preclude having time
      * zones in the elements below; one does.)
-     * 
-     * Alas, SimpleDateFormat is badly non-reentrant -- it modifies its 
+     *
+     * Alas, SimpleDateFormat is badly non-reentrant -- it modifies its
      * calendar field (PDFBox-402), so these lists are strings to create
      * SimpleDate format as needed.
-     * 
-     * Some past entries have been elided because they duplicate existing 
-     * entries. See the API for SimpleDateFormat, which says 
-     *      "For parsing, the number of pattern letters is ignored 
+     *
+     * Some past entries have been elided because they duplicate existing
+     * entries. See the API for SimpleDateFormat, which says
+     *      "For parsing, the number of pattern letters is ignored
      *      unless it's needed to separate two adjacent fields."
-     * 
+     *
      * toCalendar(String, String[]) tests to see that the entire input text
-     * has been consumed. Therefore the ordering of formats is important. 
+     * has been consumed. Therefore, the ordering of formats is important.
      * If one format begins with the entirety of another, the longer
      * must precede the other in the list.
-     * 
+     *
      * HH is for 0-23 hours and hh for 1-12 hours; an "a" field must follow "hh"
-     * Where year is yy, four digit years are accepted 
+     * Where year is yy, four digit years are accepted
      * and two digit years are converted to four digits in the range
      *      [thisyear-79...thisyear+20]
      */
-    private static final String[] ALPHA_START_FORMATS = 
+    private static final String[] ALPHA_START_FORMATS =
     {
         "EEEE, dd MMM yy hh:mm:ss a",
         "EEEE, MMM dd, yy hh:mm:ss a",
@@ -115,8 +115,8 @@ public final class DateConverter
         "EEEE MMM dd HH:mm:ss z yy", // GNU Ghostscript 7.0.7
         "EEEE MMM dd HH:mm:ss yy", // GNU Ghostscript 7.0.7 variant
     };
-    
-    private static final String[] DIGIT_START_FORMATS = 
+
+    private static final String[] DIGIT_START_FORMATS =
     {
         "dd MMM yy HH:mm:ss",  // for 26 May 2000 11:25:00
         "dd MMM yy HH:mm",  // for 26 May 2000 11:25
@@ -127,12 +127,12 @@ public final class DateConverter
         "M/d/yy HH:mm",
         "M/d/yy",
 
-        // proposed rule that is unreachable due to "dd MMM yy HH:mm:ss" 
-        //     "yyyy MMM d HH:mm:ss", 
+        // proposed rule that is unreachable due to "dd MMM yy HH:mm:ss"
+        //     "yyyy MMM d HH:mm:ss",
 
         // rules made unreachable by "M/d/yy HH:mm:ss" "M/d/yy HH:mm"  "M/d/yy",
         // (incoming digit strings do not mark themselves as y, m, or d!)
-            // "d/MM/yyyy HH:mm:ss", // PDFBOX-164 and PDFBOX-170 
+            // "d/MM/yyyy HH:mm:ss", // PDFBOX-164 and PDFBOX-170
             // "M/dd/yyyy hh:mm:ss",
             // "MM/d/yyyy hh:mm:ss",
             // "M/d/yyyy HH:mm:ss",
@@ -144,54 +144,54 @@ public final class DateConverter
         // subsumed by big-endian parse
             // "yyyy-MM-dd'T'HH:mm:ss",
             // "yyyy-MM-dd'T'HH:mm:ss",
-            // "yyyymmdd hh:mm:ss", 
-            // "yyyymmdd", 
-            // "yyyymmddX''00''",  // covers 24 cases 
-            //    (originally the above ended with '+00''00'''; 
-            //      the first apostrophe quoted the plus, 
+            // "yyyymmdd hh:mm:ss",
+            // "yyyymmdd",
+            // "yyyymmddX''00''",  // covers 24 cases
+            //    (originally the above ended with '+00''00''';
+            //      the first apostrophe quoted the plus,
             //      '' mapped to a single ', and the ''' was invalid)
     };
 
     /**
      * Converts a Calendar to a string formatted as:
      *     D:yyyyMMddHHmmss#hh'mm'  where # is Z, +, or -.
-     * 
+     *
      * @param cal The date to convert to a string. May be null.
      * The DST_OFFSET is included when computing the output time zone.
      *
-     * @return The date as a String to be used in a PDF document, 
+     * @return The date as a String to be used in a PDF document,
      *      or null if the cal value is null
      */
     public static String toString(Calendar cal)
     {
-        if (cal == null) 
+        if (cal == null)
         {
             return null;
         }
         String offset = formatTZoffset(cal.get(Calendar.ZONE_OFFSET) +
                                        cal.get(Calendar.DST_OFFSET), "'");
         return String.format(Locale.US, "D:"
-                + "%1$4tY%1$2tm%1$2td"   // yyyyMMdd 
-                + "%1$2tH%1$2tM%1$2tS"   // HHmmss 
+                + "%1$4tY%1$2tm%1$2td"   // yyyyMMdd
+                + "%1$2tH%1$2tM%1$2tS"   // HHmmss
                 + "%2$s"                 // time zone
                 + "'",                   // trailing apostrophe
             cal, offset);
     }
 
     /**
-     * Converts the date to ISO 8601 string format:
-     *     yyyy-mm-ddThh:MM:ss#hh:mm    (where '#" is '+' or '-').
+     * Converts the date to ISO 8601 string format:<br>
+     *     yyyy-mm-ddThh:MM:ss#hh:mm    (where '#' is '+' or '-').
      *
      * @param cal The date to convert.  Must not be null.
      * The DST_OFFSET is included in the output value.
-     * 
+     *
      * @return The date represented as an ISO 8601 string.
      */
     public static String toISO8601(Calendar cal)
     {
         String offset = formatTZoffset(cal.get(Calendar.ZONE_OFFSET) +
                                        cal.get(Calendar.DST_OFFSET), ":");
-        return String.format(Locale.US, 
+        return String.format(Locale.US,
                 "%1$4tY"                  // yyyy
                 + "-%1$2tm"               // -mm  (%tm adds one to cal month value)
                 + "-%1$2td"               // -dd  (%tm adds one to cal month value)
@@ -200,7 +200,7 @@ public final class DateConverter
                 + "%2$s",                 // time zone
             cal, offset);
     }
-    
+
     /*
      * Constrain a timezone offset to the range [-14:00 thru +14:00].
      * by adding or subtracting multiples of a full day.
@@ -224,7 +224,7 @@ public final class DateConverter
         // -HALF_DAY < proposedOffset < HALF_DAY
         return (int)proposedOffset;
     }
-    
+
     /*
      * Formats a time zone offset as #hh^mm
      * where # is + or -, hh is hours, ^ is a separator, and mm is minutes.
@@ -235,27 +235,27 @@ public final class DateConverter
      * To get a "general" offset in form GMT#hh:mm, write
      *      "GMT"+DateConverter.formatTZoffset(offset, ":");
      *
-     * Take thought in choosing the source for the millis value. 
-     * It can come from calendarValue.getTimeZone() or from 
+     * Take thought in choosing the source for the millis value.
+     * It can come from calendarValue.getTimeZone() or from
      * calendarValue.get(Calendar.ZONE_OFFSET).  If a TimeZone was created
      * from a valid time zone ID, then it may have a daylight savings rule.
-     * (As of July 4, 2013, the data base at http://www.iana.org/time-zones 
-     * recognized 629 time zone regions. But a TimeZone created as 
-     *      new SimpleTimeZone(millisOffset, "ID"), 
+     * (As of July 4, 2013, the data base at http://www.iana.org/time-zones
+     * recognized 629 time zone regions. But a TimeZone created as
+     *      new SimpleTimeZone(millisOffset, "ID"),
      * will not have a daylight savings rule. (Not even if there is a
      * known time zone with the given ID. To get the TimeZone named "xDT"
      * with its DST rule, use an ID of EST5EDT, CST6CDT, MST7MDT, or PST8PDT.
      *
      * When parsing PDF dates, the incoming values DOES NOT have a TIMEZONE value.
-     * At most it has an OFFSET value like -04'00'. It is generally impossible to 
+     * At most, it has an OFFSET value like -04'00'. It is generally impossible to
      * determine what TIMEZONE corresponds to a given OFFSET. If the date is
      * in the summer when daylight savings is in effect, an offset of -0400
-     * might correspond to any one of the 38 regions (of 53) with standard time 
-     * offset -0400 and no daylight saving. Or it might correspond to 
-     * any one of the 31 regions (out of 43) that observe daylight savings 
+     * might correspond to any one of the 38 regions (of 53) with standard time
+     * offset -0400 and no daylight saving. Or it might correspond to
+     * any one of the 31 regions (out of 43) that observe daylight savings
      * and have standard time offset of -0500.
      *
-     * If a Calendar has not been assigned a TimeZone with setTimeZone(), 
+     * If a Calendar has not been assigned a TimeZone with setTimeZone(),
      * it will have by default the local TIMEZONE, not just the OFFSET.  In the
      * USA, this TimeZone will have a daylight savings rule.
      *
@@ -272,12 +272,12 @@ public final class DateConverter
      *     calVal.getTimeZone().getOffset(calVal.getTimeInMillis())  =>  -04:00
      *
      * Which is correct??? I dunno, though setTimeZone() does seem to affect
-     * ZONE_OFFSET, and not vice versa.  One cannot even test whether TimeZone 
+     * ZONE_OFFSET, and not vice versa.  One cannot even test whether TimeZone
      * or ZONE_OFFSET has been set; both have been set by initialization code.
-     * TimeZone is initialized to the local default time zone 
+     * TimeZone is initialized to the local default time zone
      * and ZONE_OFFSET is set from it.
-     * 
-     * My choice in this DateConverter class has been to set the 
+     *
+     * My choice in this DateConverter class has been to set the
      * initial TimeZone of a GregorianCalendar to GMT. Thereafter
      * the TimeZone is modified with {@link #adjustTimeZoneNicely}.
      *
@@ -306,7 +306,7 @@ public final class DateConverter
      */
     private static int parseTimeField(String text, ParsePosition where, int maxlen, int remedy)
     {
-        if (text == null) 
+        if (text == null)
         {
             return remedy;
         }
@@ -327,7 +327,7 @@ public final class DateConverter
             }
             // append the digit to the return value
             retval = retval * 10 + cval;
-        }   
+        }
         if (index == where.getIndex())
         {
             return remedy;
@@ -335,7 +335,7 @@ public final class DateConverter
         where.setIndex(index);
         return retval;
     }
- 
+
     /*
      * Advances the ParsePosition past any and all the characters that match
      * those in the optionals list. In particular, a space will skip all spaces.
@@ -358,7 +358,7 @@ public final class DateConverter
         }
         return retval;
     }
-    
+
     /*
      * If the victim string is at the given position in the text, this method
      * advances the position past that string.
@@ -392,32 +392,32 @@ public final class DateConverter
         retCal.set(Calendar.MILLISECOND, 0);
         return retCal;
     }
-    
+
     /*
-     * Install a TimeZone on a GregorianCalendar without changing the 
-     * hours value. A plain GregorianCalendat.setTimeZone() 
+     * Install a TimeZone on a GregorianCalendar without changing the
+     * hours value. A plain GregorianCalendat.setTimeZone()
      * adjusts the Calendar.HOUR value to compensate. This is *BAD*
      * (not to say *EVIL*) when we have already set the time.
      */
     private static void adjustTimeZoneNicely(GregorianCalendar cal, TimeZone tz)
     {
         cal.setTimeZone(tz);
-        int offset = (cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 
+        int offset = (cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) /
                 MILLIS_PER_MINUTE;
         cal.add(Calendar.MINUTE, -offset);
     }
-    
+
     /*
      * Parses the end of a date string for a time zone and, if one is found,
-     * sets the time zone of the GregorianCalendar. Otherwise the calendar 
+     * sets the time zone of the GregorianCalendar. Otherwise the calendar
      * time zone is unchanged.
-     * 
+     *
      * The text is parsed as
      *      (Z|GMT|UTC)? [+- ]* h [': ]? m '?
-     * where the leading String is optional, h is two digits by default, 
-     * but may be a single digit if followed by one of space, apostrophe, 
-     * colon, or the end of string. Similarly, m is one or two digits. 
-     * This scheme accepts the format of PDF, RFC 822, and ISO8601. 
+     * where the leading String is optional, h is two digits by default,
+     * but may be a single digit if followed by one of space, apostrophe,
+     * colon, or the end of string. Similarly, m is one or two digits.
+     * This scheme accepts the format of PDF, RFC 822, and ISO8601.
      * If none of these applies (as for a time zone name), we try
      * TimeZone.getTimeZone().
      *
@@ -436,19 +436,19 @@ public final class DateConverter
         boolean hadGMT = (sign == 'Z' || skipString(text, "GMT", where) ||
                          skipString(text, "UTC", where));
         sign = (!hadGMT) ? sign : skipOptionals(text, where, "+- ");
-        
+
         tzHours = parseTimeField(text, where, 2, -999);
         skipOptionals(text, where, "': ");
         tzMin = parseTimeField(text, where, 2, 0);
         skipOptionals(text, where, "' ");
-        
-        if (tzHours != -999) 
+
+        if (tzHours != -999)
         {
             // we parsed a time zone in default format
             int hrSign = (sign == '-' ? -1 : 1);
-            tz.setRawOffset(restrainTZoffset(hrSign * (tzHours * (long) MILLIS_PER_HOUR + 
+            tz.setRawOffset(restrainTZoffset(hrSign * (tzHours * (long) MILLIS_PER_HOUR +
                                                        tzMin * (long) MILLIS_PER_MINUTE)));
-            updateZoneId(tz);                       
+            updateZoneId(tz);
         }
         else if ( ! hadGMT)
         {
@@ -456,7 +456,7 @@ public final class DateConverter
             String tzText = text.substring(initialWhere.getIndex()).trim();
             tz = TimeZone.getTimeZone(tzText);
             // getTimeZone returns "GMT" for unknown ids
-            if ("GMT".equals(tz.getID()))  
+            if ("GMT".equals(tz.getID()))
             {
                 // no timezone in text, cal amd initialWhere are unchanged
                 return false;
@@ -515,20 +515,20 @@ public final class DateConverter
      *     year [ -/]* month [ -/]* dayofmonth [ T]* hour [:] min [:] sec [.secFraction]
      * If any numeric field is omitted, all following fields must also be omitted.
      * No time zone is processed.
-     * 
+     *
      * Ambiguous dates can produce unexpected results. For example:
-     *      1970 12 23:08 will parse as 1970 December 23 00:08:00 
-     * 
+     *      1970 12 23:08 will parse as 1970 December 23 00:08:00
+     *
      * The parse begins at `where, on return the index
      * is advanced to just beyond the last character processed.
      * The error index is ignored and unchanged.
      */
     private static GregorianCalendar parseBigEndianDate(String text,
-            ParsePosition initialWhere) 
+            ParsePosition initialWhere)
     {
         ParsePosition where = new ParsePosition(initialWhere.getIndex());
         int year = parseTimeField(text, where, 4, 0);
-        if (where.getIndex() != 4 + initialWhere.getIndex()) 
+        if (where.getIndex() != 4 + initialWhere.getIndex())
         {
             return null;
         }
@@ -550,13 +550,13 @@ public final class DateConverter
         }
 
         GregorianCalendar dest = newGreg();
-        try 
+        try
         {
             dest.set(year, month, day, hour, minute, second);
             // trigger limit tests
             dest.getTimeInMillis();
         }
-        catch (IllegalArgumentException ill) 
+        catch (IllegalArgumentException ill)
         {
             LOG.debug("Couldn't parse arguments text:{} initialWhere:{}", text, initialWhere, ill);
             return  null;
@@ -571,18 +571,18 @@ public final class DateConverter
      * See if text can be parsed as a date according to any of a list of
      * formats. The time zone may be included as part of the format, or
      * omitted in favor of later testing for a trailing time zone.
-     * 
+     *
      * The parse starts at `where`, upon return it will have been
      * incremented to refer to the next non-space character after the date.
      * If no date was found, the value is unchanged.
      * The error index is ignored and unchanged.
-     * 
+     *
      * If there is a failure to find a date, or the GregorianCalendar
      * for the date that was found. Unless a time zone was
      * part of the format, the time zone will be GMT+0
      */
     private static GregorianCalendar parseSimpleDate(String text, String[] fmts,
-            ParsePosition initialWhere) 
+            ParsePosition initialWhere)
     {
         for(String fmt : fmts)
         {
@@ -601,19 +601,19 @@ public final class DateConverter
     }
 
     /*
-     * Parses a String to see if it begins with a date, and if so, 
-     * returns that date. The date must be strictly correct--no 
+     * Parses a String to see if it begins with a date, and if so,
+     * returns that date. The date must be strictly correct--no
      * field may exceed the appropriate limit.
-     * (That is, the Calendar has setLenient(false).) 
+     * (That is, the Calendar has setLenient(false).)
      * Skips initial spaces, but does NOT check for "D:"
-     * 
+     *
      * The scan first tries parseBigEndianDate and parseTZoffset
-     * and then tries parseSimpleDate with appropriate formats, 
-     * again followed by parseTZoffset. If at any stage the entire 
-     * text is consumed, that date value is returned immediately. 
+     * and then tries parseSimpleDate with appropriate formats,
+     * again followed by parseTZoffset. If at any stage the entire
+     * text is consumed, that date value is returned immediately.
      * Otherwise the date that consumes the longest initial part
      * of the text is returned.
-     * 
+     *
      * - PDF format dates are among those recognized by parseBigEndianDate.
      * - The formats tried are alphaStartFormats or digitStartFormat and
      * any listed in the value of moreFmts.
@@ -632,7 +632,7 @@ public final class DateConverter
 
         GregorianCalendar longestDate = null; // null says no date found yet
         int whereLen;   // tempcopy of where.getIndex()
-        
+
         ParsePosition where = new ParsePosition(initialWhere.getIndex());
         // check for null (throws exception) and trim off surrounding spaces
         skipOptionals(text, where, " ");
@@ -646,7 +646,7 @@ public final class DateConverter
         {
             // if text is fully consumed, return the date else remember it and its length
             whereLen = where.getIndex();
-            if (whereLen == text.length()) 
+            if (whereLen == text.length())
             {
                 initialWhere.setIndex(whereLen);
                 return retCal;
@@ -657,7 +657,7 @@ public final class DateConverter
 
         // try one of the sets of standard formats
         where.setIndex(startPosition);
-        String [] formats 
+        String [] formats
                 = Character.isDigit(text.charAt(startPosition))
                 ? DIGIT_START_FORMATS
                 : ALPHA_START_FORMATS;
@@ -669,32 +669,32 @@ public final class DateConverter
         {
             // if text is fully consumed, return the date else remember it and its length
             whereLen = where.getIndex();
-            if (whereLen == text.length()) 
+            if (whereLen == text.length())
             {
                 initialWhere.setIndex(whereLen);
                 return retCal;
             }
-            if (whereLen > longestLen) 
+            if (whereLen > longestLen)
             {
                 longestLen = whereLen;
                 longestDate = retCal;
             }
         }
 
-        if (longestDate != null) 
+        if (longestDate != null)
         {
             initialWhere.setIndex(longestLen);
             return longestDate;
         }
         return retCal;
     }
-       
+
     /**
      * Returns the Calendar for a given COS string containing a date,
      * or {@code null} if it cannot be parsed.
      *
      * The returned value will have 0 for DST_OFFSET.
-     * 
+     *
      * @param text A COS string containing a date.
      * @return The Calendar that the text string represents, or {@code null} if it cannot be parsed.
      */
@@ -702,7 +702,7 @@ public final class DateConverter
     {
         if (text == null)
         {
-            return null;    
+            return null;
         }
         return toCalendar(text.getString());
     }

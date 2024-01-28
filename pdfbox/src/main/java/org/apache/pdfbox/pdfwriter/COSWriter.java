@@ -77,7 +77,7 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface
 import org.apache.pdfbox.util.Hex;
 
 /**
- * This class acts on a in-memory representation of a PDF document.
+ * This class acts on an in-memory representation of a PDF document.
  *
  * @author Michael Traut
  * @author Ben Litchfield
@@ -163,7 +163,7 @@ public class COSWriter implements ICOSVisitor
      * The close stream token.
      */
     public static final byte[] ENDSTREAM = "endstream".getBytes(StandardCharsets.US_ASCII);
-    
+
     private static final NumberFormat formatXrefOffset = new DecimalFormat("0000000000",
             DecimalFormatSymbols.getInstance(Locale.US));
 
@@ -298,7 +298,7 @@ public class COSWriter implements ICOSVisitor
             Set<COSDictionary> objectsToWrite) throws IOException
     {
         // Implementation notes / summary of April 2019 comments in PDFBOX-45:
-        // we allow only COSDictionary in objectsToWrite because other types, 
+        // we allow only COSDictionary in objectsToWrite because other types,
         // especially COSArray, are written directly. If we'd allow them with the current
         // COSWriter implementation, they would be written twice,
         // once directly and once indirectly as orphan.
@@ -344,7 +344,7 @@ public class COSWriter implements ICOSVisitor
             }
         }
     }
-    
+
     /**
      * add an entry in the x ref table for later dump.
      *
@@ -614,7 +614,7 @@ public class COSWriter implements ICOSVisitor
 
     /**
      * Convenience method, so that we get false for types that can't be updated.
-     * 
+     *
      * @param base
      * @return
      */
@@ -668,7 +668,7 @@ public class COSWriter implements ICOSVisitor
             headerString = "%PDF-" + doc.getVersion();
         }
         getStandardOutput().write( headerString.getBytes(StandardCharsets.ISO_8859_1) );
-        
+
         getStandardOutput().writeEOL();
         getStandardOutput().write(COMMENT);
         getStandardOutput().write(GARBAGE);
@@ -694,7 +694,7 @@ public class COSWriter implements ICOSVisitor
         XReferenceEntry lastEntry = getXRefEntries().get(getXRefEntries().size() - 1);
         trailer.setLong(COSName.SIZE, lastEntry.getReferencedKey().getNumber() + 1);
         // Only need to stay, if an incremental update will be performed
-        if (!incrementalUpdate) 
+        if (!incrementalUpdate)
         {
           trailer.removeItem( COSName.PREV );
         }
@@ -864,7 +864,7 @@ public class COSWriter implements ICOSVisitor
         // write the actual incremental update
         incrementalOutput.write(((ByteArrayOutputStream) output).toByteArray());
     }
-    
+
     private void doWriteSignature() throws IOException
     {
         // calculate the ByteRange values
@@ -874,7 +874,7 @@ public class COSWriter implements ICOSVisitor
         long afterLength = getStandardOutput().getPos() - (inLength + signatureLength) - (signatureOffset - inLength);
 
         String byteRange = "0 " + beforeLength + " " + afterOffset + " " + afterLength + "]";
-        
+
         // Assign the values to the actual COSArray, so that the user can access it before closing
         byteRangeArray.set(0, COSInteger.ZERO);
         byteRangeArray.set(1, COSInteger.get(beforeLength));
@@ -883,8 +883,8 @@ public class COSWriter implements ICOSVisitor
 
         if (byteRange.length() > byteRangeLength)
         {
-            throw new IOException("Can't write new byteRange '" + byteRange + 
-                    "' not enough space: byteRange.length(): " + byteRange.length() + 
+            throw new IOException("Can't write new byteRange '" + byteRange +
+                    "' not enough space: byteRange.length(): " + byteRange.length() +
                     ", byteRangeLength: " + byteRangeLength +
                     ", byteRangeOffset: " + byteRangeOffset);
         }
@@ -1020,10 +1020,10 @@ public class COSWriter implements ICOSVisitor
      * <p>
      * 0 3 5 4 10 1
      * <p>
-     * this mean that the element 0 is followed by two other related numbers 
+     * this mean that the element 0 is followed by two other related numbers
      * that represent a cluster of the size 3. 5 is follow by three other
      * related numbers and create a cluster of size 4. etc.
-     * 
+     *
      * @param xRefEntriesList list with the xRef entries that was written
      * @return a integer array with the ranges
      */
@@ -1061,7 +1061,7 @@ public class COSWriter implements ICOSVisitor
         }
         return list.toArray(Long[]::new);
     }
-    
+
     /**
      * This will get the object key for the object.
      *
@@ -1202,7 +1202,7 @@ public class COSWriter implements ICOSVisitor
                     COSDictionary dict = (COSDictionary)value;
 
                     if (!incrementalUpdate)
-                    {            
+                    {
                         // write all XObjects as direct objects, this will save some size
                         // PDFBOX-3684: but avoid dictionary that references itself
                         COSBase item = dict.getItem(COSName.XOBJECT);
@@ -1505,7 +1505,7 @@ public class COSWriter implements ICOSVisitor
         if (doc.isAllSecurityToBeRemoved())
         {
             willEncrypt = false;
-            // also need to get rid of the "Encrypt" in the trailer so readers 
+            // also need to get rid of the "Encrypt" in the trailer so readers
             // don't try to decrypt a document which is not encrypted
             trailer.removeItem(COSName.ENCRYPT);
         }

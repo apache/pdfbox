@@ -216,7 +216,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
 
             if (acroForm != null && acroForm.getNeedAppearances())
             {
-                // PDFBOX-3738 NeedAppearances true results in visible signature becoming invisible 
+                // PDFBOX-3738 NeedAppearances true results in visible signature becoming invisible
                 // with Adobe Reader
                 if (acroForm.getFields().isEmpty())
                 {
@@ -297,11 +297,11 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
                 doc.saveIncremental(fos);
             }
         }
-        
+
         // Do not close signatureOptions before saving, because some COSStream objects within
         // are transferred to the signed document.
         // Do not allow signatureOptions get out of scope before saving, because then the COSDocument
-        // in signature options might by closed by gc, which would close COSStream objects prematurely.
+        // in signature options might be closed by gc, which would close COSStream objects prematurely.
         // See https://issues.apache.org/jira/browse/PDFBOX-3743
         IOUtils.closeQuietly(signatureOptions);
     }
@@ -348,7 +348,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
     }
 
     // create a template PDF document with empty signature and return it as a stream.
-    private InputStream createVisualSignatureTemplate(PDDocument srcDoc, int pageNum, 
+    private InputStream createVisualSignatureTemplate(PDDocument srcDoc, int pageNum,
             PDRectangle rect, PDSignature signature) throws IOException
     {
         try (PDDocument doc = new PDDocument())
@@ -384,7 +384,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
                     height = bbox.getWidth();
                     break;
                 case 180:
-                    form.setMatrix(AffineTransform.getQuadrantRotateInstance(2)); 
+                    form.setMatrix(AffineTransform.getQuadrantRotateInstance(2));
                     break;
                 case 270:
                     form.setMatrix(AffineTransform.getQuadrantRotateInstance(3));

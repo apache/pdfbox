@@ -20,7 +20,7 @@ package org.apache.pdfbox.cos;
  * Object representing the physical reference to an indirect pdf object.
  *
  * @author Michael Traut
- * 
+ *
  */
 public final class COSObjectKey implements Comparable<COSObjectKey>
 {
@@ -32,12 +32,13 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
     private final long numberAndGeneration;
     // index within a compressed object stream if applicable otherwise -1
     private final int streamIndex;
-    
+
     /**
      * Constructor.
      *
      * @param num The object number.
      * @param gen The object generation number.
+     * @throws IllegalArgumentException when object number 'num' or object generation number 'gen' is &lt; 0
      */
     public COSObjectKey(long num, int gen)
     {
@@ -59,6 +60,7 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
      * @param num The object number.
      * @param gen The object generation number.
      * @param index The index within a compressed object stream
+     * @throws IllegalArgumentException when object number 'num' or object generation number 'gen' is &lt; 0
      */
     public COSObjectKey(long num, int gen, int index)
     {
@@ -76,7 +78,7 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
 
     /**
      * Calculate the internal hash value for the given object number and generation number.
-     * 
+     *
      * @param num the object number
      * @param gen the generation number
      * @return the internal hash for the given values
@@ -88,7 +90,7 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
 
     /**
      * Return the internal hash value which is based on the number and the generation.
-     * 
+     *
      * @return the internal hash value
      */
     public long getInternalHash()
@@ -129,7 +131,7 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
 
     /**
      * The index within a compressed object stream.
-     * 
+     *
      * @return the index within a compressed object stream if applicable otherwise -1
      */
     public int getStreamIndex()

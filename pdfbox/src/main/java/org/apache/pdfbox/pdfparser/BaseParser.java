@@ -143,7 +143,7 @@ public abstract class BaseParser
     private static final byte ASCII_ZERO = 48;
     private static final byte ASCII_NINE = 57;
     private static final byte ASCII_SPACE = 32;
-    
+
     /**
      * This is the stream that will be read from.
      */
@@ -171,11 +171,11 @@ public abstract class BaseParser
 
     /**
      * Returns the object key for the given combination of object and generation number. The object key from the cross
-     * reference table/stream will be reused if available. Otherwise a newly created object will be returned.
-     * 
+     * reference table/stream will be reused if available. Otherwise, a newly created object will be returned.
+     *
      * @param num the given object number
      * @param gen the given generation number
-     * 
+     *
      * @return the COS object key
      */
     protected COSObjectKey getObjectKey(long num, int gen)
@@ -410,8 +410,8 @@ public abstract class BaseParser
             if (ASCII_LF != whitespace)
             {
                 source.rewind(1);
-                //The spec says this is invalid but it happens in the real
-                //world so we must support it.
+                //The spec says this is invalid, but it happens in the real
+                //world, so we must support it.
             }
         }
         else if (ASCII_LF != whitespace)
@@ -426,9 +426,9 @@ public abstract class BaseParser
     /**
      * This is really a bug in the Document creators code, but it caused a crash in PDFBox, the first bug was in this
      * format: /Title ( (5) /Creator which was patched in 1 place.
-     *
-     * However it missed the case where the number of opening and closing parenthesis isn't balanced
-     *
+     * <p>
+     * However, it missed the case where the number of opening and closing parenthesis isn't balanced
+     * <p>
      * The second bug was in this format /Title (c:\) /Producer
      *
      * @param bracesParameter the number of braces currently open.
@@ -491,7 +491,7 @@ public abstract class BaseParser
             throw new IOException( "parseCOSString string should start with '(' or '<' and not '" +
                     nextChar + "' at offset " + source.getPosition());
         }
-        
+
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         // This is the number of braces read
@@ -594,7 +594,7 @@ public abstract class BaseParser
                         {
                             nextc = c;
                         }
-    
+
                         int character = 0;
                         try
                         {
@@ -639,7 +639,7 @@ public abstract class BaseParser
      * be able to skip to next object start.
      *
      * We assume starting '&lt;' was already read.
-     * 
+     *
      * @return The parsed PDF string.
      *
      * @throws IOException If there is an error reading from the stream.
@@ -658,7 +658,7 @@ public abstract class BaseParser
             {
                 break;
             }
-            else if ( c < 0 ) 
+            else if ( c < 0 )
             {
                 throw new IOException( "Missing closing bracket for hex string. Reached EOS." );
             }
@@ -676,29 +676,29 @@ public abstract class BaseParser
                 {
                     sBuf.deleteCharAt(sBuf.length()-1);
                 }
-                
+
                 // read till the closing bracket was found
-                do 
+                do
                 {
                     c = source.read();
-                } 
+                }
                 while ( c != '>' && c >= 0 );
-                
+
                 // might have reached EOF while looking for the closing bracket
                 // this can happen for malformed PDFs only. Make sure that there is
                 // no endless loop.
-                if ( c < 0 ) 
+                if ( c < 0 )
                 {
                     throw new IOException( "Missing closing bracket for hex string. Reached EOS." );
                 }
-                
+
                 // exit loop
                 break;
             }
         }
         return COSString.parseHex(sBuf.toString());
     }
-   
+
     /**
      * This will parse a PDF array object.
      *
@@ -872,7 +872,7 @@ public abstract class BaseParser
     }
 
     /**
-     * Tries to decode the buffer cotent to an UTF-8 String.
+     * Tries to decode the buffer content to a UTF-8 String.
      * If that fails, tries the alternative Encoding.
      * @param buffer the {@link ByteArrayOutputStream} containing the bytes to decode
      * @return the decoded String
@@ -890,7 +890,7 @@ public abstract class BaseParser
             return buffer.toString(ALTERNATIVE_CHARSET);
         }
     }
-    
+
     /**
      * This will parse a directory object from the stream.
      *
@@ -916,10 +916,10 @@ public abstract class BaseParser
             return parseCOSArray();
         case '(':
             return parseCOSString();
-        case '/':   
+        case '/':
             // name
             return parseCOSName();
-        case 'n':   
+        case 'n':
             // null
             readExpectedString(NULL, false);
             return COSNull.NULL;
@@ -939,7 +939,7 @@ public abstract class BaseParser
             {
                 return parseCOSNumber();
             }
-            // This is not suppose to happen, but we will allow for it
+            // This is not supposed to happen, but we will allow for it,
             // so we are more compatible with POS writers that don't
             // follow the spec
             long startOffset = source.getPosition();
@@ -1009,10 +1009,10 @@ public abstract class BaseParser
         }
         return buffer.toString();
     }
-    
+
     /**
      * Reads given pattern from {@link #source}. Skipping whitespace at start and end if wanted.
-     * 
+     *
      * @param expectedString pattern to be skipped
      * @param skipSpaces if set to true spaces before and after the string will be skipped
      * @throws IOException if pattern could not be read
@@ -1048,7 +1048,7 @@ public abstract class BaseParser
                     "expected='" + ec + "' actual='" + c + "' at offset " + source.getPosition());
         }
     }
-    
+
     /**
      * This will read the next string from the stream up to a certain length.
      *
@@ -1135,7 +1135,7 @@ public abstract class BaseParser
             }
             buffer.append( (char)c );
         }
-        // CR+LF is also a valid EOL 
+        // CR+LF is also a valid EOL
         if (isCR(c) && isLF(source.peek()))
         {
             source.read();
@@ -1157,7 +1157,7 @@ public abstract class BaseParser
 
     /**
      * This will tell if the end of the data is reached.
-     * 
+     *
      * @return true if the end of the data is reached.
      * @throws IOException If there is an error reading from the stream.
      */
@@ -1186,7 +1186,7 @@ public abstract class BaseParser
     {
         return ASCII_CR == c;
     }
-    
+
     /**
      * This will tell if the next byte is whitespace or not.
      *
@@ -1232,10 +1232,10 @@ public abstract class BaseParser
     {
         return isSpace(source.peek());
     }
-    
+
     /**
      * This will tell if the given value is a space or not.
-     * 
+     *
      * @param c The character to check against space
      * @return true if the next byte in the stream is a space character.
      */
@@ -1258,7 +1258,7 @@ public abstract class BaseParser
 
     /**
      * This will tell if the given value is a digit or not.
-     * 
+     *
      * @param c The character to be checked
      * @return true if the next byte in the stream is a digit.
      */
@@ -1317,7 +1317,7 @@ public abstract class BaseParser
     }
 
     /**
-     * This will read a integer from the Stream and throw an {@link IllegalArgumentException} if the integer value
+     * This will read an integer from the Stream and throw an {@link IllegalArgumentException} if the integer value
      * has more than the maximum object revision (i.e. : bigger than {@link #GENERATION_NUMBER_THRESHOLD})
      * @return the generation number being read.
      * @throws IOException if an I/O error occurs
@@ -1331,7 +1331,7 @@ public abstract class BaseParser
         }
         return retval;
     }
-    
+
     /**
      * This will read an integer from the stream.
      *
@@ -1359,10 +1359,10 @@ public abstract class BaseParser
         }
         return retval;
     }
-    
+
 
     /**
-     * This will read an long from the stream.
+     * This will read a long from the stream.
      *
      * @return The long that was read from the stream.
      *
@@ -1404,7 +1404,7 @@ public abstract class BaseParser
             buffer.append( (char)lastByte );
             if (buffer.length() > MAX_LENGTH_LONG)
             {
-                throw new IOException("Number '" + buffer + 
+                throw new IOException("Number '" + buffer +
                         "' is getting too long, stop reading at offset " + source.getPosition());
             }
         }

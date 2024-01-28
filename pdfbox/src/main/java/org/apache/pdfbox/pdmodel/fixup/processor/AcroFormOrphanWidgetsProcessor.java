@@ -45,23 +45,23 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
 /**
  *  Generate field entries from page level widget annotations
  *  if there AcroForm /Fields entry is empty.
- * 
+ *
  */
 public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
 {
-    
+
     private static final Logger LOG = LogManager.getLogger(AcroFormOrphanWidgetsProcessor.class);
 
     public AcroFormOrphanWidgetsProcessor(PDDocument document)
-    { 
-        super(document); 
+    {
+        super(document);
     }
 
     @Override
     public void process()
     {
         /*
-         * Get the AcroForm in it's current state.
+         * Get the AcroForm in its current state.
          *
          * Also note: getAcroForm() applies a default fixup which this processor
          * is part of. So keep the null parameter otherwise this will end
@@ -70,9 +70,9 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(null);
 
         if (acroForm != null)
-        {            
+        {
             resolveFieldsFromWidgets(acroForm);
-        } 
+        }
     }
 
     private void resolveFieldsFromWidgets(PDAcroForm acroForm)
@@ -82,7 +82,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         PDResources resources = acroForm.getDefaultResources();
         if (resources == null)
         {
-            // failsafe. Currently resources is never null because defaultfixup is called first.
+            // failsafe. Currently, resources is never null because defaultfixup is called first.
             LOG.debug("AcroForm default resources is null");
             return;
         }
@@ -146,7 +146,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
     /**
      * Add font resources from the widget to the AcroForm to make sure embedded fonts are being used
      * and not added by ensureFontResources potentially using a fallback font.
-     * 
+     *
      * @param acroFormResources AcroForm default resources, should not be null.
      * @param annotation annotation, should not be null.
      */
@@ -203,7 +203,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
                 return null;
             }
         }
-        
+
         if (nonTerminalFieldsMap.get(parent.getString(COSName.T)) == null)
         {
             PDField field = PDFieldFactory.createField(acroForm, parent, null);
@@ -220,10 +220,10 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
 
 
     /*
-     *  Lookup the font used in the default appearance and if this is 
+     *  Lookup the font used in the default appearance and if this is
      *  not available try to find a suitable font and use that.
      *  This may not be the original font but a similar font replacement
-     * 
+     *
      *  TODO: implement a font lookup similar as discussed in PDFBOX-2661 so that already existing
      *        font resources might be accepatble.
      *        In such case this must be implemented in PDDefaultAppearanceString too!

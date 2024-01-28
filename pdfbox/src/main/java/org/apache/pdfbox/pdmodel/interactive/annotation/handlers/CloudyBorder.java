@@ -316,7 +316,7 @@ class CloudyBorder
         // intermediate curl.
         // In each polygon segment, we have n intermediate curls plus one half of a
         // corner curl at each end. One of the n intermediate curls is adjustable.
-        // Thus the number of fixed (or unadjusted) intermediate curls is n - 1.
+        // Thus, the number of fixed (or unadjusted) intermediate curls is n - 1.
 
         // Find the adjusted angle `alpha` for the first corner curl.
         int n0 = computeParamsPolygon(advIntermDefault, advCornerDefault, k, cloudRadius,

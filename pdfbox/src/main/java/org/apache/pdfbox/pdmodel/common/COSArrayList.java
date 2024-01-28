@@ -43,7 +43,7 @@ public class COSArrayList<E> implements List<E>
     private final List<E> actual;
 
     // indicates that the list has been filtered
-    // i.e. the number of entries in array and actual differ 
+    // i.e. the number of entries in array and actual differ
     private boolean isFiltered = false;
 
     private COSDictionary parentDict;
@@ -60,15 +60,15 @@ public class COSArrayList<E> implements List<E>
 
     /**
      * Create the COSArrayList specifying the List and the backing COSArray.
-     * 
+     *
      * <p>User of this constructor need to ensure that the entries in the List and
      * the backing COSArray are matching i.e. the COSObject of the List entry is
      * included in the COSArray.
-     *   
+     *
      * <p>If the number of entries in the List and the COSArray differ
      * it is assumed that the List has been filtered. In that case the COSArrayList
      * shall only be used for reading purposes and no longer for updating.
-     * 
+     *
      * @param actualList The list of standard java objects
      * @param cosArray The COS array object to sync to.
      */
@@ -78,7 +78,7 @@ public class COSArrayList<E> implements List<E>
         array = cosArray;
 
         // if the number of entries differs this may come from a filter being
-        // applied at the PDModel level 
+        // applied at the PDModel level
         if (actual.size() != array.size()) {
             isFiltered = true;
         }
@@ -192,7 +192,7 @@ public class COSArrayList<E> implements List<E>
         if( parentDict != null )
         {
             parentDict.setItem( dictKey, array );
-            //clear the parent dict so it doesn't happen again, there might be
+            //clear the parent dict, so it doesn't happen again, there might be
             //a usecase for keeping the parentDict around but not now.
             parentDict = null;
         }
@@ -283,8 +283,8 @@ public class COSArrayList<E> implements List<E>
         if( parentDict != null && !c.isEmpty())
         {
             parentDict.setItem( dictKey, array );
-            //clear the parent dict so it doesn't happen again, there might be
-            //a usecase for keeping the parentDict around but not now.
+            //clear the parent dict, so it doesn't happen again, there might be
+            //a use case for keeping the parentDict around but not now.
             parentDict = null;
         }
 
@@ -499,8 +499,8 @@ public class COSArrayList<E> implements List<E>
         if( parentDict != null )
         {
             parentDict.setItem( dictKey, array );
-            //clear the parent dict so it doesn't happen again, there might be
-            //a usecase for keeping the parentDict around but not now.
+            //clear the parent dict, so it doesn't happen again, there might be
+            //a use case for keeping the parentDict around but not now.
             parentDict = null;
         }
         actual.add( index, element );
@@ -573,7 +573,7 @@ public class COSArrayList<E> implements List<E>
     {
         return actual.subList( fromIndex, toIndex );
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -582,13 +582,13 @@ public class COSArrayList<E> implements List<E>
     {
         return "COSArrayList{" + array.toString() + "}";
     }
-    
+
     /**
      * This will return then underlying COSArray.
-     * 
+     *
      * @return the COSArray
      */
-    public COSArray toList() 
+    public COSArray toList()
     {
         return array;
     }

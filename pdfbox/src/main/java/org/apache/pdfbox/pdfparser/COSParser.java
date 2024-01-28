@@ -58,7 +58,7 @@ import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  * COS-Parser which first reads startxref and xref tables in order to know valid objects and parse only these objects.
- * 
+ *
  * This class is a much enhanced version of <code>QuickParser</code> presented in
  * <a href="https://issues.apache.org/jira/browse/PDFBOX-1104">PDFBOX-1104</a> by Jeremy Villalobos.
  */
@@ -66,7 +66,7 @@ public class COSParser extends BaseParser implements ICOSParser
 {
     private static final String PDF_HEADER = "%PDF-";
     private static final String FDF_HEADER = "%FDF-";
-    
+
     private static final String PDF_DEFAULT_VERSION = "1.4";
     private static final String FDF_DEFAULT_VERSION = "1.0";
 
@@ -78,7 +78,7 @@ public class COSParser extends BaseParser implements ICOSParser
     private static final byte[] ENDOBJ = { E, N, D, O, B, J };
 
     private static final long MINIMUM_SEARCH_OFFSET = 6;
-    
+
     private static final int X = 'x';
 
     private static final int STRMBUFLEN = 2048;
@@ -92,7 +92,7 @@ public class COSParser extends BaseParser implements ICOSParser
 
     /**
      * The range within the %%EOF marker will be searched.
-     * Useful if there are additional characters after %%EOF within the PDF. 
+     * Useful if there are additional characters after %%EOF within the PDF.
      */
     public static final String SYSPROP_EOFLOOKUPRANGE =
             "org.apache.pdfbox.pdfparser.nonSequentialPDFParser.eofLookupRange";
@@ -123,10 +123,10 @@ public class COSParser extends BaseParser implements ICOSParser
     protected boolean initialParseDone = false;
 
     private boolean trailerWasRebuild = false;
-    
+
     private BruteForceParser bruteForceParser = null;
     private PDEncryption encryption = null;
-    
+
     /**
      * Intermediate cache. Contains all objects of already read compressed object streams. Objects are removed after
      * dereferencing them.
@@ -141,13 +141,13 @@ public class COSParser extends BaseParser implements ICOSParser
     /**
      *  how many trailing bytes to read for EOF marker.
      */
-    private int readTrailBytes = DEFAULT_TRAIL_BYTECOUNT; 
+    private int readTrailBytes = DEFAULT_TRAIL_BYTECOUNT;
 
     private static final Logger LOG = LogManager.getLogger(COSParser.class);
 
-    /** 
+    /**
      * Collects all Xref/trailer objects and resolves them into single
-     * object using startxref reference. 
+     * object using startxref reference.
      */
     protected XrefTrailerResolver xrefTrailerResolver = new XrefTrailerResolver();
 
@@ -155,7 +155,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * Default constructor.
      *
      * @param source input representing the pdf.
-     * 
+     *
      * @throws IOException if something went wrong
      */
     public COSParser(RandomAccessRead source) throws IOException
@@ -165,7 +165,7 @@ public class COSParser extends BaseParser implements ICOSParser
 
     /**
      * Constructor for encrypted pdfs.
-     * 
+     *
      * @param source input representing the pdf.
      * @param password password to be used for decryption.
      * @param keyStore key store to be used for decryption when using public key security
@@ -181,7 +181,7 @@ public class COSParser extends BaseParser implements ICOSParser
 
     /**
      * Constructor for encrypted pdfs.
-     * 
+     *
      * @param source input representing the pdf.
      * @param password password to be used for decryption.
      * @param keyStore key store to be used for decryption when using public key security
@@ -223,16 +223,16 @@ public class COSParser extends BaseParser implements ICOSParser
     /**
      * Sets how many trailing bytes of PDF file are searched for EOF marker and 'startxref' marker. If not set we use
      * default value {@link #DEFAULT_TRAIL_BYTECOUNT}.
-     * 
+     *
      * <p>We check that new value is at least 16. However for practical use cases this value should not be lower than
      * 1000; even 2000 was found to not be enough in some cases where some trailing garbage like HTML snippets followed
      * the EOF marker.</p>
-     * 
+     *
      * <p>
      * In case system property {@link #SYSPROP_EOFLOOKUPRANGE} is defined this value will be set on initialization but
      * can be overwritten later.
      * </p>
-     * 
+     *
      * @param byteCount number of trailing bytes
      */
     public void setEOFLookupRange(int byteCount)
@@ -245,7 +245,7 @@ public class COSParser extends BaseParser implements ICOSParser
 
     /**
      * Read the trailer information and provide a COSDictionary containing the trailer information.
-     * 
+     *
      * @return a COSDictionary containing the trailer information
      * @throws IOException if something went wrong
      */
@@ -316,7 +316,7 @@ public class COSParser extends BaseParser implements ICOSParser
     /**
      * Indicates whether the xref trailer resolver should be reset or not. Should be overwritten if the xref trailer
      * resolver is needed after the initial parsing.
-     * 
+     *
      * @return true if the xref trailer resolver should be reset
      */
     protected boolean resetTrailerResolver()
@@ -326,7 +326,7 @@ public class COSParser extends BaseParser implements ICOSParser
 
     /**
      * Parses cross reference tables.
-     * 
+     *
      * @param startXRefOffset start offset of the first table
      * @return the trailer dictionary
      * @throws IOException if something went wrong
@@ -367,7 +367,7 @@ public class COSParser extends BaseParser implements ICOSParser
                             + source.getPosition());
                 }
                 trailer = xrefTrailerResolver.getCurrentTrailer();
-                // check for a XRef stream, it may contain some object ids of compressed objects 
+                // check for a XRef stream, it may contain some object ids of compressed objects
                 if(trailer.containsKey(COSName.XREF_STM))
                 {
                     int streamOffset = trailer.getInt(COSName.XREF_STM);
@@ -462,7 +462,7 @@ public class COSParser extends BaseParser implements ICOSParser
 
     /**
      * Parses an xref object stream starting with indirect object id.
-     * 
+     *
      * @return value of PREV item in dictionary or <code>-1</code> if no such item exists
      */
     private long parseXrefObjStream(long objByteOffset, boolean isStandalone) throws IOException
@@ -475,7 +475,7 @@ public class COSParser extends BaseParser implements ICOSParser
         COSDictionary dict = parseCOSDictionary(false);
         try (COSStream xrefStream = parseCOSStream(dict))
         {
-            // the cross reference stream of a hybrid xref table will be added to the existing one
+            // the cross-reference stream of a hybrid xref table will be added to the existing one,
             // and we must not override the offset and the trailer
             if ( isStandalone )
             {
@@ -488,12 +488,12 @@ public class COSParser extends BaseParser implements ICOSParser
 
         return dict.getLong(COSName.PREV);
     }
-    
+
     /**
      * Looks for and parses startxref. We first look for last '%%EOF' marker (within last
      * {@link #DEFAULT_TRAIL_BYTECOUNT} bytes (or range set via {@link #setEOFLookupRange(int)}) and go back to find
      * <code>startxref</code>.
-     * 
+     *
      * @return the offset of StartXref
      * @throws IOException If something went wrong.
      */
@@ -531,13 +531,13 @@ public class COSParser extends BaseParser implements ICOSParser
         int bufOff = lastIndexOf(EOF_MARKER, buf, buf.length);
         if (bufOff < 0)
         {
-            if (isLenient) 
+            if (isLenient)
             {
                 // in lenient mode the '%%EOF' isn't needed
                 bufOff = buf.length;
                 LOG.debug("Missing end of file marker '{}'", new String(EOF_MARKER));
-            } 
-            else 
+            }
+            else
             {
                 throw new IOException("Missing end of file marker '" + new String(EOF_MARKER) + "'");
             }
@@ -553,14 +553,14 @@ public class COSParser extends BaseParser implements ICOSParser
             return skipBytes + bufOff;
         }
     }
-    
+
     /**
      * Searches last appearance of pattern within buffer. Lookup before _lastOff and goes back until 0.
-     * 
+     *
      * @param pattern pattern to search for
      * @param buf buffer to search pattern in
      * @param endOff offset (exclusive) where lookup starts at
-     * 
+     *
      * @return start offset of pattern within buffer or <code>-1</code> if pattern could not be found
      */
     protected int lastIndexOf(final char[] pattern, final byte[] buf, final int endOff)
@@ -592,7 +592,7 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         return -1;
     }
-    
+
     /**
      * Return true if parser is lenient. Meaning auto healing capacity of the parser are used.
      *
@@ -609,7 +609,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * This method can only be called before the parsing of the file.
      *
      * @param lenient try to handle malformed PDFs.
-     *
+     * @throws IllegalArgumentException when it is called after parsing.
      */
     protected void setLenient(boolean lenient)
     {
@@ -647,14 +647,14 @@ public class COSParser extends BaseParser implements ICOSParser
 
     /**
      * Parse the object for the given object key.
-     * 
+     *
      * @param objKey key of object to be parsed
      * @param requireExistingNotCompressedObj if <code>true</code> the object to be parsed must be defined in xref
      * (comment: null objects may be missing from xref) and it must not be a compressed object within object stream
      * (this is used to circumvent being stuck in a loop in a malicious PDF)
-     * 
+     *
      * @return the parsed object (which is also added to document object)
-     * 
+     *
      * @throws IOException If an IO error occurs.
      */
     protected synchronized COSBase parseObjectDynamically(COSObjectKey objKey,
@@ -805,7 +805,7 @@ public class COSParser extends BaseParser implements ICOSParser
 
     /**
      * Parse the object with the given key from the object stream with the given number.
-     * 
+     *
      * @param objstmObjNr the number of the offset stream
      * @param key the key of the object to be parsed
      * @return the parsed object
@@ -850,8 +850,8 @@ public class COSParser extends BaseParser implements ICOSParser
         return objectStreamObject;
     }
 
-    /** 
-     * Returns length value referred to or defined in given object. 
+    /**
+     * Returns length value referred to or defined in given object.
      */
     private COSNumber getLength(final COSBase lengthBaseObj) throws IOException
     {
@@ -889,10 +889,10 @@ public class COSParser extends BaseParser implements ICOSParser
         throw new IOException(
                 "Wrong type of length object: " + lengthBaseObj.getClass().getSimpleName());
     }
-    
+
     /**
      * This will read a COSStream from the input stream using length attribute within dictionary. If
-     * length attribute is a indirect reference it is first resolved to get the stream length. This
+     * length attribute is an indirect reference it is first resolved to get the stream length. This
      * means we copy stream data without testing for 'endstream' or 'endobj' and thus it is no
      * problem if these keywords occur within stream. We require 'endstream' to be found after
      * stream data is read.
@@ -907,8 +907,8 @@ public class COSParser extends BaseParser implements ICOSParser
     protected COSStream parseCOSStream(COSDictionary dic) throws IOException
     {
         // read 'stream'; this was already tested in parseObjectsDynamically()
-        readString(); 
-        
+        readString();
+
         skipWhiteSpaces();
 
         /*
@@ -970,14 +970,14 @@ public class COSParser extends BaseParser implements ICOSParser
      * This method will read through the current stream object until
      * we find the keyword "endstream" meaning we're at the end of this
      * object. Some pdf files, however, forget to write some endstream tags
-     * and just close off objects with an "endobj" tag so we have to handle
+     * and just close off objects with an "endobj" tag, so we have to handle
      * this case as well.
-     * 
+     *
      * This method is optimized using buffered IO and reduced number of
      * byte compare operations.
-     * 
+     *
      * @param out  stream we write out to.
-     * 
+     *
      * @throws IOException if something went wrong
      */
     private long readUntilEndStream(final EndstreamFilterStream out) throws IOException
@@ -985,30 +985,30 @@ public class COSParser extends BaseParser implements ICOSParser
         int bufSize;
         int charMatchCount = 0;
         byte[] keyw = ENDSTREAM;
-        
+
         // last character position of shortest keyword ('endobj')
         final int quickTestOffset = 5;
-        
+
         // read next chunk into buffer; already matched chars are added to beginning of buffer
-        while ( ( bufSize = source.read( strmBuf, charMatchCount, STRMBUFLEN - charMatchCount ) ) > 0 ) 
+        while ( ( bufSize = source.read( strmBuf, charMatchCount, STRMBUFLEN - charMatchCount ) ) > 0 )
         {
             bufSize += charMatchCount;
-            
+
             int bIdx = charMatchCount;
             int quickTestIdx;
-        
+
             // iterate over buffer, trying to find keyword match
-            for ( int maxQuicktestIdx = bufSize - quickTestOffset; bIdx < bufSize; bIdx++ ) 
+            for ( int maxQuicktestIdx = bufSize - quickTestOffset; bIdx < bufSize; bIdx++ )
             {
                 // reduce compare operations by first test last character we would have to
                 // match if current one matches; if it is not a character from keywords
-                // we can move behind the test character; this shortcut is inspired by the 
+                // we can move behind the test character; this shortcut is inspired by the
                 // Boyer-Moore string search algorithm and can reduce parsing time by approx. 20%
                 quickTestIdx = bIdx + quickTestOffset;
                 if (charMatchCount == 0 && quickTestIdx < maxQuicktestIdx)
-                {                    
+                {
                     final byte ch = strmBuf[quickTestIdx];
-                    if ( ( ch > 't' ) || ( ch < 'a' ) ) 
+                    if ( ( ch > 't' ) || ( ch < 'a' ) )
                     {
                         // last character we would have to match if current character would match
                         // is not a character from keywords -> jump behind and start over
@@ -1016,59 +1016,59 @@ public class COSParser extends BaseParser implements ICOSParser
                         continue;
                     }
                 }
-                
+
                 // could be negative - but we only compare to ASCII
                 final byte ch = strmBuf[bIdx];
-            
-                if ( ch == keyw[ charMatchCount ] ) 
+
+                if ( ch == keyw[ charMatchCount ] )
                 {
-                    if ( ++charMatchCount == keyw.length ) 
+                    if ( ++charMatchCount == keyw.length )
                     {
                         // match found
                         bIdx++;
                         break;
                     }
-                } 
-                else 
+                }
+                else
                 {
-                    if ( ( charMatchCount == 3 ) && ( ch == ENDOBJ[ charMatchCount ] ) ) 
+                    if ( ( charMatchCount == 3 ) && ( ch == ENDOBJ[ charMatchCount ] ) )
                     {
                         // maybe ENDSTREAM is missing but we could have ENDOBJ
                         keyw = ENDOBJ;
                         charMatchCount++;
-                    } 
-                    else 
+                    }
+                    else
                     {
-                        // no match; incrementing match start by 1 would be dumb since we already know 
-                        // matched chars depending on current char read we may already have beginning 
-                        // of a new match: 'e': first char matched; 'n': if we are at match position 
-                        // idx 7 we already read 'e' thus 2 chars matched for each other char we have 
+                        // no match; incrementing match start by 1 would be dumb since we already know
+                        // matched chars depending on current char read we may already have beginning
+                        // of a new match: 'e': first char matched; 'n': if we are at match position
+                        // idx 7 we already read 'e' thus 2 chars matched for each other char we have
                         // to start matching first keyword char beginning with next read position
                         charMatchCount = ( ch == E ) ? 1 : ( ( ch == N ) && ( charMatchCount == 7 ) ) ? 2 : 0;
                         // search again for 'endstream'
                         keyw = ENDSTREAM;
                     }
-                } 
+                }
             }
-            
+
             int contentBytes = Math.max( 0, bIdx - charMatchCount );
-            
+
             // write buffer content until first matched char to output stream
             if ( contentBytes > 0 )
             {
                 out.filter(strmBuf, 0, contentBytes);
             }
-            if ( charMatchCount == keyw.length ) 
+            if ( charMatchCount == keyw.length )
             {
                 // keyword matched; unread matched keyword (endstream/endobj) and following buffered content
                 source.rewind( bufSize - contentBytes );
                 break;
-            } 
-            else 
+            }
+            else
             {
                 // copy matched chars at start of buffer
                 System.arraycopy( keyw, 0, strmBuf, 0, charMatchCount );
-            }            
+            }
         }
         // this writes a lonely CR or drops trailing CR LF and LF
         return out.calculateLength();
@@ -1103,8 +1103,8 @@ public class COSParser extends BaseParser implements ICOSParser
     }
 
     /**
-     * Check if the cross reference table/stream can be found at the current offset.
-     * 
+     * Check if the cross-reference table/stream can be found at the current offset.
+     *
      * @param startXRefOffset
      * @return the revised offset
      * @throws IOException
@@ -1138,8 +1138,8 @@ public class COSParser extends BaseParser implements ICOSParser
     }
 
     /**
-     * Check if the cross reference stream can be found at the current offset.
-     * 
+     * Check if the cross-reference stream can be found at the current offset.
+     *
      * @param startXRefOffset the expected start offset of the XRef stream
      * @return the revised offset
      * @throws IOException if something went wrong
@@ -1151,7 +1151,7 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             return true;
         }
-        // seek to offset-1 
+        // seek to offset-1
         source.seek(startXRefOffset-1);
         int nextValue = source.read();
         // the first character has to be a whitespace, and then a digit
@@ -1184,13 +1184,13 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         return false;
     }
-    
+
     /**
      * Try to find a fixed offset for the given xref table/stream.
-     * 
+     *
      * @param objectOffset the given offset where to look at
      * @return the fixed offset
-     * 
+     *
      * @throws IOException if something went wrong
      */
     private long calculateXRefFixedOffset(long objectOffset) throws IOException
@@ -1265,7 +1265,7 @@ public class COSParser extends BaseParser implements ICOSParser
 
     /**
      * Check the XRef table by dereferencing all objects and fixing the offset if necessary.
-     * 
+     *
      * @throws IOException if something went wrong.
      */
     private void checkXrefOffsets() throws IOException
@@ -1287,12 +1287,12 @@ public class COSParser extends BaseParser implements ICOSParser
     /**
      * Check if the given object can be found at the given offset. Returns the provided object key if everything is ok.
      * If the generation number differs it will be fixed and a new object key is returned.
-     * 
+     *
      * @param objectKey the key of object we are looking for
      * @param offset the offset where to look
      * @param xrefOffset a map with with all known xref entries
      * @return returns the found/fixed object key
-     * 
+     *
      * @throws IOException if something went wrong
      */
     private COSObjectKey findObjectKey(COSObjectKey objectKey, long offset,
@@ -1303,7 +1303,7 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             return null;
         }
-        try 
+        try
         {
             source.seek(offset);
             skipWhiteSpaces();
@@ -1386,10 +1386,10 @@ public class COSParser extends BaseParser implements ICOSParser
         }
     	return bruteForceParser;
     }
-    
+
     /**
      * Check if all entries of the pages dictionary are present. Those which can't be dereferenced are removed.
-     * 
+     *
      * @param root the root dictionary of the pdf
      * @throws java.io.IOException if the page tree root is null
      */
@@ -1474,10 +1474,10 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         return startXref;
     }
-    
+
     /**
      * Checks if the given string can be found at the current offset.
-     * 
+     *
      * @param string the bytes of the string to look for
      * @return true if the bytes are in place, false if not
      * @throws IOException if something went wrong
@@ -1500,7 +1500,7 @@ public class COSParser extends BaseParser implements ICOSParser
 
     /**
      * Checks if the given string can be found at the current offset.
-     * 
+     *
      * @param string the bytes of the string to look for
      * @return true if the bytes are in place, false if not
      * @throws IOException if something went wrong
@@ -1571,22 +1571,22 @@ public class COSParser extends BaseParser implements ICOSParser
                 return false;
             }
         }
-    
+
         // in some cases the EOL is missing and the trailer continues with " <<"
         // even if this does not comply with PDF reference we want to support as many PDFs as possible
         // Acrobat reader can also deal with this.
         skipSpaces();
-    
+
         COSDictionary parsedTrailer = parseCOSDictionary(true);
         xrefTrailerResolver.setTrailer( parsedTrailer );
-    
+
         skipSpaces();
         return true;
     }
 
     /**
      * Parse the header of a pdf.
-     * 
+     *
      * @return true if a PDF header was found
      * @throws IOException if something went wrong
      */
@@ -1597,8 +1597,8 @@ public class COSParser extends BaseParser implements ICOSParser
 
     /**
      * Parse the header of a fdf.
-     * 
-     * @return true if a FDF header was found
+     *
+     * @return true if an FDF header was found
      * @throws IOException if something went wrong
      */
     protected boolean parseFDFHeader() throws IOException
@@ -1624,25 +1624,25 @@ public class COSParser extends BaseParser implements ICOSParser
                 header = readLine();
             }
         }
-    
+
         // nothing found
         if (!header.contains(headerMarker))
         {
             source.seek(0);
             return false;
         }
-    
+
         //sometimes there is some garbage in the header before the header
         //actually starts, so lets try to find the header first.
         int headerStart = header.indexOf( headerMarker );
-    
+
         // greater than zero because if it is zero then there is no point of trimming
         if ( headerStart > 0 )
         {
             //trim off any leading characters
             header = header.substring(headerStart);
         }
-    
+
         // This is used if there is garbage after the header on the same line
         if (header.startsWith(headerMarker) && !header.matches(headerMarker + "\\d.\\d"))
         {
@@ -1707,21 +1707,21 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             return false;
         }
-        
+
         // check for trailer after xref
         String str = readString();
         byte[] b = str.getBytes(StandardCharsets.ISO_8859_1);
         source.rewind(b.length);
-        
+
         // signal start of new XRef
         xrefTrailerResolver.nextXrefObj( startByteOffset, XRefType.TABLE );
-    
+
         if (str.startsWith("trailer"))
         {
             LOG.warn("skipping empty xref table");
             return false;
         }
-        
+
         // Xref tables can have multiple sections. Each starts with a starting object id and a count.
         while(true)
         {
@@ -1755,7 +1755,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 LOG.warn("XRefTable: invalid number of objects: {}", currentLine);
                 return false;
             }
-            
+
             skipSpaces();
             for(int i = 0; i < count; i++)
             {
@@ -1847,7 +1847,7 @@ public class COSParser extends BaseParser implements ICOSParser
 
     /**
      * Prepare for decryption.
-     * 
+     *
      * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException if something went wrong
      */

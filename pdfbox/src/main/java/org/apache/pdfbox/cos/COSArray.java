@@ -46,8 +46,9 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
 
     /**
      * Use the given list to initialize the COSArray.
-     * 
+     *
      * @param cosObjectables the initial list of COSObjectables
+     * @throws IllegalArgumentException when cosObjectables is <code>null</code>
      */
     public COSArray(List<? extends COSObjectable> cosObjectables)
     {
@@ -354,7 +355,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         {
             set( index, null );
         }
-    }   
+    }
 
     /**
      * Get the value of the array as a string.
@@ -616,7 +617,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
 
     /**
      * This will return a list of names if the COSArray consists of COSNames only.
-     * 
+     *
      * @return the list of names of the COSArray of COSNames
      */
     public List<String> toCOSNameStringList()
@@ -628,7 +629,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
 
     /**
      * This will return a list of names if the COSArray consists of COSStrings only.
-     * 
+     *
      * @return the list of names of the COSArray of COSStrings
      */
     public List<String> toCOSStringStringList()
@@ -640,7 +641,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
 
     /**
      * This will return a list of float values if the COSArray consists of COSNumbers only.
-     * 
+     *
      * @return the list of float values of the COSArray of COSNumbers
      */
     public List<Float> toCOSNumberFloatList()
@@ -663,7 +664,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
 
     /**
      * This will return a list of int values if the COSArray consists of COSNumbers only.
-     * 
+     *
      * @return the list of int values of the COSArray of COSNumbers
      */
     public List<Integer> toCOSNumberIntegerList()
@@ -725,7 +726,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         strings.forEach(s -> retval.add(new COSString(s)));
         return retval;
     }
-    
+
     /**
      * Returns the current {@link COSUpdateState} of this {@link COSArray}.
      *
@@ -741,11 +742,11 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     /**
      * Collects all indirect objects numbers within this COSArray and all included dictionaries. It is used to avoid
      * mixed up object numbers when importing an existing page to another pdf.
-     * 
+     *
      * Expert use only. You might run into an endless recursion if choosing a wrong starting point.
-     * 
+     *
      * @param indirectObjects a list of already found indirect objects.
-     * 
+     *
      */
     public void getIndirectObjectKeys(List<COSObjectKey> indirectObjects)
     {

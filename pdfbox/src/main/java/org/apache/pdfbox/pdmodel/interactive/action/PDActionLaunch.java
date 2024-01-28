@@ -89,7 +89,7 @@ public class PDActionLaunch extends PDAction
     /**
      * This will get a dictionary containing Windows-specific launch parameters.
      *
-     * @return The Win entry of of the specific launch action dictionary.
+     * @return The Win entry of the specific launch action dictionary.
      */
     public PDWindowsLaunchParams getWinLaunchParams()
     {

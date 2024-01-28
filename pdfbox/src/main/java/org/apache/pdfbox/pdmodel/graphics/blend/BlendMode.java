@@ -193,7 +193,7 @@ public class BlendMode
 
     /**
      * Private constructor due to the limited set of possible blend modes.
-     * 
+     *
      * @param name the corresponding COSName of the blend mode
      * @param blendChannel the blend function for separable blend modes
      * @param blend the blend function for non-separable blend modes
@@ -218,17 +218,17 @@ public class BlendMode
 
     /**
      * Determines if the blend mode is a separable blend mode.
-     * 
+     *
      * @return true for separable blend modes
      */
     public boolean isSeparableBlendMode()
     {
         return isSeparable;
     }
-    
+
     /**
      * Returns the blend channel function, only available for separable blend modes.
-     * 
+     *
      * @return the blend channel function
      */
     public BlendChannelFunction getBlendChannelFunction()
@@ -237,8 +237,8 @@ public class BlendMode
     }
 
     /**
-     * Returns the blend function, only available for non separable blend modes.
-     * 
+     * Returns the blend function, only available for non-separable blend modes.
+     *
      * @return the blend function
      */
     public BlendFunction getBlendFunction()

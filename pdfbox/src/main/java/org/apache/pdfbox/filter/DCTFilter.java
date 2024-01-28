@@ -83,13 +83,13 @@ final class DCTFilter extends Filter
             Raster raster;
 
             // Strategy: use read() for RGB or "can't get metadata"
-            // use readRaster() for CMYK and gray and as fallback if read() fails 
+            // use readRaster() for CMYK and gray and as fallback if read() fails
             // after "can't get metadata" because "no meta" file was CMYK
             if ("3".equals(numChannels) || numChannels.isEmpty())
             {
                 try
                 {
-                    // I'd like to use ImageReader#readRaster but it is buggy and can't read RGB correctly
+                    // I'd like to use ImageReader#readRaster, but it is buggy and can't read RGB correctly
                     BufferedImage image = reader.read(0, irp);
                     raster = image.getRaster();
                 }
@@ -191,7 +191,7 @@ final class DCTFilter extends Filter
         }
         return 0;
     }
-        
+
     // See in https://github.com/haraldk/TwelveMonkeys
     // com.twelvemonkeys.imageio.plugins.jpeg.AdobeDCT class for structure of APP14 segment
     private int getAdobeTransformByBruteForce(ImageInputStream iis) throws IOException
@@ -286,7 +286,7 @@ final class DCTFilter extends Filter
         int height = raster.getHeight();
         int w3 = width * 3;
         int[] tab = new int[w3];
-        //BEWARE: handling the full image at a time is slower than one line at a time        
+        //BEWARE: handling the full image at a time is slower than one line at a time
         for (int y = 0; y < height; y++)
         {
             raster.getPixels(0, y, width, 1, tab);
@@ -300,8 +300,8 @@ final class DCTFilter extends Filter
         }
         return writableRaster;
     }
-    
-    // returns the number of channels as a string, or an empty string if there is an error getting the meta data
+
+    // returns the number of channels as a string, or an empty string if there is an error getting the metadata
     private String getNumChannels(ImageReader reader)
     {
         try
@@ -324,7 +324,7 @@ final class DCTFilter extends Filter
             LOG.debug("Couldn't read metadata - returning empty string", e);
             return "";
         }
-    }    
+    }
 
     // clamps value to 0-255 range
     private int clamp(float value)

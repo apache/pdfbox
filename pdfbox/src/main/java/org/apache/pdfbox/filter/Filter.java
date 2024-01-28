@@ -122,8 +122,8 @@ public abstract class Filter
         COSBase obj = dictionary.getDictionaryObject(COSName.DP, COSName.DECODE_PARMS);
         if (filter instanceof COSName && obj instanceof COSDictionary)
         {
-            // PDFBOX-3932: The PDF specification requires "If there is only one filter and that 
-            // filter has parameters, DecodeParms shall be set to the filter’s parameter dictionary" 
+            // PDFBOX-3932: The PDF specification requires "If there is only one filter and that
+            // filter has parameters, DecodeParms shall be set to the filter’s parameter dictionary"
             // but tests show that Adobe means "one filter name object".
             return (COSDictionary)obj;
         }
@@ -151,7 +151,7 @@ public abstract class Filter
      * Finds a suitable image raster reader for an image format.
      *
      * @param formatName The image format to search for.
-     * @param errorCause The probably cause if something goes wrong.
+     * @param errorCause The probable cause if something goes wrong.
      * @return The image reader for the format.
      * @throws MissingImageReaderException if no image reader is found.
      */
@@ -250,5 +250,5 @@ public abstract class Filter
         randomAccessWriteBuffer.seek(0);
         return randomAccessWriteBuffer;
     }
-    
+
 }

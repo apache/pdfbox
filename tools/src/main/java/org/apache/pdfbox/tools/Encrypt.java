@@ -40,7 +40,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 /**
- * This will read a document from the filesystem, encrypt it and and then write
+ * This will read a document from the filesystem, encrypt it and then write
  * the results to the filesystem.
  *
  * @author  Ben Litchfield

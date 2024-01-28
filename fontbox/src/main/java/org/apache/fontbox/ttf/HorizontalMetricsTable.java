@@ -20,7 +20,7 @@ import java.io.IOException;
 
 /**
  * A table in a true type font.
- * 
+ *
  * @author Ben Litchfield
  */
 public class HorizontalMetricsTable extends TTFTable
@@ -29,7 +29,7 @@ public class HorizontalMetricsTable extends TTFTable
      * A tag that identifies this table type.
      */
     public static final String TAG = "hmtx";
-    
+
     private int[] advanceWidth;
     private short[] leftSideBearing;
     private short[] nonHorizontalLeftSideBearing;
@@ -42,7 +42,7 @@ public class HorizontalMetricsTable extends TTFTable
 
     /**
      * This will read the required data from the stream.
-     * 
+     *
      * @param ttf The font that is being read.
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
@@ -77,7 +77,7 @@ public class HorizontalMetricsTable extends TTFTable
         }
 
         // make sure that table is never null and correct size, even with bad fonts that have no
-        // "leftSideBearing" table although they should
+        // "leftSideBearing" table, although they should
         nonHorizontalLeftSideBearing = new short[numberNonHorizontal];
 
         if (bytesRead < getLength())
@@ -99,7 +99,7 @@ public class HorizontalMetricsTable extends TTFTable
      * Returns the advance width for the given GID.
      *
      * @param gid GID
-     * 
+     *
      * @return the advance width of the given GID
      */
     public int getAdvanceWidth(int gid)
@@ -119,12 +119,12 @@ public class HorizontalMetricsTable extends TTFTable
             return advanceWidth[advanceWidth.length -1];
         }
     }
-    
+
     /**
      * Returns the left side bearing for the given GID.
      *
      * @param gid GID
-     * 
+     *
      * @return the left side bearing of the given GID
      */
     public int getLeftSideBearing(int gid)

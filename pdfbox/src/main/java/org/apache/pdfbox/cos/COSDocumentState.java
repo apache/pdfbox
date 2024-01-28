@@ -25,7 +25,7 @@ package org.apache.pdfbox.cos;
  */
 public class COSDocumentState
 {
-    
+
     /**
      * The parsing state of the document.
      * <ul>
@@ -34,7 +34,7 @@ public class COSDocumentState
      * </ul>
      */
     private boolean parsing = true;
-    
+
     /**
      * Sets the {@link #parsing} state of the document.
      *
@@ -44,15 +44,15 @@ public class COSDocumentState
     {
         this.parsing = parsing;
     }
-    
+
     /**
-     * Returns {@code true}, if the document´s {@link #parsing} is completed and it may be updated.
+     * Returns {@code true}, if the document´s {@link #parsing} is completed, and it may be updated.
      *
-     * @return {@code true}, if the document´s {@link #parsing} is completed and it may be updated.
+     * @return {@code true}, if the document´s {@link #parsing} is completed, and it may be updated.
      */
     public boolean isAcceptingUpdates()
     {
         return !parsing;
     }
-    
+
 }

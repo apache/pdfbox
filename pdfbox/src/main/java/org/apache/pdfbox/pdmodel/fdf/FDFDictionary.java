@@ -397,7 +397,7 @@ public class FDFDictionary implements COSObjectable
     }
 
     /**
-     * The encoding to be used for a FDF field. The default is PDFDocEncoding and this method will never return null.
+     * The encoding to be used for an FDF field. The default is PDFDocEncoding and this method will never return null.
      *
      * @return The encoding value.
      */

@@ -40,7 +40,7 @@ import org.apache.pdfbox.util.SmallMap;
  * This class represents a dictionary where name/value pairs reside.
  *
  * @author Ben Litchfield
- * 
+ *
  */
 public class COSDictionary extends COSBase implements COSUpdateInfo
 {
@@ -1026,7 +1026,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be an long. -1 is returned
+     * This is a convenience method that will get the dictionary object that is expected to be a long. -1 is returned
      * if there is no value.
      *
      * @param key The key to the item in the dictionary.
@@ -1039,7 +1039,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be an long. -1 is returned
+     * This is a convenience method that will get the dictionary object that is expected to be a long. -1 is returned
      * if there is no value.
      *
      * @param key The key to the item in the dictionary.
@@ -1083,7 +1083,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be an float. -1 is returned
+     * This is a convenience method that will get the dictionary object that is expected to be a float. -1 is returned
      * if there is no value.
      *
      * @param key The key to the item in the dictionary.
@@ -1095,7 +1095,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be an float. -1 is returned
+     * This is a convenience method that will get the dictionary object that is expected to be a float. -1 is returned
      * if there is no value.
      *
      * @param key The key to the item in the dictionary.
@@ -1120,7 +1120,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be an float. If the
+     * This is a convenience method that will get the dictionary object that is expected to be a float. If the
      * dictionary value is null then the default value will be returned.
      *
      * @param key The key to the item in the dictionary.
@@ -1177,7 +1177,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
 
     /**
      * This will do a lookup into the dictionary.
-     * 
+     *
      * @param key The key to the object.
      *
      * @return The item that matches the key.
@@ -1206,7 +1206,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         return retval;
     }
-    
+
     /**
      * Returns the names of the entries in this dictionary. The returned set is in the order the entries were added to
      * the dictionary.
@@ -1235,7 +1235,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * Convenience method that calls {@link Map#forEach(java.util.function.BiConsumer) Map.forEach(BiConsumer)}.
      *
      * @param action The action to be performed for each entry
-     * 
+     *
      */
     public void forEach(BiConsumer<? super COSName, ? super COSBase> action)
     {
@@ -1329,7 +1329,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
 
     /**
      * Returns an unmodifiable view of this dictionary.
-     * 
+     *
      * @return an unmodifiable view of this dictionary
      */
     public COSDictionary asUnmodifiableDictionary()
@@ -1408,7 +1408,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         return base.toString();
     }
-    
+
     /**
      * Returns the current {@link COSUpdateState} of this {@link COSDictionary}.
      *
@@ -1424,11 +1424,11 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     /**
      * Collects all indirect objects numbers within this dictionary and all included dictionaries. It is used to avoid
      * mixed up object numbers when importing an existing page to another pdf.
-     * 
+     *
      * Expert use only. You might run into an endless recursion if choosing a wrong starting point.
-     * 
+     *
      * @param indirectObjects a list of already found indirect objects.
-     * 
+     *
      */
     public void getIndirectObjectKeys(List<COSObjectKey> indirectObjects)
     {

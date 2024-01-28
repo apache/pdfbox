@@ -76,7 +76,7 @@ public class CertInformationCollector
 
     /**
      * Gets the certificate information of a signature.
-     * 
+     *
      * @param signature the signature of the document.
      * @param fileName of the document.
      * @return the CertSignatureInformation containing all certificate information
@@ -258,7 +258,7 @@ public class CertInformationCollector
             catch (GeneralSecurityException ex)
             {
                 // not the issuer
-            }                
+            }
         }
         if (certInfo.issuerCertificate == null)
         {
@@ -270,8 +270,8 @@ public class CertInformationCollector
     }
 
     /**
-     * Get alternative certificate chain, from the Authority Information (a url). If the chain is
-     * not included in the signature, this is the main chain. Otherwise there might be a second
+     * Get alternative certificate chain, from the Authority Information (an url). If the chain is
+     * not included in the signature, this is the main chain. Otherwise, there might be a second
      * chain. Exceptions which happen on this chain will be logged and ignored, because the cert
      * might not be available at the time or other reasons.
      *
@@ -369,7 +369,7 @@ public class CertInformationCollector
      *
      * @param certificate
      * @return
-     * @throws CertificateProccessingException 
+     * @throws CertificateProccessingException
      */
     CertSignatureInformation getCertInfo(X509Certificate certificate) throws CertificateProccessingException
     {
@@ -387,7 +387,7 @@ public class CertInformationCollector
 
     /**
      * Get the set of all processed certificates until now.
-     * 
+     *
      * @return a set of serial numbers to certificates.
      */
     public Set<X509Certificate> getCertificateSet()
