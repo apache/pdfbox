@@ -140,6 +140,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName CID_SET = getPDFName("CIDSet");
     public static final COSName CIDSYSTEMINFO = getPDFName("CIDSystemInfo");
     public static final COSName CL = getPDFName("CL");
+    public static final COSName CLASS_MAP = getPDFName("ClassMap");
     public static final COSName CLR_F = getPDFName("ClrF");
     public static final COSName CLR_FF = getPDFName("ClrFf");
     public static final COSName CMAP = getPDFName("CMap");
