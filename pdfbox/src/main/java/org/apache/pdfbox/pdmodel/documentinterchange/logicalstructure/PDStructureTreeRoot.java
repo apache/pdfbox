@@ -250,8 +250,7 @@ public class PDStructureTreeRoot extends PDStructureNode
             }
             else if (object instanceof List)
             {
-                List<PDAttributeObject> list = (List<PDAttributeObject>) object;
-                classMapDictionary.setItem(name, new COSArray(list));
+                classMapDictionary.setItem(name, new COSArray((List<PDAttributeObject>) object));
             }
         });
         this.getCOSObject().setItem(COSName.CLASS_MAP, classMapDictionary);        
