@@ -19,7 +19,7 @@ package org.apache.fontbox.ttf;
 import java.io.IOException;
 
 /**
- * A table in a true type font.
+ * This 'hmtx'-table is a required table in a TrueType-font.
  *
  * @author Ben Litchfield
  */
