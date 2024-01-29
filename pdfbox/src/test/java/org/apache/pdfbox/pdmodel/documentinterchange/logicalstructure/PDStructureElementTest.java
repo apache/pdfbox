@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.pdfbox.Loader;
@@ -30,6 +31,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -52,7 +54,7 @@ class PDStructureElementTest
         try (PDDocument doc = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4197.pdf")))
         {
             PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
-            checkElement(structureTreeRoot.getK(), attributeSet);
+            checkElement(structureTreeRoot.getK(), attributeSet, structureTreeRoot.getClassMap());
         }
 
         // collect attributes and check their count.
@@ -63,7 +65,8 @@ class PDStructureElementTest
 
     // Each element can be an array, a dictionary or a number.
     // See PDF specification Table 323 - Entries in a structure element dictionary
-    private void checkElement(COSBase base, Set<Revisions<PDAttributeObject>>attributeSet)
+    private void checkElement(COSBase base, Set<Revisions<PDAttributeObject>>attributeSet,
+            Map<String, Object> classMap)
     {
         if (base instanceof COSArray)
         {
@@ -73,7 +76,7 @@ class PDStructureElementTest
                 {
                     base2 = ((COSObject) base2).getObject();
                 }
-                checkElement(base2, attributeSet);
+                checkElement(base2, attributeSet, classMap);
             }
         }
         else if (base instanceof COSDictionary)
@@ -86,10 +89,22 @@ class PDStructureElementTest
                 attributeSet.add(attributes);
                 Revisions<String> classNames = structureElement.getClassNames();
                 //TODO: modify the test to also check for class names, if we ever have a file.
+
+                // "If both the A and C entries are present and a given attribute is specified by both, 
+                // the one specified by the A entry shall take precedence."
+                if (kdict.containsKey(COSName.C) && !kdict.containsKey(COSName.A))
+                {
+                    for (int i = 0; i < classNames.size(); ++i)
+                    {
+                        String className = classNames.getObject(i);
+                        // not sure if this is to be done this way
+                        Assertions.assertTrue(classMap.containsKey(className), "'" + className + "' not in ClassMap " + classMap);
+                    }
+                }
             }
             if (kdict.containsKey(COSName.K))
             {
-                checkElement(kdict.getDictionaryObject(COSName.K), attributeSet);
+                checkElement(kdict.getDictionaryObject(COSName.K), attributeSet, classMap);
             }
         }
     }    
