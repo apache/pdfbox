@@ -256,7 +256,7 @@ public class PDStructureTreeRoot extends PDStructureNode
             else if (base instanceof COSArray)
             {
                 COSArray array = (COSArray) base;
-                List<PDAttributeObject> list = new ArrayList<>();
+                List<PDAttributeObject> list = new ArrayList<PDAttributeObject>();
                 for (int i = 0; i < array.size(); ++i)
                 {
                     COSBase base2 = array.getObject(i);
