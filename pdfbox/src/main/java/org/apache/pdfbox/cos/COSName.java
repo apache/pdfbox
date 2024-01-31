@@ -395,6 +395,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     // O
     public static final COSName O = new COSName("O");
     public static final COSName OBJ = new COSName("Obj");
+    public static final COSName OBJR = new COSName("OBJR");
     public static final COSName OBJ_STM = new COSName("ObjStm");
     public static final COSName OC = new COSName("OC");
     public static final COSName OCG = new COSName("OCG");
