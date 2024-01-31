@@ -407,6 +407,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     // O
     public static final COSName O = getPDFName("O");
     public static final COSName OBJ = getPDFName("Obj");
+    public static final COSName OBJR = new COSName("OBJR");
     public static final COSName OBJ_STM = getPDFName("ObjStm");
     public static final COSName OC = getPDFName("OC");
     public static final COSName OCG = getPDFName("OCG");
