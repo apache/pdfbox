@@ -76,6 +76,7 @@ public class Splitter
     private List<PDDocument> destinationDocuments;
     private Map<COSDictionary, COSDictionary> pageDictMap;
     private Map<COSDictionary, COSDictionary> structDictMap;
+    private Map<COSDictionary, COSDictionary> annotDictMap;
     private Set<String> idSet;
     private Set<COSName> roleSet;
 
@@ -120,6 +121,7 @@ public class Splitter
         destinationDocuments = new ArrayList<>();
         sourceDocument = document;
         pageDictMap = new HashMap<>();
+        annotDictMap = new HashMap<>();
         idSet = new HashSet<>();
         roleSet = new HashSet<>();
 
@@ -382,7 +384,7 @@ public class Splitter
                     return null;
                 }
             }
-            
+
             // Create and fill clone
             dstDict = new COSDictionary();
             structDictMap.put(srcDict, dstDict);
@@ -390,13 +392,32 @@ public class Splitter
             {
                 COSName key = entry.getKey();
                 if (!COSName.K.equals(key) &&
-                        !COSName.PG.equals(key) &&
-                        !COSName.P.equals(key))
+                    !COSName.PG.equals(key) &&
+                    !COSName.P.equals(key))
                 {
                     dstDict.setItem(key, entry.getValue());
                 }
             }
-            dstDict.setItem(COSName.P, dstParent);
+
+            // special handling for OBJR items ("object reference dictionary")
+            // see e.g. file 488300.pdf and Root/StructTreeRoot/K/K/[2]/K/[1]/K/[0]/Obj
+            COSName type = srcDict.getCOSName(COSName.TYPE);
+            if (COSName.OBJR.equals(type))
+            {
+                COSDictionary srcObj = srcDict.getCOSDictionary(COSName.OBJ);
+                COSDictionary dstObj = annotDictMap.get(srcObj);
+                if (dstObj != null)
+                {
+                    // replace annotation with clone
+                    dstDict.setItem(COSName.OBJ, dstObj);
+                }
+            }
+            else
+            {
+                // /P not needed for OBJR items
+                dstDict.setItem(COSName.P, dstParent);
+            }
+
             dstDict.setItem(COSName.PG, dstPageDict);
             COSBase kid = srcDict.getDictionaryObject(COSName.K);
             
@@ -654,11 +675,17 @@ public class Splitter
     private void processAnnotations(PDPage imported) throws IOException
     {
         List<PDAnnotation> annotations = imported.getAnnotations();
+        List<PDAnnotation> clonedAnnotations = new ArrayList<>(annotations.size());
         for (PDAnnotation annotation : annotations)
         {
-            if (annotation instanceof PDAnnotationLink)
+            // create a shallow clone
+            COSDictionary clonedDict = new COSDictionary(annotation.getCOSObject());
+            PDAnnotation annotationClone = PDAnnotation.createAnnotation(clonedDict);
+            annotDictMap.put(annotation.getCOSObject(), clonedDict);
+            clonedAnnotations.add(annotationClone);
+            if (annotationClone instanceof PDAnnotationLink)
             {
-                PDAnnotationLink link = (PDAnnotationLink)annotation;   
+                PDAnnotationLink link = (PDAnnotationLink) annotationClone;   
                 PDDestination destination = link.getDestination();
                 PDAction action = link.getAction();
                 if (destination == null && action instanceof PDActionGoTo)
@@ -667,13 +694,19 @@ public class Splitter
                 }
                 if (destination instanceof PDPageDestination)
                 {
-                    // TODO preserve links to pages within the split result  
+                    //TODO preserve links to pages within the split result
+                    // not possible here because we're not done yet with the whole target document
+                    // need shallow clone too? And a map remembering (destination => source page)?
+                    // The current code changes the source document, which a user doesn't expect.
                     ((PDPageDestination) destination).setPage(null);
                 }
             }
-            // TODO preserve links to pages within the split result  
-            annotation.setPage(null);
+            if (annotation.getPage() != null)
+            {
+                annotationClone.setPage(imported);
+            }
         }
+        imported.setAnnotations(clonedAnnotations);
     }
 
     /**
