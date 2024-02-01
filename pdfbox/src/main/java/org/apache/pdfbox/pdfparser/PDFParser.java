@@ -91,7 +91,7 @@ public class PDFParser extends COSParser
     public PDFParser(RandomAccessRead source, String decryptionPassword, InputStream keyStore,
             String alias, StreamCacheCreateFunction streamCacheCreateFunction) throws IOException
     {
-        super(source, decryptionPassword, keyStore, alias);
+        super(source, decryptionPassword, keyStore, alias, streamCacheCreateFunction);
     }
 
     /**
