@@ -3,29 +3,25 @@
 package org.apache.pdfbox.tools;
 
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
 
+import java.io.IOException;
+import java.util.*;
+
 /**
  * Wrap stripped text in simple HTML, trying to form HTML paragraphs. Paragraphs
  * broken by pages, columns, or figures are not mended.
  *
- * @author Saurav Rawat
+ * @author John J Barton
  *
  */
 public class PDFText2Markdown extends PDFTextStripper{
     private static final int INITIAL_PDF_TO_HTML_BYTES = 8192;
 
-    private final org.apache.pdfbox.tools.PDFText2Markdown.FontState fontState = new org.apache.pdfbox.tools.PDFText2Markdown.FontState();
+    private final FontState fontState = new FontState();
     /**
      * Constructor.
      * @throws IOException If there is an error during initialization.
@@ -189,29 +185,36 @@ public class PDFText2Markdown extends PDFTextStripper{
     private static void appendEscaped(StringBuilder builder, char character)
     {
         // write non-ASCII as named entities
-        if ((character < 32) || (character > 126))
-        {
-            builder.append("&#").append((int) character).append(";");
-        }
-        else
-        {
+//        if ((character < 32) || (character > 126))
+//        {
+//            builder.append("&#").append((int) character).append(";");
+//        }
+//        else
+//        {
             switch (character)
             {
                 case 34:
                     builder.append("&quot;");
                     break;
                 case 38:
-                    builder.append("&amp;");
+                    builder.append("&");
                     break;
+                case 39:
+                    builder.append("\'");
                 case 60:
-                    builder.append("&lt;");
+                    builder.append("<");
                     break;
                 case 62:
-                    builder.append("&gt;");
+                    builder.append(">");
                     break;
+                case 178:
+                    builder.append("<sup>2</sup>");
+                    break;
+
                 default:
                     builder.append(String.valueOf(character));
-            }
+
+//            }
         }
     }
 
@@ -286,8 +289,8 @@ public class PDFText2Markdown extends PDFTextStripper{
                 italics = isItalic(descriptor);
             }
 
-            buffer.append(bold ? open("**") : close("**"));
-            buffer.append(italics ? open("__") : close("__"));
+            buffer.append(bold ? open("b") : close("b"));
+            buffer.append(italics ? open("i") : close("i"));
             appendEscaped(buffer, character);
 
             return buffer.toString();
