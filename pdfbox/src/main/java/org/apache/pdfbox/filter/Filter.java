@@ -199,6 +199,7 @@ public abstract class Filter
      * @param results list of optional decoding results for each filter
      * @return the decoded stream data
      * @throws IOException if the stream cannot be decoded
+     * @throws IllegalArgumentException if filterList is empty
      */
     public static RandomAccessRead decode(InputStream encoded, List<Filter> filterList,
             COSDictionary parameters, DecodeOptions options, List<DecodeResult> results)
@@ -206,6 +207,10 @@ public abstract class Filter
     {
         int length = parameters.getInt(COSName.LENGTH,
                 RandomAccessReadBuffer.DEFAULT_CHUNK_SIZE_4KB);
+        if (filterList.isEmpty())
+        {
+            throw new IllegalArgumentException("Empty filterList");
+        }
         if (filterList.size() > 1)
         {
             Set<Filter> filterSet = new HashSet<>(filterList);

@@ -16,19 +16,21 @@
  */
 package org.apache.pdfbox.filter;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import java.util.Random;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -175,6 +177,15 @@ class TestFilters
         checkEncodeDecode(rleFilter, input7);
         byte[] input8 = new byte[2];
         checkEncodeDecode(rleFilter, input8);
+    }
+
+    @Test
+    void testEmptyFilterList() throws Exception
+    {
+        assertThrows(IllegalArgumentException.class, () ->
+        {
+            Filter.decode(null, new ArrayList(), new COSDictionary(), null, null);
+        });
     }
 
     private void checkEncodeDecode(Filter filter, byte[] original) throws IOException
