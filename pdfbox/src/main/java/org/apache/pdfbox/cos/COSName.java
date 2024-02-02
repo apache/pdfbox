@@ -49,12 +49,15 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName AC = getPDFName("AC");
     public static final COSName ACRO_FORM = getPDFName("AcroForm");
     public static final COSName ACTUAL_TEXT = getPDFName("ActualText");
+    public static final COSName ADBE = getPDFName("ADBE");
     public static final COSName ADBE_PKCS7_DETACHED = getPDFName("adbe.pkcs7.detached");
     public static final COSName ADBE_PKCS7_SHA1 = getPDFName("adbe.pkcs7.sha1");
     public static final COSName ADBE_X509_RSA_SHA1 = getPDFName("adbe.x509.rsa_sha1");
     public static final COSName ADOBE_PPKLITE = getPDFName("Adobe.PPKLite");
     public static final COSName AESV2 = getPDFName("AESV2");
     public static final COSName AESV3 = getPDFName("AESV3");
+    public static final COSName AF = getPDFName("AF");
+    public static final COSName AF_RELATIONSHIP = COSName.getPDFName("AFRelationship");
     public static final COSName AFTER = getPDFName("After");
     public static final COSName AI_META_DATA = getPDFName("AIMetaData");
     public static final COSName AIS = getPDFName("AIS");
@@ -88,6 +91,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName BASE_ENCODING = getPDFName("BaseEncoding");
     public static final COSName BASE_FONT = getPDFName("BaseFont");
     public static final COSName BASE_STATE = getPDFName("BaseState");
+    public static final COSName BASE_VERSION = getPDFName("BaseVersion");
     public static final COSName BBOX = getPDFName("BBox");
     public static final COSName BC = getPDFName("BC");
     public static final COSName BE = getPDFName("BE");
@@ -125,6 +129,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName CCITTFAX_DECODE_ABBREVIATION = getPDFName("CCF");
     public static final COSName CENTER_WINDOW = getPDFName("CenterWindow");
     public static final COSName CERT = getPDFName("Cert");
+    public static final COSName CERTS = getPDFName("Certs");
     public static final COSName CF = getPDFName("CF");
     public static final COSName CFM = getPDFName("CFM");
     //** Acro form field type for choice fields.
@@ -169,6 +174,8 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName CP = getPDFName("CP");
     public static final COSName CREATION_DATE = getPDFName("CreationDate");
     public static final COSName CREATOR = getPDFName("Creator");
+    public static final COSName CRL = getPDFName("CRL");
+    public static final COSName CRLS = getPDFName("CRLS");
     public static final COSName CROP_BOX = getPDFName("CropBox");
     public static final COSName CRYPT = getPDFName("Crypt");
     public static final COSName CS = getPDFName("CS");
@@ -219,7 +226,8 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName DOS = getPDFName("DOS");
     public static final COSName DP = getPDFName("DP");
     public static final COSName DR = getPDFName("DR");
-    public static final COSName DS = getPDFName("DS");    
+    public static final COSName DS = getPDFName("DS");
+    public static final COSName DSS = getPDFName("DSS");
     public static final COSName DUPLEX = getPDFName("Duplex");
     public static final COSName DUR = getPDFName("Dur");
     public static final COSName DV = getPDFName("DV");
@@ -242,9 +250,12 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName ENCODING_ETEN_B5_V = getPDFName("ETen-B5-V");
     public static final COSName ENCRYPT = getPDFName("Encrypt");
     public static final COSName ENCRYPT_META_DATA = getPDFName("EncryptMetadata");
+    public static final COSName ENCRYPTED_PAYLOAD = getPDFName("EncryptedPayload");
     public static final COSName END_OF_LINE = getPDFName("EndOfLine");
     public static final COSName ENTRUST_PPKEF = getPDFName("Entrust.PPKEF");
     public static final COSName EXCLUSION = getPDFName("Exclusion");
+    public static final COSName EXTENSIONS = getPDFName("Extensions");
+    public static final COSName EXTENSION_LEVEL = getPDFName("ExtensionLevel");
     public static final COSName EX_DATA = getPDFName("ExData");
     public static final COSName EXPORT = getPDFName("Export");
     public static final COSName EXPORT_STATE = getPDFName("ExportState");
@@ -407,13 +418,15 @@ public final class COSName extends COSBase implements Comparable<COSName>
     // O
     public static final COSName O = getPDFName("O");
     public static final COSName OBJ = getPDFName("Obj");
-    public static final COSName OBJR = new COSName("OBJR");
+    public static final COSName OBJR = getPDFName("OBJR");
     public static final COSName OBJ_STM = getPDFName("ObjStm");
     public static final COSName OC = getPDFName("OC");
     public static final COSName OCG = getPDFName("OCG");
     public static final COSName OCGS = getPDFName("OCGs");
     public static final COSName OCMD = getPDFName("OCMD");
     public static final COSName OCPROPERTIES = getPDFName("OCProperties");
+    public static final COSName OCSP = getPDFName("OCSP");
+    public static final COSName OCSPS = getPDFName("OCSPs");
     public static final COSName OE = getPDFName("OE");
     public static final COSName OID = getPDFName("OID");
     
@@ -574,6 +587,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName TEMPLATES = getPDFName("Templates");
     public static final COSName THREAD = getPDFName("Thread");
     public static final COSName THREADS = getPDFName("Threads");
+    public static final COSName THREE_DD = getPDFName("3DD");
     public static final COSName THUMB = getPDFName("Thumb");
     public static final COSName TI = getPDFName("TI");
     public static final COSName TILING_TYPE = getPDFName("TilingType");
@@ -626,6 +640,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName VIEWER_PREFERENCES = getPDFName("ViewerPreferences");
     public static final COSName VOLUME = getPDFName("Volume");
     public static final COSName VP = getPDFName("VP");
+    public static final COSName VRI = getPDFName("VRI");
     // W
     public static final COSName W = getPDFName("W");
     public static final COSName W2 = getPDFName("W2");
