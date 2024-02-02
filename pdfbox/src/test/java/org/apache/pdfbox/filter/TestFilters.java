@@ -17,6 +17,7 @@
 package org.apache.pdfbox.filter;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import org.apache.pdfbox.Loader;
@@ -188,5 +190,12 @@ class TestFilters
         assertArrayEquals(original, decoded.toByteArray(),
                 "Data that is encoded and then decoded through " + filter.getClass()
                         + " does not match the original data");
+    }
+
+    @Test
+    void testEmptyFilterList() throws Exception {
+        assertThrows(IllegalArgumentException.class, () -> {
+            Filter.decode(null, new ArrayList(), new COSDictionary(), null, null);
+        });
     }
 }

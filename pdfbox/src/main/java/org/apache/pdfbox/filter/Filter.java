@@ -206,6 +206,9 @@ public abstract class Filter
     {
         int length = parameters.getInt(COSName.LENGTH,
                 RandomAccessReadBuffer.DEFAULT_CHUNK_SIZE_4KB);
+        if (filterList.size() == 0) {
+            throw new IllegalArgumentException("Empty filterList");
+        }
         if (filterList.size() > 1)
         {
             Set<Filter> filterSet = new HashSet<>(filterList);
