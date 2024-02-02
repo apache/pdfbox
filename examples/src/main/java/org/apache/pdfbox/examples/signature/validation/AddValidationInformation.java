@@ -511,11 +511,11 @@ public class AddValidationInformation
             addRevocationDataRecursive(certInfo);
             if (correspondingOCSPs.size() > 0)
             {
-                vri.setItem("OCSP", correspondingOCSPs);
+                vri.setItem(COSName.OCSP, correspondingOCSPs);
             }
             if (correspondingCRLs.size() > 0)
             {
-                vri.setItem("CRL", correspondingCRLs);
+                vri.setItem(COSName.CRL, correspondingCRLs);
             }
         }
 
@@ -601,14 +601,14 @@ public class AddValidationInformation
     {
         COSDictionary dssExtensions = new COSDictionary();
         dssExtensions.setDirect(true);
-        catalog.getCOSObject().setItem("Extensions", dssExtensions);
+        catalog.getCOSObject().setItem(COSName.EXTENSIONS, dssExtensions);
 
         COSDictionary adbeExtension = new COSDictionary();
         adbeExtension.setDirect(true);
-        dssExtensions.setItem("ADBE", adbeExtension);
+        dssExtensions.setItem(COSName.ADBE, adbeExtension);
 
-        adbeExtension.setName("BaseVersion", "1.7");
-        adbeExtension.setInt("ExtensionLevel", 5);
+        adbeExtension.setName(COSName.BASE_VERSION, "1.7");
+        adbeExtension.setInt(COSName.EXTENSION_LEVEL, 5);
 
         catalog.setVersion("1.7");
     }

@@ -624,23 +624,23 @@ public final class ShowSignature
     private void analyseDSS(PDDocument document) throws IOException
     {
         PDDocumentCatalog catalog = document.getDocumentCatalog();
-        COSBase dssElement = catalog.getCOSObject().getDictionaryObject("DSS");
+        COSBase dssElement = catalog.getCOSObject().getDictionaryObject(COSName.DSS);
 
         if (dssElement instanceof COSDictionary)
         {
             COSDictionary dss = (COSDictionary) dssElement;
             System.out.println("DSS Dictionary: " + dss);
-            COSBase certsElement = dss.getDictionaryObject("Certs");
+            COSBase certsElement = dss.getDictionaryObject(COSName.CERTS);
             if (certsElement instanceof COSArray)
             {
                 printStreamsFromArray((COSArray) certsElement, "Cert");
             }
-            COSBase ocspsElement = dss.getDictionaryObject("OCSPs");
+            COSBase ocspsElement = dss.getDictionaryObject(COSName.OCSPS);
             if (ocspsElement instanceof COSArray)
             {
                 printStreamsFromArray((COSArray) ocspsElement, "Ocsp");
             }
-            COSBase crlElement = dss.getDictionaryObject("CRLs");
+            COSBase crlElement = dss.getDictionaryObject(COSName.CRLS);
             if (crlElement instanceof COSArray)
             {
                 printStreamsFromArray((COSArray) crlElement, "CRL");
