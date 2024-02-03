@@ -52,6 +52,11 @@ import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
  */
 public final class IOUtils
 {
+    /**
+     * Log instance.
+     */
+    private static final Logger LOG = LogManager.getLogger(IOUtils.class);
+
     private static final StreamCacheCreateFunction streamCache = RandomAccessStreamCacheImpl::new;
 
     //TODO PDFBox should really use Apache Commons IO.
@@ -62,11 +67,6 @@ public final class IOUtils
         UNMAPPER = Optional.ofNullable(AccessController
                 .doPrivileged((PrivilegedAction<Consumer<ByteBuffer>>) IOUtils::unmapper));
     }
-
-    /**
-     * Log instance.
-     */
-    private static final Logger LOG = LogManager.getLogger(IOUtils.class);
 
     private IOUtils()
     {
