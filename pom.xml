@@ -57,7 +57,7 @@
 
     <bouncycastle.version>1.77</bouncycastle.version>
     <log4j2.version>2.22.1</log4j2.version>
-    <junit.version>5.10.1</junit.version>
+    <junit.version>5.10.2</junit.version>
     <jbig2.version>3.0.4</jbig2.version>
     <jai.version>1.4.0</jai.version>
     <commons-io.version>2.15.0</commons-io.version>
