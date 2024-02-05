@@ -16,9 +16,9 @@
  */
 package org.apache.fontbox.ttf;
 
-import java.io.*;
+import java.io.IOException;
 
-import org.apache.pdfbox.io.*;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 
 /**
  * This 'glyf'-table is a required table in a TrueType-font.

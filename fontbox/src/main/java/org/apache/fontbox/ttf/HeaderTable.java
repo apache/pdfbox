@@ -16,8 +16,8 @@
  */
 package org.apache.fontbox.ttf;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.Calendar;
 
 /**
  * This 'head'-table is a required table in a TrueType-font.

@@ -16,7 +16,7 @@
  */
 package org.apache.fontbox.ttf;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * This 'loca'-table is a required table in a TrueType-font.
