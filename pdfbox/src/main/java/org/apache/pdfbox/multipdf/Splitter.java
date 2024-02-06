@@ -50,6 +50,7 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
@@ -77,6 +78,7 @@ public class Splitter
     private Map<COSDictionary, COSDictionary> pageDictMap;
     private Map<COSDictionary, COSDictionary> structDictMap;
     private Map<COSDictionary, COSDictionary> annotDictMap;
+    private Set<PDPageDestination> destToFixSet;
     private Set<String> idSet;
     private Set<COSName> roleSet;
 
@@ -121,6 +123,7 @@ public class Splitter
         destinationDocuments = new ArrayList<>();
         sourceDocument = document;
         pageDictMap = new HashMap<>();
+        destToFixSet = new HashSet<>();
         annotDictMap = new HashMap<>();
         idSet = new HashSet<>();
         roleSet = new HashSet<>();
@@ -130,9 +133,36 @@ public class Splitter
         for (PDDocument destinationDocument : destinationDocuments)
         {
             cloneStructureTree(destinationDocument);
+            fixDestinations(destinationDocument);
         }
 
         return destinationDocuments;
+    }
+    
+    /**
+     * Replace the page destinations, if the destination page is in the target document. This must
+     * be called after all pages (and its annotations) are processed.
+     *
+     * @param destinationDocument
+     */
+    private void fixDestinations(PDDocument destinationDocument)
+    {
+        PDPageTree pageTree = destinationDocument.getPages();
+        for (PDPageDestination pageDestination : destToFixSet)
+        {
+            COSDictionary srcPageDict = pageDestination.getPage().getCOSObject();
+            COSDictionary dstPageDict = pageDictMap.get(srcPageDict);
+            PDPage dstPage = new PDPage(dstPageDict);
+            // Find whether destination is inside or outside
+            if (pageTree.indexOf(dstPage) >= 0)
+            {
+                pageDestination.setPage(dstPage);
+            }
+            else
+            {
+                pageDestination.setPage(null);
+            }
+        }
     }
 
     /**
@@ -675,6 +705,10 @@ public class Splitter
     private void processAnnotations(PDPage imported) throws IOException
     {
         List<PDAnnotation> annotations = imported.getAnnotations();
+        if (annotations.isEmpty())
+        {
+            return;
+        }
         List<PDAnnotation> clonedAnnotations = new ArrayList<>(annotations.size());
         for (PDAnnotation annotation : annotations)
         {
@@ -686,19 +720,49 @@ public class Splitter
             if (annotationClone instanceof PDAnnotationLink)
             {
                 PDAnnotationLink link = (PDAnnotationLink) annotationClone;   
-                PDDestination destination = link.getDestination();
-                PDAction action = link.getAction();
-                if (destination == null && action instanceof PDActionGoTo)
+                PDDestination srcDestination = link.getDestination();
+                PDAction action = null;
+                if (srcDestination == null)
                 {
-                    destination = ((PDActionGoTo) action).getDestination();
+                    action = link.getAction();
+                    if (action instanceof PDActionGoTo)
+                    {
+                        srcDestination = ((PDActionGoTo) action).getDestination();
+                    }
                 }
-                if (destination instanceof PDPageDestination)
+                if (srcDestination instanceof PDPageDestination)
                 {
-                    //TODO preserve links to pages within the split result
-                    // not possible here because we're not done yet with the whole target document
-                    // need shallow clone too? And a map remembering (destination => source page)?
-                    // The current code changes the source document, which a user doesn't expect.
-                    ((PDPageDestination) destination).setPage(null);
+                    // preserve links to pages within the split result:
+                    // not fully possible here because we don't have the full target document yet.
+                    // However we're cloning as needed and remember what to do later.
+                    PDPage destinationPage = ((PDPageDestination) srcDestination).getPage();
+                    if (destinationPage != null)
+                    {
+                        // clone destination
+                        COSArray clonedDestinationArray =
+                                new COSArray(((PDPageDestination) srcDestination).getCOSObject().toList());
+                        PDPageDestination dstDestination =
+                                (PDPageDestination) PDDestination.create(clonedDestinationArray);
+
+                        // remember the destination to adjust / remove page later
+                        destToFixSet.add(dstDestination);
+
+                        if (action != null)
+                        {
+                            // if action is not null, then the destination came from an action,
+                            // thus clone action as well, then assign destination clone, then action
+                            COSDictionary clonedActionDict = new COSDictionary(action.getCOSObject());
+                            PDActionGoTo dstAction =
+                                    (PDActionGoTo) PDActionFactory.createAction(clonedActionDict);
+                            dstAction.setDestination(dstDestination);
+                            link.setAction(dstAction);
+                        }
+                        else
+                        {
+                            // just assign destination clone
+                            link.setDestination(dstDestination);
+                        }
+                    }
                 }
             }
             if (annotation.getPage() != null)
