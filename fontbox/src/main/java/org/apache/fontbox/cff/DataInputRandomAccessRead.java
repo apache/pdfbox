@@ -21,6 +21,10 @@ import org.apache.pdfbox.io.RandomAccessRead;
 
 /**
  * This class implements the DataInput interface using a RandomAccessRead as source.
+ * <br>
+ * Note: things can get hairy when the underlying buffer is larger than {@link Integer#MAX_VALUE}.
+ * Straight forward reading may work, but {@link #getPosition()} and {@link #setPosition(int)}
+ * may have problems.
  */
 public class DataInputRandomAccessRead implements DataInput
 {
@@ -29,7 +33,7 @@ public class DataInputRandomAccessRead implements DataInput
 
     /**
      * Constructor.
-     * 
+     *
      * @param randomAccessRead the source to be read from
      */
     public DataInputRandomAccessRead(RandomAccessRead randomAccessRead)
@@ -38,8 +42,9 @@ public class DataInputRandomAccessRead implements DataInput
     }
 
     /**
-     * Determines if there are any bytes left to read or not. 
-     * @return true if there are any bytes left to read
+     * Determines if there are any bytes left to read or not.
+     * @return true if there are any bytes left to read.
+     * @throws IOException when the underlying buffer has been closed already.
      */
     @Override
     public boolean hasRemaining() throws IOException
@@ -49,7 +54,8 @@ public class DataInputRandomAccessRead implements DataInput
 
     /**
      * Returns the current position.
-     * @return current position
+     * @return current position.
+     * @throws IOException when the underlying buffer has been closed already.
      */
     @Override
     public int getPosition() throws IOException
@@ -58,10 +64,12 @@ public class DataInputRandomAccessRead implements DataInput
     }
 
     /**
-     * Sets the current position to the given value.
-     * 
-     * @param position the given position
-     * @throws IOException if the new position ist out of range
+     * Sets the current <i>absolute</i> position to the given value.
+     * You <i>cannot</i> use <code>setPosition( -20 ) </code> to move 20 bytes back!
+     *
+     * @param position the given position, must be 0 &le; position &lt; length.
+     * @throws IOException if the new position is out of range.
+     * @throws IOException when the underlying buffer has been closed already.
      */
     @Override
     public void setPosition(int position) throws IOException
@@ -80,40 +88,43 @@ public class DataInputRandomAccessRead implements DataInput
 
     /**
      * Read one single byte from the buffer.
-     * @return the byte
-     * @throws IOException if an error occurs during reading
+     * @return the byte.
+     * @throws IOException when there are no bytes to read.
+     * @throws IOException when the underlying buffer has been closed already.
      */
     @Override
     public byte readByte() throws IOException
     {
         if (!hasRemaining())
         {
-            throw new IOException("End off buffer reached");
+            throw new IOException("End of buffer reached!");
         }
         return (byte) randomAccessRead.read();
     }
 
     /**
      * Read one single unsigned byte from the buffer.
-     * @return the unsigned byte as int
-     * @throws IOException if an error occurs during reading
+     * @return the unsigned byte as int.
+     * @throws IOException when there are no bytes to read.
+     * @throws IOException when the underlying buffer has been closed already.
      */
     @Override
     public int readUnsignedByte() throws IOException
     {
         if (!hasRemaining())
         {
-            throw new IOException("End off buffer reached");
+            throw new IOException("End of buffer reached!");
         }
         return randomAccessRead.read();
     }
 
     /**
      * Peeks one single unsigned byte from the buffer.
-     * 
-     * @param offset offset to the byte to be peeked
-     * @return the unsigned byte as int
-     * @throws IOException if an error occurs during reading
+     *
+     * @param offset offset to the byte to be peeked, must be 0 &le; offset.
+     * @return the unsigned byte as int.
+     * @throws IOException when the offset is negative or beyond end_of_buffer.
+     * @throws IOException when the underlying buffer has been closed already.
      */
     @Override
     public int peekUnsignedByte(int offset) throws IOException
@@ -139,10 +150,14 @@ public class DataInputRandomAccessRead implements DataInput
     }
 
     /**
-     * Read a number of single byte values from the buffer.
-     * @param length the number of bytes to be read
-     * @return an array with containing the bytes from the buffer 
-     * @throws IOException if an error occurs during reading
+     * Read a number of single byte values from the buffer.<br>
+     * Note: when <code>readBytes( 5 )</code> is called, but there are only 3 bytes
+     * available, the caller gets an IOException, not the 3 bytes!
+     *
+     * @param length the number of bytes to be read, must be 0 &le; length.
+     * @return an array with containing the bytes from the buffer.
+     * @throws IOException when there are less than <code>length</code> bytes available.
+     * @throws IOException when the underlying buffer has been closed already.
      */
     @Override
     public byte[] readBytes(int length) throws IOException
@@ -156,8 +171,9 @@ public class DataInputRandomAccessRead implements DataInput
             throw new IOException("Premature end of buffer reached");
         }
         byte[] bytes = new byte[length];
-        for (int i = 0; i < length; i++)
-            bytes[i] = readByte();
+        for (int i = 0; i < length; i++) {
+            bytes[ i ] = readByte();
+        }
         return bytes;
     }
 
