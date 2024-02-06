@@ -15,10 +15,6 @@
  */
 package org.apache.pdfbox.multipdf;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,14 +44,21 @@ import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitDestination;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.rendering.PDFRenderer;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -1028,6 +1031,55 @@ class PDFMergerUtilityTest
                 assertEquals(126, PDFMergerUtility.getIDTreeAsMap(structureTreeRoot.getIDTree()).size());
                 assertEquals(2, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot.getParentTree()).size());
                 assertEquals(6, structureTreeRoot.getRoleMap().size());
+            }
+        }
+    }
+
+    @Test
+    void testSplitWithStructureTreeAndDestinations() throws IOException
+    {
+        try (PDDocument doc = Loader.loadPDF(new File(SRCDIR,"PDFBOX-5762-722238.pdf")))
+        {
+            Splitter splitter = new Splitter();
+            splitter.setStartPage(1);
+            splitter.setEndPage(2);
+            splitter.setSplitAtPage(2);
+            List<PDDocument> splitResult = splitter.split(doc);
+            assertEquals(1, splitResult.size());
+            try (PDDocument dstDoc = splitResult.get(0))
+            {
+                assertEquals(2, dstDoc.getNumberOfPages());
+                checkForPageOrphans(dstDoc);
+                // these tests just verify the status quo. Changes should be checked visually with
+                // a PDF viewer that can display structural information.
+                PDStructureTreeRoot structureTreeRoot = dstDoc.getDocumentCatalog().getStructureTreeRoot();
+                assertEquals(7, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot.getParentTree()).size());
+                assertEquals(4, structureTreeRoot.getRoleMap().size());
+                
+                // check that destinations are fixed (only the two first point to the split doc)
+                List<PDAnnotation> annotations = dstDoc.getPage(0).getAnnotations();
+                assertEquals(5, annotations.size());
+                PDAnnotationLink link1 = (PDAnnotationLink) annotations.get(0);
+                PDAnnotationLink link2 = (PDAnnotationLink) annotations.get(1);
+                PDAnnotationLink link3 = (PDAnnotationLink) annotations.get(2);
+                PDAnnotationLink link4 = (PDAnnotationLink) annotations.get(3);
+                PDAnnotationLink link5 = (PDAnnotationLink) annotations.get(4);
+                PDPageDestination pd1 = 
+                        (PDPageDestination) ((PDActionGoTo) link1.getAction()).getDestination();
+                PDPageDestination pd2 = 
+                        (PDPageDestination) ((PDActionGoTo) link2.getAction()).getDestination();
+                PDPageDestination pd3 = 
+                        (PDPageDestination) ((PDActionGoTo) link3.getAction()).getDestination();
+                PDPageDestination pd4 = 
+                        (PDPageDestination) ((PDActionGoTo) link4.getAction()).getDestination();
+                PDPageDestination pd5 = 
+                        (PDPageDestination) ((PDActionGoTo) link5.getAction()).getDestination();
+                PDPageTree pageTree = dstDoc.getPages();
+                assertEquals(0, pageTree.indexOf(pd1.getPage()));
+                assertEquals(1, pageTree.indexOf(pd2.getPage()));
+                assertNull(pd3.getPage());
+                assertNull(pd4.getPage());
+                assertNull(pd5.getPage());
             }
         }
     }
