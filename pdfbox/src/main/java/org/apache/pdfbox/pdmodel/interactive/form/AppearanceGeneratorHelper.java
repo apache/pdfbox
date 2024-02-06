@@ -914,6 +914,11 @@ class AppearanceGeneratorHelper
                 }
 
                 float heightBasedFontSize = contentRect.getHeight() / height * yScalingFactor;
+
+                // in case that we have empty content
+                if (widthBasedFontSize <= 0) {
+                    return heightBasedFontSize;
+                }
                 
                 return Math.min(heightBasedFontSize, widthBasedFontSize);
             }
