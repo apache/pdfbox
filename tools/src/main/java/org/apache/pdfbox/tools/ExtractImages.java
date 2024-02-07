@@ -80,18 +80,18 @@ public final class ExtractImages implements Callable<Integer>
             COSName.DCT_DECODE.getName(),
             COSName.DCT_DECODE_ABBREVIATION.getName());
 
-    @Option(names = "-password", description = "the password for the PDF or certificate in keystore.", arity = "0..1", interactive = true)    
+    @Option(names = "-password", description = "the password for the PDF or certificate in keystore.", arity = "0..1", interactive = true)
     private String password;
 
-    @Option(names = "-prefix", description = "the image prefix (default to pdf name).")    
+    @Option(names = "-prefix", description = "the image prefix (default to pdf name).")
     private String prefix;
 
-    @Option(names = "-useDirectJPEG", description = "Forces the direct extraction of JPEG/JPX images " + 
-        "regardless of colorspace or masking.")    
+    @Option(names = "-useDirectJPEG", description = "Forces the direct extraction of JPEG/JPX images " +
+        "regardless of colorspace or masking.")
     private boolean useDirectJPEG;
 
     @Option(names = "-noColorConvert", description = "Images are extracted with their " +
-        "original colorspace if possible.")    
+        "original colorspace if possible.")
     private boolean noColorConvert;
 
     @Option(names = {"-i", "--input"}, description = "the PDF file", required = true)
@@ -174,7 +174,7 @@ public final class ExtractImages implements Callable<Integer>
                 PDExtendedGraphicsState extGState = res.getExtGState(name);
                 if (extGState == null)
                 {
-                    // can happen if key exists but no value 
+                    // can happen if key exists but no value
                     continue;
                 }
                 PDSoftMask softMask = extGState.getSoftMask();
@@ -268,7 +268,7 @@ public final class ExtractImages implements Callable<Integer>
         }
 
         @Override
-        protected void showGlyph(Matrix textRenderingMatrix, 
+        protected void showGlyph(Matrix textRenderingMatrix,
                                  PDFont font,
                                  int code,
                                  Vector displacement) throws IOException
@@ -366,7 +366,7 @@ public final class ExtractImages implements Callable<Integer>
                     suffix = "png";
                     if (elements > 3)
                     {
-                        // More then 3 channels: Thats likely CMYK. We use tiff here,
+                        // More than 3 channels: That's likely CMYK. We use tiff here,
                         // but a TIFF codec must be in the class path for this to work.
                         suffix = "tiff";
                     }
@@ -387,7 +387,7 @@ public final class ExtractImages implements Callable<Integer>
                 if ("jpg".equals(suffix))
                 {
                     String colorSpaceName = pdImage.getColorSpace().getName();
-                    if (directJPEG || 
+                    if (directJPEG ||
                         (PDDeviceGray.INSTANCE.getName().equals(colorSpaceName) ||
                          PDDeviceRGB.INSTANCE.getName().equals(colorSpaceName)))
                     {
@@ -442,7 +442,7 @@ public final class ExtractImages implements Callable<Integer>
                     int w = image.getWidth();
                     int h = image.getHeight();
                     BufferedImage bitonalImage = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_BINARY);
-                    // copy image the old fashioned way - ColorConvertOp is slower!
+                    // copy image the old-fashioned way - ColorConvertOp is slower!
                     for (int y = 0; y < h; y++)
                     {
                         for (int x = 0; x < w; x++)
