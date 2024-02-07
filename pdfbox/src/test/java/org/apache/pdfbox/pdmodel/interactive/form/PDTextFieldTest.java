@@ -16,9 +16,17 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.IOException;
+
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -67,4 +75,43 @@ public class PDTextFieldTest
         assertEquals(widget.getCOSObject(), textField.getCOSObject());
     }
 
+    /**
+     * PDFBOX-5763: check that -Infinity is avoided. The test is based on a slightly modified
+     * CreateSimpleForm example where the field is tiny and has a 0 (variable) font size and no
+     * content.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testTinyHorizontalFieldWith0FontSize() throws IOException
+    {
+        // Create a new document with an empty page.
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage(PDRectangle.A4);
+        doc.addPage(page);
+
+        PDFont font = PDType1Font.HELVETICA;
+        PDResources resources = new PDResources();
+        resources.put(COSName.HELV, font);
+        PDAcroForm acroForm = new PDAcroForm(doc);
+        doc.getDocumentCatalog().setAcroForm(acroForm);
+        acroForm.setDefaultResources(resources);
+
+        String defaultAppearanceString = "/Helv 0 Tf 0 g";
+        acroForm.setDefaultAppearance(defaultAppearanceString);
+        PDTextField textBox = new PDTextField(acroForm);
+        textBox.setPartialName("SampleField");
+        textBox.setDefaultAppearance(defaultAppearanceString);
+        acroForm.getFields().add(textBox);
+
+        PDAnnotationWidget widget = textBox.getWidgets().get(0);
+        PDRectangle rect = new PDRectangle(50, 750, 1, 50);
+        widget.setRectangle(rect);
+        widget.setPage(page);
+        page.getAnnotations().add(widget);
+
+        textBox.setValue(""); // mayhem happened here
+
+        doc.close();
+    }
 }
