@@ -21,8 +21,8 @@ import java.io.IOException;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 
 /**
- * A table in a true type font.
- * 
+ * This 'glyf'-table is a required table in a TrueType font.
+ *
  * @author Ben Litchfield
  */
 public class GlyphTable extends TTFTable
@@ -38,16 +38,16 @@ public class GlyphTable extends TTFTable
     private TTFDataStream data;
     private IndexToLocationTable loca;
     private int numGlyphs;
-    
+
     private int cached = 0;
-    
+
     private HorizontalMetricsTable hmt = null;
-    
+
     /**
      * Don't even bother to cache huge fonts.
      */
     private static final int MAX_CACHE_SIZE = 5000;
-    
+
     /**
      * Don't cache more glyphs than this.
      */
@@ -60,7 +60,7 @@ public class GlyphTable extends TTFTable
 
     /**
      * This will read the required data from the stream.
-     * 
+     *
      * @param ttf The font that is being read.
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
@@ -102,9 +102,9 @@ public class GlyphTable extends TTFTable
      * Returns the data for the glyph with the given GID.
      *
      * @param gid GID
-     * 
+     *
      * @return data of the glyph with the given GID or null
-     * 
+     *
      * @throws IOException if the font cannot be read
      */
     public GlyphData getGlyph(int gid) throws IOException
@@ -113,7 +113,7 @@ public class GlyphTable extends TTFTable
         {
             return null;
         }
-        
+
         if (glyphs != null && glyphs[gid] != null)
         {
             return glyphs[gid];

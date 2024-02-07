@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A table in a true type font.
- * 
+ * This 'name'-table is a required table in a TrueType font.
+ *
  * @author Ben Litchfield
  */
 public class NamingTable extends TTFTable
@@ -35,7 +35,7 @@ public class NamingTable extends TTFTable
      * A tag that identifies this table type.
      */
     public static final String TAG = "name";
-    
+
     private List<NameRecord> nameRecords;
 
     private Map<Integer, Map<Integer, Map<Integer, Map<Integer, String>>>> lookupTable;
@@ -51,7 +51,7 @@ public class NamingTable extends TTFTable
 
     /**
      * This will read the required data from the stream.
-     * 
+     *
      * @param ttf The font that is being read.
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
@@ -78,7 +78,7 @@ public class NamingTable extends TTFTable
                 nr.setString(null);
                 continue;
             }
-            
+
             data.seek(getOffset() + (2L*3)+numberOfNameRecords*2L*6+nr.getStringOffset());
             int platform = nr.getPlatformId();
             int encoding = nr.getPlatformEncodingId();
@@ -226,7 +226,7 @@ public class NamingTable extends TTFTable
     {
         return nameRecords;
     }
-    
+
     /**
      * Returns the font family name, in English.
      *
