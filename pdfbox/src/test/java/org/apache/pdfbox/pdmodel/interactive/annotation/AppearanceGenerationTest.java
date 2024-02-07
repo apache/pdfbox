@@ -33,8 +33,8 @@ import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.rendering.TestPDFToImage;
+
 import org.junit.jupiter.api.AfterEach;
-import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -143,7 +143,7 @@ class AppearanceGenerationTest
         if (!TestPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
             // don't fail, rendering is different on different systems, result must be viewed manually
-            fail("Rendering of " + file + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
+            System.out.println("Rendering of " + file + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
         }
     }
     
