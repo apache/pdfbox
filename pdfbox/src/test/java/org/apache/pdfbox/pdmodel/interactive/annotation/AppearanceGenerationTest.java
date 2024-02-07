@@ -31,7 +31,13 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -145,7 +151,47 @@ class AppearanceGenerationTest
             System.out.println("Rendering of " + file + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
         }
     }
-    
+
+    /**
+     * PDFBOX-5763: check that -Infinity is avoided. The test is based on a slightly modified
+     * CreateSimpleForm example where the field is tiny and has a 0 (variable) font size and no
+     * content.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testTinyHorizontalFieldWith0FontSize() throws IOException
+    {
+        // Create a new document with an empty page.
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            
+            PDFont font = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+            PDResources resources = new PDResources();
+            resources.put(COSName.HELV, font);
+            PDAcroForm acroForm = new PDAcroForm(document);
+            document.getDocumentCatalog().setAcroForm(acroForm);
+            acroForm.setDefaultResources(resources);
+
+            String defaultAppearanceString = "/Helv 0 Tf 0 g";
+            acroForm.setDefaultAppearance(defaultAppearanceString);
+            PDTextField textBox = new PDTextField(acroForm);
+            textBox.setPartialName("SampleField");
+            textBox.setDefaultAppearance(defaultAppearanceString);
+            acroForm.getFields().add(textBox);
+
+            PDAnnotationWidget widget = textBox.getWidgets().get(0);
+            PDRectangle rect = new PDRectangle(50, 750, 1, 50);
+            widget.setRectangle(rect);
+            widget.setPage(page);
+            page.getAnnotations().add(widget);
+
+            textBox.setValue(""); // mayhem happened here
+        }
+    }
+
     @AfterEach
     public void tearDown() throws IOException
     {

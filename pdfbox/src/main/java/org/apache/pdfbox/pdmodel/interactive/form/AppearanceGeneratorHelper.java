@@ -909,6 +909,11 @@ class AppearanceGeneratorHelper
                 }
 
                 float heightBasedFontSize = contentRect.getHeight() / height * yScalingFactor;
+                if (Float.isInfinite(widthBasedFontSize))
+                {
+                    // PDFBOX-5763: avoids -Infinity if empty value and tiny rectangle
+                    return heightBasedFontSize;
+                }
                 
                 return Math.min(heightBasedFontSize, widthBasedFontSize);
             }
