@@ -63,6 +63,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
  *
  * @author Mario Ivankovits
  * @author Ben Litchfield
+ * @author Tilman Hausherr
  */
 public class Splitter
 {
