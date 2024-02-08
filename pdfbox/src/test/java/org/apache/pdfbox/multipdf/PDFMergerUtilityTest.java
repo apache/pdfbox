@@ -48,14 +48,18 @@ import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitDestination;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.rendering.PDFRenderer;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -1004,6 +1008,31 @@ class PDFMergerUtilityTest
         if (page != null)
         {
             assertNotEquals(-1, pageTree.indexOf(page), "Page is not in the page tree");
+        }
+    }
+
+    @Test
+    void testSplitWithStructureTree() throws IOException
+    {
+        try (PDDocument doc = Loader.loadPDF(new File(SRCDIR, "PDFBOX-4417-001031.pdf")))
+        {
+            Splitter splitter = new Splitter();
+            splitter.setStartPage(1);
+            splitter.setEndPage(2);
+            splitter.setSplitAtPage(2);
+            List<PDDocument> splitResult = splitter.split(doc);
+            assertEquals(1, splitResult.size());
+            try (PDDocument dstDoc = splitResult.get(0))
+            {
+                assertEquals(2, dstDoc.getNumberOfPages());
+                checkForPageOrphans(dstDoc);
+                // these tests just verify the status quo. Changes should be checked visually with
+                // a PDF viewer that can display structural information.
+                PDStructureTreeRoot structureTreeRoot = dstDoc.getDocumentCatalog().getStructureTreeRoot();
+                assertEquals(126, PDFMergerUtility.getIDTreeAsMap(structureTreeRoot.getIDTree()).size());
+                assertEquals(2, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot.getParentTree()).size());
+                assertEquals(6, structureTreeRoot.getRoleMap().size());
+            }
         }
     }
 }
