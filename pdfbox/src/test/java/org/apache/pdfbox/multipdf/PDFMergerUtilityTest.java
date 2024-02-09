@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -969,5 +970,27 @@ public class PDFMergerUtilityTest extends TestCase
         {
             Assert.assertNotEquals("Page is not in the page tree", -1, pageTree.indexOf(page));
         }
+    }
+
+    public void testSplitWithStructureTree() throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File(SRCDIR, "PDFBOX-4417-001031.pdf"));
+        Splitter splitter = new Splitter();
+        splitter.setStartPage(1);
+        splitter.setEndPage(2);
+        splitter.setSplitAtPage(2);
+        List<PDDocument> splitResult = splitter.split(doc);
+        assertEquals(1, splitResult.size());
+        PDDocument dstDoc = splitResult.get(0);
+        assertEquals(2, dstDoc.getNumberOfPages());
+        checkForPageOrphans(dstDoc);
+        // these tests just verify the status quo. Changes should be checked visually with
+        // a PDF viewer that can display structural information.
+        PDStructureTreeRoot structureTreeRoot = dstDoc.getDocumentCatalog().getStructureTreeRoot();
+        assertEquals(126, PDFMergerUtility.getIDTreeAsMap(structureTreeRoot.getIDTree()).size());
+        assertEquals(2, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot.getParentTree()).size());
+        assertEquals(6, structureTreeRoot.getRoleMap().size());
+        dstDoc.close();
+        doc.close();
     }
 }
