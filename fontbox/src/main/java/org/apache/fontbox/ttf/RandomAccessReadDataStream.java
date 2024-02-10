@@ -25,7 +25,8 @@ import org.apache.pdfbox.io.RandomAccessRead;
 
 /**
  * An implementation of the TTFDataStream using RandomAccessRead as source.
- * 
+ * The underlying RandomAccessRead can be any length, but this implementation supports
+ * only bufferLengths upto Integer.MAX_VALUE.
  */
 class RandomAccessReadDataStream extends TTFDataStream
 {
@@ -35,9 +36,9 @@ class RandomAccessReadDataStream extends TTFDataStream
 
     /**
      * Constructor.
-     * 
+     *
      * @param randomAccessRead source to be read from
-     * 
+     *
      * @throws IOException If there is a problem reading the source data.
      */
     RandomAccessReadDataStream(RandomAccessRead randomAccessRead) throws IOException
@@ -52,12 +53,12 @@ class RandomAccessReadDataStream extends TTFDataStream
             remainingBytes -= amountRead;
         }
     }
-    
+
     /**
      * Constructor.
-     * 
+     *
      * @param inputStream source to be read from
-     * 
+     *
      * @throws IOException If there is a problem reading the source data.
      */
     RandomAccessReadDataStream(InputStream inputStream) throws IOException
@@ -76,10 +77,10 @@ class RandomAccessReadDataStream extends TTFDataStream
     {
         return currentPosition;
     }
-    
+
     /**
      * Close the underlying resources.
-     * 
+     *
      * @throws IOException If there is an error closing the resources.
      */
     @Override
@@ -87,10 +88,10 @@ class RandomAccessReadDataStream extends TTFDataStream
     {
         // nothing to do
     }
-    
+
     /**
      * Read an unsigned byte.
-     * @return An unsigned byte.
+     * @return An unsigned byte, or -1, signalling 'no more data'
      * @throws IOException If there is an error reading the data.
      */
     @Override
@@ -102,10 +103,10 @@ class RandomAccessReadDataStream extends TTFDataStream
         }
         return data[currentPosition++] & 0xff;
     }
-    
+
     /**
      * Read a signed 64-bit integer.
-     * 
+     *
      * @return eight bytes interpreted as a long.
      * @throws IOException If there is an error reading the data.
      */
@@ -117,8 +118,8 @@ class RandomAccessReadDataStream extends TTFDataStream
 
     /**
      * Read a signed 32-bit integer.
-     * 
-     * @return 4 bytes interpreted as a int.
+     *
+     * @return 4 bytes interpreted as an int.
      * @throws IOException If there is an error reading the data.
      */
     private int readInt() throws IOException
@@ -131,7 +132,10 @@ class RandomAccessReadDataStream extends TTFDataStream
     }
     /**
      * Seek into the datasource.
-     * 
+     * When the requested <code>pos</code> is &lt; 0, an IOException() is fired.
+     * When the requested <code>pos</code> is &ge; {@link #length}, the {@link #currentPosition}
+     * is set to the first byte <i>after</i> the {@link #data}!
+     *
      * @param pos The position to seek to.
      * @throws IOException If there is an error seeking to that position.
      */
@@ -144,16 +148,16 @@ class RandomAccessReadDataStream extends TTFDataStream
         }
         currentPosition = pos < length ? (int) pos : (int) length;
     }
-    
+
     /**
      * @see java.io.InputStream#read( byte[], int, int )
-     * 
+     *
      * @param b The buffer to write to.
      * @param off The offset into the buffer.
      * @param len The length into the buffer.
-     * 
-     * @return The number of bytes read.
-     * 
+     *
+     * @return The number of bytes read or -1, signalling 'no more data'
+     *
      * @throws IOException If there is an error reading from the stream.
      */
     @Override
@@ -169,7 +173,7 @@ class RandomAccessReadDataStream extends TTFDataStream
         currentPosition += bytesToRead;
         return bytesToRead;
     }
-    
+
     /**
      * {@inheritDoc}
      */
