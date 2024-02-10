@@ -27,6 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -74,6 +76,14 @@ public class GlyphSubstitutionTable extends TTFTable
     private String lastUsedSupportedScript;
 
     private GsubData gsubData;
+
+    /**
+     * The regex represents 4 'word characters' [a-zA-Z_0-9], see
+     * {@link java.util.regex.ASCII#WORD}.
+     * <p>
+     * Note: the ' '-character is not matched!
+     */
+    private static final Pattern WORDPATTERN = Pattern.compile( "\\w{4}" );
 
     GlyphSubstitutionTable()
     {
@@ -204,7 +214,8 @@ public class GlyphSubstitutionTable extends TTFTable
             {
                 // catch corrupt file
                 // https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#flTbl
-                if (featureTags[i].matches("\\w{4}") && featureTags[i-1].matches("\\w{4}"))
+                if (WORDPATTERN.matcher(featureTags[i]).matches() &&
+                    WORDPATTERN.matcher(featureTags[i - 1]).matches())
                 {
                     // ArialUni.ttf has many warnings but isn't corrupt, so we assume that only
                     // strings with trash characters indicate real corruption
@@ -754,8 +765,8 @@ public class GlyphSubstitutionTable extends TTFTable
      * @param gid GID
      * @param scriptTags Script tags applicable to the gid (see {@link OpenTypeScript})
      * @param enabledFeatures list of features to apply
-     * 
-     * @return the id of the glyph substituion
+     *
+     * @return the id of the glyph substitution
      */
     public int getSubstitution(int gid, String[] scriptTags, List<String> enabledFeatures)
     {
@@ -767,7 +778,7 @@ public class GlyphSubstitutionTable extends TTFTable
         if (cached != null)
         {
             // Because script detection for indeterminate scripts (COMMON, INHERIT, etc.) depends on context,
-            // it is possible to return a different substitution for the same input. However we don't want that,
+            // it is possible to return a different substitution for the same input. However, we don't want that,
             // as we need a one-to-one mapping.
             return cached;
         }
@@ -785,13 +796,14 @@ public class GlyphSubstitutionTable extends TTFTable
     }
 
     /**
-     * For a substitute-gid (obtained from {@link #getSubstitution(int, String[], List)}), retrieve the original gid.
-     *
-     * Only gids previously substituted by this instance can be un-substituted. If you are trying to unsubstitute before
-     * you substitute, something is wrong.
+     * For a substitute-gid (obtained from {@link #getSubstitution(int, String[], List)}),
+     * retrieve the original gid.
+     * <p>
+     * Only gids previously substituted by this instance can be un-substituted.
+     * If you are trying to unsubstitute before you substitute, something is wrong.
      *
      * @param sgid Substitute GID
-     * 
+     *
      * @return the original gid of a substitute-gid
      */
     public int getUnsubstitution(int sgid)
