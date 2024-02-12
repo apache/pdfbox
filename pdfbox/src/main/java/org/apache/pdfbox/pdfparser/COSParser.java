@@ -55,6 +55,7 @@ import org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
+import org.apache.pdfbox.util.StringUtil;
 
 /**
  * COS-Parser which first reads startxref and xref tables in order to know valid objects and parse only these objects.
@@ -1721,7 +1722,7 @@ public class COSParser extends BaseParser implements ICOSParser
         while(true)
         {
             String currentLine = readLine();
-            String[] splitString = currentLine.split("\\s");
+            String[] splitString = StringUtil.splitOnSpace(currentLine);
             if (splitString.length != 2)
             {
                 LOG.warn("Unexpected XRefTable Entry: " + currentLine);
@@ -1764,7 +1765,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 }
                 //Ignore table contents
                 currentLine = readLine();
-                splitString = currentLine.split("\\s");
+                splitString = StringUtil.splitOnSpace(currentLine);
                 if (splitString.length < 3)
                 {
                     LOG.warn("invalid xref line: " + currentLine);
