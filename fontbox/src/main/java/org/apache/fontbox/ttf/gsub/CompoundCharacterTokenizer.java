@@ -47,6 +47,12 @@ public class CompoundCharacterTokenizer
         regexExpression = Pattern.compile(getRegexFromTokens(compoundWords));
     }
 
+    /**
+     * 
+     * @param singleRegex
+     * @deprecated use {@link CompoundCharacterTokenizer#CompoundCharacterTokenizer(Pattern)} instead.
+     */
+    @Deprecated
     public CompoundCharacterTokenizer(String singleRegex)
     {
         regexExpression = Pattern.compile(singleRegex);
