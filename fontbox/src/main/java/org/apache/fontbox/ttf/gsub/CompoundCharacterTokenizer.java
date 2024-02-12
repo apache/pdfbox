@@ -52,6 +52,11 @@ public class CompoundCharacterTokenizer
         regexExpression = Pattern.compile(singleRegex);
     }
 
+    public CompoundCharacterTokenizer(Pattern pattern)
+    {
+        regexExpression = pattern;
+    }
+
     public List<String> tokenize(String text)
     {
         List<String> tokens = new ArrayList<>();
