@@ -1091,10 +1091,6 @@ public class COSWriter implements ICOSVisitor
         // check if the returned key and the origin key of the given object are the same
         if (key == null || (actualKey != null && !key.equals(actualKey)))
         {
-            if (key != null)
-                System.out.println("key fixed: " + key + " -> " + actualKey);
-            else
-                System.out.println("key initialized: " + actualKey);
             // update the object key given object/referenced object
             key = actualKey;
             actual.setKey(actualKey);
