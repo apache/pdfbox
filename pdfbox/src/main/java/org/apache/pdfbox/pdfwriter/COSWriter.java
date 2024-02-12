@@ -736,7 +736,9 @@ public class COSWriter implements ICOSVisitor, Closeable
     private void doWriteIncrement() throws IOException
     {
         // write existing PDF
-        IOUtils.copy(new RandomAccessInputStream(incrementalInput), incrementalOutput);
+        RandomAccessInputStream input = new RandomAccessInputStream(incrementalInput);
+        IOUtils.copy(input, incrementalOutput);
+        input.close();
         // write the actual incremental update
         incrementalOutput.write(((ByteArrayOutputStream) output).toByteArray());
     }
