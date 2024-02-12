@@ -55,6 +55,7 @@ import org.apache.pdfbox.pdmodel.encryption.PDEncryption;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
+import org.apache.pdfbox.util.StringUtil;
 
 import static org.apache.pdfbox.util.Charsets.ISO_8859_1;
 
@@ -2764,7 +2765,7 @@ public class COSParser extends BaseParser
         while(true)
         {
             String currentLine = readLine();
-            String[] splitString = currentLine.split("\\s");
+            String[] splitString = StringUtil.splitOnSpace(currentLine);
             if (splitString.length != 2)
             {
                 LOG.warn("Unexpected XRefTable Entry: " + currentLine);
@@ -2807,7 +2808,7 @@ public class COSParser extends BaseParser
                 }
                 //Ignore table contents
                 currentLine = readLine();
-                splitString = currentLine.split("\\s");
+                splitString = StringUtil.splitOnSpace(currentLine);
                 if (splitString.length < 3)
                 {
                     LOG.warn("invalid xref line: " + currentLine);
