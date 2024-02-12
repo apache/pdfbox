@@ -1070,39 +1070,37 @@ public class COSWriter implements ICOSVisitor
      */
     private COSObjectKey getObjectKey( COSBase obj )
     {
-        COSBase actual = obj;
-        if( actual instanceof COSObject )
+        COSObjectKey key = obj.getKey();
+        COSBase actual;
+        if (obj instanceof COSObject)
         {
             actual = ((COSObject) obj).getObject();
-            if (reuseObjectNumbers)
+            if (actual == null)
             {
-                COSObjectKey key = obj.getKey();
-                if (key != null)
-                {
-                    COSObjectKey actualKey = actual != null ? actual.getKey() : null;
-                    // check if the key of the referenced object and the indirect object is the same
-                    if (actualKey != null && !key.equals(actualKey))
-                    {
-                        // update the object key of the indirect object
-                        key = actualKey;
-                        obj.setKey(key);
-                    }
-                    objectKeys.put(obj, key);
-                    return key;
-                }
+                objectKeys.put(obj, key);
+                return key;
             }
         }
-        // PDFBOX-4540: because objectKeys is accessible from outside, it is possible
-        // that a COSObject obj is already in the objectKeys map.
-        COSObjectKey newKey = objectKeys.computeIfAbsent(actual,
-                k -> new COSObjectKey(++number, 0));
-        COSObjectKey actualKey = actual.getKey();
-        // if the returned key is new update the existing key of the given object
-        if (actualKey != null && !actualKey.equals(newKey))
+        else
         {
-            actual.setKey(newKey);
+            actual = obj;
         }
-        return newKey;
+        COSObjectKey actualKey = objectKeys.computeIfAbsent(actual,
+                k -> new COSObjectKey(++number, 0));
+        // check if the returned key and the origin key of the given object are the same
+        if (key == null || (actualKey != null && !key.equals(actualKey)))
+        {
+            // update the object key given object/referenced object
+            key = actualKey;
+            actual.setKey(actualKey);
+            if (obj instanceof COSObject)
+            {
+                // update the object key of the indirect object
+                obj.setKey(key);
+                objectKeys.put(obj, key);
+            }
+        }
+        return key;
     }
 
     @Override
