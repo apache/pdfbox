@@ -859,10 +859,12 @@ public class COSWriter implements ICOSVisitor
     private void doWriteIncrement() throws IOException
     {
         // write existing PDF
-        InputStream input = new RandomAccessInputStream(incrementalInput);
-        input.transferTo(incrementalOutput);
-        // write the actual incremental update
-        incrementalOutput.write(((ByteArrayOutputStream) output).toByteArray());
+        try (InputStream input = new RandomAccessInputStream(incrementalInput))
+        {
+            input.transferTo(incrementalOutput);
+            // write the actual incremental update
+            incrementalOutput.write(((ByteArrayOutputStream) output).toByteArray());
+        }
     }
     
     private void doWriteSignature() throws IOException
