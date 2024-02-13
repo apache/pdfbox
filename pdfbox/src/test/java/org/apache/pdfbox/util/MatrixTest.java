@@ -234,7 +234,7 @@ class MatrixTest
         assertEquals(new COSFloat(5), toCOSArray.get(2));
         assertEquals(new COSFloat(8), toCOSArray.get(3));
         assertEquals(new COSFloat(2), toCOSArray.get(4));
-        assertEquals(new COSFloat(0), toCOSArray.get(5));
+        assertEquals(COSFloat.ZERO, toCOSArray.get(5));
         
     }
 

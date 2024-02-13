@@ -118,9 +118,9 @@ public abstract class PDCIEDictionaryBasedColorSpace extends PDCIEBasedColorSpac
         if (wp == null)
         {
             wp = new COSArray();
-            wp.add(new COSFloat(1.0f));
-            wp.add(new COSFloat(1.0f));
-            wp.add(new COSFloat(1.0f));
+            wp.add(COSFloat.ONE);
+            wp.add(COSFloat.ONE);
+            wp.add(COSFloat.ONE);
         }
         return new PDTristimulus(wp);
     }
@@ -138,9 +138,9 @@ public abstract class PDCIEDictionaryBasedColorSpace extends PDCIEBasedColorSpac
         if (bp == null)
         {
             bp = new COSArray();
-            bp.add(new COSFloat(0.0f));
-            bp.add(new COSFloat(0.0f));
-            bp.add(new COSFloat(0.0f));
+            bp.add(COSFloat.ZERO);
+            bp.add(COSFloat.ZERO);
+            bp.add(COSFloat.ZERO);
         }
         return new PDTristimulus(bp);
     }

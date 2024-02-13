@@ -39,9 +39,9 @@ public final class PDGamma implements COSObjectable
     public PDGamma()
     {
         values = new COSArray();
-        values.add(new COSFloat(0.0f));
-        values.add(new COSFloat(0.0f));
-        values.add(new COSFloat(0.0f));
+        values.add(COSFloat.ZERO);
+        values.add(COSFloat.ZERO);
+        values.add(COSFloat.ZERO);
     }
 
     /**

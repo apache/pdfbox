@@ -518,8 +518,8 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         // extend range array with default values if needed
         while (rangeArray.size() < (n + 1) * 2)
         {
-            rangeArray.add(new COSFloat(0));
-            rangeArray.add(new COSFloat(1));
+            rangeArray.add(COSFloat.ZERO);
+            rangeArray.add(COSFloat.ONE);
         }
         rangeArray.set(n*2, new COSFloat(range.getMin()));
         rangeArray.set(n*2+1, new COSFloat(range.getMax()));

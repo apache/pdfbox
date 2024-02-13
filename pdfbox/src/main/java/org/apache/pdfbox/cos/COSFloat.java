@@ -32,6 +32,9 @@ public class COSFloat extends COSNumber
     private final float value;
     private String valueAsString;
 
+    public static final COSFloat ZERO = new COSFloat(0f, "0.0");
+    public static final COSFloat ONE = new COSFloat(1f, "1.0");
+
     /**
      * Constructor.
      *
@@ -40,6 +43,18 @@ public class COSFloat extends COSNumber
     public COSFloat( float aFloat )
     {
         value = aFloat;
+    }
+
+    /**
+     * An internal constructor to avoid formatting for the predefined constants.
+     *
+     * @param aFloat
+     * @param valueString
+     */
+    private COSFloat(float aFloat, String valueString)
+    {
+        value = aFloat;
+        valueAsString = valueString;
     }
 
     /**
