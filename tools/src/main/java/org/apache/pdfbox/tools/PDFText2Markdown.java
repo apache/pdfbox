@@ -161,7 +161,7 @@ public class PDFText2Markdown extends PDFTextStripper {
      * Responsible for applying Markdown formatting based on font properties.
      * Supports bold and italic text based on font descriptors.
      *
-     * @author Saurav Rawat
+     * @author Axel Dörfler
      */
     private static class FontState {
         private final List<String> stateList = new ArrayList<>();
