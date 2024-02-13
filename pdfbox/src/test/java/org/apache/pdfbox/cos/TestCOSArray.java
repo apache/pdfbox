@@ -117,7 +117,7 @@ class TestCOSArray
         cosArray.setFloatArray(floatArrayStart);
 
         assertEquals(3, cosArray.size());
-        assertEquals(new COSFloat(1.0f), cosArray.get(0));
+        assertEquals(COSFloat.ONE, cosArray.get(0));
         assertEquals(new COSFloat(0.1f), cosArray.get(1));
         assertEquals(new COSFloat(0.02f), cosArray.get(2));
 
@@ -134,9 +134,9 @@ class TestCOSArray
         assertArrayEquals(floatArrayStart, floatArrayEnd, 0);
 
         // check arrays with null values
-        cosArray = new COSArray(Arrays.asList(new COSFloat(1.0f), null, new COSFloat(0.02f)));
+        cosArray = new COSArray(Arrays.asList(COSFloat.ONE, null, new COSFloat(0.02f)));
         assertEquals(3, cosArray.size());
-        assertEquals(new COSFloat(1.0f), cosArray.get(0));
+        assertEquals(COSFloat.ONE, cosArray.get(0));
         assertNull(cosArray.get(1));
         assertEquals(new COSFloat(0.02f), cosArray.get(2));
 

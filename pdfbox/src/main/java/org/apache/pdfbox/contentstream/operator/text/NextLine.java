@@ -44,7 +44,7 @@ public class NextLine extends OperatorProcessor
     {
         //move to start of next text line
         List<COSBase> args = new ArrayList<>(2);
-        args.add(new COSFloat(0f));
+        args.add(COSFloat.ZERO);
         PDFStreamEngine context = getContext();
         // this must be -leading instead of just leading as written in the
         // specification (p.369) the acrobat reader seems to implement it the same way

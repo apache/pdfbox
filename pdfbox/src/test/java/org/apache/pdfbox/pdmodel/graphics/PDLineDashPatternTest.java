@@ -48,7 +48,7 @@ class PDLineDashPatternTest
         COSArray dashArray = (COSArray) dashBase.getObject(0);
         assertEquals(2, dashBase.size());
         assertEquals(2, dashArray.size());
-        assertEquals(new COSFloat(1), dashArray.get(0));
+        assertEquals(COSFloat.ONE, dashArray.get(0));
         assertEquals(new COSFloat(2), dashArray.get(1));
         assertEquals(COSInteger.THREE, dashBase.get(1));
         System.out.println(dash);
