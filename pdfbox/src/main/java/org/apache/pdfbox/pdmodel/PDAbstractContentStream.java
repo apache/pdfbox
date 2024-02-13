@@ -513,7 +513,7 @@ abstract class PDAbstractContentStream implements Closeable
         sb.append(inlineImage.getColorSpace().getName());
 
         COSArray decodeArray = inlineImage.getDecode();
-        if (decodeArray != null && decodeArray.size() > 0)
+        if (decodeArray != null && !decodeArray.isEmpty())
         {
             sb.append("\n /D ");
             sb.append('[');

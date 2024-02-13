@@ -385,7 +385,7 @@ public class Splitter
                     dst.add(rc);
                 }
             }
-            return dst.size() > 0 ? dst : null;
+            return dst.isEmpty() ? null : dst;
         }
 
         private COSBase createDictionaryClone(COSBase src, COSBase dstParent, COSDictionary currentPageDict)

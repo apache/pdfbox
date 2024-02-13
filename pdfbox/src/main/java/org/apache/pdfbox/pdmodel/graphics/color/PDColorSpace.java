@@ -158,7 +158,7 @@ public abstract class PDColorSpace implements COSObjectable
         else if (colorSpace instanceof COSArray)
         {
             COSArray array = (COSArray)colorSpace;
-            if (array.size() == 0)
+            if (array.isEmpty())
             {
                 throw new IOException("Colorspace array is empty");
             }

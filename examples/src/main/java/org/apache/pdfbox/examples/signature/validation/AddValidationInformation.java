@@ -510,11 +510,11 @@ public class AddValidationInformation
             correspondingOCSPs = new COSArray();
             correspondingCRLs = new COSArray();
             addRevocationDataRecursive(certInfo);
-            if (correspondingOCSPs.size() > 0)
+            if (!correspondingOCSPs.isEmpty())
             {
                 vri.setItem(COSName.OCSP, correspondingOCSPs);
             }
-            if (correspondingCRLs.size() > 0)
+            if (!correspondingCRLs.isEmpty())
             {
                 vri.setItem(COSName.CRL, correspondingCRLs);
             }

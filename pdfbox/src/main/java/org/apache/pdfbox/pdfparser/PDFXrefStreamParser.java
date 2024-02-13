@@ -94,7 +94,7 @@ public class PDFXrefStreamParser extends BaseParser
             indexArray.add(COSInteger.ZERO);
             indexArray.add(COSInteger.get(stream.getInt(COSName.SIZE, 0)));
         }
-        if (indexArray.size() == 0 || indexArray.size() % 2 == 1)
+        if (indexArray.isEmpty() || indexArray.size() % 2 == 1)
         {
             throw new IOException(
                     "Wrong number of values for /Index array in XRef: " + Arrays.toString(w));

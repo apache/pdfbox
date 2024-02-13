@@ -205,9 +205,7 @@ public abstract class FDFAnnotation implements COSObjectable
         {
             values[i] = Float.parseFloat(rectValues[i]);
         }
-        COSArray array = new COSArray();
-        array.setFloatArray(values);
-        setRectangle(new PDRectangle(array));
+        setRectangle(new PDRectangle(COSArray.of(values)));
 
         setTitle(element.getAttribute("title"));
 
@@ -471,9 +469,7 @@ public abstract class FDFAnnotation implements COSObjectable
         COSArray color = null;
         if (c != null)
         {
-            float[] colors = c.getRGBColorComponents(null);
-            color = new COSArray();
-            color.setFloatArray(colors);
+            color = COSArray.of(c.getRGBColorComponents(null));
         }
         annot.setItem(COSName.C, color);
     }

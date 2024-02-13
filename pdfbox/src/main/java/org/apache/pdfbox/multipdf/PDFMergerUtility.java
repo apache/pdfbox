@@ -986,7 +986,7 @@ public class PDFMergerUtility
             srcKArray.add(clonedSrcKEntry);
         }
 
-        if (srcKArray.size() == 0)
+        if (srcKArray.isEmpty())
         {
             return;
         }
@@ -1024,7 +1024,7 @@ public class PDFMergerUtility
             }
         }
 
-        if (dstKArray.size() == 0)
+        if (dstKArray.isEmpty())
         {
             updateParentEntry(srcKArray, destStructTree.getCOSObject(), null);
             destStructTree.setK(srcKArray);

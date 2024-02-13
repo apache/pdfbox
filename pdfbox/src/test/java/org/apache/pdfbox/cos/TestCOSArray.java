@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +38,8 @@ class TestCOSArray
     {
         COSArray cosArray = new COSArray();
         assertEquals(0, cosArray.size());
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new COSArray(null),
+        Assertions.assertThrows(NullPointerException.class, () -> new COSArray(
+                        (List<? extends COSObjectable>) null),
                 "Constructor should have thrown an exception");
 
         cosArray = new COSArray(Arrays.asList(COSName.A, COSName.B, COSName.C));

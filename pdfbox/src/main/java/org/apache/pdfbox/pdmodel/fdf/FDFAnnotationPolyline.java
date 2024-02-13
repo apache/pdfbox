@@ -132,9 +132,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
      */
     public void setVertices(float[] vertices)
     {
-        COSArray newVertices = new COSArray();
-        newVertices.setFloatArray(vertices);
-        annot.setItem(COSName.VERTICES, newVertices);
+        annot.setItem(COSName.VERTICES, COSArray.of(vertices));
     }
 
     /**
@@ -224,9 +222,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
         COSArray array = null;
         if (color != null)
         {
-            float[] colors = color.getRGBColorComponents(null);
-            array = new COSArray();
-            array.setFloatArray(colors);
+            array = COSArray.of(color.getRGBColorComponents(null));
         }
         annot.setItem(COSName.IC, array);
     }

@@ -66,7 +66,7 @@ public abstract class PDPageDestination extends PDDestination
     public PDPage getPage()
     {
         PDPage retval = null;
-        if( array.size() > 0 )
+        if (!array.isEmpty())
         {
             COSBase page = array.getObject( 0 );
             if( page instanceof COSDictionary )
@@ -98,7 +98,7 @@ public abstract class PDPageDestination extends PDDestination
     public int getPageNumber()
     {
         int retval = -1;
-        if( array.size() > 0 )
+        if( !array.isEmpty() )
         {
             COSBase page = array.getObject( 0 );
             if( page instanceof COSNumber )
@@ -119,7 +119,7 @@ public abstract class PDPageDestination extends PDDestination
     public int retrievePageNumber()
     {
         int retval = -1;
-        if (array.size() > 0)
+        if (!array.isEmpty())
         {
             COSBase page = array.getObject(0);
             if (page instanceof COSNumber)

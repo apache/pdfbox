@@ -22,6 +22,8 @@ import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.graphics.color.PDGamma;
 
+import java.util.List;
+
 /**
  * An object for four colours.
  *
@@ -34,11 +36,12 @@ public class PDFourColours implements COSObjectable
 
     public PDFourColours()
     {
-        this.array = new COSArray();
-        this.array.add(COSNull.NULL);
-        this.array.add(COSNull.NULL);
-        this.array.add(COSNull.NULL);
-        this.array.add(COSNull.NULL);
+        this.array = new COSArray(List.of(
+            COSNull.NULL,
+            COSNull.NULL,
+            COSNull.NULL,
+            COSNull.NULL
+        ));
     }
 
     public PDFourColours(COSArray array)

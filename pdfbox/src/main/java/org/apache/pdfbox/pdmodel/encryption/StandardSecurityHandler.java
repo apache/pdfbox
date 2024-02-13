@@ -302,7 +302,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         //some documents may not have document id, see
         //test\encryption\encrypted_doc_no_id.pdf
         byte[] documentIDBytes;
-        if( documentIDArray != null && documentIDArray.size() >= 1 )
+        if (documentIDArray != null && !documentIDArray.isEmpty())
         {
             COSString id = (COSString)documentIDArray.getObject( 0 );
             documentIDBytes = id.getBytes();
@@ -535,9 +535,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             byte[] id = md.digest(this.toString().getBytes(StandardCharsets.ISO_8859_1));
             COSString idString = new COSString(id);
 
-            idArray = new COSArray();
-            idArray.add(idString);
-            idArray.add(idString);
+            idArray = new COSArray(Arrays.asList(idString, idString));
             document.getDocument().setDocumentID(idArray);
         }
 

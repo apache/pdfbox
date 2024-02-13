@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -312,9 +313,7 @@ public class PDStructureElement extends PDStructureNode
         }
         else
         {
-            COSArray array = new COSArray();
-            array.add(a);
-            array.add(COSInteger.get(this.getRevisionNumber()));
+            COSArray array = new COSArray(Arrays.asList(a, COSInteger.get(this.getRevisionNumber())));
             this.getCOSObject().setItem(key, array);
         }
     }

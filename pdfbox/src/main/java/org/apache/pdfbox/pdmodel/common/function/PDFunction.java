@@ -294,7 +294,7 @@ public abstract class PDFunction implements COSObjectable
     {
         COSArray rangesArray = getRangeValues();
         float[] result;
-        if (rangesArray != null && rangesArray.size() > 0)
+        if (rangesArray != null && !rangesArray.isEmpty())
         {
             float[] rangeValues = rangesArray.toFloatArray();
             int numberOfRanges = rangeValues.length/2;
