@@ -50,7 +50,7 @@ public class PlainText
      */
     public PlainText(String textValue)
     {
-        String[] parts = textValue.replace('\t', ' ').split("\\r\\n|\\n|\\r|\\u2028|\\u2029");
+        String[] parts = textValue.replace('\t', ' ').split("\\R");
         paragraphs = new ArrayList<>(parts.length);
         for (String part : parts)
         {
