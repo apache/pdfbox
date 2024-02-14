@@ -355,7 +355,7 @@ public class StreamPane implements ActionListener
                 // replace the remaining CRs with LF
                 if (data != null)
                 {
-                    data = data.replace("\r\n", "\n").replace('\r', '\n');
+                    data = data.replaceAll("\\R", "\n");
                 }
 
                 try

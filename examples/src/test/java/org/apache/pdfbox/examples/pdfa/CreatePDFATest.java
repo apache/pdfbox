@@ -115,7 +115,7 @@ class CreatePDFATest
             {
                 continue;
             }
-            if (line.matches("^\\d+ 0 obj$"))
+            if (line.matches("\\d+ 0 obj"))
             {
                 int pos = line.indexOf(" 0 obj");
                 line = line.substring(0, pos);
