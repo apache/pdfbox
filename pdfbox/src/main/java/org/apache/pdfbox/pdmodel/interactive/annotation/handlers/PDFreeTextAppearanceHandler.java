@@ -53,7 +53,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
     private static final Log LOG = LogFactory.getLog(PDFreeTextAppearanceHandler.class);
 
     private static final Pattern COLOR_PATTERN =
-            Pattern.compile(".*color\\:\\s*\\#([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]).*");
+            Pattern.compile(".*color\\:\\s*\\#([0-9a-fA-F]{6}).*");
 
     private float fontSize = 10;
     private COSName fontName = COSName.HELV;
