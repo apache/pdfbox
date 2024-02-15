@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.interactive.AppearanceStyle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.Line;
 import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.Paragraph;
 import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.TextAttribute;

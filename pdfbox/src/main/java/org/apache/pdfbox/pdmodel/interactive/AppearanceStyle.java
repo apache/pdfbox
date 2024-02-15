@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.interactive.form;
+package org.apache.pdfbox.pdmodel.interactive;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
 
@@ -22,7 +22,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
  * Define styling attributes to be used for text formatting.
  * 
  */
-class AppearanceStyle
+public class AppearanceStyle
 {
     private PDFont font;
     /**
@@ -44,7 +44,7 @@ class AppearanceStyle
      * 
      * @return the font used for text formatting.
      */
-    PDFont getFont()
+    public PDFont getFont()
     {
         return font;
     }
@@ -54,7 +54,7 @@ class AppearanceStyle
      * 
      * @param font the font to be used.
      */
-    void setFont(PDFont font)
+    public void setFont(PDFont font)
     {
         this.font = font;
     }
@@ -64,7 +64,7 @@ class AppearanceStyle
      * 
      * @return the fontSize used for text formatting.
      */
-    float getFontSize()
+    public float getFontSize()
     {
         return fontSize;
     }
@@ -74,7 +74,7 @@ class AppearanceStyle
      * 
      * @param fontSize the font size.
      */
-    void setFontSize(float fontSize)
+    public void setFontSize(float fontSize)
     {
         this.fontSize = fontSize;
         leading = fontSize * 1.2f;
@@ -85,7 +85,7 @@ class AppearanceStyle
      * 
      * @return the leading used for text formatting.
      */
-    float getLeading()
+    public float getLeading()
     {
         return leading;
     }
@@ -95,7 +95,7 @@ class AppearanceStyle
      * 
      * @param leading the leading to be used.
      */
-    void setLeading(float leading)
+    public void setLeading(float leading)
     {
         this.leading = leading;
     }
