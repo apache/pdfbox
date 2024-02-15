@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.common;
 
+import java.util.Objects;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
@@ -46,10 +47,18 @@ public class PDRange implements COSObjectable
      * Constructor assumes a starting index of 0.
      *
      * @param range The array that describes the range.
+     * If range is null, then sets to the default range of 0..1.
      */
     public PDRange( COSArray range )
     {
-        rangeArray = range;
+        if (range == null) {
+            rangeArray = new COSArray();
+            rangeArray.add( new COSFloat( 0.0f ) );
+            rangeArray.add( new COSFloat( 1.0f ) );
+        } else {
+            rangeArray = range;
+        }
+        startingIndex = 0;
     }
 
     /**
@@ -60,11 +69,22 @@ public class PDRange implements COSObjectable
      *
      * @param range The array that describes the index
      * @param index The range index into the array for the start of the range.
+     * If range is null, then regardless of index, sets to the default range of 0..1.
+     * @throws IllegalArgumentException if index does not correspond to a valid range.
      */
     public PDRange( COSArray range, int index )
     {
-        rangeArray = range;
-        startingIndex = index;
+        if (range == null) {
+            rangeArray = new COSArray();
+            rangeArray.add( new COSFloat( 0.0f ) );
+            rangeArray.add( new COSFloat( 1.0f ) );
+            startingIndex = 0;
+        } else if (index < 0 || 2 * index + 2 > range.size()) {
+            throw new IllegalArgumentException("index does not correspond to a valid range in the array.");
+        } else {
+            rangeArray = Objects.requireNonNull(range, "range cannot be null");
+            startingIndex = index;
+        }
     }
 
     /**
