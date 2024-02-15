@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.interactive.AppearanceStyle;
+import org.apache.pdfbox.pdmodel.interactive.TextAlign;
 import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.Line;
 import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.Paragraph;
 import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.TextAttribute;
@@ -35,35 +36,6 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.Word;
 
 public class PlainTextFormatter
 {
-    
-    enum TextAlign
-    {
-        LEFT(0), CENTER(1), RIGHT(2), JUSTIFY(4);
-        
-        private final int alignment;
-        
-        private TextAlign(int alignment)
-        {
-            this.alignment = alignment;
-        }
-        
-        int getTextAlign()
-        {
-            return alignment;
-        }
-        
-        public static TextAlign valueOf(int alignment)
-        {
-            for (TextAlign textAlignment : TextAlign.values())
-            {
-                if (textAlignment.getTextAlign() == alignment)
-                {
-                    return textAlignment;
-                }
-            }
-            return TextAlign.LEFT;
-        }
-    }
 
     /**
      * The scaling factor for font units to PDF units
