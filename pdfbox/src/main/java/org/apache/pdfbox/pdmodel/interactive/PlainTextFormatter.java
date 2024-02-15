@@ -14,18 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.interactive.annotation.layout;
+package org.apache.pdfbox.pdmodel.interactive;
 
 import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
-import org.apache.pdfbox.pdmodel.interactive.AppearanceStyle;
-import org.apache.pdfbox.pdmodel.interactive.TextAlign;
-import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.Line;
-import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.Paragraph;
-import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.TextAttribute;
-import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.Word;
+import org.apache.pdfbox.pdmodel.interactive.PlainText.Line;
+import org.apache.pdfbox.pdmodel.interactive.PlainText.Paragraph;
+import org.apache.pdfbox.pdmodel.interactive.PlainText.TextAttribute;
+import org.apache.pdfbox.pdmodel.interactive.PlainText.Word;
 
 /**
  * TextFormatter to handle plain text formatting for annotation rectangles.

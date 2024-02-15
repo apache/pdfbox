@@ -43,8 +43,8 @@ import static org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine.
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderEffectDictionary;
 import org.apache.pdfbox.pdmodel.interactive.AppearanceStyle;
-import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText;
-import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainTextFormatter;
+import org.apache.pdfbox.pdmodel.interactive.PlainText;
+import org.apache.pdfbox.pdmodel.interactive.PlainTextFormatter;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.util.Matrix;
 

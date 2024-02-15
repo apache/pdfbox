@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.interactive.form;
+package org.apache.pdfbox.pdmodel.interactive;
 
 import java.io.IOException;
 import java.text.AttributedString;
@@ -25,6 +25,8 @@ import java.util.List;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
 
+import javax.sound.sampled.Line;
+
 /**
  * A block of text.
  * <p>
@@ -33,7 +35,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
  * </p>
  * 
  */
-class PlainText
+public class PlainText
 {
     private static final float FONTSCALE = 1000f;
     
@@ -48,7 +50,7 @@ class PlainText
      * 
      * @param textValue the text block string.
      */
-    PlainText(String textValue)
+    public PlainText(String textValue)
     {
         if (textValue.isEmpty())
         {
@@ -79,7 +81,7 @@ class PlainText
      * 
      * @param listValue the text block string.
      */
-    PlainText(List<String> listValue)
+    public PlainText(List<String> listValue)
     {
         paragraphs = new ArrayList<>(listValue.size());
         listValue.forEach(part -> paragraphs.add(new Paragraph(part)));
@@ -90,7 +92,7 @@ class PlainText
      * 
      * @return the paragraphs.
      */
-    List<Paragraph> getParagraphs()
+    public List<Paragraph> getParagraphs()
     {
         return paragraphs;
     }
@@ -100,7 +102,6 @@ class PlainText
      * 
      * This is similar to {@link java.awt.font.TextAttribute} but
      * handled individually as to avoid a dependency on awt.
-     * 
      */
     static class TextAttribute extends Attribute
     {
@@ -128,47 +129,46 @@ class PlainText
      * A block of text can contain multiple paragraphs which will
      * be treated individually within the block placement.
      * </p>
-     * 
      */
-    static class Paragraph
+    public static class Paragraph
     {
         private final String textContent;
-        
+
         Paragraph(String text)
         {
             textContent = text;
         }
-        
+
         /**
          * Get the paragraph text.
-         * 
+         *
          * @return the text.
          */
         String getText()
         {
             return textContent;
         }
-        
+
         /**
          * Break the paragraph into individual lines.
-         * 
+         *
          * @param font the font used for rendering the text.
          * @param fontSize the fontSize used for rendering the text.
          * @param width the width of the box holding the content.
          * @return the individual lines.
          * @throws IOException
          */
-        List<Line> getLines(PDFont font, float fontSize, float width) throws IOException
+        public List<Line> getLines(PDFont font, float fontSize, float width) throws IOException
         {
             BreakIterator iterator = BreakIterator.getLineInstance();
             iterator.setText(textContent);
-            
+
             final float scale = fontSize/FONTSCALE;
-            
+
             int start = iterator.first();
             int end = iterator.next();
             float lineWidth = 0;
-            
+
             List<Line> textLines = new ArrayList<>();
             Line textLine = new Line();
 
@@ -179,7 +179,7 @@ class PlainText
 
                 boolean wordNeedsSplit = false;
                 int splitOffset = end - start;
-                
+
                 lineWidth = lineWidth + wordWidth;
 
                 // check if the last word would fit without the whitespace ending it
@@ -188,7 +188,7 @@ class PlainText
                     float whitespaceWidth = font.getStringWidth(word.substring(word.length()-1)) * scale;
                     lineWidth = lineWidth - whitespaceWidth;
                 }
-                
+
                 if (lineWidth >= width && !textLine.getWords().isEmpty())
                 {
                     textLine.setWidth(textLine.calculateWidth(font, fontSize));
@@ -196,7 +196,7 @@ class PlainText
                     textLine = new Line();
                     lineWidth = font.getStringWidth(word) * scale;
                 }
-                
+
                 if (wordWidth > width && textLine.getWords().isEmpty())
                 {
                     // single word does not fit into width
@@ -238,7 +238,7 @@ class PlainText
             return textLines;
         }
     }
-
+    
     /**
      * An individual line of text.
      */
