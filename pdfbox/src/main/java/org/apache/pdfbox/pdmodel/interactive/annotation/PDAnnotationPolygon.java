@@ -123,9 +123,7 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
      */
     public void setVertices(float[] points)
     {
-        COSArray ar = new COSArray();
-        ar.setFloatArray(points);
-        getCOSObject().setItem(COSName.VERTICES, ar);
+        getCOSObject().setItem(COSName.VERTICES, COSArray.of(points));
     }
 
     /**

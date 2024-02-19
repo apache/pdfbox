@@ -80,11 +80,7 @@ public class PDUserAttributeObject extends PDAttributeObject
      */
     public void setUserProperties(List<PDUserProperty> userProperties)
     {
-        COSArray p = new COSArray();
-        for (PDUserProperty userProperty : userProperties)
-        {
-            p.add(userProperty);
-        }
+        COSArray p = new COSArray(userProperties);
         this.getCOSObject().setItem(COSName.P, p);
     }
 

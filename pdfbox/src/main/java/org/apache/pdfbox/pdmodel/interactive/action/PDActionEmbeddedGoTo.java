@@ -85,7 +85,7 @@ public class PDActionEmbeddedGoTo extends PDAction
         {
             PDPageDestination pageDest = (PDPageDestination) d;
             COSArray destArray = pageDest.getCOSObject();
-            if (destArray.size() >= 1)
+            if (!destArray.isEmpty())
             {
                 COSBase page = destArray.getObject(0);
                 if (!(page instanceof COSInteger))

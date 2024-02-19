@@ -87,9 +87,7 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
      */
     public void setCoords(float[] coords)
     {
-        COSArray newQuadPoints = new COSArray();
-        newQuadPoints.setFloatArray(coords);
-        annot.setItem(COSName.QUADPOINTS, newQuadPoints);
+        annot.setItem(COSName.QUADPOINTS, COSArray.of(coords));
     }
 
     /**

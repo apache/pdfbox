@@ -134,9 +134,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public void setLine(float[] l)
     {
-        COSArray newL = new COSArray();
-        newL.setFloatArray(l);
-        getCOSObject().setItem(COSName.L, newL);
+        getCOSObject().setItem(COSName.L, COSArray.of(l));
     }
 
     /**
@@ -159,7 +157,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     {
         String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
         COSArray array = getCOSObject().getCOSArray(COSName.LE);
-        if (array == null || array.size() == 0)
+        if (array == null || array.isEmpty())
         {
             array = new COSArray();
             array.add(COSName.getPDFName(actualStyle));
@@ -356,9 +354,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
         COSArray array = getCOSObject().getCOSArray(COSName.CO);
         if (array == null)
         {
-            array = new COSArray();
-            array.setFloatArray(new float[] { offset, 0.f });
-            getCOSObject().setItem(COSName.CO, array);
+            getCOSObject().setItem(COSName.CO, COSArray.of(offset, 0.f ));
         }
         else
         {
@@ -387,9 +383,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
         COSArray array = getCOSObject().getCOSArray(COSName.CO);
         if (array == null)
         {
-            array = new COSArray();
-            array.setFloatArray(new float[] { 0.f, offset });
-            this.getCOSObject().setItem(COSName.CO, array);
+            this.getCOSObject().setItem(COSName.CO, COSArray.of(0.f, offset));
         }
         else
         {

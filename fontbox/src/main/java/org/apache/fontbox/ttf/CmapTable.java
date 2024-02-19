@@ -19,8 +19,8 @@ package org.apache.fontbox.ttf;
 import java.io.IOException;
 
 /**
- * The "cmap" table of a true type font.
- * 
+ * This 'cmap'-table is a required table in a TrueType font.
+ *
  * @author Ben Litchfield
  */
 public class CmapTable extends TTFTable
@@ -63,7 +63,7 @@ public class CmapTable extends TTFTable
 
     /**
      * This will read the required data from the stream.
-     * 
+     *
      * @param ttf The font that is being read.
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
@@ -107,10 +107,10 @@ public class CmapTable extends TTFTable
 
     /**
      * Returns the subtable, if any, for the given platform and encoding.
-     * 
+     *
      * @param platformId the ID of the given platform
      * @param platformEncodingId the ID of the given encoding
-     * 
+     *
      * @return the subtable, if any, or null
      */
     public CmapSubtable getSubtable(int platformId, int platformEncodingId)

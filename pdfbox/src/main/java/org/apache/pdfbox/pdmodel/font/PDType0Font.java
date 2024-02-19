@@ -80,7 +80,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
         {
             throw new IOException("Missing descendant font array");
         }
-        if (descendantFonts.size() == 0)
+        if (descendantFonts.isEmpty())
         {
             throw new IOException("Descendant font array is empty");
         }

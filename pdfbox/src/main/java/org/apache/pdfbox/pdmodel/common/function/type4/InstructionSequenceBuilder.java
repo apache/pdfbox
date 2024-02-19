@@ -17,7 +17,7 @@
 package org.apache.pdfbox.pdmodel.common.function.type4;
 
 import java.util.Stack;
-import java.util.regex.Matcher;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 /**
@@ -26,8 +26,8 @@ import java.util.regex.Pattern;
  */
 public final class InstructionSequenceBuilder extends Parser.AbstractSyntaxHandler
 {
-    private static final Pattern INTEGER_PATTERN = Pattern.compile("[\\+\\-]?\\d+");
-    private static final Pattern REAL_PATTERN = Pattern.compile("[\\-]?\\d*\\.\\d*([Ee]\\-?\\d+)?");
+    private static final Predicate<String> MATCHES_INTEGER = Pattern.compile("[\\+\\-]?\\d+").asMatchPredicate();
+    private static final Predicate<String> MATCHES_REAL = Pattern.compile("[\\-]?\\d*\\.\\d*([Ee]\\-?\\d+)?").asMatchPredicate();
 
     private final InstructionSequence mainSequence = new InstructionSequence();
     private final Stack<InstructionSequence> seqStack = new Stack<>();
@@ -86,15 +86,13 @@ public final class InstructionSequenceBuilder extends Parser.AbstractSyntaxHandl
         }
         else
         {
-            Matcher m = INTEGER_PATTERN.matcher(token);
-            if (m.matches())
+            if (MATCHES_INTEGER.test(token))
             {
                 getCurrentSequence().addInteger(parseInt(token));
                 return;
             }
 
-            m = REAL_PATTERN.matcher(token);
-            if (m.matches())
+            if (MATCHES_REAL.test(token))
             {
                 getCurrentSequence().addReal(parseReal(token));
                 return;

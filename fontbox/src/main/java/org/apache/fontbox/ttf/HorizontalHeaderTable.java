@@ -19,8 +19,8 @@ package org.apache.fontbox.ttf;
 import java.io.IOException;
 
 /**
- * A table in a true type font.
- * 
+ * This 'hhea'-table is a required table in a TrueType font.
+ *
  * @author Ben Litchfield
  */
 public class HorizontalHeaderTable extends TTFTable
@@ -29,7 +29,7 @@ public class HorizontalHeaderTable extends TTFTable
      * A tag that identifies this table type.
      */
     public static final String TAG = "hhea";
-    
+
     private float version;
     private short ascender;
     private short descender;
@@ -55,7 +55,7 @@ public class HorizontalHeaderTable extends TTFTable
 
     /**
      * This will read the required data from the stream.
-     * 
+     *
      * @param ttf The font that is being read.
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
@@ -82,7 +82,7 @@ public class HorizontalHeaderTable extends TTFTable
         numberOfHMetrics = data.readUnsignedShort();
         initialized = true;
     }
-    
+
     /**
      * @return Returns the advanceWidthMax.
      */

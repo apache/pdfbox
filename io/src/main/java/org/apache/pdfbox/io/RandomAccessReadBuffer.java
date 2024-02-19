@@ -90,7 +90,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
      */
     public RandomAccessReadBuffer(ByteBuffer input)
     {
-        chunkSize = input.capacity();
+        chunkSize = input.limit();
         size = chunkSize;
         currentBuffer = input;
         bufferList = new ArrayList<>(1);

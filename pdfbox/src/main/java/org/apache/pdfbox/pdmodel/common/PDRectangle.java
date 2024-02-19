@@ -19,6 +19,8 @@ package org.apache.pdfbox.pdmodel.common;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.util.Arrays;
+import java.util.List;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
@@ -114,11 +116,12 @@ public class PDRectangle implements COSObjectable
      */
     public PDRectangle( float x, float y, float width, float height )
     {
-        rectArray = new COSArray();
-        rectArray.add( new COSFloat( x ) );
-        rectArray.add( new COSFloat( y ) );
-        rectArray.add( new COSFloat( x + width ) );
-        rectArray.add( new COSFloat( y + height ) );
+        rectArray = new COSArray(List.of(
+            new COSFloat( x ),
+            new COSFloat( y ),
+            new COSFloat( x + width ),
+            new COSFloat( y + height )
+        ));
     }
 
     /**
@@ -128,11 +131,12 @@ public class PDRectangle implements COSObjectable
      */
     public PDRectangle( BoundingBox box )
     {
-        rectArray = new COSArray();
-        rectArray.add( new COSFloat( box.getLowerLeftX() ) );
-        rectArray.add( new COSFloat( box.getLowerLeftY() ) );
-        rectArray.add( new COSFloat( box.getUpperRightX() ) );
-        rectArray.add( new COSFloat( box.getUpperRightY() ) );
+        rectArray = new COSArray(List.of(
+            new COSFloat( box.getLowerLeftX() ),
+            new COSFloat( box.getLowerLeftY() ),
+            new COSFloat( box.getUpperRightX() ),
+            new COSFloat( box.getUpperRightY() )
+        ));
     }
 
     /**
@@ -143,12 +147,13 @@ public class PDRectangle implements COSObjectable
     public PDRectangle( COSArray array )
     {
         float[] values = Arrays.copyOf(array.toFloatArray(), 4);
-        rectArray = new COSArray();
-        // we have to start with the lower left corner
-        rectArray.add( new COSFloat( Math.min(values[0],values[2] )) );
-        rectArray.add( new COSFloat( Math.min(values[1],values[3] )) );
-        rectArray.add( new COSFloat( Math.max(values[0],values[2] )) );
-        rectArray.add( new COSFloat( Math.max(values[1],values[3] )) );
+        rectArray = new COSArray(List.of(
+            // we have to start with the lower left corner
+            new COSFloat( Math.min(values[0],values[2] )),
+            new COSFloat( Math.min(values[1],values[3] )),
+            new COSFloat( Math.max(values[0],values[2] )),
+            new COSFloat( Math.max(values[1],values[3] ))
+        ));
     }
 
     /**

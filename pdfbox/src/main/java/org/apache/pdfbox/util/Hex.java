@@ -206,7 +206,8 @@ public final class Hex
      */
     public static byte[] decodeBase64(String base64Value)
     {
-        return Base64.getDecoder().decode(base64Value.replaceAll("\\s", ""));
+        return Base64.getDecoder().
+                decode(StringUtil.PATTERN_SPACE.matcher(base64Value).replaceAll(""));
     }
 
     /**

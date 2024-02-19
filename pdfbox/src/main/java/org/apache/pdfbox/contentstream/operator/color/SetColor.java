@@ -57,8 +57,7 @@ public abstract class SetColor extends OperatorProcessor
                 return;
             }
         }
-        COSArray array = new COSArray();
-        array.addAll(arguments);
+        COSArray array = new COSArray(arguments);
         setColor(new PDColor(array, colorSpace));
     }
 

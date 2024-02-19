@@ -38,9 +38,9 @@ public final class PDTristimulus implements COSObjectable
     public PDTristimulus()
     {
         values = new COSArray();
-        values.add(new COSFloat(0.0f));
-        values.add(new COSFloat(0.0f));
-        values.add(new COSFloat(0.0f));
+        values.add(COSFloat.ZERO);
+        values.add(COSFloat.ZERO);
+        values.add(COSFloat.ZERO);
     }
 
     /**

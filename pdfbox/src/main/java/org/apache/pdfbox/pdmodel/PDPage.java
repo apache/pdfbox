@@ -225,7 +225,7 @@ public class PDPage implements COSObjectable, PDContentStream
         }
         else if (contents instanceof COSArray)
         {
-            return ((COSArray) contents).size() > 0;
+            return !((COSArray) contents).isEmpty();
         }
         return false;
     }

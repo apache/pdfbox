@@ -50,7 +50,7 @@ public final class PDColor
      */
     public PDColor(COSArray array, PDColorSpace colorSpace)
     {
-        if (array.size() > 0 && array.get(array.size() - 1) instanceof COSName)
+        if (!array.isEmpty() && array.get(array.size() - 1) instanceof COSName)
         {
             // color components (optional), for the color of an uncoloured tiling pattern
             components = new float[array.size() - 1];
@@ -190,8 +190,7 @@ public final class PDColor
      */
     public COSArray toCOSArray()
     {
-        COSArray array = new COSArray();
-        array.setFloatArray(components);
+        COSArray array = COSArray.of(components);
         if (patternName != null)
         {
             array.add(patternName);

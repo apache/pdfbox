@@ -108,10 +108,11 @@ public class LayerUtility
         {
             COSStream contentsStream = (COSStream)contents;
 
-            COSArray array = new COSArray();
-            array.add(saveGraphicsStateStream);
-            array.add(contentsStream);
-            array.add(restoreGraphicsStateStream);
+            COSArray array = new COSArray(Arrays.asList(
+                saveGraphicsStateStream,
+                contentsStream,
+                restoreGraphicsStateStream
+            ));
 
             pageDictionary.setItem(COSName.CONTENTS, array);
         }

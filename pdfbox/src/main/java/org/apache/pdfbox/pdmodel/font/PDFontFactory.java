@@ -310,7 +310,7 @@ public final class PDFontFactory
     private static COSDictionary getDescendantFont(COSDictionary dictionary)
     {
         COSArray descendantFonts = dictionary.getCOSArray(COSName.DESCENDANT_FONTS);
-        if (descendantFonts != null && descendantFonts.size() > 0)
+        if (descendantFonts != null && !descendantFonts.isEmpty())
         {
             COSBase descendantFontDictBase = descendantFonts.getObject(0);
             if (descendantFontDictBase instanceof COSDictionary)

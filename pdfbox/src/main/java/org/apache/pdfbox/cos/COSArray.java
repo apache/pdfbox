@@ -32,16 +32,25 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInfo
 {
-    private final List<COSBase> objects = new ArrayList<>();
+    private final ArrayList<COSBase> objects;
     private final COSUpdateState updateState;
+
+    public static COSArray of(float... floats)
+    {
+        ArrayList<COSBase> objects = new ArrayList<>(floats.length);
+        for (float f : floats)
+        {
+            objects.add(new COSFloat(f));
+        }
+        return new COSArray(objects, true);
+    }
 
     /**
      * Constructor.
      */
     public COSArray()
     {
-        updateState = new COSUpdateState(this);
-        setDirect(true);
+        this(new ArrayList<>(), true);
     }
 
     /**
@@ -51,14 +60,19 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public COSArray(List<? extends COSObjectable> cosObjectables)
     {
-        if (cosObjectables == null)
-        {
-            throw new IllegalArgumentException("List of COSObjectables cannot be null");
-        }
+        this(
+            cosObjectables.stream()
+            .map(co -> co == null ? null : co.getCOSObject())
+            .collect(Collectors.toCollection(ArrayList::new)),
+            true
+        );
+    }
+
+    private COSArray(ArrayList<COSBase> cosObjects, boolean direct)
+    {
+        objects = cosObjects;
         updateState = new COSUpdateState(this);
-        setDirect(true);
-        cosObjectables.forEach(cosObjectable ->
-            objects.add(cosObjectable != null ? cosObjectable.getCOSObject() : null));
+        setDirect(direct);
     }
 
     /**
@@ -398,6 +412,16 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
+     * Returns true if the container is empty, false otherwise.
+     *
+     * @return true if the container is empty, false otherwise
+     */
+    public boolean isEmpty()
+    {
+        return objects.isEmpty();
+    }
+
+    /**
      * This will remove an element from the array.
      *
      * @param i The index of the object to remove.
@@ -554,6 +578,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void growToSize( int size, COSBase object )
     {
+        objects.ensureCapacity(size);
         while( size() < size )
         {
             add( object );

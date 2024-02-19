@@ -125,9 +125,7 @@ public class FDFAnnotationInk extends FDFAnnotation
         COSArray newInklist = new COSArray();
         for (float[] array : inklist)
         {
-            COSArray newArray = new COSArray();
-            newArray.setFloatArray(array);
-            newInklist.add(newArray);
+            newInklist.add(COSArray.of(array));
         }
         annot.setItem(COSName.INKLIST, newInklist);
     }

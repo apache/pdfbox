@@ -164,9 +164,8 @@ public final class TreeStatus
             node = node.trim();
             if (node.startsWith("["))
             {
-                node = node.replace("]", "").replace("[", "");
+                node = node.replace("]", "").replace("[", "").trim();
             }
-            node = node.trim();
             if (node.isEmpty())
             {
                 return null;

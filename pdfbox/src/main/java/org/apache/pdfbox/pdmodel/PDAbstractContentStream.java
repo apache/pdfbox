@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -68,6 +67,7 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.NumberFormatUtil;
+import org.apache.pdfbox.util.StringUtil;
 
 /**
  * Provides the ability to write to a content stream.
@@ -513,7 +513,7 @@ abstract class PDAbstractContentStream implements Closeable
         sb.append(inlineImage.getColorSpace().getName());
 
         COSArray decodeArray = inlineImage.getDecode();
-        if (decodeArray != null && decodeArray.size() > 0)
+        if (decodeArray != null && !decodeArray.isEmpty())
         {
             sb.append("\n /D ");
             sb.append('[');
@@ -1615,16 +1615,14 @@ abstract class PDAbstractContentStream implements Closeable
     private byte[] encodeForGsub(GsubWorker gsubWorker,
                                  Set<Integer> glyphIds, PDType0Font font, String text) throws IOException
     {
-        Pattern spaceRegex = Pattern.compile("\\s");
-
         // break the entire chunk of text into words by splitting it with space
-        List<String> words = new CompoundCharacterTokenizer("\\s").tokenize(text);
+        List<String> words = new CompoundCharacterTokenizer(StringUtil.PATTERN_SPACE).tokenize(text);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         for (String word : words)
         {
-            if (spaceRegex.matcher(word).matches())
+            if (StringUtil.PATTERN_SPACE.matcher(word).matches())
             {
                 out.write(font.encode(word));
             }

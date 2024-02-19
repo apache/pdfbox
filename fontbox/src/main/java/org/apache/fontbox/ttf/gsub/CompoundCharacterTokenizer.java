@@ -47,9 +47,9 @@ public class CompoundCharacterTokenizer
         regexExpression = Pattern.compile(getRegexFromTokens(compoundWords));
     }
 
-    public CompoundCharacterTokenizer(String singleRegex)
+    public CompoundCharacterTokenizer(Pattern pattern)
     {
-        regexExpression = Pattern.compile(singleRegex);
+        regexExpression = pattern;
     }
 
     public List<String> tokenize(String text)

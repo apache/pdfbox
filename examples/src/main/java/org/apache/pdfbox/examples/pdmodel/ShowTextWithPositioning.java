@@ -30,6 +30,7 @@ import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.util.Matrix;
+import org.apache.pdfbox.util.StringUtil;
 
 /**
  * This example shows how to justify a string using the showTextWithPositioning method. First only
@@ -92,8 +93,8 @@ public class ShowTextWithPositioning
                 float justifyWidth = pageSize.getWidth() * 1000f - stringWidth;
                 
                 List<Object> text = new ArrayList<>();
-                String[] parts = message.split("\\s");
-                
+                String[] parts = StringUtil.splitOnSpace(message);
+
                 float spaceWidth = (justifyWidth / (parts.length - 1)) / FONT_SIZE;
                 
                 for (int i = 0; i < parts.length; i++)

@@ -27,6 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -74,6 +76,14 @@ public class GlyphSubstitutionTable extends TTFTable
     private String lastUsedSupportedScript;
 
     private GsubData gsubData;
+
+    /**
+     * The regex represents 4 'word characters' [a-zA-Z_0-9], see
+     * {@link java.util.regex.ASCII#WORD}.
+     * <p>
+     * Note: the ' '-character is not matched!
+     */
+    private static final Predicate<String> IS_4_CHAR_WORD = Pattern.compile("\\w{4}").asMatchPredicate();
 
     GlyphSubstitutionTable()
     {
@@ -223,7 +233,7 @@ public class GlyphSubstitutionTable extends TTFTable
             {
                 // catch corrupt file
                 // https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#flTbl
-                if (featureTags[i].matches("\\w{4}") && featureTags[i-1].matches("\\w{4}"))
+                if (IS_4_CHAR_WORD.test(featureTags[i]) && IS_4_CHAR_WORD.test(featureTags[i - 1]))
                 {
                     // ArialUni.ttf has many warnings but isn't corrupt, so we assume that only
                     // strings with trash characters indicate real corruption
@@ -767,8 +777,8 @@ public class GlyphSubstitutionTable extends TTFTable
      * @param gid GID
      * @param scriptTags Script tags applicable to the gid (see {@link OpenTypeScript})
      * @param enabledFeatures list of features to apply
-     * 
-     * @return the id of the glyph substituion
+     *
+     * @return the id of the glyph substitution
      */
     public int getSubstitution(int gid, String[] scriptTags, List<String> enabledFeatures)
     {
@@ -780,7 +790,7 @@ public class GlyphSubstitutionTable extends TTFTable
         if (cached != null)
         {
             // Because script detection for indeterminate scripts (COMMON, INHERIT, etc.) depends on context,
-            // it is possible to return a different substitution for the same input. However we don't want that,
+            // it is possible to return a different substitution for the same input. However, we don't want that,
             // as we need a one-to-one mapping.
             return cached;
         }
@@ -798,13 +808,14 @@ public class GlyphSubstitutionTable extends TTFTable
     }
 
     /**
-     * For a substitute-gid (obtained from {@link #getSubstitution(int, String[], List)}), retrieve the original gid.
-     *
-     * Only gids previously substituted by this instance can be un-substituted. If you are trying to unsubstitute before
-     * you substitute, something is wrong.
+     * For a substitute-gid (obtained from {@link #getSubstitution(int, String[], List)}),
+     * retrieve the original gid.
+     * <p>
+     * Only gids previously substituted by this instance can be un-substituted.
+     * If you are trying to unsubstitute before you substitute, something is wrong.
      *
      * @param sgid Substitute GID
-     * 
+     *
      * @return the original gid of a substitute-gid
      */
     public int getUnsubstitution(int sgid)
@@ -820,7 +831,7 @@ public class GlyphSubstitutionTable extends TTFTable
 
     /**
      * Returns a GsubData instance containing all scripts of the table.
-     * 
+     *
      * @return the GsubData instance representing the table
      */
     public GsubData getGsubData()
@@ -836,7 +847,7 @@ public class GlyphSubstitutionTable extends TTFTable
      * corresponding {@link org.apache.fontbox.ttf.gsub.GsubWorker} implementation for it.
      *
      * Note: This method performs searching on every invocation (no results are cached)
-     * 
+     *
      * @param scriptTag a <a href="https://learn.microsoft.com/en-us/typography/opentype/spec/scripttags">script tag</a>
      * for which the data is needed
      * @return GSUB data for the given script or {@code null} if no such script in the font
