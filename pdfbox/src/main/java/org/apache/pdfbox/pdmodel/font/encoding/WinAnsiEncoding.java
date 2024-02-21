@@ -21,7 +21,7 @@ import org.apache.pdfbox.cos.COSName;
 
 /**
  * This the win ansi encoding.
- * 
+ *
  * @author Ben Litchfield
  */
 public class WinAnsiEncoding extends Encoding
@@ -29,6 +29,7 @@ public class WinAnsiEncoding extends Encoding
     /**
      * Table of octal character codes and their corresponding names.
      */
+    @SuppressWarnings("OctalInteger")
     private static final Object[][] WIN_ANSI_ENCODING_TABLE = {
             {0101, "A"},
             {0306, "AE"},
@@ -253,7 +254,7 @@ public class WinAnsiEncoding extends Encoding
 
     /**
      * Singleton instance of this class.
-     * 
+     *
      * @since Apache PDFBox 1.3.0
      */
     public static final WinAnsiEncoding INSTANCE = new WinAnsiEncoding();

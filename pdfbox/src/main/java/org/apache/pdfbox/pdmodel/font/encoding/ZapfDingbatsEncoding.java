@@ -27,6 +27,7 @@ public class ZapfDingbatsEncoding extends Encoding
     /**
      * Table of octal character codes and their corresponding names.
      */
+    @SuppressWarnings("OctalInteger")
     private static final Object[][] ZAPFDINGBATS_ENCODING_TABLE = {
         {040, "space"},
         {041, "a1"},
@@ -217,7 +218,7 @@ public class ZapfDingbatsEncoding extends Encoding
         {0375, "a190"},
         {0376, "a191"}
     };
-    
+
     /**
      * Singleton instance of this class.
      */
@@ -233,7 +234,7 @@ public class ZapfDingbatsEncoding extends Encoding
             add((Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
         }
     }
-    
+
     @Override
     public COSBase getCOSObject()
     {

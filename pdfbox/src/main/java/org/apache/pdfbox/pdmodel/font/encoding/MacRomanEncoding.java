@@ -29,6 +29,7 @@ public class MacRomanEncoding extends Encoding
     /**
      * Table of octal character codes and their corresponding names.
      */
+    @SuppressWarnings("OctalInteger")
     private static final Object[][] MAC_ROMAN_ENCODING_TABLE = {
             {0101, "A"},
             {0256, "AE"},
@@ -240,7 +241,7 @@ public class MacRomanEncoding extends Encoding
             // adding an additional mapping as defined in Appendix D of the pdf spec
             {0312, "nbspace"}
     };
-    
+
     /**
      * Singleton instance of this class.
      *
@@ -258,7 +259,7 @@ public class MacRomanEncoding extends Encoding
             add((Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
         }
     }
-    
+
     @Override
     public COSBase getCOSObject()
     {

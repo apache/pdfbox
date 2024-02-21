@@ -27,7 +27,9 @@ public class MacOSRomanEncoding extends MacRomanEncoding
     /**
      * Table of octal character codes and their corresponding names
      * on top of {@link MacRomanEncoding}.
+     * ToDo are these really octals?? leading 0 seems to be missing
      */
+    @SuppressWarnings("OctalInteger")
     private static final Object[][] MAC_OS_ROMAN_ENCODING_TABLE = {
             {255, "notequal"},
             {260, "infinity"},
@@ -44,9 +46,9 @@ public class MacOSRomanEncoding extends MacRomanEncoding
             {306, "Delta"},
             {327, "lozenge"},
             {333, "Euro"},
-            {360, "apple"}    
+            {360, "apple"}
     };
-    
+
     /**
      * Singleton instance of this class.
      *

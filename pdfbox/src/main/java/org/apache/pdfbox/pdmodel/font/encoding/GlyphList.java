@@ -38,10 +38,10 @@ public final class GlyphList
 
     // Adobe Glyph List (AGL)
     private static final GlyphList DEFAULT = load("glyphlist.txt", 4281);
-    
+
     // Zapf Dingbats has its own glyph list
     private static final GlyphList ZAPF_DINGBATS = load("zapfdingbats.txt",201);
-    
+
     /**
      * Loads a glyph list from disk.
      */
@@ -65,7 +65,7 @@ public final class GlyphList
 
     /**
      * Returns the Adobe Glyph List (AGL).
-     * 
+     *
      * @return the Adobe glyph list
      */
     public static GlyphList getAdobeGlyphList()
@@ -75,7 +75,7 @@ public final class GlyphList
 
     /**
      * Returns the Zapf Dingbats glyph list.
-     * 
+     *
      * @return the Zapf Dingbats glyph list
      */
     public static GlyphList getZapfDingbats()
@@ -86,7 +86,7 @@ public final class GlyphList
     // read-only mappings, never modified outside GlyphList's constructor
     private final Map<String, String> nameToUnicode;
     private final Map<String, String> unicodeToName;
-    
+
     // additional read/write cache for uniXXXX names
     private final Map<String, String> uniNameToUnicodeCache = new ConcurrentHashMap<>();
 
@@ -154,11 +154,11 @@ public final class GlyphList
                     nameToUnicode.put(name, string);
 
                     // reverse mapping
-                    // PDFBOX-3884: take the various standard encodings as canonical, 
+                    // PDFBOX-3884: take the various standard encodings as canonical,
                     // e.g. tilde over ilde
                     final boolean forceOverride =
                           WinAnsiEncoding.INSTANCE.contains(name) ||
-                          MacRomanEncoding.INSTANCE.contains(name) || 
+                          MacRomanEncoding.INSTANCE.contains(name) ||
                           MacExpertEncoding.INSTANCE.contains(name) ||
                           SymbolEncoding.INSTANCE.contains(name) ||
                           ZapfDingbatsEncoding.INSTANCE.contains(name);
@@ -221,7 +221,7 @@ public final class GlyphList
         {
             return unicode;
         }
-        
+
         // separate read/write cache for thread safety
         unicode = uniNameToUnicodeCache.get(name);
         if (unicode == null)

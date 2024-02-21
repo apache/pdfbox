@@ -36,7 +36,7 @@ public class BuiltInEncoding extends Encoding
     {
         codeToName.forEach(this::add);
     }
-    
+
     @Override
     public COSBase getCOSObject()
     {

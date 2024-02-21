@@ -27,6 +27,7 @@ public class SymbolEncoding extends Encoding
     /**
      * Table of octal character codes and their corresponding names.
      */
+    @SuppressWarnings("OctalInteger")
     private static final Object[][] SYMBOL_ENCODING_TABLE = {
         {0101, "Alpha"},
         {0102, "Beta"},
@@ -216,9 +217,9 @@ public class SymbolEncoding extends Encoding
         {0303, "weierstrass"},
         {0170, "xi"},
         {0060, "zero"},
-        {0172, "zeta"}       
+        {0172, "zeta"}
     };
-    
+
     /**
      * Singleton instance of this class.
      */
@@ -234,7 +235,7 @@ public class SymbolEncoding extends Encoding
             add((Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
         }
     }
-    
+
     @Override
     public COSBase getCOSObject()
     {

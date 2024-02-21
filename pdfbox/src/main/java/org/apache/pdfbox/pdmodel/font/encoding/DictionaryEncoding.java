@@ -61,7 +61,7 @@ public class DictionaryEncoding extends Encoding
         {
             throw new IllegalArgumentException("Invalid encoding: " + baseEncoding);
         }
-        
+
         codeToName.putAll(this.baseEncoding.codeToName);
         inverted.putAll(this.baseEncoding.inverted);
         applyDifferences();
@@ -78,7 +78,7 @@ public class DictionaryEncoding extends Encoding
         baseEncoding = null;
         applyDifferences();
     }
-    
+
     /**
      * Creates a new DictionaryEncoding from a PDF.
      *
@@ -116,7 +116,7 @@ public class DictionaryEncoding extends Encoding
                 {
                     // triggering this error indicates a bug in PDFBox. Every font should always have
                     // a built-in encoding, if not, we parsed it incorrectly.
-                    throw new IllegalArgumentException("Symbolic fonts must have a built-in " + 
+                    throw new IllegalArgumentException("Symbolic fonts must have a built-in " +
                                                        "encoding");
                 }
             }
@@ -156,7 +156,7 @@ public class DictionaryEncoding extends Encoding
 
     /**
      * Returns the base encoding. Will be null for Type 3 fonts.
-     * 
+     *
      * @return the base encoding or null
      */
     public Encoding getBaseEncoding()
@@ -166,7 +166,7 @@ public class DictionaryEncoding extends Encoding
 
     /**
      * Returns the Differences array.
-     * 
+     *
      * @return a map containing all differences
      */
     public Map<Integer, String> getDifferences()

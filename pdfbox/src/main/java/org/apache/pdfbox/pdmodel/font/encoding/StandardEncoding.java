@@ -29,6 +29,7 @@ public class StandardEncoding extends Encoding
     /**
      * Table of octal character codes and their corresponding names.
      */
+    @SuppressWarnings("OctalInteger")
     private static final Object[][] STANDARD_ENCODING_TABLE = {
             {0101, "A"},
             {0341, "AE"},

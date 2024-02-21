@@ -25,7 +25,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
  * A PostScript encoding vector, maps character codes to glyph names.
- * 
+ *
  * @author Ben Litchfield
  */
 public abstract class Encoding implements COSObjectable
@@ -75,7 +75,7 @@ public abstract class Encoding implements COSObjectable
 
     /**
      * Returns an unmodifiable view of the code -&gt; name mapping.
-     * 
+     *
      * @return the code -&gt; name map
      */
     public Map<Integer, String> getCodeToNameMap()
@@ -97,9 +97,9 @@ public abstract class Encoding implements COSObjectable
     /**
      * This will add a character encoding. An already existing mapping is preserved when creating
      * the reverse mapping. Should only be used during construction of the class.
-     * 
+     *
      * @see #overwrite(int, String)
-     * 
+     *
      * @param code character code
      * @param name PostScript glyph name
      */
@@ -136,7 +136,7 @@ public abstract class Encoding implements COSObjectable
 
     /**
      * Determines if the encoding has a mapping for the given name value.
-     * 
+     *
      * @param name PostScript glyph name
      * @return true if the encoding has a mapping for the given name value
      */
@@ -147,10 +147,10 @@ public abstract class Encoding implements COSObjectable
 
     /**
      * Determines if the encoding has a mapping for the given code value.
-     * 
+     *
      * @param code character code
      * @return if the encoding has a mapping for the given code value
-     * 
+     *
      */
     public boolean contains(int code)
     {
@@ -159,23 +159,18 @@ public abstract class Encoding implements COSObjectable
 
     /**
      * This will take a character code and get the name from the code.
-     * 
+     *
      * @param code character code
-     * @return PostScript glyph name
+     * @return PostScript glyph name, or ".notdef" when not found.
      */
     public String getName(int code)
     {
-       String name = codeToName.get(code);
-       if (name != null)
-       {
-          return name;
-       }
-       return ".notdef";
+       return codeToName.getOrDefault(code, ".notdef");
     }
 
     /**
      * Returns the name of this encoding.
-     * 
+     *
      * @return the name of the encoding
      */
     public abstract String getEncodingName();

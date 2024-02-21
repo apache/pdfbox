@@ -27,6 +27,7 @@ public class MacExpertEncoding extends Encoding
     /**
      * Table of octal character codes and their corresponding names.
      */
+    @SuppressWarnings("OctalInteger")
     private static final Object[][] MAC_EXPERT_ENCODING_TABLE = {
         {0276, "AEsmall"},
         {0207, "Aacutesmall"},
@@ -194,7 +195,7 @@ public class MacExpertEncoding extends Encoding
         {060, "zerooldstyle"},
         {0342, "zerosuperior"}
     };
-    
+
     /**
      * Singleton instance of this class.
      */
@@ -210,7 +211,7 @@ public class MacExpertEncoding extends Encoding
             add((Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
         }
     }
-    
+
     @Override
     public COSBase getCOSObject()
     {
