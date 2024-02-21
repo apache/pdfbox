@@ -70,24 +70,18 @@ public class PDFText2Markdown extends PDFTextStripper
     {
         switch (character)
         {
-            case 34:
-                builder.append("&quot;");
-                break;
-            case 38:
-                builder.append("&");
-                break;
-            case 39:
-                builder.append("\'");
-            case 60:
-                builder.append("<");
-                break;
-            case 62:
-                builder.append(">");
+            case '*':
+            case '+':
+            case '-':
+            case '#':
+                builder.append('\\').append(character);
                 break;
             case 178:
                 builder.append("<sup>2</sup>");
                 break;
-
+            case 179:
+                builder.append("<sup>3</sup>");
+                break;
             default:
                 builder.append(character);
                 break;
