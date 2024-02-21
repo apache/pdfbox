@@ -347,9 +347,6 @@ public class PDDocument implements Closeable
             throw new IllegalStateException("Cannot sign an empty document");
         }
 
-        int startIndex = Math.min(Math.max(options.getPage(), 0), pageCount - 1);
-        PDPage page = pageTree.get(startIndex);
-
         // Get the AcroForm from the Root-Dictionary and append the annotation
         PDDocumentCatalog catalog = getDocumentCatalog();
         PDAcroForm acroForm = catalog.getAcroForm(null);
@@ -378,12 +375,15 @@ public class PDDocument implements Closeable
             acroForm.getCOSObject().setItem(COSName.FIELDS, new COSArray());
         }
         PDAnnotationWidget firstWidget;
+        PDPage page;
         if (signatureField == null)
         {
             signatureField = new PDSignatureField(acroForm);
             // append the signature object
             signatureField.setValue(sigObject);
             firstWidget = signatureField.getWidgets().get(0);
+            int startIndex = Math.min(Math.max(options.getPage(), 0), pageCount - 1);
+            page = pageTree.get(startIndex);
             // backward linking
             firstWidget.setPage(page);
         }
@@ -391,6 +391,7 @@ public class PDDocument implements Closeable
         {
             firstWidget = signatureField.getWidgets().get(0);
             sigObject.getCOSObject().setNeedToBeUpdated(true);
+            page = null;
         }
 
         // TODO This "overwrites" the settings of the original signature field which might not be intended by the user
@@ -434,35 +435,38 @@ public class PDDocument implements Closeable
             prepareVisibleSignature(firstWidget, acroForm, visualSignature);
         }
 
-        // Create Annotation / Field for signature
-        List<PDAnnotation> annotations = page.getAnnotations();
-
-        // Get the annotations of the page and append the signature-annotation to it
-        // take care that page and acroforms do not share the same array (if so, we don't need to add it twice)
-        if (!(checkFields &&
-              annotations instanceof COSArrayList &&
-              acroFormFields instanceof COSArrayList &&
-              ((COSArrayList) annotations).toList().
-                      equals(((COSArrayList) acroFormFields).toList())))
+        if (page != null)
         {
-            // use check to prevent the annotation widget from appearing twice
-            if (checkSignatureAnnotation(annotations, firstWidget))
+            // Create Annotation / Field for signature
+            List<PDAnnotation> annotations = page.getAnnotations();
+
+            // Get the annotations of the page and append the signature-annotation to it
+            // take care that page and acroforms do not share the same array (if so, we don't need to add it twice)
+            if (!(checkFields &&
+                  annotations instanceof COSArrayList &&
+                  acroFormFields instanceof COSArrayList &&
+                  ((COSArrayList) annotations).toList().
+                          equals(((COSArrayList) acroFormFields).toList())))
             {
-                firstWidget.getCOSObject().setNeedToBeUpdated(true);
+                // use check to prevent the annotation widget from appearing twice
+                if (checkSignatureAnnotation(annotations, firstWidget))
+                {
+                    firstWidget.getCOSObject().setNeedToBeUpdated(true);
+                }
+                else
+                {
+                    annotations.add(firstWidget);
+                }   
             }
-            else
-            {
-                annotations.add(firstWidget);
-            }   
+
+            // Make /Annots a direct object by reassigning it,
+            // to avoid problem if it is an existing indirect object: 
+            // it would not be updated in incremental save, and if we'd set the /Annots array "to be updated" 
+            // while keeping it indirect, Adobe Reader would claim that the document had been modified.
+            page.setAnnotations(annotations);
+
+            page.getCOSObject().setNeedToBeUpdated(true);
         }
-
-        // Make /Annots a direct object by reassigning it,
-        // to avoid problem if it is an existing indirect object: 
-        // it would not be updated in incremental save, and if we'd set the /Annots array "to be updated" 
-        // while keeping it indirect, Adobe Reader would claim that the document had been modified.
-        page.setAnnotations(annotations);
-
-        page.getCOSObject().setNeedToBeUpdated(true);
     }
 
     /**
