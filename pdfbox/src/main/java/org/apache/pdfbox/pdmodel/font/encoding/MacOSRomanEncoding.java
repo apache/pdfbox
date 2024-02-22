@@ -29,22 +29,22 @@ public class MacOSRomanEncoding extends MacRomanEncoding
      * on top of {@link MacRomanEncoding}.
      */
     private static final Object[][] MAC_OS_ROMAN_ENCODING_TABLE = {
-            {255, "notequal"},
-            {260, "infinity"},
-            {262, "lessequal"},
-            {263, "greaterequal"},
-            {266, "partialdiff"},
-            {267, "summation"},
-            {270, "product"},
-            {271, "pi"},
-            {272, "integral"},
-            {275, "Omega"},
-            {303, "radical"},
-            {305, "approxequal"},
-            {306, "Delta"},
-            {327, "lozenge"},
-            {333, "Euro"},
-            {360, "apple"}    
+            { 0255, "notequal" }, //
+            { 0260, "infinity" }, //
+            { 0262, "lessequal" }, //
+            { 0263, "greaterequal" }, //
+            { 0266, "partialdiff" }, //
+            { 0267, "summation" }, //
+            { 0270, "product" }, //
+            { 0271, "pi" }, //
+            { 0272, "integral" }, //
+            { 0275, "Omega" }, //
+            { 0303, "radical" }, //
+            { 0305, "approxequal" }, //
+            { 0306, "Delta" }, //
+            { 0327, "lozenge" }, //
+            { 0333, "Euro" }, //
+            { 0360, "apple" } 
     };
     
     /**
