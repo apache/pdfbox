@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.apache.pdfbox.pdmodel.interactive.PlainText;
 import org.junit.jupiter.api.Test;
 
 /**
