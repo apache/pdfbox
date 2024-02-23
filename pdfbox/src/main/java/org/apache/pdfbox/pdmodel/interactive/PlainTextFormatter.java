@@ -14,16 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.interactive.annotation.layout;
+package org.apache.pdfbox.pdmodel.interactive;
 
 import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
-import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.Line;
-import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.Paragraph;
-import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.TextAttribute;
-import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.Word;
+import org.apache.pdfbox.pdmodel.interactive.PlainText.Line;
+import org.apache.pdfbox.pdmodel.interactive.PlainText.Paragraph;
+import org.apache.pdfbox.pdmodel.interactive.PlainText.TextAttribute;
+import org.apache.pdfbox.pdmodel.interactive.PlainText.Word;
 
 /**
  * TextFormatter to handle plain text formatting for annotation rectangles.
@@ -34,35 +34,6 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.Word;
 
 public class PlainTextFormatter
 {
-    
-    enum TextAlign
-    {
-        LEFT(0), CENTER(1), RIGHT(2), JUSTIFY(4);
-        
-        private final int alignment;
-        
-        private TextAlign(int alignment)
-        {
-            this.alignment = alignment;
-        }
-        
-        int getTextAlign()
-        {
-            return alignment;
-        }
-        
-        public static TextAlign valueOf(int alignment)
-        {
-            for (TextAlign textAlignment : TextAlign.values())
-            {
-                if (textAlignment.getTextAlign() == alignment)
-                {
-                    return textAlignment;
-                }
-            }
-            return TextAlign.LEFT;
-        }
-    }
 
     /**
      * The scaling factor for font units to PDF units
