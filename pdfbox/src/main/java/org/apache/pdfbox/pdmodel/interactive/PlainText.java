@@ -25,8 +25,6 @@ import java.util.List;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
 
-import javax.sound.sampled.Line;
-
 /**
  * A block of text.
  * <p>
