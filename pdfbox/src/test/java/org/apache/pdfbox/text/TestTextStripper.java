@@ -64,6 +64,10 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlin
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.spy;
+
 
 /**
  * Test suite for PDFTextStripper.
@@ -112,6 +116,40 @@ import org.junit.jupiter.api.Test;
  */
 class TestTextStripper
 {
+
+    PDFTextStripper mockPDFTextStripper1() throws IOException {
+        PDFTextStripper mockInstance = spy(PDFTextStripper.class);
+        doAnswer((stubInvo) -> {
+            PDFont font = stubInvo.getArgument(0);
+            BoundingBox bbox = font.getBoundingBox();
+            if (bbox.getLowerLeftY() < Short.MIN_VALUE) {
+                bbox.setLowerLeftY(-(bbox.getLowerLeftY() + 65536));
+            }
+            float glyphHeight = bbox.getHeight() / 2;
+            PDFontDescriptor fontDescriptor = font.getFontDescriptor();
+            if (fontDescriptor != null) {
+                float capHeight = fontDescriptor.getCapHeight();
+                if (Float.compare(capHeight, 0) != 0
+                        && (capHeight < glyphHeight || Float.compare(glyphHeight, 0) == 0)) {
+                    glyphHeight = capHeight;
+                }
+                float ascent = fontDescriptor.getAscent();
+                float descent = fontDescriptor.getDescent();
+                if (ascent > 0 && descent < 0
+                        && ((ascent - descent) / 2 < glyphHeight || Float.compare(glyphHeight, 0) == 0)) {
+                    glyphHeight = (ascent - descent) / 2;
+                }
+            }
+            float height;
+            if (font instanceof PDType3Font) {
+                height = font.getFontMatrix().transformPoint(0, glyphHeight).y;
+            } else {
+                height = glyphHeight / 1000;
+            }
+            return height;
+        }).when(mockInstance).computeFontHeight(any(PDFont.class));
+        return mockInstance;
+    }
 
     /**
      * Logger instance.
@@ -593,7 +631,8 @@ class TestTextStripper
         File expectedOutFile = new File("src/test/resources/input","eu-001.pdf-tabula.txt");
         File diffFile = new File("target/test-output","eu-001.pdf-tabula-diff.txt");
         PDDocument tabulaDocument = Loader.loadPDF(pdfFile);
-        PDFTextStripper tabulaStripper = new PDFTabulaTextStripper();
+        // Construct mock object
+        PDFTextStripper tabulaStripper = mockPDFTextStripper1();
 
         try (OutputStream os = new FileOutputStream(outFile))
         {
@@ -610,62 +649,6 @@ class TestTextStripper
         compareResult(expectedOutFile, outFile, pdfFile, false, diffFile);
         
         assertFalse(bFail);
-    }
-
-    private class PDFTabulaTextStripper extends PDFTextStripper
-    {
-        PDFTabulaTextStripper() throws IOException
-        {
-            // empty
-        }
-
-        @Override
-        protected float computeFontHeight(PDFont font) throws IOException
-        {
-            BoundingBox bbox = font.getBoundingBox();
-            if (bbox.getLowerLeftY() < Short.MIN_VALUE)
-            {
-                // PDFBOX-2158 and PDFBOX-3130
-                // files by Salmat eSolutions / ClibPDF Library
-                bbox.setLowerLeftY(-(bbox.getLowerLeftY() + 65536));
-            }
-            // 1/2 the bbox is used as the height todo: why?
-            float glyphHeight = bbox.getHeight() / 2;
-
-            // sometimes the bbox has very high values, but CapHeight is OK
-            PDFontDescriptor fontDescriptor = font.getFontDescriptor();
-            if (fontDescriptor != null)
-            {
-                float capHeight = fontDescriptor.getCapHeight();
-                if (Float.compare(capHeight, 0) != 0
-                        && (capHeight < glyphHeight || Float.compare(glyphHeight, 0) == 0))
-                {
-                    glyphHeight = capHeight;
-                }
-                // PDFBOX-3464, PDFBOX-448:
-                // sometimes even CapHeight has very high value, but Ascent and Descent are ok
-                float ascent = fontDescriptor.getAscent();
-                float descent = fontDescriptor.getDescent();
-                if (ascent > 0 && descent < 0
-                        && ((ascent - descent) / 2 < glyphHeight || Float.compare(glyphHeight, 0) == 0))
-                {
-                    glyphHeight = (ascent - descent) / 2;
-                }
-            }
-
-            // transformPoint from glyph space -> text space
-            float height;
-            if (font instanceof PDType3Font)
-            {
-                height = font.getFontMatrix().transformPoint(0, glyphHeight).y;
-            }
-            else
-            {
-                height = glyphHeight / 1000;
-            }
-
-            return height;
-        }
     }
 
 }
