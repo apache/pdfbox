@@ -28,6 +28,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.DataFormatException;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -941,6 +942,10 @@ public abstract class PDFStreamEngine
         {
             // todo: this too forgiving, but PDFBox has always worked this way for DrawObject
             //       some careful refactoring is needed
+            LOG.warn(exception.getMessage(), exception);
+        }
+        else if (exception.getCause() instanceof DataFormatException)
+        {
             LOG.warn(exception.getMessage(), exception);
         }
         else
