@@ -192,7 +192,7 @@
                           <configuration>
                               <rules combine.children="append">
                                   <requireMavenVersion>
-                                      <version>3.1</version>
+                                      <version>3.2.5</version>
                                   </requireMavenVersion>
                                   <requireJavaVersion>
                                       <version>[1.7,12)</version>
