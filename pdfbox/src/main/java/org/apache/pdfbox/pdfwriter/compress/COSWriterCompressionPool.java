@@ -127,6 +127,12 @@ public class COSWriterCompressionPool
             {
                 return current;
             }
+            // check if the key of the indirect object matches the key of the referenced object
+            // otherwise update the key
+            if (!actualKey.equals(key) && base instanceof COSObject)
+            {
+                base.setKey(actualKey);
+            }
             topLevelObjects.add(actualKey);
             return current;
         }
@@ -137,7 +143,12 @@ public class COSWriterCompressionPool
         {
             return current;
         }
-
+        // check if the key of the indirect object matches the key of the referenced object
+        // otherwise update the key
+        if (!actualKey.equals(key) && base instanceof COSObject)
+        {
+            base.setKey(actualKey);
+        }
         // Append it to an object stream.
         this.objectStreamObjects.add(actualKey);
         return current;
@@ -194,7 +205,13 @@ public class COSWriterCompressionPool
                 COSObject cosObject = (COSObject) value;
                 if (cosObject.getKey() != null && objectPool.contains(cosObject.getKey()))
                 {
-                    continue;
+                    // check if the stored object matches the referenced object otherwise replace the key with a new one
+                    // there may differences if some imported content uses the same object numbers than the target pdf
+                    if (objectPool.getObject(cosObject.getKey()).equals(cosObject.getObject()))
+                    {
+                        continue;
+                    }
+                    cosObject.setKey(null);
                 }
                 if (cosObject.getObject() != null)
                 {
