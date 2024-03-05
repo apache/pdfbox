@@ -149,6 +149,16 @@ public class PDSeparation extends PDSpecialColorSpace
             // PDFBOX-3622 - regular converter fails for Lab colorspaces
             return toRGBImage2(raster);
         }
+        else if (alternateColorSpace instanceof PDICCBased)
+        {
+            // PDFBOX-5778 - same problem if Lab-based ICC colorspace
+            PDColorSpace iccAlternateColorSpace =
+                    ((PDICCBased) alternateColorSpace).getAlternateColorSpace();
+            if (iccAlternateColorSpace instanceof PDLab)
+            {
+                return toRGBImage2(raster);
+            }
+        }
 
         int numAltComponents = alternateColorSpace.getNumberOfComponents();
 
@@ -175,7 +185,7 @@ public class PDSeparation extends PDSpecialColorSpace
                     alt = new int[numAltComponents];
                     tintTransform(samples, alt);
                     calculatedValues.put(hash, alt);
-                }                
+                }
                 altRaster.setPixel(x, y, alt);
             }
         }
