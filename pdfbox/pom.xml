@@ -158,7 +158,6 @@
                             META-INF=target/maven-shared-archive-resources/META-INF,
                             org/apache/pdfbox/resources=target/classes/org/apache/pdfbox/resources
                         </Include-Resource>
-                        <Automatic-Module-Name>org.apache.pdfbox</Automatic-Module-Name>
                     </instructions>
                 </configuration>
             </plugin>
