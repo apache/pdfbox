@@ -315,7 +315,7 @@ final class FileSystemFontProvider extends FontProvider
         String hash;
         try
         {
-            hash = computeHash(Files.readAllBytes(file.toPath()));
+            hash = computeHash(Files.newInputStream(file.toPath()));
         }
         catch (IOException ex)
         {
@@ -604,7 +604,7 @@ final class FileSystemFontProvider extends FontProvider
                         // first check whether time is different and if yes, whether hash is different
                         if (fontFile.lastModified() != lastModified)
                         {
-                            String newHash = computeHash(Files.readAllBytes(fontFile.toPath()));
+                            String newHash = computeHash(Files.newInputStream(fontFile.toPath()));
                             if (newHash.equals(hash))
                             {
                                 keep = true;
@@ -738,12 +738,7 @@ final class FileSystemFontProvider extends FontProvider
                     panose = os2WindowsMetricsTable.getPanose();
                 }
 
-                byte[] ba;
-                try (InputStream is = ttf.getOriginalData())
-                {
-                    ba = IOUtils.toByteArray(is);
-                }
-                String hash = computeHash(ba);
+                String hash = computeHash(ttf.getOriginalData());
                 String format;
                 if (ttf instanceof OpenTypeFont && ((OpenTypeFont) ttf).isPostScript())
                 {
@@ -835,7 +830,7 @@ final class FileSystemFontProvider extends FontProvider
                 LOG.warn("Skipping font with '|' in name " + type1.getName() + " in file " + pfbFile);
                 return;
             }
-            String hash = computeHash(Files.readAllBytes(pfbFile.toPath()));
+            String hash = computeHash(Files.newInputStream(pfbFile.toPath()));
             fontInfoList.add(new FSFontInfo(pfbFile, FontFormat.PFB, type1.getName(),
                                             null, -1, -1, 0, 0, -1, null, this, hash, pfbFile.lastModified()));
 
@@ -873,11 +868,25 @@ final class FileSystemFontProvider extends FontProvider
         return fontInfoList;
     }
 
-    private static String computeHash(byte[] ba)
+    private static String computeHash(InputStream is) throws IOException
     {
         CRC32 crc = new CRC32();
-        crc.update(ba);
-        long l = crc.getValue();
-        return Long.toHexString(l);
+
+        try
+        {
+            byte[] buffer = new byte[4096];
+            int readBytes;
+            while ((readBytes = is.read(buffer)) != -1)
+            {
+                crc.update(buffer, 0, readBytes);
+            }
+
+            long hash = crc.getValue();
+            return Long.toHexString(hash);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(is);
+        }
     }
 }
