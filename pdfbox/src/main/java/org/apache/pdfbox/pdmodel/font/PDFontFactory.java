@@ -351,6 +351,10 @@ public final class PDFontFactory
                     remainingBytes -= amountRead;
                 }
             }
+            catch (IOException ex)
+            {
+                LOG.error(ex.getMessage(), ex);
+            }
         }
         return header;
     }
