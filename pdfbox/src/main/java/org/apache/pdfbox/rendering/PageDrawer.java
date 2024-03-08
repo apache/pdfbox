@@ -349,7 +349,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     protected Paint getPaint(PDColor color) throws IOException
     {
         PDColorSpace colorSpace = color.getColorSpace();
-        if (colorSpace instanceof PDSeparation &&
+        if (colorSpace == null) // PDFBOX-5782
+        {
+            LOG.error("colorSpace is null, will be rendered as transparency");
+            return new Color(0, 0, 0, 0);
+        }
+        else if (colorSpace instanceof PDSeparation &&
                 "None".equals(((PDSeparation) colorSpace).getColorantName()))
         {
             // PDFBOX-4900: "The special colorant name None shall not produce any visible output"
