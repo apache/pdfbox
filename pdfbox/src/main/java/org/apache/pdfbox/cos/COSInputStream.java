@@ -28,6 +28,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.filter.DecodeOptions;
 import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.filter.Filter;
@@ -43,6 +45,8 @@ import org.apache.pdfbox.io.ScratchFile;
  */
 public final class COSInputStream extends FilterInputStream
 {
+    private static final Log LOG = LogFactory.getLog(COSInputStream.class);
+    
     /**
      * Creates a new COSInputStream from an encoded input stream.
      *
@@ -74,7 +78,17 @@ public final class COSInputStream extends FilterInputStream
             Set<Filter> filterSet = new HashSet<Filter>(filters);
             if (filterSet.size() != filters.size())
             {
-                throw new IOException("Duplicate");
+                List<Filter> reducedFilterList = new ArrayList<Filter>();
+                for (Filter filter : filters)
+                {
+                    if (!reducedFilterList.contains(filter))
+                    {
+                        reducedFilterList.add(filter);
+                    }
+                }
+                // replace origin list with the reduced one
+                filters = reducedFilterList;
+                LOG.warn("Removed duplicated filter entries");
             }
         }
         // apply filters
