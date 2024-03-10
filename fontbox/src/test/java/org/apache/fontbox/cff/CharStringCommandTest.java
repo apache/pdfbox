@@ -20,7 +20,6 @@ package org.apache.fontbox.cff;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.apache.fontbox.cff.CharStringCommand.Key;
 import org.apache.fontbox.cff.CharStringCommand.Type1KeyWord;
 import org.apache.fontbox.cff.CharStringCommand.Type2KeyWord;
 import org.junit.jupiter.api.Test;
@@ -29,13 +28,13 @@ class CharStringCommandTest
 {
 
     @Test
-    void testKey()
+    void testValue()
     {
-        assertEquals(Key.HSTEM, Key.valueOfKey(1));
-        assertEquals(Key.ESCAPE, Key.valueOfKey(12));
-        assertEquals(Key.DOTSECTION, Key.valueOfKey(12, 0));
-        assertEquals(Key.AND, Key.valueOfKey(12, 3));
-        assertEquals(Key.HSBW, Key.valueOfKey(13));
+        assertEquals(CharStringCommand.HSTEM.getValue(), 1);
+        assertEquals(CharStringCommand.ESCAPE.getValue(), 12);
+        assertEquals(CharStringCommand.DOTSECTION.getValue(), (12 << 4) + 0);
+        assertEquals(CharStringCommand.AND.getValue(), (12 << 4) + 3);
+        assertEquals(CharStringCommand.HSBW.getValue(), 13);
     }
 
     @Test

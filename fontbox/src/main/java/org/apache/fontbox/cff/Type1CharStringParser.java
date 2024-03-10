@@ -160,12 +160,12 @@ public class Type1CharStringParser
             sequence.remove(sequence.size() - 1);
             // end flex
             sequence.add(0);
-            sequence.add(CharStringCommand.COMMAND_CALLOTHERSUBR);
+            sequence.add(CharStringCommand.CALLOTHERSUBR);
             break;
         case 1:
             // begin flex
             sequence.add(1);
-            sequence.add(CharStringCommand.COMMAND_CALLOTHERSUBR);
+            sequence.add(CharStringCommand.CALLOTHERSUBR);
             break;
         case 3:
             // allows hint replacement
