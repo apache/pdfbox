@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 3.0.1
+Release Notes -- Apache PDFBox -- Version 3.0.2
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 3.0.0 release. It contains
+This is an incremental bugfix release based on the earlier 3.0.1 release. It contains
 a couple of fixes and small improvements.
 
 A migration guide is available at https://pdfbox.apache.org/3.0/migration.html. It is
@@ -16,55 +16,60 @@ For more details on these changes and all the other fixes and improvements
 included in this release, please refer to the following issues on the
 PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
-Sub-task
-
-[PDFBOX-5663] - Implement "about" dialog
-
 Bug
 
-[PDFBOX-5350] - Regression unicode mapping in Korean document
-[PDFBOX-5649] - NPE in DomXmpParser.parseLiDescription
-[PDFBOX-5654] - Avoid NPE when processing CFF2 based fonts
-[PDFBOX-5658] - IllegalArgumentException: Dimensions (width=458477041 height=26) are too large
-[PDFBOX-5662] - Can not see checkbox check
-[PDFBOX-5665] - NPE when converting pdf to image.
-[PDFBOX-5666] - error encountered in splitting pdf using ver 3.0.0
-[PDFBOX-5668] - NullPointerException in XMPMetadata.getSchema()
-[PDFBOX-5672] - PDFToImage might not correctly detect unsupported image formats
-[PDFBOX-5673] - Refactor Stream operations and operations on collections
-[PDFBOX-5681] - ConcurrentModificationException in getObjectsByType() in 3.x
-[PDFBOX-5682] - Long/permanent hang in PDFBox 3.x
-[PDFBOX-5684] - Font cache isn't effective on my machine, always rebuilds
-[PDFBOX-5687] - PDFBox 3.0 OSGi bundle requires sun.java2d.cmm.kcms package
-[PDFBOX-5689] - Many new warnings "newGlyph ... newValue: ... is trying to override the oldValue" after upgrade to V3.0.0
-[PDFBOX-5694] - PDF to Image conversion results in different converted image
-[PDFBOX-5696] - COSStream lost, becomes a COSDictionary
-[PDFBOX-5702] - Text in a certain font is lost when converting pdf to image
-[PDFBOX-5706] - Incorrect colors in image from PDFs (DCTDecode)
-[PDFBOX-5707] - Avoid NPE when accessing the elements of a COSArray
-[PDFBOX-5712] - Stackoverflow in split
-[PDFBOX-5713] - PfbParser fails to parse PFB font with multiple binary records.
-[PDFBOX-5718] - java.lang.IllegalArgumentException: Provided dictionary is not of type 'COSName{OCG}'
+[PDFBOX-2725] - [PATCH] Split pdf lose accessibility tags
+[PDFBOX-5375] - Allow creating of PDFXObjectImage without accessing to the image stream
+[PDFBOX-5704] - char not rendered
+[PDFBOX-5714] - PDFBox 3.0 regression: duplicate references in dictionary values
+[PDFBOX-5715] - Lines vanish when printing on MacOS
+[PDFBOX-5717] - NullPointerException calling saveIncrementalForExternalSigning
+[PDFBOX-5721] - The embedded font DroidSansFallbackFull reports an error when parsing, and finally uses lastResortFont, resulting in garbled fonts.
+[PDFBOX-5722] - Wrong scope for maven dependencies
+[PDFBOX-5723] - COSName caches already cached hashCode
+[PDFBOX-5724] - CharStringCommand.equals() does not conform to the contract of Object.equals
+[PDFBOX-5727] - Font operation takes a long time with 3.0.1
+[PDFBOX-5728] - NullPointerException in TTFSubsetter.buildPostTable()
+[PDFBOX-5730] - The expected SubstFormat for ExtensionSubstFormat1 subtable is 108 but should be 1
+[PDFBOX-5732] - Problem converting PDF to image (java.awt.color.CMMException: Can not access specified profile)
+[PDFBOX-5733] - lookupType is to be replaced by extensionLookupType in type 7 lookup table
+[PDFBOX-5735] - Set the default value for PDNonTerminalField
+[PDFBOX-5737] - java.lang.ArrayIndexOutOfBoundsException Bug Report
+[PDFBOX-5738] - Wrong colors in PDF since PDFBOX-5488
+[PDFBOX-5742] - Split result PDFs broken
+[PDFBOX-5744] - EOFException while readMultipleSubstitutionSubtable()
+[PDFBOX-5745] - EOFException while readSingleLookupSubTable()
+[PDFBOX-5748] - Cannot get overlayPDF working on command line interface
+[PDFBOX-5751] - Convert to image exception
+[PDFBOX-5752] - Font errors after copying a page to another document
+[PDFBOX-5754] - PDF conversion in this format is very slow. Is there any room for optimization?
+[PDFBOX-5757] - streamCacheCreateFunction not passed to PDFParser
+[PDFBOX-5758] - ExceptionInInitializerError when unmapping is not supported
+[PDFBOX-5760] - NPE in FIlter.decode() when called with empty list
+[PDFBOX-5763] - IllegalArgumentException: -Infinity is not a finite number
+[PDFBOX-5764] - Wrong chunksize when using a ByteBuffer to initialize a RandomAccessReadBuffer
+[PDFBOX-5772] - Inconsistent signature page handling when signing in existing signature fields
+[PDFBOX-5773] - Add leading "0" for octal values in MacOSRomanEncoding
+[PDFBOX-5775] - importPage destroys annotations
+[PDFBOX-5776] - DataFormatException: invalid distance too far back
+[PDFBOX-5778] - Grayscale JPEG rendered multicolor
+[PDFBOX-5781] - OutOfMemoryError in FileSystemFontsProvider.scanFonts
+[PDFBOX-5782] - NPE in PageDrawer.getPaint()
 
 New Feature
 
-[PDFBOX-5670] - Allow repeatable subcommands in the command line tools
-[PDFBOX-5683] - Inconsistent/incomplete PDF rendering
+[PDFBOX-5768] - Enable Native Markdown Extraction in Apache PDFBox
 
 Improvement
 
-[PDFBOX-4892] - Improve code quality (4)
-[PDFBOX-5664] - 3.0.0: PDFCloneUtility needs a protected constructor to be useable outside of PDFBox when using Java 9 JPMS
-[PDFBOX-5685] - Reduce number of copies to lower memory footprint
-[PDFBOX-5693] - Consolidate bouncycastle configuration
-[PDFBOX-5699] - Consistent scm.url values for pom.xml
-[PDFBOX-5703] - use comparison operators for enums
-[PDFBOX-5705] - update log4j dependency to 2.21.0
-[PDFBOX-5711] - Loader: add support for java.nio.file.Path
+[PDFBOX-5729] - GsubWorkerForDevanagari and GsubWorkerForGujarati created
+[PDFBOX-5762] - When splitting, keep page destinations that are part of target document(s)
+[PDFBOX-5783] - Replace Exception with some repair attempt
 
-Test
+Task
 
-[PDFBOX-5667] - Can't create test for ExtractText command line tool
+[PDFBOX-5739] - Add test for PDFBOX-3347
+[PDFBOX-5741] - Add test for PDFBOX-4106
 
 Release Contents
 ----------------
