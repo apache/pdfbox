@@ -304,14 +304,13 @@ public class PDCIDFontType2 extends PDCIDFont
             }
             else
             {
-                boolean isOTF = ttf instanceof OpenTypeFont;
                 // "Identity" is the default for CFF-based OpenTypeFonts
-                if (isOTF && ((OpenTypeFont) ttf).isPostScript())
+                if (ttf instanceof OpenTypeFont && ((OpenTypeFont) ttf).isPostScript())
                 {
                     return cid;
                 }
                 // "Identity" is the default for TrueTypeFonts if the CID is within the range
-                return !isOTF && cid < ttf.getNumberOfGlyphs() ? cid : 0;
+                return cid < ttf.getNumberOfGlyphs() ? cid : 0;
             }
         }
     }
