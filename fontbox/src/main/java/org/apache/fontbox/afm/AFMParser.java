@@ -757,10 +757,39 @@ public class AFMParser
             while( metricsTokenizer.hasMoreTokens() )
             {
                 String nextCommand = metricsTokenizer.nextToken();
+                // top 5 most used first
                 if( nextCommand.equals( CHARMETRICS_C ) )
                 {
                     String charCode = metricsTokenizer.nextToken();
                     charMetric.setCharacterCode( Integer.parseInt( charCode ) );
+                    verifySemicolon( metricsTokenizer );
+                }
+                else if( nextCommand.equals( CHARMETRICS_WX ) )
+                {
+                    charMetric.setWx(Float.parseFloat(metricsTokenizer.nextToken()));
+                    verifySemicolon( metricsTokenizer );
+                }
+                else if( nextCommand.equals( CHARMETRICS_N ) )
+                {
+                    charMetric.setName(metricsTokenizer.nextToken());
+                    verifySemicolon( metricsTokenizer );
+                }
+                else if( nextCommand.equals( CHARMETRICS_B ) )
+                {
+                    BoundingBox box = new BoundingBox();
+                    box.setLowerLeftX(Float.parseFloat(metricsTokenizer.nextToken()));
+                    box.setLowerLeftY(Float.parseFloat(metricsTokenizer.nextToken()));
+                    box.setUpperRightX(Float.parseFloat(metricsTokenizer.nextToken()));
+                    box.setUpperRightY(Float.parseFloat(metricsTokenizer.nextToken()));
+                    charMetric.setBoundingBox( box );
+                    verifySemicolon( metricsTokenizer );
+                }
+                else if( nextCommand.equals( CHARMETRICS_L ) )
+                {
+                    Ligature lig = new Ligature();
+                    lig.setSuccessor(metricsTokenizer.nextToken());
+                    lig.setLigature(metricsTokenizer.nextToken());
+                    charMetric.addLigature( lig );
                     verifySemicolon( metricsTokenizer );
                 }
                 else if( nextCommand.equals( CHARMETRICS_CH ) )
@@ -769,11 +798,6 @@ public class AFMParser
                     //unclear, wait and see if it breaks anything.
                     String charCode = metricsTokenizer.nextToken();
                     charMetric.setCharacterCode( Integer.parseInt( charCode, BITS_IN_HEX ) );
-                    verifySemicolon( metricsTokenizer );
-                }
-                else if( nextCommand.equals( CHARMETRICS_WX ) )
-                {
-                    charMetric.setWx(Float.parseFloat(metricsTokenizer.nextToken()));
                     verifySemicolon( metricsTokenizer );
                 }
                 else if( nextCommand.equals( CHARMETRICS_W0X ) )
@@ -831,29 +855,6 @@ public class AFMParser
                     vv[0] = Float.parseFloat(metricsTokenizer.nextToken());
                     vv[1] = Float.parseFloat(metricsTokenizer.nextToken());
                     charMetric.setVv( vv );
-                    verifySemicolon( metricsTokenizer );
-                }
-                else if( nextCommand.equals( CHARMETRICS_N ) )
-                {
-                    charMetric.setName(metricsTokenizer.nextToken());
-                    verifySemicolon( metricsTokenizer );
-                }
-                else if( nextCommand.equals( CHARMETRICS_B ) )
-                {
-                    BoundingBox box = new BoundingBox();
-                    box.setLowerLeftX(Float.parseFloat(metricsTokenizer.nextToken()));
-                    box.setLowerLeftY(Float.parseFloat(metricsTokenizer.nextToken()));
-                    box.setUpperRightX(Float.parseFloat(metricsTokenizer.nextToken()));
-                    box.setUpperRightY(Float.parseFloat(metricsTokenizer.nextToken()));
-                    charMetric.setBoundingBox( box );
-                    verifySemicolon( metricsTokenizer );
-                }
-                else if( nextCommand.equals( CHARMETRICS_L ) )
-                {
-                    Ligature lig = new Ligature();
-                    lig.setSuccessor(metricsTokenizer.nextToken());
-                    lig.setLigature(metricsTokenizer.nextToken());
-                    charMetric.addLigature( lig );
                     verifySemicolon( metricsTokenizer );
                 }
                 else
