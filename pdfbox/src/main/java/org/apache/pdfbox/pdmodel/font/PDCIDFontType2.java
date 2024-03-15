@@ -325,7 +325,7 @@ public class PDCIDFontType2 extends PDCIDFont
                     return cid;
                 }
                 // "Identity" is the default for TrueTypeFonts if the CID is within the range
-                return otf == null && cid < ttf.getNumberOfGlyphs() ? cid : 0;
+                return cid < ttf.getNumberOfGlyphs() ? cid : 0;
             }
         }
     }
