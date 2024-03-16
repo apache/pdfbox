@@ -566,7 +566,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         {
             try
             {
-                if (currentFilePath.startsWith("http"))
+                if (currentFilePath.startsWith("http") || currentFilePath.startsWith("file:"))
                 {
                     readPDFurl(currentFilePath, "");
                 }
