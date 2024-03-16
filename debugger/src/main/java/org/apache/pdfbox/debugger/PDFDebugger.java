@@ -433,7 +433,7 @@ public class PDFDebugger extends JFrame
             {
                 try
                 {
-                    if (currentFilePath.startsWith("http"))
+                    if (currentFilePath.startsWith("http") || currentFilePath.startsWith("file:"))
                     {
                         readPDFurl(currentFilePath, "");
                     }
