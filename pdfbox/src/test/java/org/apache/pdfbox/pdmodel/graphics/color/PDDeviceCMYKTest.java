@@ -17,7 +17,20 @@
 
 package org.apache.pdfbox.pdmodel.graphics.color;
 
+import java.awt.Point;
+import java.awt.Transparency;
+import java.awt.color.ICC_ColorSpace;
+import java.awt.color.ICC_Profile;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
+import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -38,5 +51,35 @@ class PDDeviceCMYKTest
         protected CustomDeviceCMYK() throws IOException
         {
         }
+    }
+
+    /**
+     * PDFBOX-5787: test for problems on Mac with jdk21 homebrew. If this test fails, then use
+     * another jdk.
+     * 
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox5787() throws IOException
+    {
+        ColorConvertOp colorConvertOp = new ColorConvertOp(null);
+        String resourceName = "/org/apache/pdfbox/resources/icc/CGATS001Compat-v2-micro.icc";
+        ICC_Profile iccProfile;
+        try (InputStream is = new BufferedInputStream(PDDeviceCMYK.class.getResourceAsStream(resourceName)))
+        {
+            iccProfile = ICC_Profile.getInstance(is);
+        }
+        ICC_ColorSpace icc_ColorSpace = new ICC_ColorSpace(iccProfile);
+
+        WritableRaster raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, 1, 1,
+                4, new Point(0, 0));
+
+        ColorModel colorModel = new ComponentColorModel(icc_ColorSpace,
+                false, false, Transparency.OPAQUE, raster.getDataBuffer().getDataType());
+
+        BufferedImage src = new BufferedImage(colorModel, raster, false, null);
+        BufferedImage dest = new BufferedImage(raster.getWidth(), raster.getHeight(),
+                BufferedImage.TYPE_INT_RGB);
+        colorConvertOp.filter(src, dest);
     }
 }
