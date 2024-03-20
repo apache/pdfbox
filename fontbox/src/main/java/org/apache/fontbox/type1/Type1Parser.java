@@ -99,9 +99,9 @@ final class Type1Parser
             read(Token.LITERAL); // font name
             read(Token.NAME, "known");
             read(Token.START_PROC);
-            readProcVoid();
+            lexer.readProcVoid();
             read(Token.START_PROC);
-            readProcVoid();
+            lexer.readProcVoid();
             read(Token.NAME, "ifelse");
         }
 
@@ -109,7 +109,7 @@ final class Type1Parser
         int length = read(Token.INTEGER).intValue();
         read(Token.NAME, "dict");
         // found in some TeX fonts
-        readMaybe(Token.NAME, "dup");
+        lexer.readMaybe(Token.NAME, "dup");
         // if present, the "currentdict" is not required
         read(Token.NAME, "begin");
 
@@ -147,7 +147,7 @@ final class Type1Parser
             }
         }
 
-        readMaybe(Token.NAME, "currentdict");
+        lexer.readMaybe(Token.NAME, "currentdict");
         read(Token.NAME, "end");
 
         read(Token.NAME, "currentfile");
@@ -158,35 +158,7 @@ final class Type1Parser
     {
         List<Token> value = readDictValue();
         
-        switch (key)
-        {
-            case "FontName":
-                font.fontName = value.get(0).getText();
-                break;
-            case "PaintType":
-                font.paintType = value.get(0).intValue();
-                break;
-            case "FontType":
-                font.fontType = value.get(0).intValue();
-                break;
-            case "FontMatrix":
-                font.fontMatrix = arrayToNumbers(value);
-                break;
-            case "FontBBox":
-                font.fontBBox = arrayToNumbers(value);
-                break;
-            case "UniqueID":
-                font.uniqueID = value.get(0).intValue();
-                break;
-            case "StrokeWidth":
-                font.strokeWidth = value.get(0).floatValue();
-                break;
-            case "FID":
-                font.fontID = value.get(0).getText();
-                break;
-            default:
-                break;
-        }
+        font.readFontAttributes(key, value);
     }
 
     private void readEncoding() throws IOException
@@ -203,13 +175,13 @@ final class Type1Parser
             {
                 throw new IOException("Unknown encoding: " + name);
             }
-            readMaybe(Token.NAME, "readonly");
+            lexer.readMaybe(Token.NAME, "readonly");
             read(Token.NAME, "def");
         }
         else
         {
             read(Token.INTEGER).intValue();
-            readMaybe(Token.NAME, "array");
+            lexer.readMaybe(Token.NAME, "array");
             
             // 0 1 255 {1 index exch /.notdef put } for
             // we have to check "readonly" and "def" too
@@ -236,79 +208,22 @@ final class Type1Parser
                 codeToName.put(code, name);
             }
             font.encoding = new BuiltInEncoding(codeToName);
-            readMaybe(Token.NAME, "readonly");
+            lexer.readMaybe(Token.NAME, "readonly");
             read(Token.NAME, "def");
         }
     }
 
     /**
-     * Extracts values from an array as numbers.
-     */
-    private List<Number> arrayToNumbers(List<Token> value) throws IOException
-    {
-        List<Number> numbers = new ArrayList<>();
-        for (int i = 1, size = value.size() - 1; i < size; i++)
-        {
-            Token token = value.get(i);
-            if (token.getKind() == Token.REAL)
-            {
-                numbers.add(token.floatValue());
-            }
-            else if (token.getKind() == Token.INTEGER)
-            {
-                numbers.add(token.intValue());
-            }
-            else
-            {
-                throw new IOException("Expected INTEGER or REAL but got " + token +
-                        " at array position " + i);
-            }
-        }
-        return numbers;
-    }
-
-    /**
      * Extracts values from the /FontInfo dictionary.
      */
-    private void readFontInfo(Map<String, List<Token>> fontInfo)
+    private void readFontInfo(Map<String, List<Token>> fontInfo) throws IOException
     {
         for (Map.Entry<String, List<Token>> entry : fontInfo.entrySet())
         {
             String key = entry.getKey();
             List<Token> value = entry.getValue();
 
-            switch (key)
-            {
-                case "version":
-                    font.version = value.get(0).getText();
-                    break;
-                case "Notice":
-                    font.notice = value.get(0).getText();
-                    break;
-                case "FullName":
-                    font.fullName = value.get(0).getText();
-                    break;
-                case "FamilyName":
-                    font.familyName = value.get(0).getText();
-                    break;
-                case "Weight":
-                    font.weight = value.get(0).getText();
-                    break;
-                case "ItalicAngle":
-                    font.italicAngle = value.get(0).floatValue();
-                    break;
-                case "isFixedPitch":
-                    font.isFixedPitch = value.get(0).booleanValue();
-                    break;
-                case "UnderlinePosition":
-                    font.underlinePosition = value.get(0).floatValue();
-                    break;
-                case "UnderlineThickness":
-                    font.underlineThickness = value.get(0).floatValue();
-                    break;
-                default:
-                    break;
-            }
+            font.readFontAttributes(key, value);
         }
     }
 
@@ -322,7 +237,7 @@ final class Type1Parser
 
         int length = read(Token.INTEGER).intValue();
         read(Token.NAME, "dict");
-        readMaybe(Token.NAME, "dup");
+        lexer.readMaybe(Token.NAME, "dup");
         read(Token.NAME, "begin");
 
         for (int i = 0; i < length; i++)
@@ -354,7 +269,7 @@ final class Type1Parser
         }
 
         read(Token.NAME, "end");
-        readMaybe(Token.NAME, "readonly");
+        lexer.readMaybe(Token.NAME, "readonly");
         read(Token.NAME, "def");
 
         return dict;
@@ -414,7 +329,7 @@ final class Type1Parser
         }
         else if (token.getKind() == Token.START_PROC)
         {
-            value.addAll(readProc());
+            value.addAll(lexer.readProc());
         }
         else if (token.getKind() == Token.START_DICT)
         {
@@ -441,10 +356,10 @@ final class Type1Parser
             read(Token.NAME, "known");
 
             read(Token.START_PROC);
-            readProcVoid();
+            lexer.readProcVoid();
 
             read(Token.START_PROC);
-            readProcVoid();
+            lexer.readProcVoid();
 
             read(Token.NAME, "ifelse");
 
@@ -457,78 +372,6 @@ final class Type1Parser
 
             read(Token.NAME, "if");
         }
-    }
-
-    /**
-     * Reads a procedure.
-     */
-    private List<Token> readProc() throws IOException
-    {
-        List<Token> value = new ArrayList<>();
-
-        int openProc = 1;
-        while (true)
-        {
-            if (lexer.peekToken() == null)
-            {
-                throw new IOException("Malformed procedure: missing token");
-            }
-
-            if (lexer.peekKind(Token.START_PROC))
-            {
-                openProc++;
-            }
-
-            Token token = lexer.nextToken();
-            value.add(token);
-
-            if (token.getKind() == Token.END_PROC)
-            {
-                openProc--;
-                if (openProc == 0)
-                {
-                    break;
-                }
-            }
-        }
-        Token executeonly = readMaybe(Token.NAME, "executeonly");
-        if (executeonly != null)
-        {
-            value.add(executeonly);
-        }
-
-        return value;
-    }
-
-    /**
-     * Reads a procedure but without returning anything.
-     */
-    private void readProcVoid() throws IOException
-    {
-        int openProc = 1;
-        while (true)
-        {
-            if (lexer.peekToken() == null)
-            {
-                throw new IOException("Malformed procedure: missing token");
-            }
-            if (lexer.peekKind(Token.START_PROC))
-            {
-                openProc++;
-            }
-
-            Token token = lexer.nextToken();
-
-            if (token.getKind() == Token.END_PROC)
-            {
-                openProc--;
-                if (openProc == 0)
-                {
-                    break;
-                }
-            }
-        }
-        readMaybe(Token.NAME, "executeonly");
     }
 
     /**
@@ -569,7 +412,7 @@ final class Type1Parser
         read(Token.NAME, "dict");
         // actually could also be "/Private 10 dict def Private begin"
         // instead of the "dup"
-        readMaybe(Token.NAME, "dup");
+        lexer.readMaybe(Token.NAME, "dup");
         read(Token.NAME, "begin");
 
         int lenIV = 4; // number of random bytes at start of charstring
@@ -599,29 +442,29 @@ final class Type1Parser
                 case "ND":
                     read(Token.START_PROC);
                     // the access restrictions are not mandatory
-                    readMaybe(Token.NAME, "noaccess");
+                    lexer.readMaybe(Token.NAME, "noaccess");
                     read(Token.NAME, "def");
                     read(Token.END_PROC);
-                    readMaybe(Token.NAME, "executeonly");
-                    readMaybe(Token.NAME, "readonly");
+                    lexer.readMaybe(Token.NAME, "executeonly");
+                    lexer.readMaybe(Token.NAME, "readonly");
                     read(Token.NAME, "def");
                     break;
                 case "NP":
                     read(Token.START_PROC);
-                    readMaybe(Token.NAME, "noaccess");
+                    lexer.readMaybe(Token.NAME, "noaccess");
                     read(Token.NAME);
                     read(Token.END_PROC);
-                    readMaybe(Token.NAME, "executeonly");
-                    readMaybe(Token.NAME, "readonly");
+                    lexer.readMaybe(Token.NAME, "executeonly");
+                    lexer.readMaybe(Token.NAME, "readonly");
                     read(Token.NAME, "def");
                     break;
                 case "RD":
                     // /RD {string currentfile exch readstring pop} bind executeonly def
                     read(Token.START_PROC);
-                    readProcVoid();
-                    readMaybe(Token.NAME, "bind");
-                    readMaybe(Token.NAME, "executeonly");
-                    readMaybe(Token.NAME, "readonly");
+                    lexer.readProcVoid();
+                    lexer.readMaybe(Token.NAME, "bind");
+                    lexer.readMaybe(Token.NAME, "executeonly");
+                    lexer.readMaybe(Token.NAME, "readonly");
                     read(Token.NAME, "def");
                     break;
                 default:
@@ -652,50 +495,7 @@ final class Type1Parser
      */
     private void readPrivate(String key, List<Token> value) throws IOException
     {
-        switch (key)
-        {
-            case "BlueValues":
-                font.blueValues = arrayToNumbers(value);
-                break;
-            case "OtherBlues":
-                font.otherBlues = arrayToNumbers(value);
-                break;
-            case "FamilyBlues":
-                font.familyBlues = arrayToNumbers(value);
-                break;
-            case "FamilyOtherBlues":
-                font.familyOtherBlues = arrayToNumbers(value);
-                break;
-            case "BlueScale":
-                font.blueScale = value.get(0).floatValue();
-                break;
-            case "BlueShift":
-                font.blueShift = value.get(0).intValue();
-                break;
-            case "BlueFuzz":
-                font.blueFuzz = value.get(0).intValue();
-                break;
-            case "StdHW":
-                font.stdHW = arrayToNumbers(value);
-                break;
-            case "StdVW":
-                font.stdVW = arrayToNumbers(value);
-                break;
-            case "StemSnapH":
-                font.stemSnapH = arrayToNumbers(value);
-                break;
-            case "StemSnapV":
-                font.stemSnapV = arrayToNumbers(value);
-                break;
-            case "ForceBold":
-                font.forceBold = value.get(0).booleanValue();
-                break;
-            case "LanguageGroup":
-                font.languageGroup = value.get(0).intValue();
-                break;
-            default:
-                break;
-        }
+        font.readFontAttributes(key, value);
     }
 
     /**
@@ -816,8 +616,8 @@ final class Type1Parser
      */
     private void readDef() throws IOException
     {
-        readMaybe(Token.NAME, "readonly");
-        readMaybe(Token.NAME, "noaccess"); // allows "noaccess ND" (not in the Type 1 spec)
+        lexer.readMaybe(Token.NAME, "readonly");
+        lexer.readMaybe(Token.NAME, "noaccess"); // allows "noaccess ND" (not in the Type 1 spec)
 
         Token token = read(Token.NAME);
         switch (token.getText())
@@ -844,7 +644,7 @@ final class Type1Parser
      */
     private void readPut() throws IOException
     {
-        readMaybe(Token.NAME, "readonly");
+        lexer.readMaybe(Token.NAME, "readonly");
 
         Token token = read(Token.NAME);
         switch (token.getText())
@@ -892,21 +692,6 @@ final class Type1Parser
         {
             throw new IOException("Found " + token + " but expected " + name);
         }
-    }
-
-    /**
-     * Reads the next token if and only if it is of the given kind and
-     * has the given value.
-     * 
-     * @return token or null if not the expected one
-     */
-    private Token readMaybe(Token.Kind kind, String name) throws IOException
-    {
-        if (lexer.peekKind(kind) && lexer.peekToken().getText().equals(name))
-        {
-            return lexer.nextToken();
-        }
-        return null;
     }
 
     /**
