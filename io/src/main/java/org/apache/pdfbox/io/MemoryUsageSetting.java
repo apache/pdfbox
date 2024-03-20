@@ -85,8 +85,8 @@ public final class MemoryUsageSetting
             }
         }
         
-        if (locUseMainMemory && (locMaxStorageBytes > -1) &&
-            ((locMaxMainMemoryBytes == -1) || (locMaxMainMemoryBytes > locMaxStorageBytes)))
+        if (isMainMemoryValidAndStorageSpecified(locUseMainMemory, locMaxStorageBytes) &&
+                isMainMemoryGreaterOrUnlimitedThanStorage(locMaxMainMemoryBytes, locMaxStorageBytes))
         {
             locMaxStorageBytes = locMaxMainMemoryBytes;
         }
@@ -97,7 +97,15 @@ public final class MemoryUsageSetting
         this.maxMainMemoryBytes = locMaxMainMemoryBytes;
         this.maxStorageBytes = locMaxStorageBytes;
     }
-    
+
+    private boolean isMainMemoryValidAndStorageSpecified(boolean locUseMainMemory, long locMaxStorageBytes) {
+        return locUseMainMemory && (locMaxStorageBytes > -1);
+    }
+
+    private boolean isMainMemoryGreaterOrUnlimitedThanStorage(long locMaxMainMemoryBytes, long locMaxStorageBytes) {
+        return (locMaxMainMemoryBytes == -1) || (locMaxMainMemoryBytes > locMaxStorageBytes);
+    }
+
     /**
      * Setups buffering memory usage to only use main-memory (no temporary file) which is not restricted in size.
      * 
