@@ -320,6 +320,8 @@
                   <artifactId>dependency-check-maven</artifactId>
                   <version>9.0.10</version>
                   <configuration>
+                      <!-- skip temporarely, due to some ongoing issues with the NVD site -->
+                      <skip>true</skip>
                       <failBuildOnCVSS>0</failBuildOnCVSS>
                       <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
                       <skipSystemScope>true</skipSystemScope>
