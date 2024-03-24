@@ -21,10 +21,9 @@
   </formats>
   <fileSets>
     <fileSet>
-      <directory>${project.basedir}/..</directory>
+      <directory>${project.basedir}</directory>
       <outputDirectory></outputDirectory>
       <excludes>
-        <exclude>**/release/**</exclude>
         <exclude>**/target/**</exclude>
         <exclude>**/.*/**</exclude>
       </excludes>
