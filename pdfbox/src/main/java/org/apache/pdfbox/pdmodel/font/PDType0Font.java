@@ -542,6 +542,13 @@ public class PDType0Font extends PDFont implements PDVectorFont
             return unicode;
         }
 
+        // Use identity mapping if the given ToUnicode CMap doesn't provide any valid mapping
+        // a predefined map shall only be used if there isn't any ToUnicode CMap
+        if (getToUnicodeCMap() != null)
+        {
+            return Character.toString((char) code);
+        }
+
         if ((isCMapPredefined || isDescendantCJK) && cMapUCS2 != null)
         {
             // if the font is composite and uses a predefined cmap (excluding Identity-H/V) then
