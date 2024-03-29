@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -828,6 +829,15 @@ public class BruteForceParser extends COSParser
         trailerResolver.nextXrefObj(0, XRefType.TABLE);
         getBFCOSObjectOffsets().forEach(trailerResolver::setXRef);
         trailerResolver.setStartxref(0);
+        // transfer xref-table to document
+        document.getXrefTable().clear();
+        document.addXRefTable(trailerResolver.getXrefTable());
+        // remember the highest XRef object number to avoid it being reused in incremental saving
+        Optional<Long> maxValue = document.getXrefTable().keySet().stream() //
+                .map(COSObjectKey::getNumber) //
+                .reduce(Long::max);
+        document.setHighestXRefObjectNumber(maxValue.isPresent() ? maxValue.get() : 0);
+
         COSDictionary trailer = trailerResolver.getTrailer();
         document.setTrailer(trailer);
         boolean searchForObjStreamsDone = false;
