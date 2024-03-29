@@ -828,6 +828,16 @@ public class BruteForceParser extends COSParser
         trailerResolver.nextXrefObj(0, XRefType.TABLE);
         getBFCOSObjectOffsets().forEach(trailerResolver::setXRef);
         trailerResolver.setStartxref(0);
+        // transfer xref-table to document
+        document.getXrefTable().clear();
+        document.addXRefTable(trailerResolver.getXrefTable());
+        // remember the highest XRef object number to avoid it being reused in incremental saving
+        Long maxValue = document.getXrefTable().keySet().stream() //
+                .map(COSObjectKey::getNumber) //
+                .reduce(Long::max) //
+                .orElse(0L);
+        document.setHighestXRefObjectNumber(maxValue);
+
         COSDictionary trailer = trailerResolver.getTrailer();
         document.setTrailer(trailer);
         boolean searchForObjStreamsDone = false;
