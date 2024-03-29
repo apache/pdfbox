@@ -1075,6 +1075,12 @@ public class COSWriter implements ICOSVisitor
             actual = ((COSObject) obj).getObject();
             if (actual == null)
             {
+                // the referenced object isn't there due to a malformed pdf
+                // check if a key is present, otherwise create a new one
+                if (key == null)
+                {
+                    key = new COSObjectKey(++number, 0);
+                }
                 objectKeys.put(obj, key);
                 return key;
             }
