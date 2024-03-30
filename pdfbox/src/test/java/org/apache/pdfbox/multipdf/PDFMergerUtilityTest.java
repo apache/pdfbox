@@ -1084,4 +1084,38 @@ class PDFMergerUtilityTest
             }
         }
     }
+
+    /**
+     * Check for the bug that happened in PDFBOX-5792, where a destination was outside a target
+     * document and hit an NPE in the next call of Splitter.fixDestinations().
+     *
+     * @throws IOException
+     */
+    @Test
+    void testSinglePageSplit() throws IOException
+    {
+        try (PDDocument doc = Loader.loadPDF(new File(SRCDIR, "PDFBOX-5792-240045.pdf")))
+        {
+            Splitter splitter = new Splitter();
+            splitter.setSplitAtPage(1);
+            List<PDDocument> splitResult = splitter.split(doc);
+            assertEquals(6, splitResult.size());
+            for (PDDocument dstDoc : splitResult)
+            {
+                assertEquals(1, dstDoc.getNumberOfPages());
+                checkForPageOrphans(dstDoc);
+                for (PDAnnotation ann : dstDoc.getPage(0).getAnnotations())
+                {
+                    PDAnnotationLink link = (PDAnnotationLink) ann;
+                    PDActionGoTo action = (PDActionGoTo) link.getAction();
+                    PDPageDestination destination = (PDPageDestination) ((PDActionGoTo) action).getDestination();
+                    assertNull(destination.getPage());
+                }
+            }
+            for (PDDocument dstDoc : splitResult)
+            {
+                dstDoc.close();
+            }
+        }
+    }
 }
