@@ -151,6 +151,11 @@ public class Splitter
         PDPageTree pageTree = destinationDocument.getPages();
         for (PDPageDestination pageDestination : destToFixSet)
         {
+            if (pageDestination.getPage() == null)
+            {
+                //TODO avoid NPE until proper solution, see PDFBOX-5792
+                continue;
+            }
             COSDictionary srcPageDict = pageDestination.getPage().getCOSObject();
             COSDictionary dstPageDict = pageDictMap.get(srcPageDict);
             PDPage dstPage = new PDPage(dstPageDict);
