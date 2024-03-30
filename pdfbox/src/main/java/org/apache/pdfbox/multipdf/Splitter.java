@@ -78,7 +78,7 @@ public class Splitter
     private Map<COSDictionary, COSDictionary> pageDictMap;
     private Map<COSDictionary, COSDictionary> structDictMap;
     private Map<COSDictionary, COSDictionary> annotDictMap;
-    private Set<PDPageDestination> destToFixSet;
+    private Map<PDPageDestination,PDPage> destToFixMap;
     private Set<String> idSet;
     private Set<COSName> roleSet;
 
@@ -123,7 +123,7 @@ public class Splitter
         destinationDocuments = new ArrayList<PDDocument>();
         sourceDocument = document;
         pageDictMap = new HashMap<COSDictionary, COSDictionary>();
-        destToFixSet = new HashSet<PDPageDestination>();
+        destToFixMap = new HashMap<PDPageDestination,PDPage>();
         annotDictMap = new HashMap<COSDictionary, COSDictionary>();
         idSet = new HashSet<String>();
         roleSet = new HashSet<COSName>();
@@ -140,25 +140,27 @@ public class Splitter
     }
 
     /**
-     * Replace the page destinations, if the destination page is in the target document. This must
-     * be called after all pages (and its annotations) are processed.
+     * Replace the page destinations, if the source and destination pages are in the target
+     * document. This must be called after all pages (and its annotations) are processed.
      *
      * @param destinationDocument
      */
     private void fixDestinations(PDDocument destinationDocument)
     {
         PDPageTree pageTree = destinationDocument.getPages();
-        for (PDPageDestination pageDestination : destToFixSet)
+        for (Map.Entry<PDPageDestination,PDPage> entry : destToFixMap.entrySet())
         {
-            if (pageDestination.getPage() == null)
+            PDPageDestination pageDestination = entry.getKey();
+            // Find whether source page is inside or outside
+            PDPage srcPage = entry.getValue();
+            if (pageTree.indexOf(srcPage) < 0)
             {
-                //TODO avoid NPE until proper solution, see PDFBOX-5792
                 continue;
             }
             COSDictionary srcPageDict = pageDestination.getPage().getCOSObject();
             COSDictionary dstPageDict = pageDictMap.get(srcPageDict);
             PDPage dstPage = new PDPage(dstPageDict);
-            // Find whether destination is inside or outside
+            // Find whether destination page is inside or outside
             if (pageTree.indexOf(dstPage) >= 0)
             {
                 pageDestination.setPage(dstPage);
@@ -758,7 +760,7 @@ public class Splitter
                                 (PDPageDestination) PDDestination.create(clonedDestinationArray);
 
                         // remember the destination to adjust / remove page later
-                        destToFixSet.add(dstDestination);
+                        destToFixMap.put(dstDestination, imported);
 
                         if (action != null)
                         {
