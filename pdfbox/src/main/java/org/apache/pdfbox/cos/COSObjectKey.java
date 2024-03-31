@@ -41,16 +41,7 @@ public final class COSObjectKey implements Comparable<COSObjectKey>
      */
     public COSObjectKey(long num, int gen)
     {
-        if (num < 0)
-        {
-            throw new IllegalArgumentException("Object number must not be a negative value");
-        }
-        if (gen < 0)
-        {
-            throw new IllegalArgumentException("Generation number must not be a negative value");
-        }
-        numberAndGeneration = num << NUMBER_OFFSET | (gen & GENERATION_MASK);
-        streamIndex = -1;
+        this(num, gen, -1);
     }
 
     /**
