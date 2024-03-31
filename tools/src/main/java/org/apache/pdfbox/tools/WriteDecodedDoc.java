@@ -116,8 +116,7 @@ public class WriteDecodedDoc implements Callable<Integer>
             }
             catch (IOException ex)
             {
-                SYSERR.println("skip " + cosObject.getObjectNumber() + " "
-                        + cosObject.getGenerationNumber() + " obj: " + ex.getMessage());
+                SYSERR.println("skip " + cosObject.getKey() + " obj: " + ex.getMessage());
             }
         }
 
