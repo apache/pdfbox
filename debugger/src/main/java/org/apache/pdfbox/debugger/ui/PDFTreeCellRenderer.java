@@ -43,6 +43,8 @@ import org.apache.pdfbox.cos.COSString;
  */
 public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
 {
+    private static final long serialVersionUID = 6547078597109564198L;
+
     private static final ImageIcon ICON_ARRAY = new ImageIcon(getImageUrl("array"));
     private static final ImageIcon ICON_BOOLEAN = new ImageIcon(getImageUrl("boolean"));
     private static final ImageIcon ICON_DICT = new ImageIcon(getImageUrl("dict"));
@@ -115,8 +117,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
                 if (item instanceof COSObject)
                 {
                     COSObject indirect = (COSObject)item;
-                    stringResult += " [" + indirect.getObjectNumber() + " " +
-                                           indirect.getGenerationNumber() + " R]";
+                    stringResult += " [" + indirect.getKey() + "]";
                 }
                 stringResult += toTreePostfix(value);
                 
