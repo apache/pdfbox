@@ -30,8 +30,6 @@ import org.apache.logging.log4j.LogManager;
 public class COSObject extends COSBase implements COSUpdateInfo
 {
     private COSBase baseObject;
-    private long objectNumber;
-    private int generationNumber;
     private ICOSParser parser;
     private boolean isDereferenced = false;
     private final COSUpdateState updateState;
@@ -90,8 +88,6 @@ public class COSObject extends COSBase implements COSUpdateInfo
     {
         updateState = new COSUpdateState(this);
         this.parser = parser;
-        objectNumber = key.getNumber();
-        generationNumber = key.getGeneration();
         setKey(key);
     }
 
@@ -152,25 +148,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
     @Override
     public String toString()
     {
-        return "COSObject{" + objectNumber + ", " + generationNumber + "}";
-    }
-
-    /** 
-     * Getter for property objectNumber.
-     * @return Value of property objectNumber.
-     */
-    public long getObjectNumber()
-    {
-        return objectNumber;
-    }
-
-    /** 
-     * Getter for property generationNumber.
-     * @return Value of property generationNumber.
-     */
-    public int getGenerationNumber()
-    {
-        return generationNumber;
+		return "COSObject{" + getKey() + "}";
     }
 
     /**

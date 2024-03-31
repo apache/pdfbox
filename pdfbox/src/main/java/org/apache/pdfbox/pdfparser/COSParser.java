@@ -876,8 +876,7 @@ public class COSParser extends BaseParser implements ICOSParser
             }
             if (COSNull.NULL == length)
             {
-                LOG.warn("Length object ({} {}) not found", lengthObj.getObjectNumber(),
-                        lengthObj.getGenerationNumber());
+                LOG.warn("Length object ({} {}) not found", lengthObj.getKey());
                 return null;
             }
             if (length instanceof COSNumber)
