@@ -251,7 +251,7 @@ public class PDFCloneUtility
             {
                 COSObject cosObj = ((COSObject) value);
                 LOG.warn(parent.getClass().getSimpleName() + " object has a reference to itself: "
-                        + cosObj.getObjectNumber() + " " + cosObj.getGenerationNumber() + " R");
+                        + cosObj.getKey());
                 return true;
             }
         }
