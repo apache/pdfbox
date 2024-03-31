@@ -286,8 +286,7 @@ public class CatalogValidationProcess extends AbstractProcess
             }
 
             COSObject cosObj = (COSObject) destOutputProfile;
-            COSObjectKey key = new COSObjectKey(cosObj.getObjectNumber(),
-                    cosObj.getGenerationNumber());
+            COSObjectKey key = cosObj.getKey();
             if (mapDestOutputProfile.containsKey(key))
             {
                 // the profile is already checked. continue

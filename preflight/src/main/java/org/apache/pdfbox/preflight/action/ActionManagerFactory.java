@@ -151,8 +151,7 @@ public class ActionManagerFactory
             if (aDict instanceof COSObject)
             {
                 COSObject cosObj = (COSObject) aDict;
-                COSObjectKey cok = new COSObjectKey(cosObj.getObjectNumber(),
-                        cosObj.getGenerationNumber());
+                COSObjectKey cok = cosObj.getKey();
                 COSDictionary indirectDict = (COSDictionary) cosObj.getObject();
                 if (!alreadyCreated.containsKey(cok))
                 {
