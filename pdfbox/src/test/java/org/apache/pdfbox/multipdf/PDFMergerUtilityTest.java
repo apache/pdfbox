@@ -1112,6 +1112,24 @@ class PDFMergerUtilityTest
                     assertNull(destination.getPage());
                 }
             }
+            PDStructureTreeRoot structureTreeRoot1 = splitResult.get(0).getDocumentCatalog().getStructureTreeRoot();
+            assertEquals(6, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot1.getParentTree()).size());
+            assertEquals(3, structureTreeRoot1.getRoleMap().size());
+            PDStructureTreeRoot structureTreeRoot2 = splitResult.get(1).getDocumentCatalog().getStructureTreeRoot();
+            assertEquals(6, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot2.getParentTree()).size());
+            assertEquals(3, structureTreeRoot2.getRoleMap().size());
+            PDStructureTreeRoot structureTreeRoot3 = splitResult.get(2).getDocumentCatalog().getStructureTreeRoot();
+            assertEquals(6, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot3.getParentTree()).size());
+            assertEquals(4, structureTreeRoot3.getRoleMap().size());
+            PDStructureTreeRoot structureTreeRoot4 = splitResult.get(3).getDocumentCatalog().getStructureTreeRoot();
+            assertEquals(5, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot4.getParentTree()).size());
+            assertEquals(4, structureTreeRoot4.getRoleMap().size());
+            PDStructureTreeRoot structureTreeRoot5 = splitResult.get(4).getDocumentCatalog().getStructureTreeRoot();
+            assertEquals(1, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot5.getParentTree()).size());
+            assertEquals(6, structureTreeRoot5.getRoleMap().size());
+            PDStructureTreeRoot structureTreeRoot6 = splitResult.get(5).getDocumentCatalog().getStructureTreeRoot();
+            assertEquals(1, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot6.getParentTree()).size());
+            assertEquals(7, structureTreeRoot6.getRoleMap().size());
             for (PDDocument dstDoc : splitResult)
             {
                 dstDoc.close();
