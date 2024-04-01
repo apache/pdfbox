@@ -168,6 +168,7 @@ public class Type1CharString
             // indicates an invalid charstring
             LOG.warn("Unknown charstring command in glyph {} of font {}", glyphName, fontName);
             numbers.clear();
+            return;
         }
         switch(type1KeyWord)
         {
