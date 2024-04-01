@@ -100,13 +100,18 @@ class ShadedTriangle
      */
     private int calcDeg(Point2D[] p)
     {
-        Set<Point> set = new HashSet<>();
-        for (Point2D itp : p)
-        {
-            Point np = new Point((int) Math.round(itp.getX() * 1000), (int) Math.round(itp.getY() * 1000));
-            set.add(np);
+        if ((int) p[0].getX() * 1000 == (int) p[1].getX() && (int) p[0].getY() * 1000 == (int) p[1].getY()) {
+            if ((int) p[0].getX() * 1000 == (int) p[2].getX() && (int) p[0].getY() * 1000 == (int) p[2].getY()) {
+                return 1;
+            } else {
+                return 2;
+            }
+        } else if ((int) p[0].getX() * 1000 == (int) p[2].getX() && (int) p[0].getY() * 1000 == (int) p[2].getY()
+                || (int) p[1].getX() * 1000 == (int) p[2].getX() && (int) p[1].getY() * 1000 == (int) p[2].getY()) {
+            return 2;
+        } else {
+            return 3;
         }
-        return set.size();
     }
 
     public int getDeg()

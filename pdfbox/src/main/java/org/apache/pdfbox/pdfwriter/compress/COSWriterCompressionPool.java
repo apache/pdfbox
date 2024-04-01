@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.apache.pdfbox.pdfparser.PDFXRefStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -53,7 +55,7 @@ public class COSWriterCompressionPool
     // A list containing all objects, that may be appended to an object stream.
     private final List<COSObjectKey> objectStreamObjects = new ArrayList<>();
     // A list of all direct objects
-    private final List<COSBase> allDirectObjects = new ArrayList<>();
+    private final Set<COSBase> allDirectObjects = new HashSet<>();
 
     /**
      * <p>

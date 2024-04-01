@@ -150,9 +150,7 @@ public class Type1CharString
         type1Sequence.forEach(obj -> {
             if (obj instanceof CharStringCommand)
             {
-                List<Number> results = handleType1Command(numbers, (CharStringCommand) obj);
-                numbers.clear();
-                numbers.addAll(results);
+                handleType1Command(numbers, (CharStringCommand) obj);
             }
             else
             {
@@ -161,7 +159,7 @@ public class Type1CharString
         });
     }
 
-    private List<Number> handleType1Command(List<Number> numbers, CharStringCommand command)
+    private void handleType1Command(List<Number> numbers, CharStringCommand command)
     {
         commandCount++;
         Type1KeyWord type1KeyWord = command.getType1KeyWord();
@@ -169,7 +167,7 @@ public class Type1CharString
         {
             // indicates an invalid charstring
             LOG.warn("Unknown charstring command in glyph {} of font {}", glyphName, fontName);
-            return Collections.emptyList();
+            numbers.clear();
         }
         switch(type1KeyWord)
         {
@@ -298,11 +296,10 @@ public class Type1CharString
 
                 float result = a / b;
 
-                List<Number> list = new ArrayList<>(numbers);
-                list.remove(list.size() - 1);
-                list.remove(list.size() - 1);
-                list.add(result);
-                return list;
+                numbers.remove(numbers.size() - 1);
+                numbers.remove(numbers.size() - 1);
+                numbers.add(result);
+                return;
             }
             break;
         case HSTEM:
@@ -325,7 +322,7 @@ public class Type1CharString
             // indicates a PDFBox bug
             throw new IllegalArgumentException("Unhandled command: " + type1KeyWord);
         }
-        return Collections.emptyList();
+        numbers.clear();
     }
 
     /**
