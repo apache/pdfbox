@@ -688,7 +688,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 PDTransparencyGroup form = softMask.getGroup();
                 PDColorSpace colorSpace = form.getGroup().getColorSpace(form.getResources());
-                if (colorSpace != null)
+                if (colorSpace != null &&
+                    colorSpace.getNumberOfComponents() == backdropColorArray.size()) // PDFBOX-5795
                 {
                     backdropColor = new PDColor(backdropColorArray, colorSpace);
                 }
