@@ -71,6 +71,11 @@ public class IndexToLocationTable extends TTFTable
                 throw new IOException( "Error:TTF.loca unknown offset format.");
             }
         }
+        if (numGlyphs == 1 && offsets[0] == 0 && offsets[1] == 0)
+        {
+            // PDFBOX-5794 empty glyph
+            throw new IOException("The font has no glyphs");
+        }
         initialized = true;
     }
     /**
