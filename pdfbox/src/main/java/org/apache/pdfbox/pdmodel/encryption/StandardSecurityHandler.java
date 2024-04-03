@@ -607,7 +607,7 @@ public final class StandardSecurityHandler extends SecurityHandler
                 hash = computeHash2A(truncatedOwnerPassword, oValidationSalt, user);
             }
 
-            return Arrays.equals(hash, oHash);
+            return MessageDigest.isEqual(hash, oHash);
         }
         else
         {
@@ -980,12 +980,12 @@ public final class StandardSecurityHandler extends SecurityHandler
                                                    length, encryptMetadata);
         if (encRevision == 2)
         {
-            return Arrays.equals(user, passwordBytes);
+            return MessageDigest.isEqual(user, passwordBytes);
         }
         else
         {
             // compare first 16 bytes only
-            return Arrays.equals(Arrays.copyOf(user, 16), Arrays.copyOf(passwordBytes, 16));
+            return MessageDigest.isEqual(Arrays.copyOf(user, 16), Arrays.copyOf(passwordBytes, 16));
         }
     }
 
@@ -1007,7 +1007,7 @@ public final class StandardSecurityHandler extends SecurityHandler
             hash = computeHash2A(truncatedPassword, uValidationSalt, null);
         }
 
-        return Arrays.equals(hash, uHash);
+        return MessageDigest.isEqual(hash, uHash);
     }
 
     /**
