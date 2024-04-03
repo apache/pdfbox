@@ -633,12 +633,12 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
 
         if (encRevision == REVISION_5)
         {
-            return Arrays.equals(computeSHA256(truncatedOwnerPassword, oValidationSalt, user),
+            return MessageDigest.isEqual(computeSHA256(truncatedOwnerPassword, oValidationSalt, user),
                     oHash);
         }
         else
         {
-            return Arrays.equals(computeHash2A(truncatedOwnerPassword, oValidationSalt, user),
+            return MessageDigest.isEqual(computeHash2A(truncatedOwnerPassword, oValidationSalt, user),
                     oHash);
         }
     }
@@ -1027,12 +1027,12 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
                                                    length, encryptMetadata);
         if (encRevision == REVISION_2)
         {
-            return Arrays.equals(user, passwordBytes);
+            return MessageDigest.isEqual(user, passwordBytes);
         }
         else
         {
             // compare first 16 bytes only
-            return Arrays.equals(Arrays.copyOf(user, 16), Arrays.copyOf(passwordBytes, 16));
+            return MessageDigest.isEqual(Arrays.copyOf(user, 16), Arrays.copyOf(passwordBytes, 16));
         }
     }
 
@@ -1054,7 +1054,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             hash = computeHash2A(truncatedPassword, uValidationSalt, null);
         }
 
-        return Arrays.equals(hash, uHash);
+        return MessageDigest.isEqual(hash, uHash);
     }
 
     /**
