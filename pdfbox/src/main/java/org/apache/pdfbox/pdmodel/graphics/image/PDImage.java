@@ -185,7 +185,9 @@ public interface PDImage extends COSObjectable
     int getHeight();
 
     /**
-     * Sets the height of the image.
+     * Sets the height of the image. This is for internal PDFBox usage and not to set the size of
+     * the image on the page.
+     *
      * @param height The height of the image.
      */
     void setHeight(int height);
@@ -198,7 +200,9 @@ public interface PDImage extends COSObjectable
     int getWidth();
 
     /**
-     * Sets the width of the image.
+     * Sets the width of the image. This is for internal PDFBox usage and not to set the size of
+     * the image on the page.
+     *
      * @param width The width of the image.
      */
     void setWidth(int width);
