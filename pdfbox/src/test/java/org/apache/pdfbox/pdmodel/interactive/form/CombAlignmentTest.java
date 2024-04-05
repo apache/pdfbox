@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.File;
 import java.io.IOException;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.Before;
@@ -52,6 +53,33 @@ public class CombAlignmentTest
         field.setValue(TEST_VALUE);
         field = acroForm.getField("PDFBoxCombRight");
         field.setValue(TEST_VALUE);
+        // compare rendering
+        File file = new File(OUT_DIR, NAME_OF_PDF);
+        document.save(file);
+        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
+        if (!testPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        {
+            // don't fail, rendering is different on different systems, result must be viewed manually
+            System.err.println("Rendering of " + file +
+                    " failed or is not identical to expected rendering in " + IN_DIR + " directory");
+        }
+        document.close();
+    }
+
+    // PDFBOX-5784
+    @Test
+    public void testPDFBOX5784() throws IOException
+    {
+
+        final String NAME_OF_PDF = "PDFBOX-5784.pdf";
+
+        PDDocument document = PDDocument.load(new File(IN_DIR, NAME_OF_PDF));
+        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+        for (PDField field : acroForm.getFieldTree()) {
+            if (!field.getPartialName().contains("acrobat")) {
+                field.setValue("WIaqg");
+            }
+        }
         // compare rendering
         File file = new File(OUT_DIR, NAME_OF_PDF);
         document.save(file);

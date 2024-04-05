@@ -379,6 +379,23 @@ class AppearanceGeneratorHelper {
                         clipRect.getHeight());
                 contents.closeAndStroke();
             }
+
+            // draw the dividers for a comb field
+            if (borderColour != null && shallComb()) {
+                int maxLen = ((PDTextField) field).getMaxLen();
+                PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
+                PDRectangle clipRect = applyPadding(bbox, Math.max(DEFAULT_PADDING, lineWidth/2));
+                float lowerLeft = clipRect.getLowerLeftX();
+                float height = clipRect.getHeight();
+                    
+                float combWidth = bbox.getWidth() / maxLen;
+
+                for (int i= 0; i < maxLen - 1; i++) {
+                    contents.moveTo(combWidth + combWidth * i, height);
+                    contents.lineTo(combWidth + combWidth * i, lowerLeft);
+                }
+                contents.closeAndStroke();
+            }
         }
 
         contents.close();
@@ -647,26 +664,29 @@ class AppearanceGeneratorHelper {
         int quadding = field.getQ();
         int numChars = Math.min(value.length(), maxLen);
 
-        PDRectangle paddingEdge = applyPadding(appearanceStream.getBBox(), 1);
-
         float combWidth = appearanceStream.getBBox().getWidth() / maxLen;
         float ascentAtFontSize = font.getFontDescriptor().getAscent() / FONTSCALE * fontSize;
-        float baselineOffset = paddingEdge.getLowerLeftY()
-                + (appearanceStream.getBBox().getHeight() - ascentAtFontSize) / 2;
+
+        float baselineOffset = appearanceStream.getBBox().getLowerLeftY() +  
+                (appearanceStream.getBBox().getHeight() - ascentAtFontSize)/2;
 
         float prevCharWidth = 0f;
 
-        float xOffset = combWidth / 2;
+        // set initial offset based on width of first char.
+        float firstCharWidth = font.getStringWidth(value.substring(0, 1)) / FONTSCALE * fontSize;
+        float initialOffset = (combWidth - firstCharWidth)/2;
 
         // add to initial offset if right aligned or centered
         if (quadding == 2)
         {
-            xOffset = xOffset + (maxLen - numChars) * combWidth;
+            initialOffset = initialOffset + (maxLen - numChars) * combWidth;
         }
         else if (quadding == 1)
         {
-            xOffset = xOffset + (maxLen - numChars) / 2 * combWidth;
+            initialOffset = initialOffset + Math.floorDiv(maxLen - numChars, 2) * combWidth;
         }
+
+        float xOffset = initialOffset;
  
         for (int i = 0; i < numChars; i++)
         {
@@ -675,7 +695,11 @@ class AppearanceGeneratorHelper {
 
             xOffset = xOffset + prevCharWidth / 2 - currCharWidth / 2;
 
-            contents.newLineAtOffset(xOffset, baselineOffset);
+            if (i == 0) {
+                contents.newLineAtOffset(initialOffset, baselineOffset);
+            } else {
+                contents.newLineAtOffset(xOffset, baselineOffset);
+            }
             contents.showText(combString);
 
             baselineOffset = 0;
