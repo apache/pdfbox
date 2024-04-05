@@ -683,7 +683,7 @@ class AppearanceGeneratorHelper {
         }
         else if (quadding == 1)
         {
-            initialOffset = initialOffset + Math.floorDiv(maxLen - numChars, 2) * combWidth;
+            initialOffset = initialOffset + (maxLen - numChars) / 2 * combWidth;
         }
 
         float xOffset = initialOffset;
