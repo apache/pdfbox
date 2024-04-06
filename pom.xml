@@ -88,31 +88,9 @@
   <build>
     <plugins>
       <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.11</version>
-          <executions>
-              <execution>
-                  <goals>
-                      <goal>prepare-agent</goal>
-                  </goals>
-                  <configuration>
-                      <propertyName>surefireArgLine</propertyName>
-                  </configuration>
-              </execution>
-              <execution>
-                  <id>report</id>
-                  <phase>test</phase>
-                  <goals>
-                      <goal>report</goal>
-                  </goals>
-              </execution>
-          </executions>
-      </plugin>
-      <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
-              <argLine>${addmod} @{surefireArgLine}</argLine>
+              <argLine>@{surefireArgLine}</argLine>
           </configuration>
       </plugin>
       <plugin>
@@ -249,10 +227,6 @@
         <activation>
             <activeByDefault>true</activeByDefault>
         </activation>
-        <properties>
-            <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-            <addmod />
-        </properties>
     </profile>
     <!-- call mvn with -Pjdk9 or call with -Daddmod="...." -->
     <profile>
@@ -265,10 +239,6 @@
         <activation>
             <jdk>[9,10]</jdk>
         </activation>
-        <properties>
-            <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-            <addmod />
-        </properties>
     </profile>
     <!-- need to specify release version so that if PDFBox is built with
     &gt; Java 8, it can still be run with e.g. Java 6; PDFBOX-4715 -->
@@ -293,17 +263,9 @@
         <activation>
             <jdk>[11,)</jdk>
         </activation>
-        <properties>
-            <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-            <addmod />
-        </properties>
     </profile>
     <profile>
         <id>pedantic</id>
-        <properties>
-            <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-            <addmod />
-        </properties>
         <build>
             <plugins>
                 <plugin>
@@ -349,10 +311,6 @@
     </profile>
     <profile>
       <id>apache-release</id>
-      <properties>
-          <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
-          <addmod />
-      </properties>
       <build>
         <plugins>
           <plugin>
