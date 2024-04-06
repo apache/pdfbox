@@ -155,13 +155,16 @@ public class SequenceRandomAccessRead implements RandomAccessRead
         }
         else
         {
-            for (int i = 0; i < numberOfReader; i++)
+            // search forward/backwards if the new position is after/before the current position
+            int increment = position < currentPosition ? -1 : 1;
+            for (int i = currentIndex; i < numberOfReader && i >= 0;)
             {
                 if (position >= startPositions[i] && position <= endPositions[i])
                 {
                     currentIndex = i;
                     break;
                 }
+                i += increment;
             }
             currentPosition = position;
         }
