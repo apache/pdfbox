@@ -42,7 +42,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<skip>true</skip>
-                                        <argLine>${addmod} @{surefireArgLine}</argLine>
+                                        <argLine>@{surefireArgLine}</argLine>
 				</configuration>
 				<executions>
 					<execution>
@@ -56,7 +56,7 @@
 							<excludes>
 								<exclude>**/integration/**</exclude>
 							</excludes>
-                                                        <argLine>${addmod} @{surefireArgLine}</argLine>
+                                                        <argLine>@{surefireArgLine}</argLine>
 						</configuration>
 					</execution>
 					<execution>
@@ -67,7 +67,7 @@
 						</goals>
 						<configuration>
 							<skip>${skipITs}</skip>
-                                                        <argLine>${addmod} @{surefireArgLine}</argLine>
+                                                        <argLine>@{surefireArgLine}</argLine>
 							<includes>
 								<include>**/integration/*</include>
 							</includes>

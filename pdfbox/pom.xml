@@ -144,7 +144,7 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>${addmod} @{surefireArgLine} -Xmx768m</argLine>
+                    <argLine>@{surefireArgLine} -Xmx768m</argLine>
                     <excludes>
                         <exclude>org/apache/pdfbox/rendering/TestPDFToImage.java</exclude>
                     </excludes>
