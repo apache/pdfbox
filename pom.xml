@@ -55,7 +55,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <bouncycastle.version>1.77</bouncycastle.version>
+    <bouncycastle.version>1.78</bouncycastle.version>
     <log4j2.version>2.23.1</log4j2.version>
     <junit.version>5.10.2</junit.version>
     <jbig2.version>3.0.4</jbig2.version>
