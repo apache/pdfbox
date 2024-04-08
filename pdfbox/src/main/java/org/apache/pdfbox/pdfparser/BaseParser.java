@@ -62,7 +62,7 @@ public abstract class BaseParser
 
     private static final long GENERATION_NUMBER_THRESHOLD = 65535;
 
-    static final int MAX_LENGTH_LONG = Long.toString(Long.MAX_VALUE).length();
+    private static final int MAX_LENGTH_LONG = Long.toString(Long.MAX_VALUE).length();
 
     private static final Charset ALTERNATIVE_CHARSET;
 
@@ -133,13 +133,25 @@ public abstract class BaseParser
     private static final char[] NULL = { 'n', 'u', 'l', 'l' };
 
     /**
+     * ASCII code for Null.
+     */
+    private static final byte ASCII_NULL = 0;
+    /**
+     * ASCII code for horizontal tab.
+     */
+    private static final byte ASCII_TAB = 9;
+    /**
      * ASCII code for line feed.
      */
-    protected static final byte ASCII_LF = 10;
+    private static final byte ASCII_LF = 10;
+    /**
+     * ASCII code for form feed.
+     */
+    private static final byte ASCII_FF = 12;
     /**
      * ASCII code for carriage return.
      */
-    protected static final byte ASCII_CR = 13;
+    private static final byte ASCII_CR = 13;
     private static final byte ASCII_ZERO = 48;
     private static final byte ASCII_NINE = 57;
     private static final byte ASCII_SPACE = 32;
@@ -251,8 +263,7 @@ public abstract class BaseParser
     {
         if (document == null)
         {
-            throw new IOException("object reference " + key + " at offset " + source
-                    .getPosition()
+            throw new IOException("object reference " + key + " at offset " + source.getPosition()
                     + " in content stream");
         }
         return document.getObjectFromPool(key);
@@ -389,32 +400,35 @@ public abstract class BaseParser
         return true;
     }
 
+    /**
+     * Skip the upcoming CRLF or LF which are supposed to follow a stream.
+     * 
+     * @throws IOException
+     */
     protected void skipWhiteSpaces() throws IOException
     {
         //PDF Ref 3.2.7 A stream must be followed by either
         //a CRLF or LF but nothing else.
-
         int whitespace = source.read();
-
         //see brother_scan_cover.pdf, it adds whitespaces
         //after the stream but before the start of the
         //data, so just read those first
-        while (ASCII_SPACE == whitespace)
+        while (isSpace(whitespace))
         {
             whitespace = source.read();
         }
 
-        if (ASCII_CR == whitespace)
+        if (isCR(whitespace))
         {
             whitespace = source.read();
-            if (ASCII_LF != whitespace)
+            if (!isLF(whitespace))
             {
                 source.rewind(1);
                 //The spec says this is invalid but it happens in the real
                 //world so we must support it.
             }
         }
-        else if (ASCII_LF != whitespace)
+        else if (!isLF(whitespace))
         {
             //we are in an error.
             //but again we will do a lenient parsing and just assume that everything
@@ -460,10 +474,10 @@ public abstract class BaseParser
         // 4. COSDictionary ends in the next line: LF + '>'
         // 5. Next line contains another COSObject: CR + '/'
         // 6. COSDictionary ends in the next line: CR + '>'
-        if (((nextThreeBytes[0] == ASCII_CR || nextThreeBytes[0] == ASCII_LF)
+        if (((isCR(nextThreeBytes[0]) || isLF(nextThreeBytes[0]))
                 && (nextThreeBytes[1] == '/' || nextThreeBytes[1] == '>')) //
                 || //
-                (nextThreeBytes[0] == ASCII_CR && nextThreeBytes[1] == ASCII_LF
+                (isCR(nextThreeBytes[0]) && isLF(nextThreeBytes[1])
                         && (nextThreeBytes[2] == '/' || nextThreeBytes[2] == '>')) //
         )
         {
@@ -781,14 +795,14 @@ public abstract class BaseParser
      * @param ch The character
      * @return true if the character terminates a PDF name, otherwise false.
      */
-    protected boolean isEndOfName(int ch)
+    protected static boolean isEndOfName(int ch)
     {
         switch (ch)
         {
         case ASCII_SPACE:
         case ASCII_CR:
         case ASCII_LF:
-        case 9:
+        case ASCII_TAB:
         case '>':
         case '<':
         case '[':
@@ -796,7 +810,7 @@ public abstract class BaseParser
         case ']':
         case ')':
         case '(':
-        case 0:
+        case ASCII_NULL:
         case '\f':
         case '%':
         case -1:
@@ -872,8 +886,8 @@ public abstract class BaseParser
     }
 
     /**
-     * Tries to decode the buffer cotent to an UTF-8 String.
-     * If that fails, tries the alternative Encoding.
+     * Tries to decode the buffer content to an UTF-8 String. If that fails, tries the alternative Encoding.
+     * 
      * @param buffer the {@link ByteArrayOutputStream} containing the bytes to decode
      * @return the decoded String
      */
@@ -935,7 +949,7 @@ public abstract class BaseParser
         case (char)-1:
             return null;
         default:
-            if( Character.isDigit(c) || c == '-' || c == '+' || c == '.')
+            if (isDigit(c) || c == '-' || c == '+' || c == '.')
             {
                 return parseCOSNumber();
             }
@@ -1086,22 +1100,10 @@ public abstract class BaseParser
     /**
      * This will tell if the next character is a closing brace( close of PDF array ).
      *
-     * @return true if the next byte is ']', false otherwise.
-     *
-     * @throws IOException If an IO error occurs.
-     */
-    protected boolean isClosing() throws IOException
-    {
-        return isClosing(source.peek());
-    }
-
-    /**
-     * This will tell if the next character is a closing brace( close of PDF array ).
-     *
      * @param c The character to check against end of line
      * @return true if the next byte is ']', false otherwise.
      */
-    protected boolean isClosing(int c)
+    protected static boolean isClosing(int c)
     {
         return c == ']';
     }
@@ -1144,18 +1146,6 @@ public abstract class BaseParser
     }
 
     /**
-     * This will tell if the next byte to be read is an end of line byte.
-     *
-     * @return true if the next byte is 0x0A or 0x0D.
-     *
-     * @throws IOException If there is an error reading from the stream.
-     */
-    protected boolean isEOL() throws IOException
-    {
-        return isEOL(source.peek());
-    }
-
-    /**
      * This will tell if the end of the data is reached.
      * 
      * @return true if the end of the data is reached.
@@ -1172,17 +1162,29 @@ public abstract class BaseParser
      * @param c The character to check against end of line
      * @return true if the next byte is 0x0A or 0x0D.
      */
-    protected boolean isEOL(int c)
+    protected static boolean isEOL(int c)
     {
         return isLF(c) || isCR(c);
     }
 
-    private boolean isLF(int c)
+    /**
+     * This will tell if the next byte to be read is a line feed.
+     *
+     * @param c The character to check against line feed
+     * @return true if the next byte is 0x0A.
+     */
+    private static boolean isLF(int c)
     {
         return ASCII_LF == c;
     }
 
-    private boolean isCR(int c)
+    /**
+     * This will tell if the next byte to be read is a carriage return.
+     *
+     * @param c The character to check against carriage return
+     * @return true if the next byte is 0x0D.
+     */
+    private static boolean isCR(int c)
     {
         return ASCII_CR == c;
     }
@@ -1209,9 +1211,9 @@ public abstract class BaseParser
     {
         switch (c)
         {
-        case 0:
-        case 9:
-        case 12:
+        case ASCII_NULL:
+        case ASCII_TAB:
+        case ASCII_FF:
         case ASCII_LF:
         case ASCII_CR:
         case ASCII_SPACE:
@@ -1239,7 +1241,7 @@ public abstract class BaseParser
      * @param c The character to check against space
      * @return true if the next byte in the stream is a space character.
      */
-    protected boolean isSpace(int c)
+    private static boolean isSpace(int c)
     {
         return ASCII_SPACE == c;
     }
@@ -1327,7 +1329,8 @@ public abstract class BaseParser
         int retval = readInt();
         if(retval < 0 || retval > GENERATION_NUMBER_THRESHOLD)
         {
-            throw new IOException("Generation Number '" + retval + "' has more than 5 digits");
+            throw new IOException(
+                    "Generation Number '" + retval + "' has more than 5 digits or is negative");
         }
         return retval;
     }
@@ -1399,7 +1402,7 @@ public abstract class BaseParser
     {
         int lastByte;
         StringBuilder buffer = new StringBuilder();
-        while ((lastByte = source.read()) >= '0' && lastByte <= '9')
+        while (isDigit(lastByte = source.read()))
         {
             buffer.append( (char)lastByte );
             if (buffer.length() > MAX_LENGTH_LONG)
