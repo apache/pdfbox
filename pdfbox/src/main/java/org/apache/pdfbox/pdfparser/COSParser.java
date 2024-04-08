@@ -1234,8 +1234,6 @@ public class COSParser extends BaseParser implements ICOSParser
      * This will get the security handler. The document must be parsed before this is called.
      *
      * @return The security handler of the document that was parsed.
-     *
-     * @throws IOException If there is an error getting the document.
      */
     protected SecurityHandler<? extends ProtectionPolicy> getSecurityHandler()
     {
