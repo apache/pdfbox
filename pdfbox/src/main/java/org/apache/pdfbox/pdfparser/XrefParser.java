@@ -53,19 +53,16 @@ public class XrefParser
     private XrefTrailerResolver xrefTrailerResolver = new XrefTrailerResolver();
 
     private final COSParser parser;
-    private final COSDocument document;
     private final RandomAccessRead source;
 
     /**
      * Default constructor.
      *
-     * @param cosDocument the corresponding COS document of the pdf.
      * @param cosParser the parser to be used to read the pdf.
      * 
      */
-    public XrefParser(COSDocument cosDocument, COSParser cosParser)
+    public XrefParser(COSParser cosParser)
     {
-        document = cosDocument;
         parser = cosParser;
         source = parser.source;
     }
@@ -83,11 +80,14 @@ public class XrefParser
     /**
      * Parses cross reference tables.
      * 
+     * @param cosDocument the corresponding COS document of the pdf.
      * @param startXRefOffset start offset of the first table
+     * 
      * @return the trailer dictionary
+     * 
      * @throws IOException if something went wrong
      */
-    public COSDictionary parseXref(long startXRefOffset) throws IOException
+    public COSDictionary parseXref(COSDocument document, long startXRefOffset) throws IOException
     {
         source.seek(startXRefOffset);
         long startXrefOffset = Math.max(0, parseStartXref());
@@ -279,7 +279,7 @@ public class XrefParser
                 xrefTrailerResolver.nextXrefObj( objByteOffset, XRefType.STREAM );
                 xrefTrailerResolver.setTrailer(xrefStream);
             }
-            PDFXrefStreamParser parser = new PDFXrefStreamParser(xrefStream, document);
+            PDFXrefStreamParser parser = new PDFXrefStreamParser(xrefStream);
             parser.parse(xrefTrailerResolver);
         }
 

@@ -249,8 +249,8 @@ public class COSParser extends BaseParser implements ICOSParser
             long startXRefOffset = getStartxrefOffset();
             if (startXRefOffset > -1)
             {
-                XrefParser xrefParser = new XrefParser(document, this);
-                trailer = xrefParser.parseXref(startXRefOffset);
+                XrefParser xrefParser = new XrefParser(this);
+                trailer = xrefParser.parseXref(document, startXRefOffset);
                 xrefTable.putAll(xrefParser.getXrefTable());
             }
             else
