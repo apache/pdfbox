@@ -131,7 +131,7 @@ public class COSParser extends BaseParser implements ICOSParser
     /**
      * The security handler.
      */
-    private SecurityHandler<? extends ProtectionPolicy> securityHandler = null;
+    private SecurityHandler<ProtectionPolicy> securityHandler = null;
 
     /**
      *  how many trailing bytes to read for EOF marker.
@@ -1235,8 +1235,8 @@ public class COSParser extends BaseParser implements ICOSParser
      *
      * @return The security handler of the document that was parsed.
      */
-    protected SecurityHandler<? extends ProtectionPolicy> getSecurityHandler()
+    protected SecurityHandler<ProtectionPolicy> getSecurityHandler()
     {
-        return securityHandler;
+        return (SecurityHandler<ProtectionPolicy>) securityHandler;
     }
 }

@@ -209,7 +209,7 @@ public class XrefParser
         long trailerOffset = source.getPosition();
         // PDFBOX-1739 skip extra xref entries in RegisSTAR documents
         int nextCharacter = source.peek();
-        while (nextCharacter != 't' && COSParser.isDigit(nextCharacter))
+        while (nextCharacter != 't' && BaseParser.isDigit(nextCharacter))
         {
             if (source.getPosition() == trailerOffset)
             {
@@ -279,8 +279,7 @@ public class XrefParser
                 xrefTrailerResolver.nextXrefObj( objByteOffset, XRefType.STREAM );
                 xrefTrailerResolver.setTrailer(xrefStream);
             }
-            PDFXrefStreamParser parser = new PDFXrefStreamParser(xrefStream);
-            parser.parse(xrefTrailerResolver);
+            new PDFXrefStreamParser(xrefStream).parse(xrefTrailerResolver);
         }
 
         return dict.getLong(COSName.PREV);
@@ -360,7 +359,7 @@ public class XrefParser
         source.seek(startXRefOffset - 1);
         int nextValue = source.read();
         // the first character has to be a whitespace, and then a digit
-        if (COSParser.isWhitespace(nextValue))
+        if (BaseParser.isWhitespace(nextValue))
         {
             parser.skipSpaces();
             if (parser.isDigit())
@@ -643,7 +642,7 @@ public class XrefParser
                     break;
                 }
                 int nextChar = source.peek();
-                if (nextChar == 't' || COSParser.isEndOfName(nextChar))
+                if (nextChar == 't' || BaseParser.isEndOfName(nextChar))
                 {
                     break;
                 }

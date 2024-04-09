@@ -145,13 +145,13 @@ public class BruteForceParser
             source.seek(currentOffset);
             int nextChar = source.read();
             currentOffset++;
-            if (COSParser.isWhitespace(nextChar) && parser.isString(OBJ_MARKER))
+            if (BaseParser.isWhitespace(nextChar) && parser.isString(OBJ_MARKER))
             {
                 long tempOffset = currentOffset - 2;
                 source.seek(tempOffset);
                 int genID = source.peek();
                 // is the next char a digit?
-                if (COSParser.isDigit(genID))
+                if (BaseParser.isDigit(genID))
                 {
                     genID -= 48;
                     tempOffset--;
