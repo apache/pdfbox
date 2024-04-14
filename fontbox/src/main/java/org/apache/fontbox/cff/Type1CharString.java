@@ -321,6 +321,7 @@ public class Type1CharString
             // indicates a PDFBox bug
             throw new IllegalArgumentException("Unhandled command: " + type1KeyWord);
         }
+        numbers.clear();
     }
 
     /**
