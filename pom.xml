@@ -60,7 +60,7 @@
     <junit.version>5.10.2</junit.version>
     <jbig2.version>3.0.4</jbig2.version>
     <jai.version>1.4.0</jai.version>
-    <commons-io.version>2.16.0</commons-io.version>
+    <commons-io.version>2.16.1</commons-io.version>
     <picocli.version>4.7.5</picocli.version>
     <!-- This is a default value to avoid problems when running single tests
           see also https://stackoverflow.com/a/28695766/535646
@@ -183,7 +183,7 @@
                 <plugin>
                     <groupId>com.googlecode.maven-download-plugin</groupId>
                     <artifactId>download-maven-plugin</artifactId>
-                    <version>1.6.8</version>
+                    <version>1.9.0</version>
                     <configuration>
                         <skip>${skipTests}</skip>
                     </configuration>
