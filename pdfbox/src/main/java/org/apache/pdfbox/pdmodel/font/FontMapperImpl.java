@@ -441,6 +441,18 @@ final class FontMapperImpl implements FontMapper
             return info.getFont();
         }
 
+        if (postScriptName.contains(","))
+        {
+            postScriptName = postScriptName.substring(0, postScriptName.indexOf(","));
+            // PDFBOX-5806: try cutting font style and getting the basefont
+            // eg. for "Wingdings,Bolt" to "Wingding-Regular" (including the following step)
+            info = getFont(format, postScriptName);
+            if (info != null)
+            {
+                return info.getFont();
+            }
+        }
+
         // try appending "-Regular", works for Wingdings on windows
         info = getFont(format, postScriptName + "-Regular");
         if (info != null)
