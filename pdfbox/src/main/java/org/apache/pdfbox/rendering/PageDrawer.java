@@ -1161,7 +1161,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 boolean smallMask = mask.getWidth() <= 8 && mask.getHeight() <= 8;
                 if (mask.getWidth() == 1 && mask.getHeight() == 1)
                 {
-                    // PDFBOX-5802: don't use the lookup table if it is only 1 pixel
+                    // PDFBOX-5802: force usage of the lookup table if it is only 1 pixel
                     // (See the comment for PDFBOX-5403 that it isn't done for some
                     // cases based purely on the rendering result of one file!)
                     smallMask = false;
