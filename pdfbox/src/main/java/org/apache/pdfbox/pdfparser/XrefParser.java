@@ -80,7 +80,7 @@ public class XrefParser
     /**
      * Parses cross reference tables.
      * 
-     * @param cosDocument the corresponding COS document of the pdf.
+     * @param document the corresponding COS document of the pdf.
      * @param startXRefOffset start offset of the first table
      * 
      * @return the trailer dictionary
