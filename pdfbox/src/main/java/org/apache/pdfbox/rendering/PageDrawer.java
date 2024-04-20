@@ -1236,6 +1236,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 double scaleY = Math.abs(m.getScalingFactorY());
 
                 boolean smallMask = mask.getWidth() <= 8 && mask.getHeight() <= 8;
+                if (mask.getWidth() == 1 && mask.getHeight() == 1) // && mask.getRGB(0, 0) == -1)
+                {
+                    // PDFBOX-5802: don't use the lookup table if it is only 1 pixel
+                    // (See the comment for PDFBOX-5403 that it isn't done for some
+                    // cases based purely on the rendering result of one file!)
+                    smallMask = false;
+                }
                 if (!smallMask)
                 {
                     // PDFBOX-5403:
