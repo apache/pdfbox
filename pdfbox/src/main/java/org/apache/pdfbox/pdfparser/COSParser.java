@@ -1237,6 +1237,6 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     protected SecurityHandler<ProtectionPolicy> getSecurityHandler()
     {
-        return (SecurityHandler<ProtectionPolicy>) securityHandler;
+        return securityHandler;
     }
 }
