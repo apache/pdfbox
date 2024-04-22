@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>31</version>
+    <version>32</version>
     <relativePath />
   </parent>
 
@@ -67,6 +67,9 @@
           https://maven.apache.org/surefire/maven-surefire-plugin/faq.html#late-property-evaluation
     -->
     <surefireArgLine />
+    <!-- needed here since apache 32 -->
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.release>11</maven.compiler.release>
   </properties>
 
   <modules>
@@ -126,8 +129,6 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <showDeprecation>true</showDeprecation>
-                    <target>11</target>
-                    <source>11</source>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -135,7 +136,6 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <sourcepath>src/main/java</sourcepath>
-                    <source>11</source>
                     <links>
                         <link>https://docs.oracle.com/en/java/javase/11/docs/api/</link>
                     </links>
