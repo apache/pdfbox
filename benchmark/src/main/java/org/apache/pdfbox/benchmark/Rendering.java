@@ -39,7 +39,7 @@ import org.openjdk.jmh.infra.Blackhole;
 
 public class Rendering {
 
-    static final String ALTONA_TEST_SUITE = "target/pdfs/altona-test-suite";
+    static final String ALTONA_TEST_SUITE = "target/pdfs/eci_altona-test-suite-v2_technical2_x4.pdf";
     static final String GHENT_CMYK_X4 = "target/pdfs/Ghent_PDF_Output_Suite_V50_Full/Categories/1-CMYK/Test pages/Ghent_PDF-Output-Test-V50_CMYK_X4.pdf";
     static final String PDF32000_2008 = "target/pdfs/PDF32000_2008.pdf";
     static final String RENDER_OUTPUT_DIR = "target/renditions";
