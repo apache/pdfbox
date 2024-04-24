@@ -66,7 +66,7 @@ public final class OverlayPDF implements Callable<Integer>
     @Option(names = {"-default"}, description = "the default overlay file")
     private File defaultOverlay;
 
-    @Option(names = "-position", description = "where to put the overlay file: foreground or background (default: ${DEFAULT-VALUE})")    
+    @Option(names = "-position", description = "where to put the overlay file: FOREGROUND or BACKGROUND (default: ${DEFAULT-VALUE})")    
     private Position position = Position.BACKGROUND;
 
     @Option(names = {"-i", "--input"}, description = "the PDF input file", required = true)
