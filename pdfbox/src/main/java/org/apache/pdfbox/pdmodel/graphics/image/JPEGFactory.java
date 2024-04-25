@@ -164,11 +164,11 @@ public final class JPEGFactory
                 {
                     return meta;
                 }
-                LOG.warn("No image metadata, will decode image and use raster size");
+                LOG.info("No image metadata, will decode image and use raster size");
             }
             catch (IOException ex)
             {
-                LOG.warn("Error reading image metadata, will decode image and use raster size", ex);
+                LOG.warn("Error reading image metadata, will decode image and use raster size");
             }            
 
             // Old method: get from raster (slower)
