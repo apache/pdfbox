@@ -47,6 +47,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     private float version;
     private int numberOfGlyphs = -1;
     private int unitsPerEm = -1;
+    private boolean enableGsub = true;
     protected final Map<String,TTFTable> tables = new HashMap<>();
     private final TTFDataStream data;
     private volatile Map<String, Integer> postScriptNames;
@@ -74,7 +75,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * @return Returns the version.
      */
-    public float getVersion() 
+    public float getVersion()
     {
         return version;
     }
@@ -87,7 +88,24 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     {
         version = versionValue;
     }
-    
+
+    /**
+     * @return Returns true if the GSUB table can be used for this font
+     */
+    public boolean isEnableGsub()
+    {
+        return enableGsub;
+    }
+
+    /**
+     * Enable or disable the GSUB table for this font.
+     * GSUB table is enabled by default.
+     */
+    public void setEnableGsub(boolean enableGsub)
+    {
+        this.enableGsub = enableGsub;
+    }
+
     /**
      * Add a table definition. Package-private, used by TTFParser only.
      * 
@@ -638,13 +656,17 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Returns the GSubData of the GlyphSubstitutionTable if present.
      * 
-     * @return the GSubData of the GlyphSubstitutionTable or {@link GsubData#NO_DATA_FOUND} if either no GSUB data is
-     * available or its scripts are not supported
-     * 
+     * @return the GSubData of the GlyphSubstitutionTable or {@link GsubData#NO_DATA_FOUND} if no GSUB data is
+     * available, its scripts are not supported or it was disabled for that font
      * @throws IOException if the font data could not be read
      */
     public GsubData getGsubData() throws IOException
     {
+        if (!enableGsub)
+        {
+            return GsubData.NO_DATA_FOUND;
+        }
+
         GlyphSubstitutionTable table = getGsub();
         if (table == null)
         {

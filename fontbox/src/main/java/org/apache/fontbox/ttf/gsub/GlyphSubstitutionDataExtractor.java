@@ -36,8 +36,10 @@ import org.apache.fontbox.ttf.table.common.LookupListTable;
 import org.apache.fontbox.ttf.table.common.LookupSubTable;
 import org.apache.fontbox.ttf.table.common.LookupTable;
 import org.apache.fontbox.ttf.table.common.ScriptTable;
+import org.apache.fontbox.ttf.table.gsub.AlternateSetTable;
 import org.apache.fontbox.ttf.table.gsub.LigatureSetTable;
 import org.apache.fontbox.ttf.table.gsub.LigatureTable;
+import org.apache.fontbox.ttf.table.gsub.LookupTypeAlternateSubstitutionFormat1;
 import org.apache.fontbox.ttf.table.gsub.LookupTypeLigatureSubstitutionSubstFormat1;
 import org.apache.fontbox.ttf.table.gsub.LookupTypeMultipleSubstitutionFormat1;
 import org.apache.fontbox.ttf.table.gsub.LookupTypeSingleSubstFormat1;
@@ -176,6 +178,11 @@ public class GlyphSubstitutionDataExtractor
                 extractDataFromLigatureSubstitutionSubstFormat1Table(glyphSubstitutionMap,
                         (LookupTypeLigatureSubstitutionSubstFormat1) lookupSubTable);
             }
+            else if (lookupSubTable instanceof LookupTypeAlternateSubstitutionFormat1)
+            {
+                extractDataFromAlternateSubstitutionSubstFormat1Table(glyphSubstitutionMap,
+                        (LookupTypeAlternateSubstitutionFormat1) lookupSubTable);
+            }
             else if (lookupSubTable instanceof LookupTypeSingleSubstFormat1)
             {
                 extractDataFromSingleSubstTableFormat1Table(glyphSubstitutionMap,
@@ -276,6 +283,47 @@ public class GlyphSubstitutionDataExtractor
                 extractDataFromLigatureTable(glyphSubstitutionMap, ligatureTable);
             }
 
+        }
+
+    }
+
+    /**
+     * Extracts data from the AlternateSubstitutionFormat1 (lookuptype) 3 table and puts it in the glyphSubstitutionMap
+     * This is added for Zola usage
+     *
+     * @param glyphSubstitutionMap         the map to store the substitution data
+     * @param alternateSubstitutionFormat1 the alternate substitution format 1 table
+     */
+    private void extractDataFromAlternateSubstitutionSubstFormat1Table(
+            Map<List<Integer>, Integer> glyphSubstitutionMap,
+            LookupTypeAlternateSubstitutionFormat1 alternateSubstitutionFormat1)
+    {
+
+        CoverageTable coverageTable = alternateSubstitutionFormat1.getCoverageTable();
+
+        if (coverageTable.getSize() != alternateSubstitutionFormat1.getAlternateSetTables().length)
+        {
+            LOG.warn("The coverage table size (" + coverageTable.getSize() +
+                    ") should be the same as the count of the atlternate set tables (" +
+                    alternateSubstitutionFormat1.getAlternateSetTables().length + ")");
+            return;
+        }
+
+        for (int i = 0; i < coverageTable.getSize(); i++)
+        {
+            int coverageGlyphId = coverageTable.getGlyphId(i);
+            AlternateSetTable sequenceTable = alternateSubstitutionFormat1.getAlternateSetTables()[i];
+
+            // Loop through the substitute glyphs and pick the first one that is not the same as the coverage glyph
+            for (int alternateGlyphId : sequenceTable.getAlternateGlyphIDs())
+            {
+                if (alternateGlyphId != coverageGlyphId)
+                {
+                    putNewSubstitutionEntry(glyphSubstitutionMap, alternateGlyphId,
+                            Collections.singletonList(coverageGlyphId));
+                    break;
+                }
+            }
         }
 
     }
