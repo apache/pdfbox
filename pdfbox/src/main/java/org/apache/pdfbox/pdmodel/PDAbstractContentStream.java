@@ -37,7 +37,6 @@ import java.util.Set;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.fontbox.ttf.CmapLookup;
-import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
 import org.apache.fontbox.ttf.gsub.GsubWorker;
 import org.apache.fontbox.ttf.gsub.GsubWorkerFactory;
 import org.apache.fontbox.ttf.model.GsubData;
@@ -1616,7 +1615,7 @@ abstract class PDAbstractContentStream implements Closeable
                                  Set<Integer> glyphIds, PDType0Font font, String text) throws IOException
     {
         // break the entire chunk of text into words by splitting it with space
-        List<String> words = new CompoundCharacterTokenizer(StringUtil.PATTERN_SPACE).tokenize(text);
+        String[] words = StringUtil.tokenizeOnSpace(text);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
