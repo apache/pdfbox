@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.fontbox.ttf.CmapLookup;
+import org.apache.fontbox.ttf.OTFParser;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
@@ -41,7 +42,7 @@ import org.junit.jupiter.api.Test;
 class GsubWorkerForLatinTest
 {
     @Test
-    void testApplyLigatures() throws IOException
+    void testApplyLigaturesCalibri() throws IOException
     {
         File file = new File("c:/windows/fonts/calibri.ttf");
         Assumptions.assumeTrue(file.exists(), "calibri ligature test skipped");
@@ -65,6 +66,32 @@ class GsubWorkerForLatinTest
         assertEquals(Arrays.asList(327, 381, 258, 410),
                 gsubWorkerForLatin.applyTransforms(getGlyphIds("float", cmapLookup)));
         assertEquals(Arrays.asList(393, 367, 258, 414, 381, 396, 373),
+                gsubWorkerForLatin.applyTransforms(getGlyphIds("platform", cmapLookup)));
+    }
+
+    @Test
+    void testApplyLigaturesFoglihtenNo07() throws IOException
+    {
+        CmapLookup cmapLookup;
+        GsubWorker gsubWorkerForLatin;
+        try (TrueTypeFont ttf = new OTFParser().parse(
+                new RandomAccessReadBufferedFile("src/test/resources/otf/FoglihtenNo07.otf")))
+        {
+            cmapLookup = ttf.getUnicodeCmapLookup();
+            gsubWorkerForLatin = new GsubWorkerFactory().getGsubWorker(cmapLookup, ttf.getGsubData());
+        }
+
+        assertEquals(Arrays.asList(66, 1590, 645, 70),
+                gsubWorkerForLatin.applyTransforms(getGlyphIds("affine", cmapLookup)));
+        assertEquals(Arrays.asList(538, 633, 85, 86, 69, 70),
+                gsubWorkerForLatin.applyTransforms(getGlyphIds("attitude", cmapLookup)));
+        assertEquals(Arrays.asList(66, 1590, 525, 74, 683),
+                gsubWorkerForLatin.applyTransforms(getGlyphIds("affiliate", cmapLookup)));
+        assertEquals(Arrays.asList(542, 1, 1591, 498),
+                gsubWorkerForLatin.applyTransforms(getGlyphIds("The film", cmapLookup)));
+        assertEquals(Arrays.asList(542, 1, 45, 703, 85),
+                gsubWorkerForLatin.applyTransforms(getGlyphIds("The Last", cmapLookup)));
+        assertEquals(Arrays.asList(81, 77, 538, 71, 80, 83, 78),
                 gsubWorkerForLatin.applyTransforms(getGlyphIds("platform", cmapLookup)));
     }
 
