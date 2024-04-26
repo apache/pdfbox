@@ -33,17 +33,21 @@ import java.util.regex.Pattern;
  */
 public class CompoundCharacterTokenizer
 {
+    private static final String GLYPH_ID_SEPARATOR = "_";
     private final Pattern regexExpression;
 
     /**
      * Constructor. Calls getRegexFromTokens which returns strings like
      * (_79_99_)|(_80_99_)|(_92_99_) and creates a regexp assigned to regexExpression. See the code
      * in GlyphArraySplitterRegexImpl on how these strings were created.
+     * <p>
+     * It is assumed the compound words are sorted in descending order of length.
      *
      * @param compoundWords A set of strings like _79_99_, _80_99_ or _92_99_ .
      */
     public CompoundCharacterTokenizer(Set<String> compoundWords)
     {
+        validateCompoundWords(compoundWords);
         regexExpression = Pattern.compile(getRegexFromTokens(compoundWords));
     }
 
@@ -52,6 +56,35 @@ public class CompoundCharacterTokenizer
         regexExpression = pattern;
     }
 
+    /**
+     * Validate the compound words. They should not be null or empty and should start and end with
+     * the GLYPH_ID_SEPARATOR
+     */
+    private void validateCompoundWords(Set<String> compoundWords)
+    {
+        if (compoundWords == null || compoundWords.isEmpty())
+        {
+            throw new IllegalArgumentException("Compound words cannot be null or empty");
+        }
+
+        // Ensure all word are starting and ending with the GLYPH_ID_SEPARATOR
+        compoundWords.forEach(word ->
+        {
+            if (!word.startsWith(GLYPH_ID_SEPARATOR) || !word.endsWith(GLYPH_ID_SEPARATOR))
+            {
+                throw new IllegalArgumentException(
+                        "Compound words should start and end with " + GLYPH_ID_SEPARATOR);
+            }
+        });
+    }
+
+    /**
+     * Tokenize a string into tokens.
+     *
+     * @param text A string like "_66_71_71_74_79_70_"
+     * @return A list of tokens like "_66_", "_71_71_", "74_79_70_". The "_" is sometimes missing at
+     * the beginning or end, this has to be cleaned by the caller.
+     */
     public List<String> tokenize(String text)
     {
         List<String> tokens = new ArrayList<>();
@@ -60,7 +93,7 @@ public class CompoundCharacterTokenizer
 
         int lastIndexOfPrevMatch = 0;
 
-        while (regexMatcher.find()) // this is where the magic happens:
+        while (regexMatcher.find(lastIndexOfPrevMatch)) // this is where the magic happens:
                                     // the regexp is used to find a matching pattern for substitution
         {
             int beginIndexOfNextMatch = regexMatcher.start();
@@ -77,7 +110,12 @@ public class CompoundCharacterTokenizer
             tokens.add(currentMatch);
 
             lastIndexOfPrevMatch = regexMatcher.end();
-
+            if (lastIndexOfPrevMatch < text.length() && text.charAt(lastIndexOfPrevMatch) != '_')
+            {
+                // beause it is sometimes positioned after the "_", but it should be positioned
+                // before the "_"
+                --lastIndexOfPrevMatch;
+            }
         }
 
         String tail = text.substring(lastIndexOfPrevMatch);
