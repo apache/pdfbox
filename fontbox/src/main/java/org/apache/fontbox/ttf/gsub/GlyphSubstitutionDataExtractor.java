@@ -232,8 +232,7 @@ public class GlyphSubstitutionDataExtractor
         for (int i = 0; i < coverageTable.getSize(); i++)
         {
             int coverageGlyphId = coverageTable.getGlyphId(i);
-            int substituteGlyphId = coverageGlyphId
-                    + singleSubstTableFormat2.getSubstituteGlyphIDs()[i];
+            int substituteGlyphId = singleSubstTableFormat2.getSubstituteGlyphIDs()[i];
             putNewSubstitutionEntry(glyphSubstitutionMap, substituteGlyphId,
                     Collections.singletonList(coverageGlyphId));
         }
