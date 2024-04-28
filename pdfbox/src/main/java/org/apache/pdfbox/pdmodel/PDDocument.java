@@ -62,6 +62,8 @@ import org.apache.pdfbox.pdmodel.encryption.SecurityHandlerFactory;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPopup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
@@ -692,6 +694,15 @@ public class PDDocument implements Closeable
     {
         PDPage importedPage = new PDPage(new COSDictionary(page.getCOSObject()), resourceCache);
         importedPage.getCOSObject().removeItem(COSName.PARENT);
+
+        // PDFBOX-5809: avoid orphan pages through beads and annotations
+        if (importedPage.getCOSObject().containsKey(COSName.B))
+        {
+            importedPage.getCOSObject().removeItem(COSName.B);
+            LOG.warn("/B entry (beads) of source page is not imported to destination page");
+        }
+        importedPage.getAnnotations().stream().forEach(ann -> fixAnnotation(ann, importedPage));
+
         PDStream dest = new PDStream(this, page.getContents(), COSName.FLATE_DECODE);
         importedPage.setContents(dest);
         addPage(importedPage);
@@ -704,6 +715,30 @@ public class PDDocument implements Closeable
             LOG.warn("call importedPage.setResources(page.getResources()) to do this");
         }
         return importedPage;
+    }
+
+    /**
+     * Avoid orphan page references in annotations.
+     *
+     * @param ann
+     * @param importedPage 
+     */
+    private void fixAnnotation(PDAnnotation ann, PDPage importedPage)
+    {
+        if (ann.getCOSObject().containsKey(COSName.P))
+        {
+            ann.setPage(importedPage);
+        }
+        // getPopup() result of markup annotations needs not to be fixed, one can assume this one
+        // is in the page annotation list
+        if (ann instanceof PDAnnotationPopup)
+        {
+            PDAnnotationMarkup parentAnnotation = ((PDAnnotationPopup) ann).getParent();
+            if (parentAnnotation != null)
+            {
+                fixAnnotation(parentAnnotation, importedPage);
+            }
+        }
     }
 
     /**
