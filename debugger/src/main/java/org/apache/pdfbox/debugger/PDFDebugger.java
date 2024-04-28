@@ -1598,7 +1598,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         {
             return ex.getMessage();
         }
-        if (pageLabels != null)
+        if (pageLabels != null && pageIndex >= 0)
         {
             String[] labels = pageLabels.getLabelsByPageIndices();
             if (labels[pageIndex] != null)
