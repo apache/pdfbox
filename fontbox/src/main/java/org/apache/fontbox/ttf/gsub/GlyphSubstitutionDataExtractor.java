@@ -287,8 +287,8 @@ public class GlyphSubstitutionDataExtractor
     }
 
     /**
-     * Extracts data from the AlternateSubstitutionFormat1 (lookuptype) 3 table and puts it in the glyphSubstitutionMap
-     * This is added for Zola usage
+     * Extracts data from the AlternateSubstitutionFormat1 (lookuptype) 3 table and puts it in the
+     * glyphSubstitutionMap.
      *
      * @param glyphSubstitutionMap         the map to store the substitution data
      * @param alternateSubstitutionFormat1 the alternate substitution format 1 table
