@@ -27,7 +27,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -46,8 +45,10 @@ import org.apache.fontbox.ttf.table.common.LookupSubTable;
 import org.apache.fontbox.ttf.table.common.LookupTable;
 import org.apache.fontbox.ttf.table.common.RangeRecord;
 import org.apache.fontbox.ttf.table.common.ScriptTable;
+import org.apache.fontbox.ttf.table.gsub.AlternateSetTable;
 import org.apache.fontbox.ttf.table.gsub.LigatureSetTable;
 import org.apache.fontbox.ttf.table.gsub.LigatureTable;
+import org.apache.fontbox.ttf.table.gsub.LookupTypeAlternateSubstitutionFormat1;
 import org.apache.fontbox.ttf.table.gsub.LookupTypeLigatureSubstitutionSubstFormat1;
 import org.apache.fontbox.ttf.table.gsub.LookupTypeMultipleSubstitutionFormat1;
 import org.apache.fontbox.ttf.table.gsub.LookupTypeSingleSubstFormat1;
@@ -289,6 +290,10 @@ public class GlyphSubstitutionTable extends TTFTable
                 // Multiple Substitution Subtable
                 // https://learn.microsoft.com/en-us/typography/opentype/spec/gsub#lookuptype-2-multiple-substitution-subtable
                 return readMultipleSubstitutionSubtable(data, offset);
+            case 3:
+                // Alternate Substitution Subtable
+                // https://learn.microsoft.com/en-us/typography/opentype/spec/gsub#lookuptype-3-alternate-substitution-subtable
+                return readAlternateSubstitutionSubtable(data, offset);
             case 4:
                 // Ligature Substitution Subtable
                 // https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#LS
@@ -345,6 +350,7 @@ public class GlyphSubstitutionTable extends TTFTable
         {
         case 1:
         case 2:
+        case 3:
         case 4:
             for (int i = 0; i < subTableCount; i++)
             {
@@ -460,6 +466,49 @@ public class GlyphSubstitutionTable extends TTFTable
         }
 
         return new LookupTypeMultipleSubstitutionFormat1(substFormat, coverageTable, sequenceTables);
+    }
+
+    private LookupSubTable readAlternateSubstitutionSubtable(TTFDataStream data, long offset) throws IOException
+    {
+        data.seek(offset);
+        int substFormat = data.readUnsignedShort();
+
+        if (substFormat != 1)
+        {
+            throw new IOException(
+                    "The expected SubstFormat for AlternateSubstitutionTable is 1");
+        }
+
+        int coverage = data.readUnsignedShort();
+        int altSetCount = data.readUnsignedShort();
+
+        int[] alternateOffsets = new int[altSetCount];
+
+        for (int i = 0; i < altSetCount; i++)
+        {
+            alternateOffsets[i] = data.readUnsignedShort();
+        }
+
+        CoverageTable coverageTable = readCoverageTable(data, offset + coverage);
+
+        if (altSetCount != coverageTable.getSize())
+        {
+            throw new IOException(
+                    "According to the OpenTypeFont specifications, the coverage count should be equal to the no. of AlternateSetTable");
+        }
+
+        AlternateSetTable[] alternateSetTables = new AlternateSetTable[altSetCount];
+
+        for (int i = 0; i < altSetCount; i++)
+        {
+            data.seek(offset + alternateOffsets[i]);
+            int glyphCount = data.readUnsignedShort();
+            int[] alternateGlyphIDs = data.readUnsignedShortArray(glyphCount);
+            alternateSetTables[i] = new AlternateSetTable(glyphCount, alternateGlyphIDs);
+        }
+
+        return new LookupTypeAlternateSubstitutionFormat1(substFormat, coverageTable,
+                alternateSetTables);
     }
 
     private LookupSubTable readLigatureSubstitutionSubtable(TTFDataStream data, long offset)
