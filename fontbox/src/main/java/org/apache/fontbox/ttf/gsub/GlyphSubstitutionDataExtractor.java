@@ -300,9 +300,9 @@ public class GlyphSubstitutionDataExtractor
 
         if (coverageTable.getSize() != alternateSubstitutionFormat1.getAlternateSetTables().length)
         {
-            LOG.warn("The coverage table size (" + coverageTable.getSize() +
-                    ") should be the same as the count of the atlternate set tables (" +
-                    alternateSubstitutionFormat1.getAlternateSetTables().length + ")");
+            LOG.warn("The coverage table size ({}) should be the same as the count of the alternate set tables ({})",
+                    coverageTable.getSize(), 
+                    alternateSubstitutionFormat1.getAlternateSetTables().length);
             return;
         }
 
