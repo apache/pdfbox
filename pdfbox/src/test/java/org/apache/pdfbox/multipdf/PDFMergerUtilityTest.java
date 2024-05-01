@@ -47,6 +47,8 @@ import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructur
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPopup;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationText;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitDestination;
@@ -1133,6 +1135,43 @@ class PDFMergerUtilityTest
             {
                 dstDoc.close();
             }
+        }
+    }
+
+    @Test
+    void testSplitWithPopupAnnotations() throws IOException
+    {
+        try (PDDocument doc = Loader.loadPDF(new File(SRCDIR, "PDFBOX-5809-509329.pdf")))
+        {
+            Splitter splitter = new Splitter();
+            splitter.setStartPage(3);
+            splitter.setEndPage(3);
+            splitter.setSplitAtPage(1);
+            List<PDDocument> splitResult = splitter.split(doc);
+            assertEquals(1, splitResult.size());
+            List<PDAnnotation> annotations;
+            PDAnnotationText annotationText3;
+            PDAnnotationPopup annotationPopup4;
+            try (PDDocument dstDoc = splitResult.get(0))
+            {
+                checkForPageOrphans(dstDoc);
+                assertEquals(1, dstDoc.getNumberOfPages());
+                annotations = dstDoc.getPage(0).getAnnotations();
+                assertEquals(5, annotations.size());
+                annotationText3 = (PDAnnotationText) annotations.get(3);
+                annotationPopup4 = (PDAnnotationPopup) annotations.get(4);
+                assertEquals(annotationText3.getPopup(), annotationPopup4);
+                assertEquals(annotationPopup4.getParent(), annotationText3);
+                assertEquals(annotationText3.getPage(), dstDoc.getPage(0));
+            }
+            // Check that source document is ok
+            annotations = doc.getPage(2).getAnnotations();
+            assertEquals(5, annotations.size());
+            annotationText3 = (PDAnnotationText) annotations.get(3);
+            annotationPopup4 = (PDAnnotationPopup) annotations.get(4);
+            assertEquals(annotationText3.getPopup(), annotationPopup4);
+            assertEquals(annotationPopup4.getParent(), annotationText3);
+            assertEquals(annotationText3.getPage(), doc.getPage(2));
         }
     }
 }
