@@ -704,6 +704,11 @@ public class Splitter
             imported.setResources(page.getResources());
             LOG.info("Resources imported in Splitter"); // follow-up to warning in importPage
         }
+        if (imported.getCOSObject().containsKey(COSName.B))
+        {
+            imported.getCOSObject().removeItem(COSName.B);
+            LOG.warn("/B entry (beads) removed by splitter");
+        }
         // remove page links to avoid copying not needed resources 
         processAnnotations(imported);
 
