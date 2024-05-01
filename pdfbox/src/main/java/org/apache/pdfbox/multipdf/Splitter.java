@@ -53,6 +53,8 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPopup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
@@ -714,6 +716,13 @@ public class Splitter
         pageDictMap.put(page.getCOSObject(), imported.getCOSObject());
     }
 
+    /**
+     * Clone all annotations because of changes possibly made, and because the structure tree is
+     * cloned.
+     *
+     * @param imported
+     * @throws IOException 
+     */
     private void processAnnotations(PDPage imported) throws IOException
     {
         List<PDAnnotation> annotations = imported.getAnnotations();
@@ -780,6 +789,60 @@ public class Splitter
             if (annotation.getPage() != null)
             {
                 annotationClone.setPage(imported);
+            }
+        }
+        // Second loop for markup and popup annotations, which reference annotations themselves
+        for (PDAnnotation annotation : clonedAnnotations)
+        {
+            if (annotation instanceof PDAnnotationMarkup)
+            {
+                PDAnnotationPopup annotationPopup = ((PDAnnotationMarkup) annotation).getPopup();
+                COSDictionary clonedPopupDict = annotDictMap.get(annotationPopup.getCOSObject());
+                if (clonedPopupDict != null)
+                {
+                    annotation.getCOSObject().setItem(COSName.POPUP, clonedPopupDict);
+                }
+                else
+                {
+                    // orphan popup (not in annotation list); clone it and fix references 
+                    clonedPopupDict = new COSDictionary(annotationPopup.getCOSObject());
+                    annotDictMap.put(annotationPopup.getCOSObject(), clonedPopupDict);
+                    PDAnnotationPopup annotationPopupClone =
+                            (PDAnnotationPopup) PDAnnotation.createAnnotation(clonedPopupDict);
+                    annotationPopupClone.setParent((PDAnnotationMarkup) annotation);
+                    ((PDAnnotationMarkup) annotation).setPopup(annotationPopupClone);
+                    if (annotationPopupClone.getPage() != null)
+                    {
+                        annotationPopupClone.setPage(imported);
+                    }
+                }
+            }
+            if (annotation instanceof PDAnnotationPopup)
+            {
+                PDAnnotationMarkup annotationMarkup = ((PDAnnotationPopup) annotation).getParent();
+                if (annotationMarkup == null)
+                {
+                    continue;
+                }
+                COSDictionary clonedMarkupDict = annotDictMap.get(annotationMarkup.getCOSObject());
+                if (clonedMarkupDict != null)
+                {
+                    annotation.getCOSObject().setItem(COSName.PARENT, clonedMarkupDict);
+                }
+                else
+                {
+                    // orphan markup (not in annotation list); clone it and fix references 
+                    clonedMarkupDict = new COSDictionary(annotationMarkup.getCOSObject());
+                    annotDictMap.put(annotationMarkup.getCOSObject(), clonedMarkupDict);
+                    PDAnnotationMarkup annotationMarkupClone =
+                            (PDAnnotationMarkup) PDAnnotation.createAnnotation(clonedMarkupDict);
+                    annotationMarkupClone.setPopup((PDAnnotationPopup) annotation);
+                    ((PDAnnotationPopup) annotation).setParent(annotationMarkupClone);
+                    if (annotationMarkupClone.getPage() != null)
+                    {
+                        annotationMarkupClone.setPage(imported);
+                    }
+                }
             }
         }
         imported.setAnnotations(clonedAnnotations);
