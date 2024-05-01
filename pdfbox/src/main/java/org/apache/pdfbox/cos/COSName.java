@@ -468,6 +468,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName PERCEPTUAL = new COSName("Perceptual");
     public static final COSName PIECE_INFO = new COSName("PieceInfo");
     public static final COSName PG = new COSName("Pg");
+    public static final COSName POPUP = new COSName("Popup");
     public static final COSName PRE_RELEASE = new COSName("PreRelease");
     public static final COSName PREDICTOR = new COSName("Predictor");
     public static final COSName PREV = new COSName("Prev");
