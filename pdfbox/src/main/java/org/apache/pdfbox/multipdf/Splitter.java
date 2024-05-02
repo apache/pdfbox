@@ -798,6 +798,10 @@ public class Splitter
             if (annotation instanceof PDAnnotationMarkup)
             {
                 PDAnnotationPopup annotationPopup = ((PDAnnotationMarkup) annotation).getPopup();
+                if (annotationPopup == null)
+                {
+                    continue;
+                }
                 COSDictionary clonedPopupDict = annotDictMap.get(annotationPopup.getCOSObject());
                 if (clonedPopupDict != null)
                 {

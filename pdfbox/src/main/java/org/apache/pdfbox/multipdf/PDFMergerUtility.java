@@ -1090,6 +1090,10 @@ public class PDFMergerUtility
             PDStructureTreeRoot srcStructTree,
             PDStructureTreeRoot destStructTree) throws IOException
     {
+        if (srcStructTree == null)
+        {
+            return;
+        }
         PDNameTreeNode<PDStructureElement> srcIDTree = srcStructTree.getIDTree();
         if (srcIDTree == null)
         {
@@ -1128,6 +1132,10 @@ public class PDFMergerUtility
     static Map<String, PDStructureElement> getIDTreeAsMap(PDNameTreeNode<PDStructureElement> idTree)
             throws IOException
     {
+        if (idTree == null)
+        {
+            return new LinkedHashMap<>();
+        }
         Map<String, PDStructureElement> names = idTree.getNames();
         if (names == null)
         {
@@ -1154,6 +1162,10 @@ public class PDFMergerUtility
     static Map<Integer, COSObjectable> getNumberTreeAsMap(PDNumberTreeNode tree)
             throws IOException
     {
+        if (tree == null)
+        {
+            return new LinkedHashMap<>();
+        }
         Map<Integer, COSObjectable> numbers = tree.getNumbers();
         if (numbers == null)
         {
