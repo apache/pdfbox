@@ -44,7 +44,6 @@ class MultilineFieldsTest
     private static final String TEST_VALUE = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, " +
             "sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam";
 
-    
     private PDDocument document;
     private PDAcroForm acroForm;
 
@@ -159,22 +158,21 @@ class MultilineFieldsTest
         }
     }
 
-
     private float getFontSizeFromAppearanceStream(PDField field) throws IOException
     {
-    	PDAnnotationWidget widget = field.getWidgets().get(0);
+    	PDAnnotationWidget widget = field.getWidgets().getFirst();
         PDFStreamParser parser = new PDFStreamParser(widget.getNormalAppearanceStream());
     	
     	Object token = parser.parseNextToken();
     	    	
     	while (token != null)
     	{
-            if (token instanceof COSName && ((COSName) token).getName().equals("Helv"))
+            if (token instanceof COSName name && name.getName().equals("Helv"))
     		{
                 token = parser.parseNextToken();
-                if (token instanceof COSNumber)
+                if (token instanceof COSNumber number)
                 {
-                    return ((COSNumber) token).floatValue();
+                    return number.floatValue();
                 }
             }
             token = parser.parseNextToken();
@@ -184,7 +182,7 @@ class MultilineFieldsTest
 
     private List<String> getTextLinesFromAppearanceStream(PDField field) throws IOException
     {
-    	PDAnnotationWidget widget = field.getWidgets().get(0);
+    	PDAnnotationWidget widget = field.getWidgets().getFirst();
         PDFStreamParser parser = new PDFStreamParser(widget.getNormalAppearanceStream());
     	
         Object token = parser.parseNextToken();
@@ -193,9 +191,9 @@ class MultilineFieldsTest
     	    	
     	while (token != null)
     	{
-            if (token instanceof COSString)
+            if (token instanceof COSString string)
     		{
-                lines.add(((COSString) token).getString());
+                lines.add(string.getString());
             }
             token = parser.parseNextToken();
         }
@@ -208,5 +206,4 @@ class MultilineFieldsTest
     {
         document.close();
     }
-    
 }

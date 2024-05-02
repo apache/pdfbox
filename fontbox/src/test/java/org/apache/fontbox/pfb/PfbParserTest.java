@@ -35,7 +35,6 @@ class PfbParserTest
     /**
      * Test parsing a PFB font.
      *
-     * @throws IOException 
      */
     @Test
     void testPfb() throws IOException
@@ -50,11 +49,11 @@ class PfbParserTest
         Assertions.assertEquals("Open Sans Regular", font.getFullName());
         Assertions.assertEquals("Open Sans", font.getFamilyName());
         Assertions.assertEquals("Digitized data copyright (c) 2010-2011, Google Corporation.", font.getNotice());
-        Assertions.assertEquals(false, font.isFixedPitch());
-        Assertions.assertEquals(false, font.isForceBold());
+        Assertions.assertFalse(font.isFixedPitch());
+        Assertions.assertFalse(font.isForceBold());
         Assertions.assertEquals(0, font.getItalicAngle());
         Assertions.assertEquals("Book", font.getWeight());
-        Assertions.assertTrue(font.getEncoding() instanceof BuiltInEncoding);
+        Assertions.assertInstanceOf(BuiltInEncoding.class, font.getEncoding());
         Assertions.assertEquals(4498, font.getASCIISegment().length);
         Assertions.assertEquals(95911, font.getBinarySegment().length);
         Assertions.assertEquals(938, font.getCharStringsDict().size());
@@ -68,7 +67,6 @@ class PfbParserTest
     /**
      * PDFBOX-5713: font with several binary segments.
      *
-     * @throws IOException 
      */
     @Test
     void testPfbPDFBox5713() throws IOException
@@ -83,11 +81,11 @@ class PfbParserTest
         Assertions.assertEquals("DejaVu Serif Condensed", font.getFullName());
         Assertions.assertEquals("DejaVu Serif Condensed", font.getFamilyName());
         Assertions.assertEquals("Copyright [c] 2003 by Bitstream, Inc. All Rights Reserved.", font.getNotice());
-        Assertions.assertEquals(false, font.isFixedPitch());
-        Assertions.assertEquals(false, font.isForceBold());
+        Assertions.assertFalse(font.isFixedPitch());
+        Assertions.assertFalse(font.isForceBold());
         Assertions.assertEquals(0, font.getItalicAngle());
         Assertions.assertEquals("Book", font.getWeight());
-        Assertions.assertTrue(font.getEncoding() instanceof BuiltInEncoding);
+        Assertions.assertInstanceOf(BuiltInEncoding.class, font.getEncoding());
         Assertions.assertEquals(5959, font.getASCIISegment().length);
         Assertions.assertEquals(1056090, font.getBinarySegment().length);
         Assertions.assertEquals(3399, font.getCharStringsDict().size());

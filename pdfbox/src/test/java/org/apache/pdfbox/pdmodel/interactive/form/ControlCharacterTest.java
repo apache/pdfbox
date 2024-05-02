@@ -78,8 +78,7 @@ class ControlCharacterTest
     }
     
     @Test
-    void characterNUL() throws IOException
-    {
+    void characterNUL() {
         PDField field = acroForm.getField("pdfbox-nul");
         assertThrows(IllegalArgumentException.class, () -> field.setValue("NUL\0NUL"));
     }
@@ -131,9 +130,8 @@ class ControlCharacterTest
     
     private List<String> getStringsFromStream(PDField field) throws IOException
     {
-    	PDAnnotationWidget widget = field.getWidgets().get(0);
-        PDFStreamParser parser = new PDFStreamParser(
-                widget.getNormalAppearanceStream());
+    	PDAnnotationWidget widget = field.getWidgets().getFirst();
+        PDFStreamParser parser = new PDFStreamParser(widget.getNormalAppearanceStream());
     	
         List<Object> tokens = parser.parse();
     	

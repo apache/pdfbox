@@ -15,13 +15,13 @@
  */
 package org.apache.fontbox.cff;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.fontbox.util.BoundingBox;
@@ -40,8 +40,8 @@ class CFFParserTest
     @BeforeAll
     static void loadCFFFont() throws IOException
     {
-        List<CFFFont> fonts = readFont("target/fonts/SourceSansProBold.otf");
-        testCFFType1Font = (CFFType1Font) fonts.get(0);
+        List<CFFFont> fonts = readFont();
+        testCFFType1Font = (CFFType1Font) fonts.getFirst();
     }
 
     @Test
@@ -106,8 +106,7 @@ class CFFParserTest
     {
         CFFEncoding encoding = testCFFType1Font.getEncoding();
         assertNotNull(encoding, "Encoding must not be null");
-        assertTrue(encoding instanceof CFFStandardEncoding,
-                "Encoding is not an instance of CFFStandardEncoding");
+        assertInstanceOf(CFFStandardEncoding.class, encoding, "Encoding is not an instance of CFFStandardEncoding");
     }
 
     @Test
@@ -117,25 +116,13 @@ class CFFParserTest
         assertFalse(charStringBytes.isEmpty());
         assertEquals(824, testCFFType1Font.getNumCharStrings());
         // check some randomly chosen values
-        assertTrue(
-                Arrays.equals(new byte[] { -4, 15, 14 }, charStringBytes.get(1)), //
-                "Other char strings byte values than expected");
-        assertTrue(
-                Arrays.equals(new byte[] { 72, 29, -13, 29, -9, -74, -9, 43, 3, 33, 29, 14 },
-                        charStringBytes.get(16)), //
-                "Other char strings byte values than expected");
-        assertTrue(
-                Arrays.equals(new byte[] { -41, 88, 29, -47, -9, 12, 1, -123, 10, 3, 35, 29, -9,
-                        -50, -9, 62, -9, 3, 10, 85, -56, 61, 10 }, charStringBytes.get(195)), //
-                "Other char strings byte values than expected");
-        assertTrue(
-                Arrays.equals(new byte[] { -5, -69, -61, -8, 28, 1, -9, 57, -39, -65, 29, 14 },
-                        charStringBytes.get(525)), //
-                "Other char strings byte values than expected");
-        assertTrue(
-                Arrays.equals(new byte[] { 107, -48, 10, -9, 20, -9, 123, 3, -9, -112, -8, -46, 21,
-                        -10, 115, 10 }, charStringBytes.get(738)), //
-                "Other char strings byte values than expected");
+        assertArrayEquals(new byte[]{-4, 15, 14}, charStringBytes.get(1), "Other char strings byte values than expected");
+        assertArrayEquals(new byte[]{72, 29, -13, 29, -9, -74, -9, 43, 3, 33, 29, 14}, charStringBytes.get(16), "Other char strings byte values than expected");
+        assertArrayEquals(new byte[]{-41, 88, 29, -47, -9, 12, 1, -123, 10, 3, 35, 29, -9,
+                -50, -9, 62, -9, 3, 10, 85, -56, 61, 10}, charStringBytes.get(195), "Other char strings byte values than expected");
+        assertArrayEquals(new byte[]{-5, -69, -61, -8, 28, 1, -9, 57, -39, -65, 29, 14}, charStringBytes.get(525), "Other char strings byte values than expected");
+        assertArrayEquals(new byte[]{107, -48, 10, -9, 20, -9, 123, 3, -9, -112, -8, -46, 21,
+                -10, 115, 10}, charStringBytes.get(738), "Other char strings byte values than expected");
     }
 
     @Test
@@ -145,28 +132,19 @@ class CFFParserTest
         assertFalse(globalSubrIndex.isEmpty());
         assertEquals(278, globalSubrIndex.size());
         // check some randomly chosen values
-        assertTrue(
-                Arrays.equals(new byte[] { 21, -70, -83, -85, -72, -72, 105, -85, 92, 91, 105, 107,
-                        10, -83, -9, 62, 10 }, globalSubrIndex.get(12)), //
-                "Other global subr index values than expected");
-        assertTrue(
-                Arrays.equals(new byte[] { 58, 122, 29, -5, 48, 6, 11 }, globalSubrIndex.get(120)), //
-                "Other global subr index values than expected");
-        assertTrue(
-                Arrays.equals(new byte[] { 68, 80, 29, -45, -9, 16, -8, -92, 119, 11 },
-                        globalSubrIndex.get(253)), //
-                "Other global subr index values than expected");
+        assertArrayEquals(new byte[]{21, -70, -83, -85, -72, -72, 105, -85, 92, 91, 105, 107,
+                10, -83, -9, 62, 10}, globalSubrIndex.get(12), "Other global subr index values than expected");
+        assertArrayEquals(new byte[]{58, 122, 29, -5, 48, 6, 11}, globalSubrIndex.get(120), "Other global subr index values than expected");
+        assertArrayEquals(new byte[]{68, 80, 29, -45, -9, 16, -8, -92, 119, 11}, globalSubrIndex.get(253), "Other global subr index values than expected");
     }
 
     /**
      * PDFBOX-4038: Test whether BlueValues and other delta encoded lists are read correctly. The
      * test file is from FOP-2432.
      *
-     * @throws IOException 
      */
     @Test
-    void testDeltaLists() throws IOException
-    {
+    void testDeltaLists() {
         @SuppressWarnings("unchecked")
         List<Number> blues = (List<Number>) testCFFType1Font.getPrivateDict().get("BlueValues");
 
@@ -201,9 +179,9 @@ class CFFParserTest
                 new int[]{146, 150}, stemSnapV);
     }
 
-    private static List<CFFFont> readFont(String filename) throws IOException
+    private static List<CFFFont> readFont() throws IOException
     {
-        RandomAccessReadBufferedFile randomAccessRead = new RandomAccessReadBufferedFile(filename);
+        RandomAccessReadBufferedFile randomAccessRead = new RandomAccessReadBufferedFile("target/fonts/SourceSansProBold.otf");
         CFFParser parser = new CFFParser();
         return parser.parse(randomAccessRead);
     }
@@ -225,5 +203,4 @@ class CFFParserTest
             assertEquals(expected[i], found.get(i).floatValue(), message);
         }
     }
-
 }

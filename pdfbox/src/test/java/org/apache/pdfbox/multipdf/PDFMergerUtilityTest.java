@@ -152,7 +152,6 @@ class PDFMergerUtilityTest
     /**
      * PDFBOX-3972: Test that OpenAction page destination isn't lost after merge.
      * 
-     * @throws IOException 
      */
     @Test
     void testPDFMergerOpenAction() throws IOException
@@ -822,20 +821,19 @@ class PDFMergerUtilityTest
 
         void walk(COSBase base)
         {
-            if (base instanceof COSArray)
+            if (base instanceof COSArray array)
             {
-                for (COSBase base2 : (COSArray) base)
+                for (COSBase base2 : array)
                 {
-                    if (base2 instanceof COSObject)
+                    if (base2 instanceof COSObject object)
                     {
-                        base2 = ((COSObject) base2).getObject();
+                        base2 = object.getObject();
                     }
                     walk(base2);
                 }
             }
-            else if (base instanceof COSDictionary)
+            else if (base instanceof COSDictionary kdict)
             {
-                COSDictionary kdict = (COSDictionary) base;
                 if (kdict.containsKey(COSName.PG))
                 {
                     ++cnt;
@@ -1023,7 +1021,7 @@ class PDFMergerUtilityTest
             splitter.setSplitAtPage(2);
             List<PDDocument> splitResult = splitter.split(doc);
             assertEquals(1, splitResult.size());
-            try (PDDocument dstDoc = splitResult.get(0))
+            try (PDDocument dstDoc = splitResult.getFirst())
             {
                 assertEquals(2, dstDoc.getNumberOfPages());
                 checkForPageOrphans(dstDoc);
@@ -1048,7 +1046,7 @@ class PDFMergerUtilityTest
             splitter.setSplitAtPage(2);
             List<PDDocument> splitResult = splitter.split(doc);
             assertEquals(1, splitResult.size());
-            try (PDDocument dstDoc = splitResult.get(0))
+            try (PDDocument dstDoc = splitResult.getFirst())
             {
                 assertEquals(2, dstDoc.getNumberOfPages());
                 checkForPageOrphans(dstDoc);
@@ -1066,16 +1064,11 @@ class PDFMergerUtilityTest
                 PDAnnotationLink link3 = (PDAnnotationLink) annotations.get(2);
                 PDAnnotationLink link4 = (PDAnnotationLink) annotations.get(3);
                 PDAnnotationLink link5 = (PDAnnotationLink) annotations.get(4);
-                PDPageDestination pd1 = 
-                        (PDPageDestination) ((PDActionGoTo) link1.getAction()).getDestination();
-                PDPageDestination pd2 = 
-                        (PDPageDestination) ((PDActionGoTo) link2.getAction()).getDestination();
-                PDPageDestination pd3 = 
-                        (PDPageDestination) ((PDActionGoTo) link3.getAction()).getDestination();
-                PDPageDestination pd4 = 
-                        (PDPageDestination) ((PDActionGoTo) link4.getAction()).getDestination();
-                PDPageDestination pd5 = 
-                        (PDPageDestination) ((PDActionGoTo) link5.getAction()).getDestination();
+                PDPageDestination pd1 = (PDPageDestination) ((PDActionGoTo) link1.getAction()).getDestination();
+                PDPageDestination pd2 = (PDPageDestination) ((PDActionGoTo) link2.getAction()).getDestination();
+                PDPageDestination pd3 = (PDPageDestination) ((PDActionGoTo) link3.getAction()).getDestination();
+                PDPageDestination pd4 = (PDPageDestination) ((PDActionGoTo) link4.getAction()).getDestination();
+                PDPageDestination pd5 = (PDPageDestination) ((PDActionGoTo) link5.getAction()).getDestination();
                 PDPageTree pageTree = dstDoc.getPages();
                 assertEquals(0, pageTree.indexOf(pd1.getPage()));
                 assertEquals(1, pageTree.indexOf(pd2.getPage()));
@@ -1090,7 +1083,6 @@ class PDFMergerUtilityTest
      * Check for the bug that happened in PDFBOX-5792, where a destination was outside a target
      * document and hit an NPE in the next call of Splitter.fixDestinations().
      *
-     * @throws IOException
      */
     @Test
     void testSinglePageSplit() throws IOException
@@ -1109,7 +1101,7 @@ class PDFMergerUtilityTest
                 {
                     PDAnnotationLink link = (PDAnnotationLink) ann;
                     PDActionGoTo action = (PDActionGoTo) link.getAction();
-                    PDPageDestination destination = (PDPageDestination) ((PDActionGoTo) action).getDestination();
+                    PDPageDestination destination = (PDPageDestination) action.getDestination();
                     assertNull(destination.getPage());
                 }
             }
@@ -1152,7 +1144,7 @@ class PDFMergerUtilityTest
             List<PDAnnotation> annotations;
             PDAnnotationText annotationText3;
             PDAnnotationPopup annotationPopup4;
-            try (PDDocument dstDoc = splitResult.get(0))
+            try (PDDocument dstDoc = splitResult.getFirst())
             {
                 checkForPageOrphans(dstDoc);
                 assertEquals(1, dstDoc.getNumberOfPages());

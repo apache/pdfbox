@@ -52,9 +52,8 @@ class FDFAnnotationTest
             boolean testedPDFBox4345andPDFBox3646 = false;
             for (FDFAnnotation ann : fdfAnnots)
             {
-                if (ann instanceof FDFAnnotationFreeText)
+                if (ann instanceof FDFAnnotationFreeText annotationFreeText)
                 {
-                    FDFAnnotationFreeText annotationFreeText = (FDFAnnotationFreeText) ann;
                     if ("P&1 P&2 P&3".equals(annotationFreeText.getContents()))
                     {
                         testedPDFBox4345andPDFBox3646 = true;

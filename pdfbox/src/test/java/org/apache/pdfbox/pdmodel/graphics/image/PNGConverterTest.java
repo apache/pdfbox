@@ -185,10 +185,9 @@ class PNGConverterTest
             assertNotNull(pdImageXObject);
             
             ICC_Profile imageProfile = null;
-            if (pdImageXObject.getColorSpace() instanceof PDICCBased)
+            if (pdImageXObject.getColorSpace() instanceof PDICCBased iccColorSpace)
             {
                 // Make sure that ICC profile is a valid one
-                PDICCBased iccColorSpace = (PDICCBased) pdImageXObject.getColorSpace();
                 imageProfile = ICC_Profile.getInstance(iccColorSpace.getPDStream().toByteArray());
             }
             PDPage page = new PDPage();

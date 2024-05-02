@@ -16,7 +16,7 @@
 package org.apache.pdfbox.multipdf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
@@ -45,7 +45,6 @@ class PDFCloneUtilityTest
     /**
      * original (minimal) test from PDFBOX-2052.
      * 
-     * @throws IOException 
      */
     @Test
     void testClonePDFWithCosArrayStream() throws IOException
@@ -65,7 +64,6 @@ class PDFCloneUtilityTest
     /**
      * broader test that saves to a real PDF document.
      * 
-     * @throws IOException 
      */
     @Test
     void testClonePDFWithCosArrayStream2() throws IOException
@@ -118,7 +116,6 @@ class PDFCloneUtilityTest
      * PDFBOX-4814: this tests merging a direct and an indirect COSDictionary, when "target" is
      * indirect in cloneMerge().
      *
-     * @throws IOException
      */
     @Test
     void testDirectIndirect() throws IOException
@@ -133,8 +130,8 @@ class PDFCloneUtilityTest
             {
                 PDFMergerUtility merger = new PDFMergerUtility();
                 // The OCProperties is a direct object here, but gets saved as an indirect object.
-                assertTrue(doc1.getDocumentCatalog().getCOSObject().getItem(COSName.OCPROPERTIES) instanceof COSDictionary);
-                assertTrue(doc2.getDocumentCatalog().getCOSObject().getItem(COSName.OCPROPERTIES) instanceof COSObject);
+                assertInstanceOf(COSDictionary.class, doc1.getDocumentCatalog().getCOSObject().getItem(COSName.OCPROPERTIES));
+                assertInstanceOf(COSObject.class, doc2.getDocumentCatalog().getCOSObject().getItem(COSName.OCPROPERTIES));
                 merger.appendDocument(doc2, doc1);
                 assertEquals(2, doc2.getNumberOfPages());
             }

@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -122,7 +123,6 @@ class PDAcroFormTest
             // don't fail, rendering is different on different systems, result must be viewed manually
             System.out.println("Rendering of " + file + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
         }
-        
     }
 
     /*
@@ -216,8 +216,7 @@ class PDAcroFormTest
             System.err.println("Couldn't create test document, test skipped");
         }
     }
-    
-    
+
     /*
      * Test that we add missing ressouce information to an AcroForm 
      * when accessing the AcroForm on the PD level
@@ -259,7 +258,6 @@ class PDAcroFormTest
     /**
      * PDFBOX-4235: a bad /DA string should not result in an NPE.
      * 
-     * @throws IOException 
      */
     @Test
     void testBadDA() throws IOException
@@ -340,8 +338,8 @@ class PDAcroFormTest
             assertNotNull(helv);
             assertNotNull(zadb);
             // make sure that font wasn't overwritten
-            assertTrue(helv instanceof PDType1Font);
-            assertTrue(zadb instanceof PDType1Font);
+            assertInstanceOf(PDType1Font.class, helv);
+            assertInstanceOf(PDType1Font.class, zadb);
             PDType1Font helvType1 = (PDType1Font) helv;
             PDType1Font zadbType1 = (PDType1Font) zadb;
             assertEquals(FontName.HELVETICA.getName(), helv.getName());
