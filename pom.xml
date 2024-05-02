@@ -68,8 +68,8 @@
     -->
     <surefireArgLine />
     <!-- needed here since apache 32 -->
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.release>11</maven.compiler.release>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.release>21</maven.compiler.release>
   </properties>
 
   <modules>
