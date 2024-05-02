@@ -1127,7 +1127,7 @@ public class PDFMergerUtility
     {
         if (idTree == null)
         {
-            return new LinkedHashMap<>();
+            return new LinkedHashMap<String, PDStructureElement>();
         }
         Map<String, PDStructureElement> names = idTree.getNames();
         if (names == null)
@@ -1157,7 +1157,7 @@ public class PDFMergerUtility
     {
         if (tree == null)
         {
-            return new LinkedHashMap<>();
+            return new LinkedHashMap<Integer, COSObjectable>();
         }
         Map<Integer, COSObjectable> numbers = tree.getNumbers();
         if (numbers == null)
