@@ -155,20 +155,27 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             rectMap.put(linkAnnotation.getRectangle(), "URI: " + uriAction.getURI());
             return;
         }
-        PDDestination destination;
-        if (action instanceof PDActionGoTo)
+        PDDestination destination = null;
+        try
         {
-            PDActionGoTo goToAction = (PDActionGoTo) action;
-            destination = goToAction.getDestination();
+            if (action instanceof PDActionGoTo)
+            {
+                PDActionGoTo goToAction = (PDActionGoTo) action;
+                destination = goToAction.getDestination();
+            }
+            else
+            {
+                destination = linkAnnotation.getDestination();
+            }
+            if (destination instanceof PDNamedDestination)
+            {
+                destination = document.getDocumentCatalog().
+                        findNamedDestinationPage((PDNamedDestination) destination);
+            }
         }
-        else
+        catch (IOException ex)
         {
-            destination = linkAnnotation.getDestination();
-        }
-        if (destination instanceof PDNamedDestination)
-        {
-            destination = document.getDocumentCatalog().
-                    findNamedDestinationPage((PDNamedDestination) destination);
+            LOG.error(ex.getMessage(), ex);
         }
         if (destination instanceof PDPageDestination)
         {
