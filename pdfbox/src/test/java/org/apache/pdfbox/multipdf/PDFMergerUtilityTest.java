@@ -59,6 +59,7 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
@@ -1172,6 +1173,34 @@ class PDFMergerUtilityTest
             assertEquals(annotationText3.getPopup(), annotationPopup4);
             assertEquals(annotationPopup4.getParent(), annotationText3);
             assertEquals(annotationText3.getPage(), doc.getPage(2));
+        }
+    }
+
+    @Test
+    void testSplitWithBrokenDestination() throws IOException
+    {
+        try (PDDocument doc = Loader.loadPDF(new File(SRCDIR, "PDFBOX-5811-362972.pdf")))
+        {
+            Splitter splitter = new Splitter();
+            splitter.setStartPage(2);
+            splitter.setEndPage(2);
+            List<PDDocument> splitResult = splitter.split(doc);
+            assertEquals(1, splitResult.size());
+            List<PDAnnotation> annotations;
+            try (PDDocument dstDoc = splitResult.get(0))
+            {
+                checkForPageOrphans(dstDoc);
+                assertEquals(1, dstDoc.getNumberOfPages());
+                annotations = dstDoc.getPage(0).getAnnotations();
+                assertEquals(1, annotations.size());
+                PDAnnotationLink link = (PDAnnotationLink) annotations.get(0);
+                assertNull(link.getDestination());
+            }
+            // Check source document
+            annotations = doc.getPage(1).getAnnotations();
+            assertEquals(1, annotations.size());
+            PDAnnotationLink link = (PDAnnotationLink) annotations.get(0);
+            assertThrows(IOException.class, () -> link.getDestination());
         }
     }
 }
