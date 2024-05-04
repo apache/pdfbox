@@ -744,15 +744,35 @@ public class Splitter
             clonedAnnotations.add(annotationClone);
             if (annotationClone instanceof PDAnnotationLink)
             {
-                PDAnnotationLink link = (PDAnnotationLink) annotationClone;   
-                PDDestination srcDestination = link.getDestination();
+                PDAnnotationLink link = (PDAnnotationLink) annotationClone;
+                PDDestination srcDestination = null;
+                try
+                {
+                    srcDestination = link.getDestination();
+                }
+                catch (IOException ex)
+                {
+                    LOG.warn("Incorrect destination in link annotation on page " +
+                            (currentPageNumber + 1) + " is removed", ex);
+                    link.setDestination(null);
+                }
                 PDAction action = null;
                 if (srcDestination == null)
                 {
                     action = link.getAction();
                     if (action instanceof PDActionGoTo)
                     {
-                        srcDestination = ((PDActionGoTo) action).getDestination();
+                        PDActionGoTo goToAction = (PDActionGoTo) action;
+                        try
+                        {
+                            srcDestination = goToAction.getDestination();
+                        }
+                        catch (IOException ex)
+                        {
+                            LOG.warn("GoToAction with incorrect destination in link annotation on page " +
+                                    (currentPageNumber + 1) + " is removed", ex);
+                            link.setAction(null);
+                        }
                     }
                 }
                 if (srcDestination instanceof PDPageDestination)

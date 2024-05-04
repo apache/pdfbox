@@ -60,6 +60,8 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.junit.Assert;
+import static org.junit.Assert.assertThrows;
+import org.junit.function.ThrowingRunnable;
 
 /**
  * Test suite for PDFMergerUtility.
@@ -1124,6 +1126,38 @@ public class PDFMergerUtilityTest extends TestCase
         assertEquals(annotationPopup4.getParent(), annotationText3);
         assertEquals(annotationText3.getPage(), doc.getPage(2));
 
+        doc.close();
+    }
+
+    public void testSplitWithBrokenDestination() throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File(SRCDIR, "PDFBOX-5811-362972.pdf"));        
+        Splitter splitter = new Splitter();
+        splitter.setStartPage(2);
+        splitter.setEndPage(2);
+        List<PDDocument> splitResult = splitter.split(doc);
+        assertEquals(1, splitResult.size());
+        List<PDAnnotation> annotations;
+        PDDocument dstDoc = splitResult.get(0);
+        checkForPageOrphans(dstDoc);
+        assertEquals(1, dstDoc.getNumberOfPages());
+        annotations = dstDoc.getPage(0).getAnnotations();
+        assertEquals(1, annotations.size());
+        PDAnnotationLink link = (PDAnnotationLink) annotations.get(0);
+        assertNull(link.getDestination());
+        dstDoc.close();
+        // Check source document
+        annotations = doc.getPage(1).getAnnotations();
+        assertEquals(1, annotations.size());
+        final PDAnnotationLink link2 = (PDAnnotationLink) annotations.get(0);
+        assertThrows(IOException.class, new ThrowingRunnable()
+        {
+            @Override
+            public void run() throws Throwable
+            {
+                link2.getDestination();
+            }
+        });
         doc.close();
     }
 }
