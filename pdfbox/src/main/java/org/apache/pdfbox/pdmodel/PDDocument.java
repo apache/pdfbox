@@ -151,6 +151,9 @@ public class PDDocument implements Closeable
     // to make sure only one signature is added
     private boolean signatureAdded = false;
 
+    // cache for the key of all imported indirect objects
+    private final List<COSObjectKey> indirectObjectKeys = new ArrayList<>();
+
     /**
      * Creates an empty PDF document.
      * You need to add at least one page for the document to be valid.
@@ -713,7 +716,6 @@ public class PDDocument implements Closeable
      */
     private void setHighestImportedObjectNumber(PDPage importedPage)
     {
-        List<COSObjectKey> indirectObjectKeys = new ArrayList<>();
         importedPage.getCOSObject().getIndirectObjectKeys(indirectObjectKeys);
         long highestImportedNumber = indirectObjectKeys.stream().map(COSObjectKey::getNumber)
                 .max(Long::compare).orElse(0L);
