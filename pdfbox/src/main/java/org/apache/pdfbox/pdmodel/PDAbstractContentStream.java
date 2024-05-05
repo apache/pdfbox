@@ -1638,18 +1638,18 @@ abstract class PDAbstractContentStream implements Closeable
 
     private List<Integer> applyGSUBRules(GsubWorker gsubWorker, ByteArrayOutputStream out, PDType0Font font, String word) throws IOException
     {
-        char[] charArray = word.toCharArray();
-        List<Integer> originalGlyphIds = new ArrayList<>(charArray.length);
+        int[] codePointArray = word.codePoints().toArray();
+        List<Integer> originalGlyphIds = new ArrayList<>(word.codePointCount(0, word.length()));
         CmapLookup cmapLookup = font.getCmapLookup();
 
         // convert characters into glyphIds
-        for (char unicodeChar : charArray)
+        for (int codePoint : codePointArray)
         {
-            int glyphId = cmapLookup.getGlyphId(unicodeChar);
+            int glyphId = cmapLookup.getGlyphId(codePoint);
             if (glyphId <= 0)
             {
                 throw new IllegalStateException(
-                        "could not find the glyphId for the character: " + unicodeChar);
+                        "could not find the glyphId for the character: " + codePoint);
             }
             originalGlyphIds.add(glyphId);
         }
