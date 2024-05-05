@@ -63,6 +63,8 @@ import static org.mockito.BDDMockito.given;
 class TestFontEmbedding
 {
     private static final File OUT_DIR = new File("target/test-output");
+    private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/ttf");
+ 
 
     @BeforeAll
     static void setUp()
@@ -231,8 +233,6 @@ class TestFontEmbedding
             document.save(pdf);
         }
 
-        File IN_DIR = new File("src/test/resources/org/apache/pdfbox/ttf");
- 
         // compare rendering
         if (!TestPDFToImage.doTestFile(pdf, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
@@ -282,8 +282,6 @@ class TestFontEmbedding
             document.save(pdf);
         }
 
-        File IN_DIR = new File("src/test/resources/org/apache/pdfbox/ttf");
- 
         // compare rendering
         if (!TestPDFToImage.doTestFile(pdf, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
@@ -332,8 +330,6 @@ class TestFontEmbedding
             document.save(pdf);
         }
 
-        File IN_DIR = new File("src/test/resources/org/apache/pdfbox/ttf");
- 
         // compare rendering
         if (!TestPDFToImage.doTestFile(pdf, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
@@ -601,7 +597,6 @@ class TestFontEmbedding
     {
         final String message = "𩸽\uD867\uDE3D";
         File pdf = new File(OUT_DIR, "PDFBOX-5812.pdf");
-        File IN_DIR = new File("src/test/resources/org/apache/pdfbox/ttf");
 
         ByteArrayOutputStream baos;
         try (PDDocument doc = new PDDocument())
