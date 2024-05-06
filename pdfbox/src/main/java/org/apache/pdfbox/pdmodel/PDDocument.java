@@ -978,7 +978,7 @@ public class PDDocument implements Closeable
      */
     public void save(File file, CompressParameters compressParameters) throws IOException
     {
-        if (file.exists())
+        if (file.exists() && file.length() > 0)
         {
             LOG.warn(
                     "You are overwriting the existing file " + file.getName()
