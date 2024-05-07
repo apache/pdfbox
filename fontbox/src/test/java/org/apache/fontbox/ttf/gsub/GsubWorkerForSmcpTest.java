@@ -56,7 +56,7 @@ class GsubWorkerForSmcpTest
             gsubWorkerForSmcp = new GsubWorkerForSmcp(cmapLookup, ttf.getGsubData());
         }
 
-        // Values should be the same you get by looking at the GSUB lookup list 24 a font tool
+        // Values should be the same you get by looking at the GSUB lookup list 24 with a font tool
         // This one converts "ﬀ" (single-ff-ligature glyph) into "FF" small capitals
         assertEquals(Arrays.asList(165, 165),
                 gsubWorkerForSmcp.applyTransforms(getGlyphIds("\ufb00", cmapLookup)));
