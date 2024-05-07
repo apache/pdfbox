@@ -33,10 +33,10 @@ public class MapBackedGsubData implements GsubData
 
     private final Language language;
     private final String activeScriptName;
-    private final Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap;
+    private final Map<String, Map<List<Integer>, List<Integer>>> glyphSubstitutionMap;
 
     public MapBackedGsubData(Language language, String activeScriptName,
-            Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap)
+            Map<String, Map<List<Integer>, List<Integer>>> glyphSubstitutionMap)
     {
         this.language = language;
         this.activeScriptName = activeScriptName;

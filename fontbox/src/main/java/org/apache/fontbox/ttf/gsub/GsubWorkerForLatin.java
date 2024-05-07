@@ -101,8 +101,8 @@ public class GsubWorkerForLatin implements GsubWorker
             if (scriptFeature.canReplaceGlyphs(chunk))
             {
                 // gsub system kicks in, you get the glyphId directly
-                int glyphId = scriptFeature.getReplacementForGlyphs(chunk);
-                gsubProcessedGlyphs.add(glyphId);
+                List<Integer> replacementForGlyphs = scriptFeature.getReplacementForGlyphs(chunk);
+                gsubProcessedGlyphs.addAll(replacementForGlyphs);
             }
             else
             {

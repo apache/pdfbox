@@ -33,9 +33,9 @@ public class MapBackedScriptFeature implements ScriptFeature
 {
 
     private final String name;
-    private final Map<List<Integer>, Integer> featureMap;
+    private final Map<List<Integer>, List<Integer>> featureMap;
 
-    public MapBackedScriptFeature(String name, Map<List<Integer>, Integer> featureMap)
+    public MapBackedScriptFeature(String name, Map<List<Integer>, List<Integer>> featureMap)
     {
         this.name = name;
         this.featureMap = featureMap;
@@ -60,7 +60,7 @@ public class MapBackedScriptFeature implements ScriptFeature
     }
 
     @Override
-    public Integer getReplacementForGlyphs(List<Integer> glyphIds)
+    public List<Integer> getReplacementForGlyphs(List<Integer> glyphIds)
     {
         if (!canReplaceGlyphs(glyphIds))
         {

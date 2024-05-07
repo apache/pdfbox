@@ -167,8 +167,8 @@ public class GsubWorkerForBengali implements GsubWorker
             if (scriptFeature.canReplaceGlyphs(chunk))
             {
                 // gsub system kicks in, you get the glyphId directly
-                Integer glyphId = scriptFeature.getReplacementForGlyphs(chunk);
-                gsubProcessedGlyphs.add(glyphId);
+                List<Integer> replacementForGlyphs = scriptFeature.getReplacementForGlyphs(chunk);
+                gsubProcessedGlyphs.addAll(replacementForGlyphs);
             }
             else
             {
@@ -196,7 +196,7 @@ public class GsubWorkerForBengali implements GsubWorker
             ScriptFeature feature = gsubData.getFeature(INIT_FEATURE);
             for (List<Integer> glyphCluster : feature.getAllGlyphIdsForSubstitution())
             {
-                glyphIds.add(feature.getReplacementForGlyphs(glyphCluster));
+                glyphIds.addAll(feature.getReplacementForGlyphs(glyphCluster));
             }
         }
 

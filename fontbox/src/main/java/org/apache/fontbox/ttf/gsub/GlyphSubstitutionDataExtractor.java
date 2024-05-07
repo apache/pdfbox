@@ -18,6 +18,7 @@
 package org.apache.fontbox.ttf.gsub;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -97,7 +98,7 @@ public class GlyphSubstitutionDataExtractor
     {
         ScriptTable scriptTable = scriptTableDetails.getScriptTable();
 
-        Map<String, Map<List<Integer>, Integer>> gsubData = new LinkedHashMap<>();
+        Map<String, Map<List<Integer>, List<Integer>>> gsubData = new LinkedHashMap<>();
         // the starting point is really the scriptTags
         if (scriptTable.getDefaultLangSysTable() != null)
         {
@@ -129,7 +130,7 @@ public class GlyphSubstitutionDataExtractor
         return null;
     }
 
-    private void populateGsubData(Map<String, Map<List<Integer>, Integer>> gsubData,
+    private void populateGsubData(Map<String, Map<List<Integer>, List<Integer>>> gsubData,
             LangSysTable langSysTable, FeatureListTable featureListTable,
             LookupListTable lookupListTable)
     {
@@ -143,11 +144,12 @@ public class GlyphSubstitutionDataExtractor
         }
     }
 
-    private void populateGsubData(Map<String, Map<List<Integer>, Integer>> gsubData,
+    // Creates a Map<List<Integer>, Integer> from the lookup tables
+    private void populateGsubData(Map<String, Map<List<Integer>, List<Integer>>> gsubData,
             FeatureRecord featureRecord, LookupListTable lookupListTable)
     {
         LookupTable[] lookups = lookupListTable.getLookups();
-        Map<List<Integer>, Integer> glyphSubstitutionMap = new LinkedHashMap<>();
+        Map<List<Integer>, List<Integer>> glyphSubstitutionMap = new LinkedHashMap<>();
         for (int lookupIndex : featureRecord.getFeatureTable().getLookupListIndices())
         {
             if (lookupIndex < lookups.length)
@@ -163,7 +165,7 @@ public class GlyphSubstitutionDataExtractor
                 Collections.unmodifiableMap(glyphSubstitutionMap));
     }
 
-    private void extractData(Map<List<Integer>, Integer> glyphSubstitutionMap,
+    private void extractData(Map<List<Integer>, List<Integer>> glyphSubstitutionMap,
             LookupTable lookupTable)
     {
 
@@ -204,7 +206,7 @@ public class GlyphSubstitutionDataExtractor
     }
 
     private void extractDataFromSingleSubstTableFormat1Table(
-            Map<List<Integer>, Integer> glyphSubstitutionMap,
+            Map<List<Integer>, List<Integer>> glyphSubstitutionMap,
             LookupTypeSingleSubstFormat1 singleSubstTableFormat1)
     {
         CoverageTable coverageTable = singleSubstTableFormat1.getCoverageTable();
@@ -212,13 +214,13 @@ public class GlyphSubstitutionDataExtractor
         {
             int coverageGlyphId = coverageTable.getGlyphId(i);
             int substituteGlyphId = coverageGlyphId + singleSubstTableFormat1.getDeltaGlyphID();
-            putNewSubstitutionEntry(glyphSubstitutionMap, substituteGlyphId,
+            putNewSubstitutionEntry(glyphSubstitutionMap, Collections.singletonList(substituteGlyphId),
                     Collections.singletonList(coverageGlyphId));
         }
     }
 
     private void extractDataFromSingleSubstTableFormat2Table(
-            Map<List<Integer>, Integer> glyphSubstitutionMap,
+            Map<List<Integer>, List<Integer>> glyphSubstitutionMap,
             LookupTypeSingleSubstFormat2 singleSubstTableFormat2)
     {
 
@@ -237,13 +239,13 @@ public class GlyphSubstitutionDataExtractor
         {
             int coverageGlyphId = coverageTable.getGlyphId(i);
             int substituteGlyphId = singleSubstTableFormat2.getSubstituteGlyphIDs()[i];
-            putNewSubstitutionEntry(glyphSubstitutionMap, substituteGlyphId,
+            putNewSubstitutionEntry(glyphSubstitutionMap, Collections.singletonList(substituteGlyphId),
                     Collections.singletonList(coverageGlyphId));
         }
     }
 
     private void extractDataFromMultipleSubstitutionFormat1Table(
-            Map<List<Integer>, Integer> glyphSubstitutionMap,
+            Map<List<Integer>, List<Integer>> glyphSubstitutionMap,
             LookupTypeMultipleSubstitutionFormat1 multipleSubstFormat1Subtable)
     {
         CoverageTable coverageTable = multipleSubstFormat1Subtable.getCoverageTable();
@@ -261,15 +263,20 @@ public class GlyphSubstitutionDataExtractor
         {
             int coverageGlyphId = coverageTable.getGlyphId(i);
             SequenceTable sequenceTable = multipleSubstFormat1Subtable.getSequenceTables()[i];
-            
-            //TODO implement storing this data
-            // (not possible at this time because the map value isn't a list)
+            //TODO List.Of and Arrays.asList didn't work?!
+            List<Integer> list = new ArrayList<>();
+            for (int id : sequenceTable.getSubstituteGlyphIDs())
+            {
+                list.add(id);
+            }
+            putNewSubstitutionEntry(glyphSubstitutionMap,
+                    list,
+                    Collections.singletonList(coverageGlyphId));
         }
-        
     }
 
     private void extractDataFromLigatureSubstitutionSubstFormat1Table(
-            Map<List<Integer>, Integer> glyphSubstitutionMap,
+            Map<List<Integer>, List<Integer>> glyphSubstitutionMap,
             LookupTypeLigatureSubstitutionSubstFormat1 ligatureSubstitutionTable)
     {
 
@@ -292,7 +299,7 @@ public class GlyphSubstitutionDataExtractor
      * @param alternateSubstitutionFormat1 the alternate substitution format 1 table
      */
     private void extractDataFromAlternateSubstitutionSubstFormat1Table(
-            Map<List<Integer>, Integer> glyphSubstitutionMap,
+            Map<List<Integer>, List<Integer>> glyphSubstitutionMap,
             LookupTypeAlternateSubstitutionFormat1 alternateSubstitutionFormat1)
     {
 
@@ -316,7 +323,7 @@ public class GlyphSubstitutionDataExtractor
             {
                 if (alternateGlyphId != coverageGlyphId)
                 {
-                    putNewSubstitutionEntry(glyphSubstitutionMap, alternateGlyphId,
+                    putNewSubstitutionEntry(glyphSubstitutionMap, Collections.singletonList(alternateGlyphId),
                             Collections.singletonList(coverageGlyphId));
                     break;
                 }
@@ -325,7 +332,7 @@ public class GlyphSubstitutionDataExtractor
 
     }
 
-    private void extractDataFromLigatureTable(Map<List<Integer>, Integer> glyphSubstitutionMap,
+    private void extractDataFromLigatureTable(Map<List<Integer>, List<Integer>> glyphSubstitutionMap,
             LigatureTable ligatureTable)
     {
         int[] componentGlyphIDs = ligatureTable.getComponentGlyphIDs();
@@ -337,20 +344,19 @@ public class GlyphSubstitutionDataExtractor
 
         LOG.debug("glyphsToBeSubstituted: {}", glyphsToBeSubstituted);
 
-        putNewSubstitutionEntry(glyphSubstitutionMap, ligatureTable.getLigatureGlyph(),
+        putNewSubstitutionEntry(glyphSubstitutionMap, Collections.singletonList(ligatureTable.getLigatureGlyph()),
                 glyphsToBeSubstituted);
-
     }
 
-    private void putNewSubstitutionEntry(Map<List<Integer>, Integer> glyphSubstitutionMap,
-            int newGlyph, List<Integer> glyphsToBeSubstituted)
+    private void putNewSubstitutionEntry(Map<List<Integer>, List<Integer>> glyphSubstitutionMap,
+            List<Integer> newGlyphList, List<Integer> glyphsToBeSubstituted)
     {
-        Integer oldValue = glyphSubstitutionMap.put(glyphsToBeSubstituted, newGlyph);
+        List<Integer> oldValues = glyphSubstitutionMap.put(glyphsToBeSubstituted, newGlyphList);
 
-        if (oldValue != null)
+        if (oldValues != null)
         {
             LOG.debug("For the newGlyph: {}, newValue: {} is trying to override the oldValue {}",
-                    newGlyph, glyphsToBeSubstituted, oldValue);
+                    newGlyphList, glyphsToBeSubstituted, oldValues);
         }
     }
 

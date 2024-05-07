@@ -30,13 +30,35 @@ import org.apache.fontbox.ttf.table.common.FeatureRecord;
  */
 public interface ScriptFeature
 {
-
+    /**
+     * The name of this feature.
+     * 
+     * @return 
+     */
     String getName();
 
+    /**
+     * Returns a set of integer sequences that may match and thus can be replaced by
+     * something else.
+     *
+     * @return
+     */
     Set<List<Integer>> getAllGlyphIdsForSubstitution();
 
+    /**
+     * Returns true if the sequence of integers can be replaced by something else.
+     * 
+     * @param glyphIds sequence of integers
+     * @return 
+     */
     boolean canReplaceGlyphs(List<Integer> glyphIds);
 
-    Integer getReplacementForGlyphs(List<Integer> glyphIds);
+    /**
+     * Returns the replacement for the input sequence of integers.
+     * 
+     * @param glyphIds sequence of integers
+     * @return 
+     */
+    List<Integer> getReplacementForGlyphs(List<Integer> glyphIds);
 
 }

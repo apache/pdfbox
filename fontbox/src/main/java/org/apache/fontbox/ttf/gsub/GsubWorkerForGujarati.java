@@ -219,8 +219,8 @@ public class GsubWorkerForGujarati implements GsubWorker
         {
             if (scriptFeature.canReplaceGlyphs(chunk))
             {
-                Integer glyphId = scriptFeature.getReplacementForGlyphs(chunk);
-                gsubProcessedGlyphs.add(glyphId);
+                List<Integer> replacementForGlyphs = scriptFeature.getReplacementForGlyphs(chunk);
+                gsubProcessedGlyphs.addAll(replacementForGlyphs);
             }
             else
             {
