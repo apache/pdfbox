@@ -45,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -629,6 +630,71 @@ class TestFontEmbedding
         {
             // don't fail, rendering is different on different systems, result must be viewed manually
             System.err.println("Rendering of " + pdf + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
+        }
+    }
+
+    @Test
+    void testSurrogatePairCharacterExceptionIsBmpCodePoint() throws IOException
+    {
+        final String message = "あ";
+
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            doc.addPage(page);
+            PDFont font = PDType0Font.load(doc,
+this.getClass().getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"));
+
+            try (PDPageContentStream contents = new PDPageContentStream(doc, page))
+            {
+                contents.beginText();
+                contents.setFont(font, 64);
+                contents.newLineAtOffset(100, 700);
+                contents.showText(message);
+                contents.endText();
+            }
+
+            fail();
+        }
+        catch (IllegalStateException e)
+        {
+            assertEquals("could not find the glyphId for the character: あ", e.getMessage());
+        }
+        catch (Exception e)
+        {
+            fail();
+        }
+    }
+
+    @Test
+    void testSurrogatePairCharacterExceptionIsValidCodePoint() throws IOException
+    {
+        final String message = "𩸽";
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            doc.addPage(page);
+            PDFont font = PDType0Font.load(doc,
+this.getClass().getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"));
+
+            try (PDPageContentStream contents = new PDPageContentStream(doc, page))
+            {
+                contents.beginText();
+                contents.setFont(font, 64);
+                contents.newLineAtOffset(100, 700);
+                contents.showText(message);
+                contents.endText();
+            }
+
+            fail();
+        }
+        catch (IllegalStateException e)
+        {
+            assertEquals("could not find the glyphId for the character: 𩸽" ,e.getMessage());
+        }
+        catch (Exception e)
+        {
+            fail();
         }
     }
 }

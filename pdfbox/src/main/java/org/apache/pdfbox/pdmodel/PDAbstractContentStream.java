@@ -1648,8 +1648,20 @@ abstract class PDAbstractContentStream implements Closeable
             int glyphId = cmapLookup.getGlyphId(codePoint);
             if (glyphId <= 0)
             {
-                throw new IllegalStateException(
-                        "could not find the glyphId for the character: " + codePoint);
+                String source;
+                if (Character.isBmpCodePoint(codePoint))
+                {
+                    source = String.valueOf((char) codePoint);
+                }
+                else if (Character.isValidCodePoint(codePoint))
+                {
+                    source = new String(new int[] {codePoint},0,1);
+                }
+                else
+                {
+                    source = "?";
+                }
+                throw new IllegalStateException("could not find the glyphId for the character: " + source);
             }
             originalGlyphIds.add(glyphId);
         }
