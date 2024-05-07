@@ -258,16 +258,8 @@ public class GlyphSubstitutionDataExtractor
                     multipleSubstFormat1Subtable.getSequenceTables().length + ")");
             return;
         }
-
-        for (int i = 0; i < coverageTable.getSize(); i++)
-        {
-            int coverageGlyphId = coverageTable.getGlyphId(i);
-            SequenceTable sequenceTable = multipleSubstFormat1Subtable.getSequenceTables()[i];
-            
-            //TODO implement storing this data
-            // (not possible at this time because the map value isn't a list)
-        }
-        
+        // not implemented in 3.0, because the map value isn't a list.
+        // implemented in 4.0, since PDFBOX-5648
     }
 
     private void extractDataFromLigatureSubstitutionSubstFormat1Table(
