@@ -240,8 +240,8 @@ public class CFFCIDFont extends CFFFont
                         getLocalSubrIndex(gid), String.format(Locale.US, "%04x", cid));
                 type2 = new CIDKeyedType2CharString(reader, getName(), cid, gid, type2seq,
                         getDefaultWidthX(gid), getNominalWidthX(gid));
-                charStringCache.put(cid, type2);
             }
+            charStringCache.put(cid, type2);
         }
         return type2;
     }
