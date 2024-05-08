@@ -50,10 +50,10 @@ public class CFFCIDFont extends CFFFont
 
     /**
      * Returns the registry value.
-     * 
+     *
      * @return the registry
      */
-    public String getRegistry() 
+    public String getRegistry()
     {
         return registry;
     }
@@ -73,7 +73,7 @@ public class CFFCIDFont extends CFFFont
      *
      * @return the ordering
      */
-    public String getOrdering() 
+    public String getOrdering()
     {
         return ordering;
     }
@@ -93,7 +93,7 @@ public class CFFCIDFont extends CFFFont
      *
      * @return the supplement
      */
-    public int getSupplement() 
+    public int getSupplement()
     {
         return supplement;
     }
@@ -235,11 +235,13 @@ public class CFFCIDFont extends CFFFont
             {
                 bytes = charStrings[0]; // .notdef
             }
-            List<Object> type2seq = getParser().parse(bytes, globalSubrIndex,
-                    getLocalSubrIndex(gid), String.format(Locale.US, "%04x", cid));
-            type2 = new CIDKeyedType2CharString(reader, getName(), cid, gid, type2seq,
-                                                getDefaultWidthX(gid), getNominalWidthX(gid));
-            charStringCache.put(cid, type2);
+            synchronized (this) {
+                List<Object> type2seq = getParser().parse(bytes, globalSubrIndex,
+                        getLocalSubrIndex(gid), String.format(Locale.US, "%04x", cid));
+                type2 = new CIDKeyedType2CharString(reader, getName(), cid, gid, type2seq,
+                        getDefaultWidthX(gid), getNominalWidthX(gid));
+                charStringCache.put(cid, type2);
+            }
         }
         return type2;
     }
