@@ -661,10 +661,6 @@ class TestFontEmbedding
         {
             assertEquals("could not find the glyphId for the character: あ", e.getMessage());
         }
-        catch (Exception e)
-        {
-            fail();
-        }
     }
 
     @Test
@@ -692,10 +688,6 @@ class TestFontEmbedding
         catch (IllegalStateException e)
         {
             assertEquals("could not find the glyphId for the character: 𩸽" ,e.getMessage());
-        }
-        catch (Exception e)
-        {
-            fail();
         }
     }
 }
