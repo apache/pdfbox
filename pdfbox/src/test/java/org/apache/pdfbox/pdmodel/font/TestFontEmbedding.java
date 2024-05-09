@@ -654,12 +654,13 @@ class TestFontEmbedding
                 contents.showText(message);
                 contents.endText();
             }
+            catch (IllegalStateException e)
+            {
+                assertEquals("could not find the glyphId for the character: あ", e.getMessage());
+                return;
+            }
 
             fail();
-        }
-        catch (IllegalStateException e)
-        {
-            assertEquals("could not find the glyphId for the character: あ", e.getMessage());
         }
     }
 
@@ -682,12 +683,13 @@ class TestFontEmbedding
                 contents.showText(message);
                 contents.endText();
             }
+            catch (IllegalStateException e)
+            {
+                assertEquals("could not find the glyphId for the character: 𩸽", e.getMessage());
+                return;
+            }
 
             fail();
-        }
-        catch (IllegalStateException e)
-        {
-            assertEquals("could not find the glyphId for the character: 𩸽" ,e.getMessage());
         }
     }
 }
