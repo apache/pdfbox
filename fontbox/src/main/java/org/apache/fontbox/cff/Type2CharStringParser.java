@@ -32,11 +32,7 @@ public class Type2CharStringParser
     private static final int CALLSUBR = 10;
     private static final int CALLGSUBR = 29;
 
-    private int hstemCount;
-    private int vstemCount;
-    private List<Object> sequence;
     private final String fontName;
-    private String currentGlyph;
 
     /**
      * Constructs a new Type1CharStringParser object for a Type 1-equivalent font.
@@ -62,17 +58,12 @@ public class Type2CharStringParser
     public List<Object> parse(byte[] bytes, byte[][] globalSubrIndex, byte[][] localSubrIndex,
             String glyphName) throws IOException
     {
-        // reset values if the parser is used multiple times
-        hstemCount = 0;
-        vstemCount = 0;
-        // create a new list as it is used as return value
-        sequence = new ArrayList<>();
-        currentGlyph = glyphName;
-        return parseSequence(bytes, globalSubrIndex, localSubrIndex);
+        return parseSequence(bytes, globalSubrIndex, localSubrIndex, new ArrayList<>(), 0, 0);
     }
 
     private List<Object> parseSequence(byte[] bytes, byte[][] globalSubrIndex,
-            byte[][] localSubrIndex) throws IOException
+            byte[][] localSubrIndex, List<Object> sequence, int hstemCount, int vstemCount)
+            throws IOException
     {
         DataInput input = new DataInputByteArray(bytes);
         boolean localSubroutineIndexProvided = localSubrIndex != null && localSubrIndex.length > 0;
@@ -83,15 +74,18 @@ public class Type2CharStringParser
             int b0 = input.readUnsignedByte();
             if (b0 == CALLSUBR && localSubroutineIndexProvided)
             {
-                processCallSubr(globalSubrIndex, localSubrIndex, localSubrIndex);
+                processCallSubr(globalSubrIndex, localSubrIndex, localSubrIndex, sequence,
+                        hstemCount, vstemCount);
             }
             else if (b0 == CALLGSUBR && globalSubroutineIndexProvided)
             {
-                processCallSubr(globalSubrIndex, localSubrIndex, globalSubrIndex);
+                processCallSubr(globalSubrIndex, localSubrIndex, globalSubrIndex, sequence,
+                        hstemCount, vstemCount);
             }
             else if ( (b0 >= 0 && b0 <= 27) || (b0 >= 29 && b0 <= 31))
             {
-                sequence.add(readCommand(b0, input));
+                sequence.add(
+                        readCommand(b0, input, countNumbers(sequence), hstemCount, vstemCount));
             } 
             else if (b0 == 28 || (b0 >= 32 && b0 <= 255))
             {
@@ -105,7 +99,8 @@ public class Type2CharStringParser
         return sequence;
     }
 
-    private void processCallSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex, byte[][] subrIndex)
+    private void processCallSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex,
+            byte[][] subrIndex, List<Object> sequence, int hstemCount, int vstemCount)
             throws IOException
     {
         int subrNumber = calculateSubrNumber((Integer) sequence.remove(sequence.size() - 1),
@@ -113,7 +108,8 @@ public class Type2CharStringParser
         if (subrNumber < subrIndex.length)
         {
             byte[] subrBytes = subrIndex[subrNumber];
-            parseSequence(subrBytes, globalSubrIndex, localSubrIndex);
+            parseSequence(subrBytes, globalSubrIndex, localSubrIndex, sequence, hstemCount,
+                    vstemCount);
             Object lastItem = sequence.get(sequence.size() - 1);
             if (lastItem instanceof CharStringCommand
                     && Type2KeyWord.RET == ((CharStringCommand) lastItem).getType2KeyWord())
@@ -137,24 +133,26 @@ public class Type2CharStringParser
         return 32768 + operand;
     }
 
-    private CharStringCommand readCommand(int b0, DataInput input) throws IOException
+    private CharStringCommand readCommand(int b0, DataInput input, int numberCount, int hstemCount,
+            int vstemCount)
+            throws IOException
     {
         switch (b0)
         {
         case 1:
         case 18:
-            hstemCount += countNumbers() / 2;
+            hstemCount += numberCount / 2;
             return CharStringCommand.getInstance(b0);
         case 3:
         case 23:
-            vstemCount += countNumbers() / 2;
+            vstemCount += numberCount / 2;
             return CharStringCommand.getInstance(b0);
         case 12:
             return CharStringCommand.getInstance(b0, input.readUnsignedByte());
         case 19:
         case 20:
-            vstemCount += countNumbers() / 2;
-            int[] value = new int[1 + getMaskLength()];
+            vstemCount += numberCount / 2;
+            int[] value = new int[1 + getMaskLength(hstemCount, vstemCount)];
             value[0] = b0;
 
             for (int i = 1; i < value.length; i++)
@@ -203,7 +201,7 @@ public class Type2CharStringParser
         }
     }
 
-    private int getMaskLength()
+    private int getMaskLength(int hstemCount, int vstemCount)
     {
         int hintCount = hstemCount + vstemCount;
         int length = hintCount / 8; 
@@ -214,7 +212,7 @@ public class Type2CharStringParser
         return length;
     }
 
-    private int countNumbers()
+    private int countNumbers(List<Object> sequence)
     {
         int count = 0;
         for (int i = sequence.size() - 1; i > -1; i--)
@@ -231,6 +229,6 @@ public class Type2CharStringParser
     @Override
     public String toString()
     {
-        return fontName + ", current glpyh " + currentGlyph;
+        return fontName;
     }
 }
