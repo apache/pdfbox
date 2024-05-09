@@ -660,10 +660,6 @@ this.getClass().getResourceAsStream("/org/apache/pdfbox/resources/ttf/Liberation
         {
             assertEquals("could not find the glyphId for the character: あ", e.getMessage());
         }
-        catch (Exception e)
-        {
-            fail();
-        }
     }
 
     @Test
@@ -691,10 +687,6 @@ this.getClass().getResourceAsStream("/org/apache/pdfbox/resources/ttf/Liberation
         catch (IllegalStateException e)
         {
             assertEquals("could not find the glyphId for the character: 𩸽" ,e.getMessage());
-        }
-        catch (Exception e)
-        {
-            fail();
         }
     }
 }
