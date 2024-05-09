@@ -57,11 +57,13 @@ public class Type2CharStringParser
     public List<Object> parse(byte[] bytes, byte[][] globalSubrIndex, byte[][] localSubrIndex)
             throws IOException
     {
-        return parseSequence(bytes, globalSubrIndex, localSubrIndex, new ArrayList<>(), 0, 0);
+        GlyphData glyphData = new GlyphData();
+        parseSequence(bytes, globalSubrIndex, localSubrIndex, glyphData);
+        return glyphData.sequence;
     }
 
-    private List<Object> parseSequence(byte[] bytes, byte[][] globalSubrIndex,
-            byte[][] localSubrIndex, List<Object> sequence, int hstemCount, int vstemCount)
+    private void parseSequence(byte[] bytes, byte[][] globalSubrIndex,
+            byte[][] localSubrIndex, GlyphData glyphData)
             throws IOException
     {
         DataInput input = new DataInputByteArray(bytes);
@@ -73,45 +75,44 @@ public class Type2CharStringParser
             int b0 = input.readUnsignedByte();
             if (b0 == CALLSUBR && localSubroutineIndexProvided)
             {
-                processCallSubr(globalSubrIndex, localSubrIndex, localSubrIndex, sequence);
+                processCallSubr(globalSubrIndex, localSubrIndex, localSubrIndex, glyphData);
             }
             else if (b0 == CALLGSUBR && globalSubroutineIndexProvided)
             {
-                processCallSubr(globalSubrIndex, localSubrIndex, globalSubrIndex, sequence);
+                processCallSubr(globalSubrIndex, localSubrIndex, globalSubrIndex, glyphData);
             }
             else if ( (b0 >= 0 && b0 <= 27) || (b0 >= 29 && b0 <= 31))
             {
-                sequence.add(
-                        readCommand(b0, input, countNumbers(sequence), hstemCount, vstemCount));
+                glyphData.sequence.add(readCommand(b0, input, glyphData));
             } 
             else if (b0 == 28 || (b0 >= 32 && b0 <= 255))
             {
-                sequence.add(readNumber(b0, input));
+                glyphData.sequence.add(readNumber(b0, input));
             } 
             else
             {
                 throw new IllegalArgumentException();
             }
         }
-        return sequence;
     }
 
     private void processCallSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex,
-            byte[][] subrIndex, List<Object> sequence)
+            byte[][] subrIndex, GlyphData glyphData)
             throws IOException
     {
-        int subrNumber = calculateSubrNumber((Integer) sequence.remove(sequence.size() - 1),
+        int subrNumber = calculateSubrNumber(
+                (Integer) glyphData.sequence.remove(glyphData.sequence.size() - 1),
                 subrIndex.length);
         if (subrNumber < subrIndex.length)
         {
             byte[] subrBytes = subrIndex[subrNumber];
-            parseSequence(subrBytes, globalSubrIndex, localSubrIndex, sequence, 0, 0);
-            Object lastItem = sequence.get(sequence.size() - 1);
+            parseSequence(subrBytes, globalSubrIndex, localSubrIndex, glyphData);
+            Object lastItem = glyphData.sequence.get(glyphData.sequence.size() - 1);
             if (lastItem instanceof CharStringCommand
                     && Type2KeyWord.RET == ((CharStringCommand) lastItem).getType2KeyWord())
             {
                 // remove "return" command
-                sequence.remove(sequence.size() - 1);
+                glyphData.sequence.remove(glyphData.sequence.size() - 1);
             }
         }
     }
@@ -129,26 +130,25 @@ public class Type2CharStringParser
         return 32768 + operand;
     }
 
-    private CharStringCommand readCommand(int b0, DataInput input, int numberCount, int hstemCount,
-            int vstemCount)
+    private CharStringCommand readCommand(int b0, DataInput input, GlyphData glyphData)
             throws IOException
     {
         switch (b0)
         {
         case 1:
         case 18:
-            hstemCount += numberCount / 2;
+            glyphData.hstemCount += countNumbers(glyphData.sequence) / 2;
             return CharStringCommand.getInstance(b0);
         case 3:
         case 23:
-            vstemCount += numberCount / 2;
+            glyphData.vstemCount += countNumbers(glyphData.sequence) / 2;
             return CharStringCommand.getInstance(b0);
         case 12:
             return CharStringCommand.getInstance(b0, input.readUnsignedByte());
         case 19:
         case 20:
-            vstemCount += numberCount / 2;
-            int[] value = new int[1 + getMaskLength(hstemCount, vstemCount)];
+            glyphData.vstemCount += countNumbers(glyphData.sequence) / 2;
+            int[] value = new int[1 + getMaskLength(glyphData.hstemCount, glyphData.vstemCount)];
             value[0] = b0;
 
             for (int i = 1; i < value.length; i++)
@@ -226,5 +226,16 @@ public class Type2CharStringParser
     public String toString()
     {
         return fontName;
+    }
+
+    private class GlyphData
+    {
+        final List<Object> sequence = new ArrayList<>();
+        int hstemCount = 0;
+        int vstemCount = 0;;
+
+        private GlyphData()
+        {
+        }
     }
 }
