@@ -610,6 +610,11 @@ public class GlyphSubstitutionTable extends TTFTable
         int ligatureGlyph = data.readUnsignedShort();
 
         int componentCount = data.readUnsignedShort();
+        if (componentCount > 100)
+        {
+            throw new IOException("componentCount in ligature table is " +
+                    componentCount + ", font likely corrupt");
+        }
 
         int[] componentGlyphIDs = new int[componentCount];
 
