@@ -40,6 +40,7 @@ import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampRequestGenerator;
 import org.bouncycastle.tsp.TimeStampResponse;
 import org.bouncycastle.tsp.TimeStampToken;
+import org.bouncycastle.tsp.TimeStampTokenInfo;
 
 /**
  * Time Stamping Authority (TSA) Client [RFC 3161].
@@ -113,12 +114,25 @@ public class TSAClient
         }
         catch (TSPException e)
         {
-            LOG.error(String.format("nonce: %08X", nonce));
             LOG.error("request: " + Hex.getString(request.getEncoded()));
+            LOG.error(String.format("request nonce: %08X / %s", nonce, request.getNonce().toString(16)));
             if (response != null)
             {
                 LOG.error("response status: " + response.getStatus() + " " + response.getStatusString());
                 LOG.error("response tst: " + response.getTimeStampToken());
+                if (response.getTimeStampToken() != null)
+                {
+                    TimeStampTokenInfo tsi = response.getTimeStampToken().getTimeStampInfo();
+                    LOG.error("response tsi: " + tsi);
+                    if (tsi != null && tsi.getNonce() != null)
+                    {
+                        LOG.error("response tsi nonce: " + tsi.getNonce().toString(16));
+                    }
+                    else if (tsi != null)
+                    {
+                        LOG.error("response tsi nonce is null");
+                    }
+                }
             }
             LOG.error("response: " + Hex.getString(tsaResponse));
             throw new IOException(e);
