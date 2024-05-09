@@ -21,7 +21,6 @@ import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.fontbox.type1.Type1CharStringReader;
@@ -236,7 +235,7 @@ public class CFFCIDFont extends CFFFont
                 bytes = charStrings[0]; // .notdef
             }
             List<Object> type2seq = getParser().parse(bytes, globalSubrIndex,
-                    getLocalSubrIndex(gid), String.format(Locale.US, "%04x", cid));
+                    getLocalSubrIndex(gid));
             type2 = new CIDKeyedType2CharString(reader, getName(), cid, gid, type2seq,
                                                 getDefaultWidthX(gid), getNominalWidthX(gid));
             charStringCache.put(cid, type2);
