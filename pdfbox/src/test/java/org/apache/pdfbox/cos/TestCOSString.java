@@ -59,15 +59,14 @@ class TestCOSString extends TestCOSBase
     {
         String inputString = "Test with a text and a few numbers 1, 2 and 3";
         String pdfHex = "<" + createHex(inputString) + ">";
-        COSString cosStr = new COSString(inputString);
-        cosStr.setForceHexForm(true);
+        COSString cosStr = new COSString(inputString, true);
         writePDFTests(pdfHex, cosStr);
 
         COSString escStr = new COSString(ESC_CHAR_STRING);
         writePDFTests("(" + ESC_CHAR_STRING_PDF_FORMAT + ")", escStr);
-        escStr.setForceHexForm(true);
+        COSString escStrHex = new COSString(ESC_CHAR_STRING, true);
         // Escape characters not escaped in hex version
-        writePDFTests("<" + createHex(ESC_CHAR_STRING) + ">", escStr);
+        writePDFTests("<" + createHex(ESC_CHAR_STRING) + ">", escStrHex);
     }
 
     /**
@@ -265,8 +264,8 @@ class TestCOSString extends TestCOSBase
         testSubj.accept(visitor);
         assertEquals("(" + ESC_CHAR_STRING_PDF_FORMAT + ")", outStream.toString());
         outStream.reset();
-        testSubj.setForceHexForm(true);
-        testSubj.accept(visitor);
+        COSString testSubjHex = new COSString(ESC_CHAR_STRING, true);
+        testSubjHex.accept(visitor);
         assertEquals("<" + createHex(ESC_CHAR_STRING) + ">", outStream.toString());
     }
 
@@ -287,8 +286,7 @@ class TestCOSString extends TestCOSBase
             COSString y1 = new COSString("Test");
             assertEquals(x1, y1);
             assertEquals(y1, x1);
-            COSString x2 = new COSString("Test");
-            x2.setForceHexForm(true);
+            COSString x2 = new COSString("Test", true);
             // also if x != y then y != x
             assertNotEquals(x1, x2);
             assertNotEquals(x2, x1);
@@ -316,8 +314,8 @@ class TestCOSString extends TestCOSBase
         assertNotEquals(str1.hashCode(), str2.hashCode());
         COSString str3 = new COSString("Test1");
         assertEquals(str1.hashCode(), str3.hashCode());
-        str3.setForceHexForm(true);
-        assertNotEquals(str1.hashCode(), str3.hashCode());
+        COSString str3Hex = new COSString("Test1", true);
+        assertNotEquals(str1.hashCode(), str3Hex.hashCode());
     }
 
     /**

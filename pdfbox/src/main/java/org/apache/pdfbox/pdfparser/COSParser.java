@@ -588,7 +588,9 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         else if (securityHandler != null)
         {
-            securityHandler.decrypt(parsedObject, objKey.getNumber(), objKey.getGeneration());
+            parsedObject = securityHandler.decrypt(parsedObject, objKey.getNumber(),
+                    objKey.getGeneration());
+            parsedObject.setKey(objKey);
         }
 
         if (!endObjectKey.startsWith(ENDOBJ_STRING))

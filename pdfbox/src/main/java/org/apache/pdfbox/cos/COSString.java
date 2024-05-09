@@ -47,8 +47,8 @@ public final class COSString extends COSBase
 {
     private static final Logger LOG = LogManager.getLogger(COSString.class);
 
-    private byte[] bytes;
-    private boolean forceHexForm;
+    private final byte[] bytes;
+    private final boolean forceHexForm;
 
     // legacy behaviour for old PDFParser
     public static final boolean FORCE_PARSING =
@@ -62,7 +62,21 @@ public final class COSString extends COSBase
      */
     public COSString(byte[] bytes)
     {
-        setValue(bytes);
+        this(bytes, false);
+    }
+
+    /**
+     * Creates a new PDF string from a byte array. This method can be used to read a string from an existing PDF file,
+     * or to create a new byte string.
+     *
+     * @param bytes The raw bytes of the PDF text string or byte string.
+     * @param forceHex forces the hexadecimal presentation of the string if set to true
+     * 
+     */
+    public COSString(byte[] bytes, boolean forceHex)
+    {
+        forceHexForm = forceHex;
+        this.bytes = Arrays.copyOf(bytes, bytes.length);
     }
 
     /**
@@ -72,6 +86,19 @@ public final class COSString extends COSBase
      */
     public COSString(String text)
     {
+        this(text, false);
+    }
+
+    /**
+     * Creates a new <i>text string</i> from a Java String.
+     *
+     * @param text The string value of the object.
+     * @param forceHex forces the hexadecimal presentation of the string if set to true
+     * 
+     */
+    public COSString(String text, boolean forceHex)
+    {
+        forceHexForm = forceHex;
         // check whether the string uses only characters available in PDFDocEncoding
         boolean isOnlyPDFDocEncoding = true;
         for (char c : text.toCharArray())
@@ -142,30 +169,6 @@ public final class COSString extends COSBase
     }
 
     /**
-     * Sets the raw value of this string.
-     *
-     * @param value The raw bytes of the PDF text string or byte string.
-     * 
-     * @deprecated to be removed in a future release.
-     */
-    @Deprecated
-    public void setValue(byte[] value)
-    {
-        bytes = value.clone();
-    }
-
-    /**
-     * Sets whether to force the string is to be written in hex form.
-     * This is needed when signing PDF files.
-     *
-     * @param value True to force hex.
-     */
-    public void setForceHexForm(boolean value)
-    {
-        this.forceHexForm = value;
-    }
-
-    /**
      * Returns true if the string is to be written in hex form.
      * 
      * @return true if the COSString is written in hex form
@@ -219,7 +222,7 @@ public final class COSString extends COSBase
      */
     public byte[] getBytes()
     {
-        return bytes.clone();
+        return Arrays.copyOf(bytes, bytes.length);
     }
 
     /**

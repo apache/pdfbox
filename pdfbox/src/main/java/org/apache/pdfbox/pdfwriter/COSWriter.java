@@ -1429,12 +1429,17 @@ public class COSWriter implements ICOSVisitor
     {
         if (willEncrypt)
         {
-            pdDocument.getEncryption().getSecurityHandler().encryptString(
+            COSString encryptedCOSString = (COSString) pdDocument.getEncryption()
+                    .getSecurityHandler().encryptString(
                     obj,
                     currentObjectKey.getNumber(),
                     currentObjectKey.getGeneration());
+            COSWriter.writeString(encryptedCOSString, getStandardOutput());
         }
-        COSWriter.writeString(obj, getStandardOutput());
+        else
+        {
+            COSWriter.writeString(obj, getStandardOutput());
+        }
     }
 
     /**
