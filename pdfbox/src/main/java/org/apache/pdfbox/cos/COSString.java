@@ -155,11 +155,13 @@ public final class COSString extends COSBase
     }
 
     /**
-     * Sets whether to force the string is to be written in hex form.
-     * This is needed when signing PDF files.
+     * Sets whether to force the string is to be written in hex form. This is needed when signing PDF files.
      *
      * @param value True to force hex.
+     * 
+     * @deprecated to be removed in a future release.
      */
+    @Deprecated
     public void setForceHexForm(boolean value)
     {
         this.forceHexForm = value;
