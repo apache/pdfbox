@@ -31,6 +31,7 @@ import java.util.Random;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.DigestAlgorithmIdentifierFinder;
@@ -104,7 +105,7 @@ public class TSAClient
         // get TSA response
         byte[] tsaResponse = getTSAResponse(request.getEncoded());
 
-        TimeStampResponse response;
+        TimeStampResponse response = null;
         try
         {
             response = new TimeStampResponse(tsaResponse);
@@ -112,6 +113,14 @@ public class TSAClient
         }
         catch (TSPException e)
         {
+            LOG.error(String.format("nonce: %08X", nonce));
+            LOG.error("request: " + Hex.getString(request.getEncoded()));
+            if (response != null)
+            {
+                LOG.error("response status: " + response.getStatus() + " " + response.getStatusString());
+                LOG.error("response tst: " + response.getTimeStampToken());
+            }
+            LOG.error("response: " + Hex.getString(tsaResponse));
             throw new IOException(e);
         }
 
