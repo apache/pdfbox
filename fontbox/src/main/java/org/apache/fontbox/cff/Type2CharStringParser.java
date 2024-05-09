@@ -24,6 +24,7 @@ import org.apache.fontbox.cff.CharStringCommand.Type2KeyWord;
 
 /**
  * This class represents a converter for a mapping into a Type2-sequence.
+ * 
  * @author Villu Ruusmann
  */
 public class Type2CharStringParser
@@ -62,13 +63,13 @@ public class Type2CharStringParser
         return glyphData.sequence;
     }
 
-    private void parseSequence(byte[] bytes, byte[][] globalSubrIndex,
-            byte[][] localSubrIndex, GlyphData glyphData)
-            throws IOException
+    private void parseSequence(byte[] bytes, byte[][] globalSubrIndex, byte[][] localSubrIndex,
+            GlyphData glyphData) throws IOException
     {
         DataInput input = new DataInputByteArray(bytes);
         boolean localSubroutineIndexProvided = localSubrIndex != null && localSubrIndex.length > 0;
-        boolean globalSubroutineIndexProvided = globalSubrIndex != null && globalSubrIndex.length > 0;
+        boolean globalSubroutineIndexProvided = globalSubrIndex != null
+                && globalSubrIndex.length > 0;
 
         while (input.hasRemaining())
         {
@@ -81,14 +82,14 @@ public class Type2CharStringParser
             {
                 processCallSubr(globalSubrIndex, localSubrIndex, globalSubrIndex, glyphData);
             }
-            else if ( (b0 >= 0 && b0 <= 27) || (b0 >= 29 && b0 <= 31))
+            else if ((b0 >= 0 && b0 <= 27) || (b0 >= 29 && b0 <= 31))
             {
                 glyphData.sequence.add(readCommand(b0, input, glyphData));
-            } 
+            }
             else if (b0 == 28 || (b0 >= 32 && b0 <= 255))
             {
                 glyphData.sequence.add(readNumber(b0, input));
-            } 
+            }
             else
             {
                 throw new IllegalArgumentException();
@@ -97,8 +98,7 @@ public class Type2CharStringParser
     }
 
     private void processCallSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex,
-            byte[][] subrIndex, GlyphData glyphData)
-            throws IOException
+            byte[][] subrIndex, GlyphData glyphData) throws IOException
     {
         int subrNumber = calculateSubrNumber(
                 (Integer) glyphData.sequence.remove(glyphData.sequence.size() - 1),
@@ -167,17 +167,17 @@ public class Type2CharStringParser
         if (b0 == 28)
         {
             return (int) input.readShort();
-        } 
+        }
         else if (b0 >= 32 && b0 <= 246)
         {
             return b0 - 139;
-        } 
+        }
         else if (b0 >= 247 && b0 <= 250)
         {
             int b1 = input.readUnsignedByte();
 
             return (b0 - 247) * 256 + b1 + 108;
-        } 
+        }
         else if (b0 >= 251 && b0 <= 254)
         {
             int b1 = input.readUnsignedByte();
@@ -190,7 +190,7 @@ public class Type2CharStringParser
             // The lower bytes are representing the digits after the decimal point
             double fraction = input.readUnsignedShort() / 65535d;
             return value + fraction;
-        } 
+        }
         else
         {
             throw new IllegalArgumentException();
@@ -200,7 +200,7 @@ public class Type2CharStringParser
     private int getMaskLength(int hstemCount, int vstemCount)
     {
         int hintCount = hstemCount + vstemCount;
-        int length = hintCount / 8; 
+        int length = hintCount / 8;
         if (hintCount % 8 > 0)
         {
             length++;
