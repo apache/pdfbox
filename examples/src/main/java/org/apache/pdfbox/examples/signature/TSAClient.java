@@ -29,6 +29,7 @@ import java.util.Random;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
@@ -38,6 +39,7 @@ import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampRequestGenerator;
 import org.bouncycastle.tsp.TimeStampResponse;
 import org.bouncycastle.tsp.TimeStampToken;
+import org.bouncycastle.tsp.TimeStampTokenInfo;
 
 /**
  * Time Stamping Authority (TSA) Client [RFC 3161].
@@ -83,8 +85,8 @@ public class TSAClient
         digest.reset();
         byte[] hash = digest.digest(content);
 
-        // 32-bit cryptographic nonce
-        int nonce = RANDOM.nextInt();
+        // 31-bit positive cryptographic nonce
+        int nonce = RANDOM.nextInt(Integer.MAX_VALUE);
 
         // generate TSA request
         TimeStampRequestGenerator tsaGenerator = new TimeStampRequestGenerator();
@@ -93,9 +95,10 @@ public class TSAClient
         TimeStampRequest request = tsaGenerator.generate(oid, hash, BigInteger.valueOf(nonce));
 
         // get TSA response
-        byte[] tsaResponse = getTSAResponse(request.getEncoded());
+        byte[] encodedRequest = request.getEncoded();
+        byte[] tsaResponse = getTSAResponse(encodedRequest);
 
-        TimeStampResponse response;
+        TimeStampResponse response = null;
         try
         {
             response = new TimeStampResponse(tsaResponse);
@@ -103,6 +106,26 @@ public class TSAClient
         }
         catch (TSPException e)
         {
+            // You can visualize the hex with an ASN.1 Decoder, e.g. http://ldh.org/asn1.html
+            LOG.error("request: " + Hex.getString(encodedRequest));
+            if (response != null)
+            {
+                LOG.error("response: " + Hex.getString(tsaResponse));
+                // See https://github.com/bcgit/bc-java/blob/4a10c27a03bddd96cf0a3663564d0851425b27b9/pkix/src/main/java/org/bouncycastle/tsp/TimeStampResponse.java#L159
+                if ("response contains wrong nonce value.".equals(e.getMessage()))
+                {
+                    LOG.error("request nonce: " + request.getNonce().toString(16));
+                    if (response.getTimeStampToken() != null)
+                    {
+                        TimeStampTokenInfo tsi = response.getTimeStampToken().getTimeStampInfo();
+                        if (tsi != null && tsi.getNonce() != null)
+                        {
+                            // the nonce of the "wrong" test response is 0x3d3244ef
+                            LOG.error("response nonce: " + tsi.getNonce().toString(16));
+                        }
+                    }
+                }
+            }
             throw new IOException(e);
         }
 
