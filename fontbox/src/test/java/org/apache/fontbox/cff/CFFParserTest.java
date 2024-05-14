@@ -29,6 +29,9 @@ import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  *
  * @author Petr Slaby
@@ -162,7 +165,7 @@ class CFFParserTest
      * PDFBOX-4038: Test whether BlueValues and other delta encoded lists are read correctly. The
      * test file is from FOP-2432.
      *
-     * @throws IOException 
+     * @throws IOException
      */
     @Test
     void testDeltaLists() throws IOException
@@ -171,34 +174,57 @@ class CFFParserTest
         List<Number> blues = (List<Number>) testCFFType1Font.getPrivateDict().get("BlueValues");
 
         // Expected values found for this font
-        assertNumberList("Blue values are different than expected: " + blues.toString(),                     
+        assertNumberList("Blue values are different than expected: " + blues.toString(),
                 new int[]{-12, 0, 496, 508, 578, 590, 635, 647, 652, 664, 701, 713}, blues);
 
         @SuppressWarnings("unchecked")
         List<Number> otherBlues = (List<Number>) testCFFType1Font.getPrivateDict().get("OtherBlues");
-        assertNumberList("Other blues are different than expected: " + otherBlues.toString(),                     
+        assertNumberList("Other blues are different than expected: " + otherBlues.toString(),
                 new int[]{-196, -184}, otherBlues);
 
         @SuppressWarnings("unchecked")
         List<Number> familyBlues = (List<Number>) testCFFType1Font.getPrivateDict().get("FamilyBlues");
-        assertNumberList("Other blues are different than expected: " + familyBlues.toString(),                     
+        assertNumberList("Other blues are different than expected: " + familyBlues.toString(),
                 new int[]{-12, 0, 486, 498, 574, 586, 638, 650, 656, 668, 712, 724}, familyBlues);
 
         @SuppressWarnings("unchecked")
         List<Number> familyOtherBlues = (List<Number>) testCFFType1Font.getPrivateDict()
                 .get("FamilyOtherBlues");
-        assertNumberList("Other blues are different than expected: " + familyOtherBlues.toString(),                     
+        assertNumberList("Other blues are different than expected: " + familyOtherBlues.toString(),
                 new int[]{-217, -205}, familyOtherBlues);
 
         @SuppressWarnings("unchecked")
         List<Number> stemSnapH = (List<Number>) testCFFType1Font.getPrivateDict().get("StemSnapH");
-        assertNumberList("StemSnapH values are different than expected: " + stemSnapH.toString(),                     
+        assertNumberList("StemSnapH values are different than expected: " + stemSnapH.toString(),
                 new int[]{115}, stemSnapH);
 
         @SuppressWarnings("unchecked")
         List<Number> stemSnapV = (List<Number>) testCFFType1Font.getPrivateDict().get("StemSnapV");
-        assertNumberList("StemSnapV values are different than expected: " + stemSnapV.toString(),                     
+        assertNumberList("StemSnapV values are different than expected: " + stemSnapV.toString(),
                 new int[]{146, 150}, stemSnapV);
+    }
+
+    @Test
+    void testMultiThreadParse() throws InterruptedException
+    {
+        CountDownLatch latch = new CountDownLatch(2);
+        PathRunner pathRunner1 = new PathRunner(latch);
+        PathRunner pathRunner2 = new PathRunner(latch);
+
+        AtomicBoolean wasCalled = new AtomicBoolean(false);
+
+        Thread.UncaughtExceptionHandler handler = (t, e) -> wasCalled.set(true);
+
+        Thread thread1 = new Thread(pathRunner1);
+        thread1.setUncaughtExceptionHandler(handler);
+        Thread thread2 = new Thread(pathRunner2);
+        thread2.setUncaughtExceptionHandler(handler);
+
+        thread1.start();
+        thread2.start();
+
+        latch.await();
+        assertFalse(wasCalled.get());
     }
 
     private static List<CFFFont> readFont(String filename) throws IOException
@@ -226,4 +252,33 @@ class CFFParserTest
         }
     }
 
+    private class PathRunner implements Runnable
+    {
+        private final CountDownLatch latch;
+
+        public PathRunner(CountDownLatch latch)
+        {
+            this.latch = latch;
+        }
+
+        @Override
+        public void run()
+        {
+            try
+            {
+                for (int i = 33; i < 126; i++)
+                {
+                    testCFFType1Font.getPath(Character.toString(i));
+                }
+            }
+            catch (Exception e)
+            {
+                throw new IllegalStateException(e);
+            }
+            finally
+            {
+                latch.countDown();
+            }
+        }
+    }
 }
