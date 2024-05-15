@@ -41,6 +41,11 @@ import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
+import org.verapdf.pdfa.Foundries;
+import org.verapdf.pdfa.PDFAParser;
+import org.verapdf.pdfa.PDFAValidator;
+import org.verapdf.pdfa.flavours.PDFAFlavour;
 
 /**
  *
@@ -126,5 +131,14 @@ class CreatePDFATest
         }
         br.close();
 
+        // https://docs.verapdf.org/develop/
+        VeraGreenfieldFoundryProvider.initialise();
+        PDFAFlavour flavour = PDFAFlavour.fromString("1b");
+        try (PDFAParser parser = Foundries.defaultInstance().createParser(new File(signedPdfaFilename), flavour))
+        {
+            PDFAValidator validator = Foundries.defaultInstance().createValidator(flavour, false);
+            org.verapdf.pdfa.results.ValidationResult veraResult = validator.validate(parser);
+            assertTrue(veraResult.isCompliant());
+        }
     }
 }
