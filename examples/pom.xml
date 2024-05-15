@@ -111,6 +111,12 @@
       <artifactId>log4j-core</artifactId>
       <version>${log4j2.version}</version>
     </dependency>
+    <dependency>
+        <groupId>org.verapdf</groupId>
+        <artifactId>validation-model</artifactId>
+        <version>1.24.2</version>
+        <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
