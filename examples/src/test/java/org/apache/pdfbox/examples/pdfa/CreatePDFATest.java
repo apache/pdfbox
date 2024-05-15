@@ -32,6 +32,11 @@ import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.xml.DomXmpParser;
+import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
+import org.verapdf.pdfa.Foundries;
+import org.verapdf.pdfa.PDFAParser;
+import org.verapdf.pdfa.PDFAValidator;
+import org.verapdf.pdfa.flavours.PDFAFlavour;
 
 /**
  *
@@ -90,6 +95,15 @@ public class CreatePDFATest extends TestCase
         DublinCoreSchema dc = metadata.getDublinCoreSchema();
         assertEquals(pdfaFilename, dc.getTitle());
         document.close();
+
+        // https://docs.verapdf.org/develop/
+        VeraGreenfieldFoundryProvider.initialise();
+        PDFAFlavour flavour = PDFAFlavour.fromString("1b");
+        PDFAParser parser = Foundries.defaultInstance().createParser(new File(signedPdfaFilename), flavour);
+        PDFAValidator validator = Foundries.defaultInstance().createValidator(flavour, false);
+        org.verapdf.pdfa.results.ValidationResult veraResult = validator.validate(parser);
+        assertTrue(veraResult.isCompliant());
+        parser.close();
     }
     
 }
