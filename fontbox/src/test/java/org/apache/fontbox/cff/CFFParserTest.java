@@ -23,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
@@ -199,6 +201,64 @@ class CFFParserTest
         List<Number> stemSnapV = (List<Number>) testCFFType1Font.getPrivateDict().get("StemSnapV");
         assertNumberList("StemSnapV values are different than expected: " + stemSnapV.toString(),                     
                 new int[]{146, 150}, stemSnapV);
+    }
+
+    /**
+     * PDFBOX-5819: ensure thread safety of Type2CharStringParser when parsing the path of a glyph.
+     * 
+     * @throws InterruptedException
+     */
+    @Test
+    void testMultiThreadParse() throws InterruptedException
+    {
+        CountDownLatch latch = new CountDownLatch(2);
+        PathRunner pathRunner1 = new PathRunner(latch);
+        PathRunner pathRunner2 = new PathRunner(latch);
+
+        AtomicBoolean wasCalled = new AtomicBoolean(false);
+
+        Thread.UncaughtExceptionHandler handler = (t, e) -> wasCalled.set(true);
+
+        Thread thread1 = new Thread(pathRunner1);
+        thread1.setUncaughtExceptionHandler(handler);
+        Thread thread2 = new Thread(pathRunner2);
+        thread2.setUncaughtExceptionHandler(handler);
+
+        thread1.start();
+        thread2.start();
+
+        latch.await();
+        assertFalse(wasCalled.get());
+    }
+
+    private class PathRunner implements Runnable
+    {
+        private final CountDownLatch latch;
+
+        public PathRunner(CountDownLatch latch)
+        {
+            this.latch = latch;
+        }
+
+        @Override
+        public void run()
+        {
+            try
+            {
+                for (char i = 33; i < 126; i++)
+                {
+                    testCFFType1Font.getPath(String.valueOf(i));
+                }
+            }
+            catch (Exception e)
+            {
+                throw new IllegalStateException(e);
+            }
+            finally
+            {
+                latch.countDown();
+            }
+        }
     }
 
     private static List<CFFFont> readFont(String filename) throws IOException
