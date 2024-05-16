@@ -197,7 +197,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
                     if (set.contains(kid))
                     {
                         // PDFBOX-5009, PDFBOX-3953: prevent stack overflow with malformed PDFs
-                        LOG.error("This page tree node has already been visited");
+                        LOG.warn("This page tree node has already been visited");
                         continue;
                     }
                     else if (kid.containsKey(COSName.KIDS))
@@ -215,7 +215,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
                 }
                 else
                 {
-                    LOG.error("Page skipped due to an invalid or missing type {}",
+                    LOG.warn("Page skipped due to an invalid or missing type {}",
                             node.getCOSName(COSName.TYPE));
                 }
             }
