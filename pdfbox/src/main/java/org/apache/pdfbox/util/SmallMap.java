@@ -356,6 +356,8 @@ public class SmallMap<K, V> implements Map<K, V>
         @Override
         public int hashCode()
         {
+            // before thinking of changing this, read
+            // https://stackoverflow.com/a/78491381/535646
             return getKey().hashCode();
         }
         
