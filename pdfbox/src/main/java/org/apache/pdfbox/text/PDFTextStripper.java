@@ -946,15 +946,9 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      * This will set the first page to be extracted by this class.
      *
      * @param startPageValue New value of 1-based startPage property.
-     * 
-     * @throws IllegalArgumentException if the parameter is below 1.
      */
     public void setStartPage(int startPageValue)
     {
-        if (startPageValue <= 0)
-        {
-            throw new IllegalArgumentException("Parameter must be 1-based, but is " + startPageValue);
-        }
         startPage = startPageValue;
     }
 
@@ -974,15 +968,9 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      * This will set the last page to be extracted by this class.
      *
      * @param endPageValue New value of 1-based endPage property.
-     *
-     * @throws IllegalArgumentException if the parameter is below 1.
      */
     public void setEndPage(int endPageValue)
     {
-        if (endPageValue <= 0)
-        {
-            throw new IllegalArgumentException("Parameter must be 1-based, but is " + endPageValue);
-        }
         endPage = endPageValue;
     }
 
