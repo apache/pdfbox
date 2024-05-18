@@ -724,4 +724,23 @@ public class TestTextStripper extends TestCase
         String[] arg = {TestTextStripper.class.getName() };
         junit.textui.TestRunner.main( arg );
     }
+
+    /**
+     * Check that setting start and end pages work properly.
+     *
+     * @throws IOException 
+     */
+    public void testStartEndPage() throws IOException
+    {
+        File pdfFile = new File("src/test/resources/input", "eu-001.pdf");
+        PDDocument doc = PDDocument.load(pdfFile);
+        PDFTextStripper textStripper = new PDFTextStripper();
+        textStripper.setStartPage(2);
+        textStripper.setEndPage(2);
+        String text = textStripper.getText(doc).trim();
+        assertTrue(text.startsWith("Pesticides"));
+        assertTrue(text.endsWith("1 000 10 10"));
+        assertEquals(text.length(), 1440);
+        doc.close();
+    }
 }
