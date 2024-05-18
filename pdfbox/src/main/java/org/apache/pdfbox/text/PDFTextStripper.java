@@ -961,6 +961,10 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      */
     public void setStartPage(int startPageValue)
     {
+        if (startPageValue <= 0)
+        {
+            LOG.warn("Parameter must be 1-based, but is " + startPageValue);
+        }
         startPage = startPageValue;
     }
 
@@ -983,6 +987,10 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      */
     public void setEndPage(int endPageValue)
     {
+        if (endPageValue <= 0)
+        {
+            LOG.warn("Parameter must be 1-based, but is " + endPageValue);
+        }
         endPage = endPageValue;
     }
 
