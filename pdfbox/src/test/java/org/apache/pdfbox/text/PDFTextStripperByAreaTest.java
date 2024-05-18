@@ -29,12 +29,8 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class PDFTextStripperByAreaTest
+class PDFTextStripperByAreaTest
 {
-    public PDFTextStripperByAreaTest()
-    {
-    }
-
     @Test
     void testSomeMethod() throws IOException
     {
