@@ -688,7 +688,7 @@ class TestTextStripper
             String text = textStripper.getText(doc).trim();
             assertTrue(text.startsWith("Pesticides"));
             assertTrue(text.endsWith("1 000 10 10"));
-            assertEquals(text.length(), 1440);
+            assertEquals(1378, text.replaceAll("\r", "").length());
         }
     }
 }
