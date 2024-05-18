@@ -671,4 +671,24 @@ class TestTextStripper
         }
     }
 
+    /**
+     * Check that setting start and end pages work properly.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testStartEndPage() throws IOException
+    {
+        File pdfFile = new File("src/test/resources/input", "eu-001.pdf");
+        try (PDDocument doc = Loader.loadPDF(pdfFile))
+        {
+            PDFTextStripper textStripper = new PDFTextStripper();
+            textStripper.setStartPage(2);
+            textStripper.setEndPage(2);
+            String text = textStripper.getText(doc).trim();
+            assertTrue(text.startsWith("Pesticides"));
+            assertTrue(text.endsWith("1 000 10 10"));
+            assertEquals(text.length(), 1440);
+        }
+    }
 }
