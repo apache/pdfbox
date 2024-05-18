@@ -124,7 +124,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     private String articleStart = "";
     private String articleEnd = "";
 
-    private int currentPageNo = 0;
+    private int currentPageNo = 1;
     private int startPage = 1;
     private int endPage = Integer.MAX_VALUE;
     private PDOutlineItem startBookmark = null;
@@ -204,7 +204,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
     private void resetEngine()
     {
-        currentPageNo = 0;
+        currentPageNo = 1;
         document = null;
         charactersByArticle.clear();
         characterListMapping.clear();
@@ -281,11 +281,11 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
         for (PDPage page : pages)
         {
-            currentPageNo++;
             if (page.hasContents())
             {
                 processPage(page);
             }
+            currentPageNo++;
         }
     }
 
