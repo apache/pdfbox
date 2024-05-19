@@ -67,20 +67,17 @@ public class Type2CharStringParser
             GlyphData glyphData) throws IOException
     {
         DataInput input = new DataInputByteArray(bytes);
-        boolean localSubroutineIndexProvided = localSubrIndex != null && localSubrIndex.length > 0;
-        boolean globalSubroutineIndexProvided = globalSubrIndex != null
-                && globalSubrIndex.length > 0;
 
         while (input.hasRemaining())
         {
             int b0 = input.readUnsignedByte();
-            if (b0 == CALLSUBR && localSubroutineIndexProvided)
+            if (b0 == CALLSUBR)
             {
-                processCallSubr(globalSubrIndex, localSubrIndex, localSubrIndex, glyphData);
+                processCallSubr(globalSubrIndex, localSubrIndex, glyphData);
             }
-            else if (b0 == CALLGSUBR && globalSubroutineIndexProvided)
+            else if (b0 == CALLGSUBR)
             {
-                processCallSubr(globalSubrIndex, localSubrIndex, globalSubrIndex, glyphData);
+                processCallGSubr(globalSubrIndex, localSubrIndex, glyphData);
             }
             else if ((b0 >= 0 && b0 <= 27) || (b0 >= 29 && b0 <= 31))
             {
@@ -97,23 +94,44 @@ public class Type2CharStringParser
         }
     }
 
-    private void processCallSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex,
-            byte[][] subrIndex, GlyphData glyphData) throws IOException
+    private byte[] getSubrBytes(byte[][] subrIndex, GlyphData glyphData)
     {
         int subrNumber = calculateSubrNumber(
                 (Integer) glyphData.sequence.remove(glyphData.sequence.size() - 1),
                 subrIndex.length);
-        if (subrNumber < subrIndex.length)
+        return subrNumber < subrIndex.length ? subrIndex[subrNumber] : null;
+    }
+
+    private void processCallSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex,
+            GlyphData glyphData) throws IOException
+    {
+        if (localSubrIndex != null && localSubrIndex.length > 0)
         {
-            byte[] subrBytes = subrIndex[subrNumber];
-            parseSequence(subrBytes, globalSubrIndex, localSubrIndex, glyphData);
-            Object lastItem = glyphData.sequence.get(glyphData.sequence.size() - 1);
-            if (lastItem instanceof CharStringCommand
-                    && Type2KeyWord.RET == ((CharStringCommand) lastItem).getType2KeyWord())
-            {
-                // remove "return" command
-                glyphData.sequence.remove(glyphData.sequence.size() - 1);
-            }
+            byte[] subrBytes = getSubrBytes(localSubrIndex, glyphData);
+            processSubr(globalSubrIndex, localSubrIndex, subrBytes, glyphData);
+        }
+    }
+
+    private void processCallGSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex,
+            GlyphData glyphData) throws IOException
+    {
+        if (globalSubrIndex != null && globalSubrIndex.length > 0)
+        {
+            byte[] subrBytes = getSubrBytes(globalSubrIndex, glyphData);
+            processSubr(globalSubrIndex, localSubrIndex, subrBytes, glyphData);
+        }
+    }
+
+    private void processSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex, byte[] subrBytes,
+            GlyphData glyphData) throws IOException
+    {
+        parseSequence(subrBytes, globalSubrIndex, localSubrIndex, glyphData);
+        Object lastItem = glyphData.sequence.get(glyphData.sequence.size() - 1);
+        if (lastItem instanceof CharStringCommand
+                && Type2KeyWord.RET == ((CharStringCommand) lastItem).getType2KeyWord())
+        {
+            // remove "return" command
+            glyphData.sequence.remove(glyphData.sequence.size() - 1);
         }
     }
 
@@ -168,33 +186,28 @@ public class Type2CharStringParser
         {
             return (int) input.readShort();
         }
-        else if (b0 >= 32 && b0 <= 246)
+        if (b0 >= 32 && b0 <= 246)
         {
             return b0 - 139;
         }
-        else if (b0 >= 247 && b0 <= 250)
+        if (b0 >= 247 && b0 <= 250)
         {
             int b1 = input.readUnsignedByte();
-
             return (b0 - 247) * 256 + b1 + 108;
         }
-        else if (b0 >= 251 && b0 <= 254)
+        if (b0 >= 251 && b0 <= 254)
         {
             int b1 = input.readUnsignedByte();
-
             return -(b0 - 251) * 256 - b1 - 108;
         }
-        else if (b0 == 255)
+        if (b0 == 255)
         {
             short value = input.readShort();
             // The lower bytes are representing the digits after the decimal point
             double fraction = input.readUnsignedShort() / 65535d;
             return value + fraction;
         }
-        else
-        {
-            throw new IllegalArgumentException();
-        }
+        throw new IllegalArgumentException();
     }
 
     private int getMaskLength(int hstemCount, int vstemCount)
@@ -232,7 +245,7 @@ public class Type2CharStringParser
     {
         final List<Object> sequence = new ArrayList<>();
         int hstemCount = 0;
-        int vstemCount = 0;;
+        int vstemCount = 0;
 
         private GlyphData()
         {
