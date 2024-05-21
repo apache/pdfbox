@@ -16,12 +16,25 @@
  */
 package org.apache.pdfbox.cos;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.LinkedHashMap;
+import org.apache.pdfbox.util.SmallMap;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
 
 class COSDictionaryTest
 {
+    private final String property = "org.apache.pdfbox.cosdictionary.smallmap.threshold";
+
+    @AfterEach
+    void tearDown()
+    {
+        System.clearProperty(property);
+    }
+
     @Test
     void testCOSDictionaryNotEqualsCOSStream()
     {
@@ -34,5 +47,18 @@ class COSDictionaryTest
                 "a COSDictionary shall not be equal to a COSStream with the same dictionary entries");
         assertNotEquals(cosStream, cosDictionary,
                 "a COSStream shall not be equal to a COSDictionary with the same dictionary entries");
+    }
+
+    @Test
+    void testCOSDictionarySystemPropertyDefined()
+    {
+        System.setProperty(property, "0");
+        assertInstanceOf(LinkedHashMap.class, new COSDictionary().items);
+
+        System.clearProperty(property);
+        assertInstanceOf(SmallMap.class, new COSDictionary().items);
+
+        System.setProperty(property, "abc");
+        assertThrows(NumberFormatException.class, COSDictionary::new);
     }
 }

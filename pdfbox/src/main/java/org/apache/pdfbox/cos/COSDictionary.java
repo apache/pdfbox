@@ -50,13 +50,14 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     private static final Logger LOG = LogManager.getLogger(COSDictionary.class);
 
+    private static final String SYSPROP_SMALLMAP_THRESHOLD = "org.apache.pdfbox.cosdictionary.smallmap.threshold";
     private static final String PATH_SEPARATOR = "/";
     private static final int MAP_THRESHOLD = 1000;
 
     /**
      * The name-value pairs of this dictionary. The pairs are kept in the order they were added to the dictionary.
      */
-    protected Map<COSName, COSBase> items = new SmallMap<>();
+    protected Map<COSName, COSBase> items;
     private final COSUpdateState updateState;
 
     /**
@@ -65,6 +66,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     public COSDictionary()
     {
         updateState = new COSUpdateState(this);
+        items = initMap();
     }
 
     /**
@@ -74,7 +76,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public COSDictionary(COSDictionary dict)
     {
-        updateState = new COSUpdateState(this);
+        this();
         addAll(dict);
     }
 
@@ -1352,6 +1354,17 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             LOG.debug("An exception occurred trying - returning error message instead", e);
             return "COSDictionary{" + e.getMessage() + "}";
         }
+    }
+
+    private Map<COSName, COSBase> initMap() throws NumberFormatException
+    {
+        String property = System.getProperty(SYSPROP_SMALLMAP_THRESHOLD);
+        int threshold = property != null ? Integer.parseInt(property) : MAP_THRESHOLD;
+
+        if (threshold < 1)
+            return new LinkedHashMap<>();
+
+        return new SmallMap<>();
     }
 
     private static String getDictionaryString(COSBase base, List<COSBase> objs) throws IOException
