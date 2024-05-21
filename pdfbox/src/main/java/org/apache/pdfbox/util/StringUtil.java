@@ -17,11 +17,13 @@
 package org.apache.pdfbox.util;
 
 import java.util.Arrays;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public final class StringUtil
 {
     public static final Pattern PATTERN_SPACE = Pattern.compile("\\s");
+    public static final Predicate<String> PREDICATE_SPACE = PATTERN_SPACE.asPredicate();
 
     public static String[] splitOnSpace(String s)
     {
