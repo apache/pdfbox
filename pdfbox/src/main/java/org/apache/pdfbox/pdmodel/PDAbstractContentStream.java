@@ -1621,7 +1621,11 @@ abstract class PDAbstractContentStream implements Closeable
 
         for (String word : words)
         {
-            if (StringUtil.PATTERN_SPACE.matcher(word).matches())
+            if (word == null)
+            {
+                continue;
+            }
+            if (word.length() == 1 && word.isBlank())
             {
                 out.write(font.encode(word));
             }
