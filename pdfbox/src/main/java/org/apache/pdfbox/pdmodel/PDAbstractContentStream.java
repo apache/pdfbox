@@ -1627,7 +1627,7 @@ abstract class PDAbstractContentStream implements Closeable
             {
                 continue;
             }
-            if (word.length() == 1 && StringUtil.PREDICATE_SPACE.test(word))
+            if (word.length() == 1 && Character.isWhitespace(word.charAt(0)))
             {
                 out.write(font.encode(word));
             }
