@@ -54,7 +54,7 @@ class CreatePDFATest
     private final String outDir = "target/test-output";
 
     @BeforeEach
-    protected void setUp() throws Exception
+    protected void setUp()
     {
         new File(outDir).mkdirs();
     }

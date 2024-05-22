@@ -19,15 +19,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.transform.TransformerException;
 import org.apache.pdfbox.examples.pdmodel.CreatePDFA;
 import org.apache.pdfbox.examples.util.PDFMergerExample;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.verapdf.core.VeraPDFException;
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
 import org.verapdf.pdfa.Foundries;
 import org.verapdf.pdfa.PDFAParser;
@@ -44,13 +47,13 @@ class MergePDFATest
     private final String outDir = "target/test-output";
 
     @BeforeEach
-    protected void setUp() throws Exception
+    protected void setUp()
     {
         new File(outDir).mkdirs();
     }
 
     @Test
-    void testMergePDFA() throws Exception
+    void testMergePDFA() throws IOException, TransformerException, VeraPDFException
     {
         System.out.println("testMergePDFA");
         String pdfaFilename = outDir + "/Source_PDFA.pdf";
