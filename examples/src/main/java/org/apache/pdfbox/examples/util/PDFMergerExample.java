@@ -160,10 +160,8 @@ public class PDFMergerExample
         OutputStream cosXMPStream = null;
         try
         {
-            xmpOutputStream = new ByteArrayOutputStream();
             cosXMPStream = cosStream.createOutputStream();
-            new XmpSerializer().serialize(xmpMetadata, xmpOutputStream, true);
-            cosXMPStream.write(xmpOutputStream.toByteArray());
+            new XmpSerializer().serialize(xmpMetadata, cosXMPStream, true);
             cosStream.setName(COSName.TYPE, "Metadata" );
             cosStream.setName(COSName.SUBTYPE, "XML" );
             return new PDMetadata(cosStream);
