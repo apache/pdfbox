@@ -37,7 +37,9 @@ import java.util.List;
 import javax.xml.transform.TransformerException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 
 /**
  *
@@ -83,7 +85,7 @@ public class PDFMergerExample
             pdfMerger.setDestinationMetadata(xmpMetadata);
 
             LOG.info("Merging " + sources.size() + " source documents into one PDF");
-            pdfMerger.mergeDocuments(IOUtils.createMemoryOnlyStreamCache());
+            pdfMerger.mergeDocuments(IOUtils.createMemoryOnlyStreamCache(), CompressParameters.NO_COMPRESSION);
             LOG.info("PDF merge successful, size = {" + mergedPDFOutputStream.size() + "} bytes");
 
             return new ByteArrayInputStream(mergedPDFOutputStream.toByteArray());
@@ -149,6 +151,8 @@ public class PDFMergerExample
         {
             new XmpSerializer().serialize(xmpMetadata, xmpOutputStream, true);
             cosXMPStream.write(xmpOutputStream.toByteArray());
+            cosStream.setName(COSName.TYPE, "Metadata" );
+            cosStream.setName(COSName.SUBTYPE, "XML" );
             return new PDMetadata(cosStream);
         }
     }
