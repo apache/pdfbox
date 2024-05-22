@@ -35,7 +35,8 @@ public class PDMetadata extends PDStream
 {
 
     /**
-     * This will create a new PDMetadata object.
+     * This will create a new PDMetadata object with the /Type and /Subtype entries for a document
+     * level metadata object.
      *
      * @param document The document that the stream will be part of.
      */
@@ -47,8 +48,9 @@ public class PDMetadata extends PDStream
     }
 
     /**
-     * Constructor.  Reads all data from the input stream and embeds it into the
-     * document, this will close the InputStream.
+     * Constructor. Reads all data from the input stream and embeds it into the document, this will
+     * close the InputStream. The /Type and /Subtype entries for a document level metadata object
+     * will be created.
      *
      * @param doc The document that will hold the stream.
      * @param str The stream parameter.
@@ -62,7 +64,7 @@ public class PDMetadata extends PDStream
     }
 
     /**
-     * Constructor.
+     * Constructor. This will <b>not</b> set up the /Type and /Subtype entries.
      *
      * @param str The stream parameter.
      */
