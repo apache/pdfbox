@@ -20,17 +20,19 @@ import junit.framework.TestCase;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.transform.TransformerException;
 import static junit.framework.TestCase.assertTrue;
 import org.apache.pdfbox.examples.pdmodel.CreatePDFA;
 import org.apache.pdfbox.examples.util.PDFMergerExample;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
+import org.verapdf.core.VeraPDFException;
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
 import org.verapdf.pdfa.Foundries;
 import org.verapdf.pdfa.PDFAParser;
@@ -52,7 +54,7 @@ public class MergePDFATest extends TestCase
         new File(outDir).mkdirs();
     }
 
-    public void testMergePDFA() throws Exception
+    public void testMergePDFA() throws IOException, TransformerException, VeraPDFException
     {
         System.out.println("testMergePDFA");
         String pdfaFilename = outDir + "/Source_PDFA.pdf";
