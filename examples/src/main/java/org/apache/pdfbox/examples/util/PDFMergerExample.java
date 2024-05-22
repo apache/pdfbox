@@ -37,6 +37,7 @@ import java.util.List;
 import javax.xml.transform.TransformerException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 
 /**
@@ -163,6 +164,8 @@ public class PDFMergerExample
             cosXMPStream = cosStream.createOutputStream();
             new XmpSerializer().serialize(xmpMetadata, xmpOutputStream, true);
             cosXMPStream.write(xmpOutputStream.toByteArray());
+            cosStream.setName(COSName.TYPE, "Metadata" );
+            cosStream.setName(COSName.SUBTYPE, "XML" );
             return new PDMetadata(cosStream);
         }
         finally
