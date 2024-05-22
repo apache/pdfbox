@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -63,7 +64,7 @@ public class MetadataValidationProcess extends AbstractProcess
         {
             PDDocument document = ctx.getDocument();
 
-            InputStream is = getXpacket(document);
+            InputStream is = getXpacket(document, ctx);
             DomXmpParser builder = new DomXmpParser();
             XMPMetadata metadata = builder.parse(is);
             is.close();
@@ -254,7 +255,7 @@ public class MetadataValidationProcess extends AbstractProcess
     /**
      * Return the xpacket from the dictionary's stream
      */
-    private static InputStream getXpacket(PDDocument document)
+    private InputStream getXpacket(PDDocument document, PreflightContext ctx)
             throws IOException, XpacketParsingException
     {
         PDDocumentCatalog catalog = document.getDocumentCatalog();
@@ -283,6 +284,19 @@ public class MetadataValidationProcess extends AbstractProcess
                     PreflightConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER,
                     "Filter specified in metadata dictionary");
             throw new XpacketParsingException("Failed while retrieving xpacket", error);
+        }
+        COSDictionary metadataDict = metadata.getCOSObject();
+        String type = metadataDict.getNameAsString(COSName.TYPE);
+        if (!"Metadata".equals(type))
+        {
+            addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
+                    "Missing or wrong /Type key in Metadata stream dictionary"));
+        }
+        String subType = metadataDict.getNameAsString(COSName.SUBTYPE);
+        if (!"XML".equals(subType))
+        {
+            addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
+                    "Missing or wrong /Subtype key in Metadata stream dictionary"));
         }
 
         return metadata.exportXMPMetadata();
