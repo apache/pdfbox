@@ -56,9 +56,10 @@ public class GlyfCompositeDescript extends GlyfDescript
      * 
      * @param bais the stream to be read
      * @param glyphTable the Glyphtable containing all glyphs
+     * @param level current level
      * @throws IOException is thrown if something went wrong
      */
-    GlyfCompositeDescript(TTFDataStream bais, GlyphTable glyphTable) throws IOException
+    GlyfCompositeDescript(TTFDataStream bais, GlyphTable glyphTable, int level) throws IOException
     {
         super((short) -1, bais);
 
@@ -78,7 +79,7 @@ public class GlyfCompositeDescript extends GlyfDescript
         {
             readInstructions(bais, (bais.readUnsignedShort()));
         }
-        initDescriptions();
+        initDescriptions(level);
     }
 
     /**
@@ -293,14 +294,14 @@ public class GlyfCompositeDescript extends GlyfDescript
         return null;
     }
 
-    private void initDescriptions()
+    private void initDescriptions(int level)
     {
         for (GlyfCompositeComp component : components)
         {
             try
             {
                 int index = component.getGlyphIndex();
-                GlyphData glyph = glyphTable.getGlyph(index);
+                GlyphData glyph = glyphTable.getGlyph(index, level);
                 if (glyph != null)
                 {
                     descriptions.put(index, glyph.getDescription());

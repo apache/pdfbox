@@ -40,6 +40,7 @@ public class GlyphTable extends TTFTable
     private int cached = 0;
     
     private HorizontalMetricsTable hmt = null;
+    private MaximumProfileTable maxp = null;
     
     /**
      * Don't even bother to cache huge fonts.
@@ -82,6 +83,8 @@ public class GlyphTable extends TTFTable
         // and then locks TrueTypeFont to read this table, while another thread
         // locks TrueTypeFont and then tries to lock "data"
         hmt = font.getHorizontalMetrics();
+
+        maxp = ttf.getMaximumProfile();
 
         initialized = true;
     }
@@ -139,7 +142,7 @@ public class GlyphTable extends TTFTable
                 {
                     ++cached;
                 }
-                glyphs[gid] = getGlyphData(gid);
+                glyphs[gid] = getGlyphData(gid, 0);
             }
             initialized = true;
             return glyphs;
@@ -161,6 +164,11 @@ public class GlyphTable extends TTFTable
      * @throws IOException if the font cannot be read
      */
     public GlyphData getGlyph(int gid) throws IOException
+    {
+        return getGlyph(gid, 0);
+    }
+
+    GlyphData getGlyph(int gid, int level) throws IOException
     {
         if (gid < 0 || gid >= numGlyphs)
         {
@@ -196,7 +204,7 @@ public class GlyphTable extends TTFTable
 
                 data.seek(getOffset() + offsets[gid]);
 
-                glyph = getGlyphData(gid);
+                glyph = getGlyphData(gid, level);
 
                 // restore
                 data.seek(currentPosition);
@@ -212,11 +220,15 @@ public class GlyphTable extends TTFTable
         }
     }
 
-    private GlyphData getGlyphData(int gid) throws IOException
+    private GlyphData getGlyphData(int gid, int level) throws IOException
     {
+        if (level > maxp.getMaxComponentDepth())
+        {
+            throw new IOException("composite glyph maximum level reached");
+        }
         GlyphData glyph = new GlyphData();
         int leftSideBearing = hmt == null ? 0 : hmt.getLeftSideBearing(gid);
-        glyph.initData(this, data, leftSideBearing);
+        glyph.initData(this, data, leftSideBearing, level);
         // resolve composite glyph
         if (glyph.getDescription().isComposite())
         {
