@@ -22,7 +22,7 @@ import java.io.OutputStream;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
-import java.util.zip.Inflater;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -44,82 +44,23 @@ final class FlateFilter extends Filter
     {
         final COSDictionary decodeParams = getDecodeParams(parameters, index);
 
-        try
+        try (FlateFilterDecoderStream decoderStream = new FlateFilterDecoderStream(encoded))
         {
-            decompress(encoded, Predictor.wrapPredictor(decoded, decodeParams));
+            decoderStream.transferTo(Predictor.wrapPredictor(decoded, decodeParams));
         }
-        catch (DataFormatException e)
+        catch (IOException e)
         {
             // if the stream is corrupt a DataFormatException may occur
-            LOG.error("FlateFilter: stop reading corrupt stream due to a DataFormatException");
-
+            if (e.getCause() instanceof DataFormatException)
+            {
+                LOG.error("FlateFilter: stop reading corrupt stream due to a DataFormatException");
+            }
             // re-throw the exception
-            throw new IOException(e);
+            throw e;
         }
         return new DecodeResult(parameters);
     }
 
-    // Use Inflater instead of InflateInputStream to avoid an EOFException due to a probably
-    // missing Z_STREAM_END, see PDFBOX-1232 for details
-    private void decompress(InputStream in, OutputStream out) throws IOException, DataFormatException 
-    { 
-        byte[] buf = new byte[2048];
-        // skip zlib header
-        in.read();
-        in.read();
-        int read = in.read(buf); 
-        if (read > 0) 
-        { 
-            // use nowrap mode to bypass zlib-header and checksum to avoid a DataFormatException
-            Inflater inflater = new Inflater(true); 
-            inflater.setInput(buf,0,read);
-            byte[] res = new byte[1024];
-            boolean dataWritten = false;
-            try
-            {
-                while (true) 
-                { 
-                    int resRead = 0;
-                    try
-                    {
-                        resRead = inflater.inflate(res);
-                    }
-                    catch(DataFormatException exception)
-                    {
-                        if (dataWritten)
-                        {
-                            // some data could be read -> don't throw an exception
-                            LOG.warn("FlateFilter: premature end of stream due to a DataFormatException");
-                            break;
-                        }
-                        else
-                        {
-                            // nothing could be read -> re-throw exception
-                            throw exception;
-                        }
-                    }
-                    if (resRead != 0) 
-                    { 
-                        out.write(res,0,resRead);
-                        dataWritten = true;
-                        continue; 
-                    } 
-                    if (inflater.finished() || inflater.needsDictionary() || in.available() == 0) 
-                    {
-                        break;
-                    } 
-                    read = in.read(buf); 
-                    inflater.setInput(buf,0,read);
-                }
-            }
-            finally
-            {
-                inflater.end();
-            }
-        }
-        out.flush();
-    }
-    
     @Override
     protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
