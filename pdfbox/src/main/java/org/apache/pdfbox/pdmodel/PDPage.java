@@ -35,9 +35,15 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.filter.DecodeOptions;
+import org.apache.pdfbox.filter.Filter;
+import org.apache.pdfbox.filter.FilterFactory;
+import org.apache.pdfbox.filter.FlateFilterDecoderStream;
 import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.io.NonSeekableRandomAccessReadInputStream;
+import org.apache.pdfbox.io.RandomAccessReadView;
 import org.apache.pdfbox.io.SequenceRandomAccessRead;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -164,6 +170,33 @@ public class PDPage implements COSObjectable, PDContentStream
             return new RandomAccessInputStream(contentsForRandomAccess);
         }
         return new ByteArrayInputStream(new byte[0]);
+    }
+
+    @Override
+    public RandomAccessRead getContentsForStreamParsing() throws IOException
+    {
+        // return a stream based reader if there is just one stream
+        COSStream contentStream = page.getCOSStream(COSName.CONTENTS);
+        if (contentStream != null)
+        {
+            COSBase filter = contentStream.getFilters();
+            // for now only streams using a flate filter are supported
+            if (filter instanceof COSName && ((COSName) filter).equals(COSName.FLATE_DECODE))
+            {
+                try
+                {
+                    FlateFilterDecoderStream decoderStream = new FlateFilterDecoderStream(
+                            contentStream.createRawInputStream());
+                    return new NonSeekableRandomAccessReadInputStream(decoderStream);
+                }
+                catch (IOException exception)
+                {
+                    LOG.warn("skipped malformed content stream");
+                    return new RandomAccessReadBuffer(DELIMITER);
+                }
+            }
+        }
+        return getContentsForRandomAccess();
     }
 
     @Override
