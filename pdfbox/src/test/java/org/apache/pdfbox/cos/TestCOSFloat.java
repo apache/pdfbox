@@ -384,13 +384,18 @@ class TestCOSFloat extends TestCOSNumber
 
         cosFloat = new COSFloat("0.-262");
         assertEquals(new COSFloat("-0.262"), cosFloat);
+        
+        cosFloat = new COSFloat("-0.-262");
+        assertEquals(new COSFloat("-0.262"), cosFloat);
+        
+        cosFloat = new COSFloat("-12.-1");
+        assertEquals(new COSFloat("-12.1"), cosFloat);
     }
 
     @Test
     void testDuplicateMisplacedNegative()
     {
         assertThrows(IOException.class, () -> new COSFloat("0.-26-2"));
-        assertThrows(IOException.class, () -> new COSFloat("-0.-262"));
         assertThrows(IOException.class, () -> new COSFloat("---0.262"));
         assertThrows(IOException.class, () -> new COSFloat("--0.2-62"));
     }
