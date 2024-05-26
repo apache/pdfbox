@@ -88,6 +88,11 @@ public class COSFloat extends COSNumber
                 // PDFBOX-3500 has 0.-262
                 aFloat = "-" + aFloat.replaceFirst("-", "");
             }
+            else if (aFloat.matches("^-\\d+\\.-\\d+"))
+            {
+                // PDFBOX-5829 has -12.-1
+                aFloat = "-" + aFloat.replace("-", "");
+            }
             else
             {
                 throw new IOException("Error expected floating point number actual='" + aFloat + "'", e);
