@@ -99,8 +99,12 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
             if (code >= firstChar && code <= lastChar)
             {
                 String uni = glyphList.toUnicode(name);
-                int charCode = uni.codePointAt(0);
-                int gid = cmapLookup.getGlyphId(charCode);
+                int gid = 0;
+                if (uni != null)
+                {
+                    int charCode = uni.codePointAt(0);
+                    gid = cmapLookup.getGlyphId(charCode);
+                }
                 widths.set(entry.getKey() - firstChar,
                            Math.round(hmtx.getAdvanceWidth(gid) * scaling));
             }
