@@ -49,7 +49,7 @@ public final class FlateFilterDecoderStream extends FilterInputStream
     /**
      * Constructor.
      *
-     * @param is The input stream to actually read from.
+     * @param inputStream The input stream to actually read from.
      */
     public FlateFilterDecoderStream(InputStream inputStream) throws IOException
     {
