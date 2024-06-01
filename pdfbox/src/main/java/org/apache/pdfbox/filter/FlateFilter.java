@@ -40,7 +40,9 @@ final class FlateFilter extends Filter
 
         try (FlateFilterDecoderStream decoderStream = new FlateFilterDecoderStream(encoded))
         {
-            decoderStream.transferTo(Predictor.wrapPredictor(decoded, decodeParams));
+            OutputStream wrapPredictor = Predictor.wrapPredictor(decoded, decodeParams);
+            decoderStream.transferTo(wrapPredictor);
+            wrapPredictor.flush();
         }
         return new DecodeResult(parameters);
     }
