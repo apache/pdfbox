@@ -19,12 +19,8 @@ package org.apache.pdfbox.filter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSDictionary;
 
 /**
@@ -36,8 +32,6 @@ import org.apache.pdfbox.cos.COSDictionary;
  */
 final class FlateFilter extends Filter
 {
-    private static final Logger LOG = LogManager.getLogger(FlateFilter.class);
-
     @Override
     public DecodeResult decode(InputStream encoded, OutputStream decoded,
                                          COSDictionary parameters, int index) throws IOException
@@ -47,16 +41,6 @@ final class FlateFilter extends Filter
         try (FlateFilterDecoderStream decoderStream = new FlateFilterDecoderStream(encoded))
         {
             decoderStream.transferTo(Predictor.wrapPredictor(decoded, decodeParams));
-        }
-        catch (IOException e)
-        {
-            // if the stream is corrupt a DataFormatException may occur
-            if (e.getCause() instanceof DataFormatException)
-            {
-                LOG.error("FlateFilter: stop reading corrupt stream due to a DataFormatException");
-            }
-            // re-throw the exception
-            throw e;
         }
         return new DecodeResult(parameters);
     }
