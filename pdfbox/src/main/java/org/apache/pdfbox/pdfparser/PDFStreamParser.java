@@ -56,7 +56,7 @@ public class PDFStreamParser extends BaseParser
      */
     public PDFStreamParser(PDContentStream pdContentstream) throws IOException
     {
-        super(pdContentstream.getContentsForRandomAccess());
+        super(pdContentstream.getContentsForStreamParsing());
     }
 
     /**

@@ -48,6 +48,20 @@ public interface PDContentStream
     RandomAccessRead getContentsForRandomAccess() throws IOException;
 
     /**
+     * Returns this stream's content, if any.
+     * 
+     * The random access capabilities of the returned instance is supposed to be limited. Peek/rewind operations are
+     * limited to a small range of data and not the whole set of data. Seek operations aren't supported at all.
+     * 
+     * @return A RandomAccessRead or null.
+     * @throws IOException If the content could not be read
+     */
+    default RandomAccessRead getContentsForStreamParsing() throws IOException
+    {
+        return getContentsForRandomAccess();
+    }
+
+    /**
      * Returns this stream's resources, if any.
      * 
      * @return the resources of the content stream or null
