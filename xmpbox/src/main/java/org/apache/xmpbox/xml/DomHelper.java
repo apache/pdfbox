@@ -96,6 +96,11 @@ public final class DomHelper
 
     public static QName getQName(Element element)
     {
+        if (element.getPrefix() == null)
+        {
+            // PDFBOX-5835
+            return new QName(element.getNamespaceURI(), element.getLocalName());
+        }
         return new QName(element.getNamespaceURI(), element.getLocalName(), element.getPrefix());
     }
 
