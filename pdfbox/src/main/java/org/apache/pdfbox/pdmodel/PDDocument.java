@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -152,7 +153,7 @@ public class PDDocument implements Closeable
     private boolean signatureAdded = false;
 
     // cache for the key of all imported indirect objects
-    private final List<COSObjectKey> indirectObjectKeys = new ArrayList<>();
+    private final Collection<COSObjectKey> indirectObjectKeys = new HashSet<>();
 
     /**
      * Creates an empty PDF document.

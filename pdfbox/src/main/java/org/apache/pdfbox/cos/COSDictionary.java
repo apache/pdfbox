@@ -1419,10 +1419,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * 
      * Expert use only. You might run into an endless recursion if choosing a wrong starting point.
      * 
-     * @param indirectObjects a list of already found indirect objects.
+     * @param indirectObjects a collection of already found indirect objects.
      * 
      */
-    public void getIndirectObjectKeys(List<COSObjectKey> indirectObjects)
+    public void getIndirectObjectKeys(Collection<COSObjectKey> indirectObjects)
     {
         if (indirectObjects == null)
         {
