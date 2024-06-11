@@ -34,7 +34,6 @@ import org.apache.logging.log4j.LogManager;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.DateConverter;
-import org.apache.pdfbox.util.SmallMap;
 
 /**
  * This class represents a dictionary where name/value pairs reside.
@@ -51,12 +50,11 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     private static final Logger LOG = LogManager.getLogger(COSDictionary.class);
 
     private static final String PATH_SEPARATOR = "/";
-    private static final int MAP_THRESHOLD = 1000;
 
     /**
      * The name-value pairs of this dictionary. The pairs are kept in the order they were added to the dictionary.
      */
-    protected Map<COSName, COSBase> items = new SmallMap<>();
+    protected Map<COSName, COSBase> items = new LinkedHashMap<>();
     private final COSUpdateState updateState;
 
     /**
@@ -205,10 +203,6 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         else
         {
-            if (items instanceof SmallMap && items.size() >= MAP_THRESHOLD)
-            {
-                items = new LinkedHashMap<>(items);
-            }
             items.put(key, value);
             getUpdateState().update(value);
         }
@@ -1272,10 +1266,6 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public void addAll(COSDictionary dict)
     {
-        if (items instanceof SmallMap && items.size() + dict.items.size() >= MAP_THRESHOLD)
-        {
-            items = new LinkedHashMap<>(items);
-        }
         items.putAll(dict.items);
     }
 
