@@ -25,14 +25,17 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Map implementation with a smallest possible memory usage.
- * It should only be used for maps with small number of items
- * (e.g. &lt;30) since most operations have an O(n) complexity.
- * Thus it should be used in cases with large number of map
+ * Map implementation with a smallest possible memory usage. It should only be used for maps with small number of items
+ * (e.g. &lt;30) since most operations have an O(n) complexity. Thus it should be used in cases with large number of map
  * objects, each having only few items.
  * 
- * <p><code>null</code> is not supported for keys or values.</p>
+ * <p>
+ * <code>null</code> is not supported for keys or values.
+ * </p>
+ * 
+ * @deprecated will be removed in 4.0.0
  */
+@Deprecated
 public class SmallMap<K, V> implements Map<K, V>
 {
     /**
@@ -285,7 +288,7 @@ public class SmallMap<K, V> implements Map<K, V>
             return Collections.emptySet();
         }
         
-        Set<K> keys = new LinkedHashSet<>();
+        Set<K> keys = new LinkedHashSet<>(mapArr.length >> 1);
         for (int kIdx = 0; kIdx < mapArr.length; kIdx+=2)
         {
             keys.add((K)mapArr[kIdx]);
@@ -381,7 +384,7 @@ public class SmallMap<K, V> implements Map<K, V>
             return Collections.emptySet();
         }
         
-        Set<java.util.Map.Entry<K, V>> entries = new LinkedHashSet<>();
+        Set<java.util.Map.Entry<K, V>> entries = new LinkedHashSet<>(mapArr.length >> 1);
         for (int kIdx = 0; kIdx < mapArr.length; kIdx+=2)
         {
             entries.add(new SmallMapEntry(kIdx));
