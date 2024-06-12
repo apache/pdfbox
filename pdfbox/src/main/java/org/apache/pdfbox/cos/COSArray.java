@@ -746,8 +746,23 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      * 
      * @param indirectObjects a list of already found indirect objects.
      * 
+     * @deprecated, use {@link #getIndirectObjectKeys(Collection)} instead
      */
     public void getIndirectObjectKeys(List<COSObjectKey> indirectObjects)
+    {
+        getIndirectObjectKeys((Collection<COSObjectKey>) indirectObjects);
+    }
+
+    /**
+     * Collects all indirect objects numbers within this COSArray and all included dictionaries. It is used to avoid
+     * mixed up object numbers when importing an existing page to another pdf.
+     * 
+     * Expert use only. You might run into an endless recursion if choosing a wrong starting point.
+     * 
+     * @param indirectObjects a collection of already found indirect objects.
+     * 
+     */
+    public void getIndirectObjectKeys(Collection<COSObjectKey> indirectObjects)
     {
         if (indirectObjects == null)
         {
