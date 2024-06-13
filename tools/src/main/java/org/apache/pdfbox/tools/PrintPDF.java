@@ -101,10 +101,13 @@ public final class PrintPDF implements Callable<Integer>
     @Option(names = "-border", description = "print with border.")    
     private boolean border;
 
-    @Option(names = "-dpi", description = "render into intermediate image with specific dpi and then print")
+    @Option(names = "-dpi", description = "render into intermediate image with specific dpi and then print.")
     private int dpi;
 
-    @Option(names = "-noColorOpt", description = "disable color optimizations (useful when printing barcodes)")
+    @Option(names = "-noCenter", description = "align top-left (default: center on page).")
+    private boolean noCenter = false;
+
+    @Option(names = "-noColorOpt", description = "disable color optimizations (useful when printing barcodes).")
     private boolean noColorOpt;
 
     @Option(names = {"-i", "--input"}, description = "the PDF files to print.", required = true)
@@ -219,7 +222,7 @@ public final class PrintPDF implements Callable<Integer>
                 }
             }
 
-            PDFPageable pageable = new PDFPageable(document, orientation, border, dpi);
+            PDFPageable pageable = new PDFPageable(document, orientation, border, dpi, !noCenter);
             pageable.setRenderingHints(renderingHints);
             printJob.setPageable(pageable);
 
