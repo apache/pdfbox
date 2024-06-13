@@ -58,6 +58,7 @@ public final class PrintPDF
     private static final String ORIENTATION = "-orientation";
     private static final String BORDER = "-border";
     private static final String DPI = "-dpi";
+    private static final String NOCENTER = "-noCenter";
     private static final String NOCOLOROPT = "-noColorOpt";
     private static final String DUPLEX = "-duplex";
     private static final String TRAY = "-tray";
@@ -91,6 +92,7 @@ public final class PrintPDF
         Orientation orientation = Orientation.AUTO;
         boolean showPageBorder = false;
         int dpi = 0;
+        boolean noCenter = false;
         Map <String,Orientation> orientationMap = new HashMap<String,Orientation>();
         orientationMap.put("auto", Orientation.AUTO);
         orientationMap.put("landscape", Orientation.LANDSCAPE);
@@ -150,6 +152,10 @@ public final class PrintPDF
             else if (args[i].equals(SILENT))
             {
                 silentPrint = true;
+            }
+            else if (args[i].equals(NOCENTER))
+            {
+                noCenter = true;
             }
             else if (args[i].equals(ORIENTATION))
             {
@@ -276,7 +282,7 @@ public final class PrintPDF
                 }
             }
             
-            PDFPageable pageable = new PDFPageable(document, orientation, showPageBorder, dpi);
+            PDFPageable pageable = new PDFPageable(document, orientation, showPageBorder, dpi, !noCenter);
             pageable.setRenderingHints(renderingHints);
             printJob.setPageable(pageable);
 
@@ -394,6 +400,8 @@ public final class PrintPDF
                 + "  -border                              : Print with border\n"
                 + "  -dpi                                 : Render into intermediate image with\n"
                 + "                                           specific dpi and then print\n"
+                + "  -noCenter                            : align top-left\n"
+                + "                                       :   (default: center on page)\n"
                 + "  -noColorOpt                          : Disable color optimizations\n"
                 + "                                           (useful when printing barcodes)\n"
                 + "  -duplex SIMPLEX|DUPLEX|TUMBLE|DOCUMENT : Print using duplex (default: DOCUMENT)\n"
