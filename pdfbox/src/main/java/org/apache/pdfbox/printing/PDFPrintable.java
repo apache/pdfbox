@@ -29,6 +29,8 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterIOException;
 import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
@@ -43,6 +45,8 @@ import org.apache.pdfbox.rendering.RenderDestination;
  */
 public final class PDFPrintable implements Printable
 {
+    private static final Log LOG = LogFactory.getLog(PDFPrintable.class);
+
     private final PDPageTree pageTree;
     private final PDFRenderer renderer;
     
@@ -233,8 +237,18 @@ public final class PDFPrintable implements Printable
             // center on page
             if (center)
             {
-                graphics2D.translate((imageableWidth - cropBox.getWidth() * scale) / 2,
-                                     (imageableHeight - cropBox.getHeight() * scale) / 2);
+                double dx = (imageableWidth - cropBox.getWidth() * scale) / 2;
+                double dy = (imageableHeight - cropBox.getHeight() * scale) / 2;
+                if (dx >= 0 && dy >= 0)
+                {
+                    graphics2D.translate(dx, dy);
+                }
+                else
+                {
+                    // PDFBOX-3117 and https://lists.apache.org/thread/12s9tc93ofgmjfq1dpqfps9p725l0wwr
+                    LOG.warn("Centering disabled because of negative translation value (" +
+                            dx + "," + dy + ")");
+                }
             }
 
             // rasterize to bitmap (optional)
