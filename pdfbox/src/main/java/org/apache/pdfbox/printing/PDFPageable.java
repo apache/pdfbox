@@ -37,6 +37,7 @@ public final class PDFPageable extends Book
     private final int numberOfPages;
     private final boolean showPageBorder;
     private final float dpi;
+    private final boolean center;
     private final Orientation orientation;
     private boolean subsamplingAllowed = false;
     private RenderingHints renderingHints = null;
@@ -48,7 +49,7 @@ public final class PDFPageable extends Book
      */
     public PDFPageable(PDDocument document)
     {
-        this(document, Orientation.AUTO, false, 0);
+        this(document, Orientation.AUTO, false, 0, true);
     }
     
     /**
@@ -59,12 +60,12 @@ public final class PDFPageable extends Book
      */
     public PDFPageable(PDDocument document, Orientation orientation)
     {
-        this(document, orientation, false, 0);
+        this(document, orientation, false, 0, true);
     }
     
     /**
      * Creates a new PDFPageable with the given page orientation and with optional page borders
-     * shown. The image will be rasterized at the given DPI before being sent to the printer.
+     * shown.
      *
      * @param document the document to print
      * @param orientation page orientation policy
@@ -72,12 +73,13 @@ public final class PDFPageable extends Book
      */
     public PDFPageable(PDDocument document, Orientation orientation, boolean showPageBorder)
     {
-        this(document, orientation, showPageBorder, 0);
+        this(document, orientation, showPageBorder, 0, true);
     }
 
     /**
      * Creates a new PDFPageable with the given page orientation and with optional page borders
-     * shown. The image will be rasterized at the given DPI before being sent to the printer.
+     * shown. The image will be rasterized at the given DPI before being sent to the printer if
+     * non-zero.
      *
      * @param document the document to print
      * @param orientation page orientation policy
@@ -87,10 +89,28 @@ public final class PDFPageable extends Book
     public PDFPageable(PDDocument document, Orientation orientation, boolean showPageBorder,
                        float dpi)
     {
+        this(document, orientation, showPageBorder, dpi, true);
+    }
+
+    /**
+     * Creates a new PDFPageable with the given page orientation and with optional page borders
+     * shown. The image will be rasterized at the given DPI before being sent to the printer if
+     * non-zero, and optionally be centered.
+     *
+     * @param document the document to print
+     * @param orientation page orientation policy
+     * @param showPageBorder true if page borders are to be printed
+     * @param dpi if non-zero then the image will be rasterized at the given DPI
+     * @param center true if the content is to be centered on the page (otherwise top-left).
+     */
+    public PDFPageable(PDDocument document, Orientation orientation, boolean showPageBorder,
+                       float dpi, boolean center)
+    {
         this.document = document;
         this.orientation = orientation;
         this.showPageBorder = showPageBorder;
         this.dpi = dpi;
+        this.center = center;
         numberOfPages = document.getNumberOfPages();
     }
 
@@ -216,7 +236,7 @@ public final class PDFPageable extends Book
         {
             throw new IndexOutOfBoundsException(i + " >= " + numberOfPages);
         }
-        PDFPrintable printable = new PDFPrintable(document, Scaling.ACTUAL_SIZE, showPageBorder, dpi);
+        PDFPrintable printable = new PDFPrintable(document, Scaling.ACTUAL_SIZE, showPageBorder, dpi, center);
         printable.setSubsamplingAllowed(subsamplingAllowed);
         printable.setRenderingHints(renderingHints);
         return printable;
