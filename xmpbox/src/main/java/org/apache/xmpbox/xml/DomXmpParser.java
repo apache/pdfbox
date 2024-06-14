@@ -293,6 +293,7 @@ public class DomXmpParser
         // parse children elements as properties
         for (Element property : properties)
         {
+            nsFinder.push(property);
             String namespace = property.getNamespaceURI();
             PropertyType type = checkPropertyDefinition(xmp, DomHelper.getQName(property));
             // create the container
@@ -310,6 +311,7 @@ public class DomXmpParser
             ComplexPropertyContainer container = schema.getContainer();
             // create property
             createProperty(xmp, property, type, container);
+            nsFinder.pop();
         }
     }
 
@@ -597,6 +599,7 @@ public class DomXmpParser
         }
         // Instantiate abstract structured type with hint from first element
         Element first = elements.get(0);
+        nsFinder.push(first);
         PropertyType ctype = checkPropertyDefinition(xmp, DomHelper.getQName(first));
         if (ctype == null)
         {
@@ -680,6 +683,7 @@ public class DomXmpParser
             }
 
         }
+        nsFinder.pop();
         return ast;
     }
 
