@@ -57,6 +57,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPopup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 
 /**
@@ -774,6 +775,14 @@ public class Splitter
                             link.setAction(null);
                         }
                     }
+                }
+                if (srcDestination instanceof PDNamedDestination)
+                {
+                    srcDestination = sourceDocument.getDocumentCatalog().
+                            findNamedDestinationPage((PDNamedDestination) srcDestination);
+                    // we do not use the named destination anymore because names get modified, e.g.
+                    // 0xAD becomes 0, see file 410609.pdf where the name no longer matches with the
+                    // entry in the new name tree; plus the original solution was 40 additional loc
                 }
                 if (srcDestination instanceof PDPageDestination)
                 {

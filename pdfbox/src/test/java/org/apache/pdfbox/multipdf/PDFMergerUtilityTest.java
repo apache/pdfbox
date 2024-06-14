@@ -54,6 +54,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPopup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationText;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitDestination;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
@@ -1158,6 +1159,49 @@ public class PDFMergerUtilityTest extends TestCase
                 link2.getDestination();
             }
         });
+        doc.close();
+    }
+
+    public void testSplitWithNamedDestinations() throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File(SRCDIR, "PDFBOX-5840-410609.pdf"));
+        Splitter splitter = new Splitter();
+        splitter.setSplitAtPage(6);
+        List<PDDocument> splitResult = splitter.split(doc);
+        assertEquals(1, splitResult.size());
+        List<PDAnnotation> annotations;
+        PDDocument dstDoc = splitResult.get(0);
+        checkForPageOrphans(dstDoc);
+        assertEquals(6, dstDoc.getNumberOfPages());
+        annotations = dstDoc.getPage(0).getAnnotations();
+        assertEquals(5, annotations.size());
+        PDAnnotationLink link1 = (PDAnnotationLink) annotations.get(0);
+        PDAnnotationLink link2 = (PDAnnotationLink) annotations.get(1);
+        PDAnnotationLink link3 = (PDAnnotationLink) annotations.get(2);
+        PDAnnotationLink link4 = (PDAnnotationLink) annotations.get(3);
+        PDAnnotationLink link5 = (PDAnnotationLink) annotations.get(4);
+        PDPageDestination pd1 = 
+                (PDPageDestination) ((PDActionGoTo) link1.getAction()).getDestination();
+        PDPageDestination pd2 = 
+                (PDPageDestination) ((PDActionGoTo) link2.getAction()).getDestination();
+        PDPageDestination pd3 = 
+                (PDPageDestination) ((PDActionGoTo) link3.getAction()).getDestination();
+        PDPageDestination pd4 = 
+                (PDPageDestination) ((PDActionGoTo) link4.getAction()).getDestination();
+        PDPageDestination pd5 = 
+                (PDPageDestination) ((PDActionGoTo) link5.getAction()).getDestination();
+        PDPageTree pageTree = dstDoc.getPages();
+        assertEquals(0, pageTree.indexOf(pd1.getPage()));
+        assertEquals(1, pageTree.indexOf(pd2.getPage()));
+        assertEquals(3, pageTree.indexOf(pd3.getPage()));
+        assertEquals(3, pageTree.indexOf(pd4.getPage()));
+        assertEquals(5, pageTree.indexOf(pd5.getPage()));
+        dstDoc.close();
+        // Check that source document is unchanged
+        annotations = doc.getPage(0).getAnnotations();
+        assertEquals(5, annotations.size());
+        PDAnnotationLink link = (PDAnnotationLink) annotations.get(0);
+        assertTrue(((PDActionGoTo) link.getAction()).getDestination() instanceof PDNamedDestination);
         doc.close();
     }
 }
