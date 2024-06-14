@@ -154,6 +154,10 @@ public class PDOptionalContentProperties implements COSObjectable
         for (COSBase o : ocgs)
         {
             COSDictionary ocg = toDictionary(o);
+            if (ocg == null)
+            {
+                continue;
+            }
             String groupName = ocg.getString(COSName.NAME);
             if (groupName.equals(name))
             {
@@ -273,6 +277,10 @@ public class PDOptionalContentProperties implements COSObjectable
         for (COSBase o : ocgs)
         {
             COSDictionary ocg = toDictionary(o);
+            if (ocg == null)
+            {
+                continue;
+            }
             String name = ocg.getString(COSName.NAME);
             if (groupName.equals(name) && isGroupEnabled(new PDOptionalContentGroup(ocg)))
             {
@@ -333,14 +341,20 @@ public class PDOptionalContentProperties implements COSObjectable
 
     private COSDictionary toDictionary(COSBase o)
     {
+        COSBase base;
         if (o instanceof COSObject)
         {
-            return (COSDictionary)((COSObject)o).getObject();
+            base = ((COSObject) o).getObject();
         }
         else
         {
-            return (COSDictionary)o;
+            base = o;
         }
+        if (base instanceof COSDictionary)
+        {
+            return (COSDictionary) base;
+        }
+        return null;
     }
 
     /**
@@ -358,6 +372,10 @@ public class PDOptionalContentProperties implements COSObjectable
         for (COSBase o : ocgs)
         {
             COSDictionary ocg = toDictionary(o);
+            if (ocg == null)
+            {
+                continue;
+            }
             String name = ocg.getString(COSName.NAME);
             if (groupName.equals(name) && setGroupEnabled(new PDOptionalContentGroup(ocg), enable))
             {
