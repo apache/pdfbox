@@ -50,4 +50,17 @@ class DomXmpParserTest
             Assertions.assertNotNull(xmp);
         }
     }
+
+    @Test
+    void testPDFBox5835() throws IOException, XmpParsingException
+    {
+        try (InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/xml/PDFBOX-5835.xml"))
+        {
+            DomXmpParser dxp = new DomXmpParser();
+            dxp.setStrictParsing(false);
+            XMPMetadata xmp = dxp.parse(fis);
+            Assertions.assertEquals("A", xmp.getPDFAIdentificationSchema().getConformance());
+            Assertions.assertEquals((Integer) 3, xmp.getPDFAIdentificationSchema().getPart());
+        }
+    }
 }
