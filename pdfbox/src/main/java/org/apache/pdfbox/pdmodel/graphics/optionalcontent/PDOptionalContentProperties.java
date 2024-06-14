@@ -191,7 +191,11 @@ public class PDOptionalContentProperties implements COSObjectable
         COSArray ocgs = getOCGs();
         for (COSBase base : ocgs)
         {
-            coll.add(new PDOptionalContentGroup(toDictionary(base)));
+            COSDictionary dict = toDictionary(base);
+            if (dict != null)
+            {
+                coll.add(new PDOptionalContentGroup(dict));
+            }
         }
         return coll;
     }
@@ -234,7 +238,14 @@ public class PDOptionalContentProperties implements COSObjectable
         {
             COSBase obj = ocgs.get(i);
             COSDictionary ocg = toDictionary(obj);
-            groups[i] = ocg.getString(COSName.NAME);
+            if (ocg == null)
+            {
+                groups[i] = "";
+            }
+            else
+            {
+                groups[i] = ocg.getString(COSName.NAME);
+            }
         }
         return groups;
     }
