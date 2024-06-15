@@ -228,6 +228,15 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
                     sb.append("  /S:").append(subtype.getName());
                 }
             }
+
+            if (dict.containsKey(COSName.S))
+            {
+                COSName subtype = dict.getCOSName(COSName.S);
+                if (subtype != null)
+                {
+                    sb.append("  /S:").append(subtype.getName());
+                }
+            }
             return sb.toString();
         }
         else
