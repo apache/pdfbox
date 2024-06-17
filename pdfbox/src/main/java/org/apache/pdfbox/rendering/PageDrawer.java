@@ -1194,11 +1194,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 }
                 else
                 {
-                    while (scaleX < 0.25)
+                    while (scaleX < 0.25 || Math.round(mask.getWidth() * scaleX) < 1)
                     {
                         scaleX *= 2.0;
                     }
-                    while (scaleY < 0.25)
+                    while (scaleY < 0.25 || Math.round(mask.getHeight() * scaleY) < 1)
                     {
                         scaleY *= 2.0;
                     }
