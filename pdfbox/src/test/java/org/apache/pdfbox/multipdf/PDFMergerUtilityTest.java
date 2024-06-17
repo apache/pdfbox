@@ -16,6 +16,7 @@
 package org.apache.pdfbox.multipdf;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -59,6 +60,7 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -1242,6 +1244,14 @@ class PDFMergerUtilityTest
                 assertEquals(3, pageTree.indexOf(pd3.getPage()));
                 assertEquals(3, pageTree.indexOf(pd4.getPage()));
                 assertEquals(5, pageTree.indexOf(pd5.getPage()));
+
+                assertNotNull(dstDoc.getDocumentCatalog().getMetadata());
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                dstDoc.save(baos);
+                PDDocument reloadedDoc = Loader.loadPDF(baos.toByteArray());
+                assertNotNull(reloadedDoc.getDocumentCatalog().getMetadata());
+                reloadedDoc.close();
             }
             // Check that source document is unchanged
             annotations = doc.getPage(0).getAnnotations();
