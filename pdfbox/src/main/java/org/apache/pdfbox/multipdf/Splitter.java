@@ -34,6 +34,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
@@ -678,14 +679,17 @@ public class Splitter
             }
             document.setDocumentInformation(new PDDocumentInformation(destDocumentInformationDictionary));
         }
-        document.getDocumentCatalog().setViewerPreferences(
-                getSourceDocument().getDocumentCatalog().getViewerPreferences());
-        document.getDocumentCatalog().setLanguage(
-                getSourceDocument().getDocumentCatalog().getLanguage());
-        document.getDocumentCatalog().setMarkInfo(
-                getSourceDocument().getDocumentCatalog().getMarkInfo());
-        document.getDocumentCatalog().setMetadata(
-                getSourceDocument().getDocumentCatalog().getMetadata());
+        PDDocumentCatalog destCatalog = document.getDocumentCatalog();
+        PDDocumentCatalog sourceCatalog = getSourceDocument().getDocumentCatalog();
+        destCatalog.setViewerPreferences(sourceCatalog.getViewerPreferences());
+        destCatalog.setLanguage(sourceCatalog.getLanguage());
+        destCatalog.setMarkInfo(sourceCatalog.getMarkInfo());
+        // copy the COS-object itself instead of the PD-object to avoid a malformed result
+        COSObject metaData = sourceCatalog.getCOSObject().getCOSObject(COSName.METADATA);
+        if (metaData != null)
+        {
+            destCatalog.getCOSObject().setItem(COSName.METADATA, metaData);
+        }
         return document;
     }
 
