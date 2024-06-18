@@ -1192,7 +1192,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 {
                     g.drawImage(mask, imageTransform, null);
                 }
-                else
+                else if (scaleX != 0 && scaleY != 0)
                 {
                     while (scaleX < 0.25 || Math.round(mask.getWidth() * scaleX) < 1)
                     {
