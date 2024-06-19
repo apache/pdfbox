@@ -636,6 +636,7 @@ public class CFFParser
         List<Map<String, Object>> privateDictionaries = new LinkedList<Map<String, Object>>();
         List<Map<String, Object>> fontDictionaries = new LinkedList<Map<String, Object>>();
 
+        boolean privateDictPopulated = false;
         for (byte[] bytes : fdIndex)
         {
             CFFDataInput fontDictInput = new CFFDataInput(bytes);
@@ -656,7 +657,7 @@ public class CFFParser
             {
                 // PDFBOX-5843 don't abort here, and don't skip empty bytes entries, because
                 // getLocalSubrIndex() expects subr at a specific index
-                privateDictionaries.add(new HashMap<>());
+                privateDictionaries.add(new HashMap<String, Object>());
                 continue;
             }
 
@@ -666,6 +667,7 @@ public class CFFParser
             DictData privateDict = readDictData(input, privateSize);
 
             // populate private dict
+            privateDictPopulated = true;
             Map<String, Object> privDict = readPrivateDict(privateDict);
             privateDictionaries.add(privDict);
 
@@ -677,8 +679,8 @@ public class CFFParser
                 privDict.put("Subrs", readIndexData(input));
             }
         }
-        
-        if (privateDictionaries.isEmpty())
+
+        if (!privateDictPopulated)
         {
             throw new IOException("Font DICT invalid without \"Private\" entry");
         }
