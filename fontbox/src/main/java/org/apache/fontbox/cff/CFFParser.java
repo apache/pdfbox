@@ -692,6 +692,7 @@ public class CFFParser
         List<Map<String, Object>> privateDictionaries = new LinkedList<>();
         List<Map<String, Object>> fontDictionaries = new LinkedList<>();
 
+        boolean privateDictPopulated = false;
         for (byte[] bytes : fdIndex)
         {
             DataInputByteArray fontDictInput = new DataInputByteArray(bytes);
@@ -721,6 +722,7 @@ public class CFFParser
             DictData privateDict = readDictData(input, privateOffset, privateSize);
 
             // populate private dict
+            privateDictPopulated = true;
             Map<String, Object> privDict = readPrivateDict(privateDict);
             privateDictionaries.add(privDict);
 
@@ -732,8 +734,8 @@ public class CFFParser
                 privDict.put("Subrs", readIndexData(input));
             }
         }
-        
-        if (privateDictionaries.isEmpty())
+
+        if (!privateDictPopulated)
         {
             throw new IOException("Font DICT invalid without \"Private\" entry");
         }
