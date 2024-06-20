@@ -213,7 +213,7 @@ public class TestPDFToImage
             new File(outDir, file.getName() + ".saveerror").delete();
             new File(outDir, file.getName() + ".saveerror").deleteOnExit();
             new FileOutputStream(new File(outDir, file.getName() + ".reloaderror")).close();
-            Loader.loadPDF(tmpFile, (String) null).close();
+            Loader.loadPDF(tmpFile).close();
             new File(outDir, file.getName() + ".reloaderror").delete();
             new File(outDir, file.getName() + ".reloaderror").deleteOnExit();
             tmpFile.delete();
