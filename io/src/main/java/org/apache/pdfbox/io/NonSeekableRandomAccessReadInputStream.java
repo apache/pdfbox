@@ -120,13 +120,10 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
         {
             return -1;
         }
-        if (currentBufferPointer >= bufferBytes[CURRENT])
+        if (currentBufferPointer >= bufferBytes[CURRENT] && !fetch())
         {
-            if (!fetch())
-            {
-                isEOF = true;
-                return -1;
-            }
+            isEOF = true;
+            return -1;
         }
         position++;
         return buffers[CURRENT][currentBufferPointer++] & 0xFF;
