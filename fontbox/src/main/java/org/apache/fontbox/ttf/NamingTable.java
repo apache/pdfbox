@@ -46,7 +46,6 @@ public class NamingTable extends TTFTable
 
     NamingTable()
     {
-        super();
     }
 
     /**
@@ -80,41 +79,55 @@ public class NamingTable extends TTFTable
             }
 
             data.seek(getOffset() + (2L*3)+numberOfNameRecords*2L*6+nr.getStringOffset());
-            int platform = nr.getPlatformId();
-            int encoding = nr.getPlatformEncodingId();
-            Charset charset = StandardCharsets.ISO_8859_1;
-            if (platform == NameRecord.PLATFORM_WINDOWS && (encoding == NameRecord.ENCODING_WINDOWS_SYMBOL || encoding == NameRecord.ENCODING_WINDOWS_UNICODE_BMP))
-            {
-                charset = StandardCharsets.UTF_16;
-            }
-            else if (platform == NameRecord.PLATFORM_UNICODE)
-            {
-                charset = StandardCharsets.UTF_16;
-            }
-            else if (platform == NameRecord.PLATFORM_ISO)
-            {
-                switch (encoding)
-                {
-                    case 0:
-                        charset = StandardCharsets.US_ASCII;
-                        break;
-                    case 1:
-                        //not sure is this is correct??
-                        charset = StandardCharsets.UTF_16BE;
-                        break;
-                    case 2:
-                        charset = StandardCharsets.ISO_8859_1;
-                        break;
-                    default:
-                        break;
-                }
-            }
+            Charset charset = getCharset(nr);
             String string = data.readString(nr.getStringLength(), charset);
             nr.setString(string);
         }
 
-        // build multi-dimensional lookup table
         lookupTable = new HashMap<>(nameRecords.size());
+        fillLookupTable();
+        readInterestingStrings();
+
+        initialized = true;
+    }
+
+    private Charset getCharset(NameRecord nr)
+    {
+        int platform = nr.getPlatformId();
+        int encoding = nr.getPlatformEncodingId();
+        Charset charset = StandardCharsets.ISO_8859_1;
+        if (platform == NameRecord.PLATFORM_WINDOWS && (encoding == NameRecord.ENCODING_WINDOWS_SYMBOL || encoding == NameRecord.ENCODING_WINDOWS_UNICODE_BMP))
+        {
+            charset = StandardCharsets.UTF_16;
+        }
+        else if (platform == NameRecord.PLATFORM_UNICODE)
+        {
+            charset = StandardCharsets.UTF_16;
+        }
+        else if (platform == NameRecord.PLATFORM_ISO)
+        {
+            switch (encoding)
+            {
+                case 0:
+                    charset = StandardCharsets.US_ASCII;
+                    break;
+                case 1:
+                    //not sure is this is correct??
+                    charset = StandardCharsets.UTF_16BE;
+                    break;
+                case 2:
+                    charset = StandardCharsets.ISO_8859_1;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return charset;
+    }
+
+    private void fillLookupTable()
+    {
+        // build multi-dimensional lookup table
         for (NameRecord nr : nameRecords)
         {
             // name id
@@ -126,29 +139,30 @@ public class NamingTable extends TTFTable
             // language id / string
             languageLookup.put(nr.getLanguageId(), nr.getString());
         }
+    }
 
+    private void readInterestingStrings()
+    {
         // extract strings of interest
         fontFamily = getEnglishName(NameRecord.NAME_FONT_FAMILY_NAME);
         fontSubFamily = getEnglishName(NameRecord.NAME_FONT_SUB_FAMILY_NAME);
 
         // extract PostScript name, only these two formats are valid
         psName = getName(NameRecord.NAME_POSTSCRIPT_NAME,
-                         NameRecord.PLATFORM_MACINTOSH,
-                         NameRecord.ENCODING_MACINTOSH_ROMAN,
-                         NameRecord.LANGUAGE_MACINTOSH_ENGLISH);
+                NameRecord.PLATFORM_MACINTOSH,
+                NameRecord.ENCODING_MACINTOSH_ROMAN,
+                NameRecord.LANGUAGE_MACINTOSH_ENGLISH);
         if (psName == null)
         {
             psName = getName(NameRecord.NAME_POSTSCRIPT_NAME,
-                             NameRecord.PLATFORM_WINDOWS,
-                             NameRecord.ENCODING_WINDOWS_UNICODE_BMP,
-                             NameRecord.LANGUAGE_WINDOWS_EN_US);
+                    NameRecord.PLATFORM_WINDOWS,
+                    NameRecord.ENCODING_WINDOWS_UNICODE_BMP,
+                    NameRecord.LANGUAGE_WINDOWS_EN_US);
         }
         if (psName != null)
         {
             psName = psName.trim();
         }
-
-        initialized = true;
     }
 
     /**
