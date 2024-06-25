@@ -37,7 +37,7 @@ class RandomAccessReadDataStream extends TTFDataStream
     /**
      * Constructor.
      *
-     * @param randomAccessRead source to be read from
+     * @param randomAccessRead source to be read from. Caller should close it.
      *
      * @throws IOException If there is a problem reading the source data.
      */
@@ -57,7 +57,7 @@ class RandomAccessReadDataStream extends TTFDataStream
     /**
      * Constructor.
      *
-     * @param inputStream source to be read from
+     * @param inputStream source to be read from. Caller should close it.
      *
      * @throws IOException If there is a problem reading the source data.
      */
