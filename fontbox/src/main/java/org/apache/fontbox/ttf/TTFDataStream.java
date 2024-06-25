@@ -135,7 +135,8 @@ abstract class TTFDataStream implements Closeable
         long byte4 = read();
         if (byte4 < 0)
         {
-            throw new EOFException();
+            throw new EOFException("EOF at " + getCurrentPosition() + 
+                    ", b1: " + byte1 + ", b2: " + byte2 + ", b3: " + byte3 + ", b4: " + byte4);
         }
         return (byte1 << 24) + (byte2 << 16) + (byte3 << 8) + byte4;
     }
@@ -152,7 +153,7 @@ abstract class TTFDataStream implements Closeable
         int b2 = read();
         if ((b1 | b2) < 0)
         {
-            throw new EOFException();
+            throw new EOFException("EOF at " + getCurrentPosition() + ", b1: " + b1 + ", b2: " + b2);
         }
         return (b1 << 8) + b2;
     }
