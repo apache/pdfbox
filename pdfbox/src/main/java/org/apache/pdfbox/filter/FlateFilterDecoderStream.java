@@ -38,7 +38,6 @@ public final class FlateFilterDecoderStream extends FilterInputStream
 
     private boolean isEOF = false;
     private int currentDataIndex = 0;
-    private int bytesRead = 0;
     private int bytesDecoded = 0;
 
     private byte[] buffer = new byte[2048];
@@ -67,12 +66,11 @@ public final class FlateFilterDecoderStream extends FilterInputStream
         {
             isEOF = true;
             bytesDecoded = 0;
-            bytesRead = 0;
             return false;
         }
         if (inflater.needsInput())
         {
-            bytesRead = in.read(buffer);
+            int bytesRead = in.read(buffer);
             if (bytesRead > -1)
             {
                 inflater.setInput(buffer, 0, bytesRead);
@@ -120,12 +118,9 @@ public final class FlateFilterDecoderStream extends FilterInputStream
         {
             return -1;
         }
-        if (currentDataIndex == bytesDecoded)
+        if (currentDataIndex == bytesDecoded && !fetch())
         {
-            if (!fetch())
-            {
-                return -1;
-            }
+            return -1;
         }
         return decodedData[currentDataIndex++] & 0xFF;
     }
