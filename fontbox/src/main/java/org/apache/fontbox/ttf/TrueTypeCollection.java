@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
@@ -46,7 +47,7 @@ public class TrueTypeCollection implements Closeable
      */
     public TrueTypeCollection(File file) throws IOException
     {
-        this(new RandomAccessReadBufferedFile(file));
+        this(new RandomAccessReadBufferedFile(file), true);
     }
 
     /**
@@ -57,18 +58,29 @@ public class TrueTypeCollection implements Closeable
      */
     public TrueTypeCollection(InputStream stream) throws IOException
     {
-        this(new RandomAccessReadBuffer(stream));
+        this(new RandomAccessReadBuffer(stream), false);
     }
 
     /**
      * Creates a new TrueTypeCollection from a RandomAccessRead.
      *
-     * @param randomAccessRead 
+     * @param randomAccessRead
+     * @param closeAfterReading {@code true} to close randomAccessRead
      * @throws IOException If the font could not be parsed.
      */
-    TrueTypeCollection(RandomAccessRead randomAccessRead) throws IOException
+    private TrueTypeCollection(RandomAccessRead randomAccessRead, boolean closeAfterReading) throws IOException
     {
-        this.stream = new RandomAccessReadDataStream(randomAccessRead);
+        try
+        {
+            this.stream = new RandomAccessReadDataStream(randomAccessRead);
+        }
+        finally
+        {
+            if (closeAfterReading)
+            {
+                IOUtils.closeQuietly(randomAccessRead);
+            }
+        }
 
         // TTC header
         String tag = stream.readTag();
