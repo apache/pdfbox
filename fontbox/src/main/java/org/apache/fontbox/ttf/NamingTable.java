@@ -115,9 +115,6 @@ public class NamingTable extends TTFTable
                     //not sure is this is correct??
                     charset = StandardCharsets.UTF_16BE;
                     break;
-                case 2:
-                    charset = StandardCharsets.ISO_8859_1;
-                    break;
                 default:
                     break;
             }
