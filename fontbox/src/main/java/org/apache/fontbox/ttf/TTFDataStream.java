@@ -24,6 +24,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.TimeZone;
+import org.apache.pdfbox.io.RandomAccessRead;
 
 /**
  * An abstract class to read a data stream.
@@ -278,6 +279,17 @@ abstract class TTFDataStream implements Closeable
      * @throws IOException If there is an error reading from the stream.
      */
     public abstract int read(byte[] b, int off, int len) throws IOException;
+
+    /**
+     * Creates a view from current position to {@code pos + length}.
+     * It can be faster than {@code read(length)} if you only need a few bytes.
+     * {@code SubView.close()} should never close {@code TTFDataStream.this}, only itself.
+     *
+     * @return A view or null (caller can use {@link #read} instead). Please close() the result
+     */
+    public RandomAccessRead createSubView(long length) {
+        return null;
+    }
 
     /**
      * Get the current position in the stream.

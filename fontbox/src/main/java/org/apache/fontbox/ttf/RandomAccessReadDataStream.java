@@ -19,9 +19,12 @@ package org.apache.fontbox.ttf;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 
 /**
  * An implementation of the TTFDataStream using RandomAccessRead as source.
@@ -30,6 +33,8 @@ import org.apache.pdfbox.io.RandomAccessRead;
  */
 class RandomAccessReadDataStream extends TTFDataStream
 {
+    private static final Log LOG = LogFactory.getLog(RandomAccessReadDataStream.class);
+
     private final long length;
     private final byte[] data;
     private int currentPosition = 0;
@@ -172,6 +177,20 @@ class RandomAccessReadDataStream extends TTFDataStream
         System.arraycopy(data, currentPosition, b, off, bytesToRead);
         currentPosition += bytesToRead;
         return bytesToRead;
+    }
+
+    @Override
+    public RandomAccessRead createSubView(long length)
+    {
+        try
+        {
+            return new RandomAccessReadBuffer(data).createView(currentPosition, length);
+        }
+        catch (IOException e)
+        {
+            LOG.warn("Could not create a SubView", e);
+            return null;
+        }
     }
 
     /**
