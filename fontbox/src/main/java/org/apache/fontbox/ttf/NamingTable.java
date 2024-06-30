@@ -58,6 +58,21 @@ public class NamingTable extends TTFTable
     @Override
     void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
+        read(ttf, data, false);
+        initialized = true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    void readHeaders(TrueTypeFont ttf, TTFDataStream data, FontHeaders outHeaders) throws IOException
+    {
+        read(ttf, data, true);
+        outHeaders.setName(psName);
+        outHeaders.setFontFamily(fontFamily, fontSubFamily);
+    }
+
+    private void read(TrueTypeFont ttf, TTFDataStream data, boolean onlyHeaders) throws IOException
+    {
         int formatSelector = data.readUnsignedShort();
         int numberOfNameRecords = data.readUnsignedShort();
         int offsetToStartOfStringStorage = data.readUnsignedShort();
@@ -66,7 +81,10 @@ public class NamingTable extends TTFTable
         {
             NameRecord nr = new NameRecord();
             nr.initData(ttf, data);
-            nameRecords.add(nr);
+            if (!onlyHeaders || isUsefulForOnlyHeaders(nr))
+            {
+                nameRecords.add(nr);
+            }
         }
 
         for (NameRecord nr : nameRecords)
@@ -87,8 +105,6 @@ public class NamingTable extends TTFTable
         lookupTable = new HashMap<>(nameRecords.size());
         fillLookupTable();
         readInterestingStrings();
-
-        initialized = true;
     }
 
     private Charset getCharset(NameRecord nr)
@@ -160,6 +176,21 @@ public class NamingTable extends TTFTable
         {
             psName = psName.trim();
         }
+    }
+
+    private static boolean isUsefulForOnlyHeaders(NameRecord nr)
+    {
+        int nameId = nr.getNameId();
+        // see "psName =" and "getEnglishName()"
+        if (nameId == NameRecord.NAME_POSTSCRIPT_NAME
+                || nameId == NameRecord.NAME_FONT_FAMILY_NAME
+                || nameId == NameRecord.NAME_FONT_SUB_FAMILY_NAME)
+        {
+            int languageId = nr.getLanguageId();
+            return languageId == NameRecord.LANGUAGE_UNICODE
+                    || languageId == NameRecord.LANGUAGE_WINDOWS_EN_US;
+        }
+        return false;
     }
 
     /**
