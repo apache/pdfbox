@@ -20,7 +20,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 
 /**
  * An implementation of the TTFDataStream using RandomAccessRead as source.
@@ -29,6 +33,8 @@ import org.apache.pdfbox.io.RandomAccessRead;
  */
 class RandomAccessReadDataStream extends TTFDataStream
 {
+    private static final Logger LOG = LogManager.getLogger(RandomAccessReadDataStream.class);
+
     private final long length;
     private final byte[] data;
     private int currentPosition = 0;
@@ -171,6 +177,20 @@ class RandomAccessReadDataStream extends TTFDataStream
         System.arraycopy(data, currentPosition, b, off, bytesToRead);
         currentPosition += bytesToRead;
         return bytesToRead;
+    }
+
+    @Override
+    public RandomAccessRead createSubView(long length)
+    {
+        try
+        {
+            return new RandomAccessReadBuffer(data).createView(currentPosition, length);
+        }
+        catch (IOException e)
+        {
+            LOG.warn("Could not create a SubView", e);
+            return null;
+        }
     }
 
     /**

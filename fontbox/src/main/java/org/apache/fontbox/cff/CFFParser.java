@@ -29,6 +29,7 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import org.apache.fontbox.ttf.FontHeaders;
 import org.apache.pdfbox.io.RandomAccessRead;
 
 
@@ -65,6 +66,60 @@ public class CFFParser
          * @throws IOException if the data could not be read
          */
         byte[] getBytes() throws IOException;
+    }
+
+    /**
+     * Extract "Registry", "Ordering" and "Supplement" properties from the first CFF subfont.
+     * 
+     * @param randomAccessRead the source to be parsed
+     * @param outHeaders where to put results
+     * @throws IOException If there is an error reading from the stream
+     */
+    public void parseFirstSubFontROS(RandomAccessRead randomAccessRead, FontHeaders outHeaders) throws IOException
+    {
+        // this method is a simplified and merged version of parse(RandomAccessRead) > parse(DataInput) > parseFont(...)
+
+        // start code from parse(RandomAccessRead)
+        randomAccessRead.seek(0);
+        DataInput input = new DataInputRandomAccessRead(randomAccessRead);
+
+        // start code from parse(DataInput)
+        input = skipHeader(input);
+        String[] nameIndex = readStringIndexData(input);
+        if (nameIndex.length == 0)
+        {
+            outHeaders.setError("Name index missing in CFF font");
+            return;
+        }
+        byte[][] topDictIndex = readIndexData(input);
+        if (topDictIndex.length == 0)
+        {
+            outHeaders.setError("Top DICT INDEX missing in CFF font");
+            return;
+        }
+
+        // 'stringIndex' is required by 'parseROS() > readString()'
+        stringIndex = readStringIndexData(input);
+
+        // start code from parseFont(...)
+        DataInputByteArray topDictInput = new DataInputByteArray(topDictIndex[0]);
+        DictData topDict = readDictData(topDictInput);
+
+        DictData.Entry syntheticBaseEntry = topDict.getEntry("SyntheticBase");
+        if (syntheticBaseEntry != null)
+        {
+            outHeaders.setError("Synthetic Fonts are not supported");
+            return;
+        }
+
+        CFFCIDFont cffCIDFont = parseROS(topDict);
+        if (cffCIDFont != null)
+        {
+            outHeaders.setOtfROS(
+                    cffCIDFont.getRegistry(),
+                    cffCIDFont.getOrdering(),
+                    cffCIDFont.getSupplement());
+        }
     }
 
     /**
@@ -106,14 +161,7 @@ public class CFFParser
         return parse(new DataInputRandomAccessRead(randomAccessRead));
     }
 
-    /**
-     * Parse CFF font using a DataInput as input.
-     * 
-     * @param input the source to be parsed
-     * @return the parsed CFF fonts
-     * @throws IOException If there is an error reading from the stream
-     */
-    private List<CFFFont> parse(DataInput input) throws IOException
+    private DataInput skipHeader(DataInput input) throws IOException
     {
         String firstTag = readTagName(input);
         // try to determine which kind of font we have
@@ -133,6 +181,19 @@ public class CFFParser
 
         @SuppressWarnings("unused")
         Header header = readHeader(input);
+        return input;
+    }
+
+    /**
+     * Parse CFF font using a DataInput as input.
+     * 
+     * @param input the source to be parsed
+     * @return the parsed CFF fonts
+     * @throws IOException If there is an error reading from the stream
+     */
+    private List<CFFFont> parse(DataInput input) throws IOException
+    {
+        input = skipHeader(input);
         String[] nameIndex = readStringIndexData(input);
         if (nameIndex.length == 0)
         {
@@ -464,6 +525,28 @@ public class CFFParser
         }
     }
 
+    /**
+     * Extracts Registry, Ordering and Supplement from {@code topDict["ROS"]}.
+     */
+    private CFFCIDFont parseROS(DictData topDict) throws IOException
+    {
+        // determine if this is a Type 1-equivalent font or a CIDFont
+        DictData.Entry rosEntry = topDict.getEntry("ROS");
+        if (rosEntry != null)
+        {
+            if (rosEntry.size() < 3)
+            {
+                throw new IOException("ROS entry must have 3 elements");
+            }
+            CFFCIDFont cffCIDFont = new CFFCIDFont();
+            cffCIDFont.setRegistry(readString(rosEntry.getNumber(0).intValue()));
+            cffCIDFont.setOrdering(readString(rosEntry.getNumber(1).intValue()));
+            cffCIDFont.setSupplement(rosEntry.getNumber(2).intValue());
+            return cffCIDFont;
+        }
+        return null;
+    }
+
     private CFFFont parseFont(DataInput input, String name, byte[] topDictIndex) throws IOException
     {
         // top dict
@@ -479,19 +562,11 @@ public class CFFParser
 
         // determine if this is a Type 1-equivalent font or a CIDFont
         CFFFont font;
-        boolean isCIDFont = topDict.getEntry("ROS") != null;
-        if (isCIDFont)
+        CFFCIDFont cffCIDFont = parseROS(topDict);
+        // determine if this is a Type 1-equivalent font or a CIDFont
+        boolean isCIDFont = cffCIDFont != null;
+        if (cffCIDFont != null)
         {
-            CFFCIDFont cffCIDFont = new CFFCIDFont();
-            DictData.Entry rosEntry = topDict.getEntry("ROS");
-            if (rosEntry == null || rosEntry.size() < 3)
-            {
-                throw new IOException("ROS entry must have 3 elements");
-            }
-            cffCIDFont.setRegistry(readString(rosEntry.getNumber(0).intValue()));
-            cffCIDFont.setOrdering(readString(rosEntry.getNumber(1).intValue()));
-            cffCIDFont.setSupplement(rosEntry.getNumber(2).intValue());
-
             font = cffCIDFont;
         }
         else

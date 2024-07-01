@@ -47,7 +47,7 @@ public class TrueTypeCollection implements Closeable
      */
     public TrueTypeCollection(File file) throws IOException
     {
-        this(new RandomAccessReadBufferedFile(file), true);
+        this(createBufferedDataStream(new RandomAccessReadBufferedFile(file), true));
     }
 
     /**
@@ -58,7 +58,7 @@ public class TrueTypeCollection implements Closeable
      */
     public TrueTypeCollection(InputStream stream) throws IOException
     {
-        this(new RandomAccessReadBuffer(stream), false);
+        this(createBufferedDataStream(new RandomAccessReadBuffer(stream), false));
     }
 
     /**
@@ -66,21 +66,12 @@ public class TrueTypeCollection implements Closeable
      *
      * @param randomAccessRead
      * @param closeAfterReading {@code true} to close randomAccessRead
+     * @param buffered {@code true} to use {@link RandomAccessReadDataStream}, {@code false} to use {@link RandomAccessReadUnbufferedDataStream}
      * @throws IOException If the font could not be parsed.
      */
-    private TrueTypeCollection(RandomAccessRead randomAccessRead, boolean closeAfterReading) throws IOException
+    private TrueTypeCollection(TTFDataStream stream) throws IOException
     {
-        try
-        {
-            this.stream = new RandomAccessReadDataStream(randomAccessRead);
-        }
-        finally
-        {
-            if (closeAfterReading)
-            {
-                IOUtils.closeQuietly(randomAccessRead);
-            }
-        }
+        this.stream = stream;
 
         // TTC header
         String tag = stream.readTag();
@@ -107,12 +98,27 @@ public class TrueTypeCollection implements Closeable
             int ulDsigOffset = stream.readUnsignedShort();
         }
     }
-    
+
+    private static TTFDataStream createBufferedDataStream(RandomAccessRead randomAccessRead, boolean closeAfterReading) throws IOException
+    {
+        try
+        {
+            return new RandomAccessReadDataStream(randomAccessRead);
+        }
+        finally
+        {
+            if (closeAfterReading)
+            {
+                IOUtils.closeQuietly(randomAccessRead);
+            }
+        }
+    }
+
     /**
      * Run the callback for each TT font in the collection.
      * 
      * @param trueTypeFontProcessor the object with the callback method.
-     * @throws IOException if something went wrong when calling the TrueTypeFontProcessor
+     * @throws IOException if something went wrong when parsing any font or calling the TrueTypeFontProcessor
      */
     public void processAllFonts(TrueTypeFontProcessor trueTypeFontProcessor) throws IOException
     {
@@ -122,8 +128,37 @@ public class TrueTypeCollection implements Closeable
             trueTypeFontProcessor.process(font);
         }
     }
-    
+
+    /**
+     * Run the callback for each TT font in the collection.
+     * 
+     * @param trueTypeFontProcessor the object with the callback method.
+     * @throws IOException if something went wrong when parsing any font
+     */
+    public static void processAllFontHeaders(File ttcFile, TrueTypeFontHeadersProcessor trueTypeFontProcessor) throws IOException
+    {
+        try (
+                RandomAccessRead read = new RandomAccessReadBufferedFile(ttcFile);
+                TTFDataStream stream = new RandomAccessReadUnbufferedDataStream(read);
+                TrueTypeCollection ttc = new TrueTypeCollection(stream)
+        )
+        {
+            for (int i = 0; i < ttc.numFonts; i++)
+            {
+                TTFParser parser = ttc.createFontParserAtIndexAndSeek(i);
+                FontHeaders headers = parser.parseTableHeaders(new TTCDataStream(ttc.stream));
+                trueTypeFontProcessor.process(headers);
+            }
+        }
+    }
+
     private TrueTypeFont getFontAtIndex(int idx) throws IOException
+    {
+        TTFParser parser = createFontParserAtIndexAndSeek(idx);
+        return parser.parse(new TTCDataStream(stream));
+    }
+
+    private TTFParser createFontParserAtIndexAndSeek(int idx) throws IOException
     {
         stream.seek(fontOffsets[idx]);
         TTFParser parser;
@@ -136,7 +171,7 @@ public class TrueTypeCollection implements Closeable
             parser = new TTFParser(false);
         }
         stream.seek(fontOffsets[idx]);
-        return parser.parse(new TTCDataStream(stream));
+        return parser;
     }
 
     /**
@@ -167,7 +202,16 @@ public class TrueTypeCollection implements Closeable
     {
         void process(TrueTypeFont ttf) throws IOException;
     }
-    
+
+    /**
+     * Implement the callback method to call {@link TrueTypeCollection#processAllFontHeaders(File, TrueTypeFontHeadersProcessor)}.
+     */
+    @FunctionalInterface
+    public interface TrueTypeFontHeadersProcessor
+    {
+        void process(FontHeaders fontHeaders);
+    }
+
     @Override
     public void close() throws IOException
     {
