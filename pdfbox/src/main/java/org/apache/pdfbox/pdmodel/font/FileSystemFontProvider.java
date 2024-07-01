@@ -208,7 +208,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (IOException e)
             {
-                LOG.warn("Could not load font file: {}", file, e);
+                LOG.warn(() -> "Could not load font file: " + file, e);
             }
             return null;
         }
@@ -282,7 +282,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (IOException e)
             {
-                LOG.warn("Could not load font file: {}", file, e);
+                LOG.warn(() -> "Could not load font file: " + file, e);
             }
             return null;
         }
@@ -297,7 +297,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (IOException e)
             {
-                LOG.warn("Could not load font file: {}", file, e);
+                LOG.warn(() -> "Could not load font file: " + file, e);
             }
             return null;
         }
@@ -604,7 +604,7 @@ final class FileSystemFontProvider extends FontProvider
                                 }
                                 catch (IOException ex)
                                 {
-                                    LOG.debug("Error reading font file " + fontFile.getAbsolutePath(), ex);
+                                    LOG.debug(() -> "Error reading font file " + fontFile.getAbsolutePath(), ex);
                                     newHash = "<err>";
                                 }
                             }
@@ -664,7 +664,7 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
-            LOG.warn("Could not load font file: {}", ttcFile, e);
+            LOG.warn(() -> "Could not load font file: " + ttcFile, e);
             fontInfoList.add(createFSIgnored(ttcFile, FontFormat.TTF, "*skipexception*"));
         }
     }
@@ -694,7 +694,7 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
-            LOG.warn("Could not load font file: {}", ttfFile, e);
+            LOG.warn(() -> "Could not load font file: "+ ttfFile, e);
             fontInfoList.add(createFSIgnored(ttfFile, fontFormat, "*skipexception*"));
         }
     }
@@ -819,7 +819,7 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
-            LOG.warn("Could not load font file: {}", pfbFile, e);
+            LOG.warn(() -> "Could not load font file: " + pfbFile, e);
         }
     }
 
