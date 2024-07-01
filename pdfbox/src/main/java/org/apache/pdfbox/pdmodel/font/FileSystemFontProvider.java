@@ -786,7 +786,7 @@ final class FileSystemFontProvider extends FontProvider
         else
         {
             fontInfoList.add(createFSIgnored(file, FontFormat.TTF, "*skipexception*"));
-            LOG.warn("Could not load font file: {}", file, error);
+            LOG.warn("Could not load font file '{}': {}", file, error);
         }
     }
 
