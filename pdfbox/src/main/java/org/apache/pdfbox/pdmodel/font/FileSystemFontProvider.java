@@ -773,11 +773,8 @@ final class FileSystemFontProvider extends FontProvider
 
                 if (LOG.isTraceEnabled())
                 {
-                    if (name != null)
-                    {
-                        LOG.trace("{}: '{}' / '{}' / '{}'", format.name(), name,
-                                fontHeaders.getFontFamily(), fontHeaders.getFontSubFamily());
-                    }
+                    LOG.trace("{}: '{}' / '{}' / '{}'", format.name(), name,
+                            fontHeaders.getFontFamily(), fontHeaders.getFontSubFamily());
                 }
             }
             else
