@@ -79,7 +79,8 @@ public abstract class BaseParser
         catch (IllegalArgumentException | UnsupportedOperationException e)
         {
             cs = StandardCharsets.ISO_8859_1;
-            LOG.warn("Charset is not supported: {}, falling back to {}", charsetName, cs.name(), e);
+            LOG.warn(() -> "Charset is not supported: " + charsetName + ", falling back to " +
+                    StandardCharsets.ISO_8859_1.name(), e);
         }
         ALTERNATIVE_CHARSET = cs;
     }
@@ -900,7 +901,8 @@ public abstract class BaseParser
         catch (CharacterCodingException e)
         {
             // some malformed PDFs don't use UTF-8 see PDFBOX-3347
-            LOG.debug("Buffer could not be decoded using StandardCharsets.UTF_8 - trying {}", ALTERNATIVE_CHARSET.name(), e);
+            LOG.debug(() -> "Buffer could not be decoded using StandardCharsets.UTF_8 - trying " + 
+                    ALTERNATIVE_CHARSET.name(), e);
             return buffer.toString(ALTERNATIVE_CHARSET);
         }
     }

@@ -126,7 +126,7 @@ public class PDCIDFontType2 extends PDCIDFont
                 catch (IOException e)
                 {
                     fontIsDamaged = true;
-                    LOG.warn("Could not read embedded OTF for font {}", getBaseFont(), e);
+                    LOG.warn(() -> "Could not read embedded OTF for font " + getBaseFont(), e);
                 }
                 if (ttfFont instanceof OpenTypeFont && !((OpenTypeFont) ttfFont).isSupportedOTF())
                 {

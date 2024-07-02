@@ -98,9 +98,10 @@ public class FDFDictionary implements COSObjectable
                         }
                         catch (IOException e)
                         {
-                            LOG.warn(
-                                    "Error parsing ID entry for attribute 'original' [{}]. ID entry ignored.",
-                                    original, e);
+                            LOG.warn(() ->
+                                    "Error parsing ID entry for attribute 'original' [" + 
+                                            original + "]. ID entry ignored.",
+                                    e);
                         }
                         try
                         {
@@ -108,9 +109,10 @@ public class FDFDictionary implements COSObjectable
                         }
                         catch (IOException e)
                         {
-                            LOG.warn(
-                                    "Error parsing ID entry for attribute 'modified' [{}]. ID entry ignored.",
-                                    modified, e);
+                            LOG.warn(() ->
+                                    "Error parsing ID entry for attribute 'modified' [ + " + 
+                                            modified + "]. ID entry ignored.", 
+                                    e);
                         }
                         setID(ids);
                         break;
@@ -129,8 +131,9 @@ public class FDFDictionary implements COSObjectable
                                 }
                                 catch (IOException e)
                                 {
-                                    LOG.warn("Error parsing field entry [{}]. Field ignored.",
-                                            currentNode.getNodeValue(), e);
+                                    LOG.warn(() -> "Error parsing field entry [" + 
+                                            currentNode.getNodeValue() + "]. Field ignored.",
+                                            e);
                                 }
                             }
                         }
@@ -210,9 +213,10 @@ public class FDFDictionary implements COSObjectable
                                 }
                                 catch (IOException e)
                                 {
-                                    LOG.warn(
-                                            "Error parsing annotation information [{}]. Annotation ignored",
-                                            annot.getNodeValue(), e);
+                                    LOG.warn(() ->
+                                            "Error parsing annotation information [" +
+                                            annot.getNodeValue() + "]. Annotation ignored",
+                                            e);
                                 }
                             }
                         }

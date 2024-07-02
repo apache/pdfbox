@@ -474,7 +474,7 @@ public class Type1CharString
         }
         catch (IOException e)
         {
-            LOG.warn("invalid seac character in glyph {} of font {}", glyphName, fontName, e);
+            LOG.warn(() -> "invalid seac character in glyph " + glyphName + " of font " + fontName, e);
         }
         // accent character
         String accentName = StandardEncoding.INSTANCE.getName(achar.intValue());
@@ -496,7 +496,7 @@ public class Type1CharString
         }
         catch (IOException e)
         {
-            LOG.warn("invalid seac character in glyph {} of font {}", glyphName, fontName, e);
+            LOG.warn(() -> "invalid seac character in glyph " + glyphName + " of font " + fontName, e);
         }
     }
 

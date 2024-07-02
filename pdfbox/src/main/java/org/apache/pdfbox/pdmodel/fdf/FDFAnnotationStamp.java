@@ -100,7 +100,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
         catch (XPathExpressionException e)
         {
             // should not happen
-            LOG.error("Error while evaluating XPath expression for appearance: {}", e.getMessage(), e);
+            LOG.error(() -> "Error while evaluating XPath expression for appearance: " + e.getMessage(), e);
             return;
         }
         byte[] decodedAppearanceXML;

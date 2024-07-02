@@ -126,7 +126,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
                 }
                 catch (IOException e)
                 {
-                    LOG.warn("Could not read embedded TTF for font {}", getBaseFont(), e);
+                    LOG.warn(() -> "Could not read embedded TTF for font " + getBaseFont(), e);
                     fontIsDamaged = true;
                     IOUtils.closeQuietly(view);
                 }
