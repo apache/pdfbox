@@ -341,7 +341,7 @@ public final class CertificateVerifier
             }
             catch (IOException | URISyntaxException ex)
             {
-                LOG.warn("{} failure: {}", urlString, ex.getMessage(), ex);
+                LOG.warn(() -> urlString + " failure: " + ex.getMessage(), ex);
             }
             catch (CertificateException ex)
             {

@@ -646,8 +646,8 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
         }
         catch (IOException ex)
         {
-            LOG.error("Failed to decrypt COSString of length {} in object {}: {}",
-                    string.getBytes().length, objNum, ex.getMessage(), ex);
+            LOG.error(() -> "Failed to decrypt COSString of length " + string.getBytes().length +
+                    " in object " + objNum + ": " + ex.getMessage(), ex);
             return string;
         }
     }
