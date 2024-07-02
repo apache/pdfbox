@@ -147,7 +147,7 @@ public class XrefParser
                         }
                         catch (IOException ex)
                         {
-                            LOG.error("Failed to parse /XRefStm at offset {}", streamOffset, ex);
+                            LOG.error("Failed to parse /XRefStm at offset " + streamOffset, ex);
                         }
                     }
                     else

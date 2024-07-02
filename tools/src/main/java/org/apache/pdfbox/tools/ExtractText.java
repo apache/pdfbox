@@ -349,7 +349,7 @@ public final class ExtractText  implements Callable<Integer>
                 {
                     throw ex;
                 }
-                LOG.error("Failed to process page {}", p, ex);
+                LOG.error("Failed to process page " + p, ex);
             }
         }
     }

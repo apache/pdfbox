@@ -299,7 +299,7 @@ public class TestPDFToImage
         {
             new FileOutputStream(new File(outDir, file.getName() + ".cmperror")).close();
             failed = true;
-            LOG.error("Error comparing file output for " + file.getName(), e);
+            LOG.error(() -> "Error comparing file output for " + file.getName(), e);
         }
 
         return !failed;

@@ -110,7 +110,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
                 }
                 catch (IOException e)
                 {
-                    LOG.error("Can't read the embedded Type1C font {}", getName(), e);
+                    LOG.error(() -> "Can't read the embedded Type1C font " + getName(), e);
                     fontIsDamaged = true;
                 }
             }

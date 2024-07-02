@@ -303,7 +303,7 @@ public class CertInformationCollector
         }
         catch (IOException | URISyntaxException | CertificateException e)
         {
-            LOG.error("Error getting alternative issuer certificate from {}", certInfo.issuerUrl,
+            LOG.error(() -> "Error getting alternative issuer certificate from " + certInfo.issuerUrl,
                     e);
         }
     }

@@ -117,7 +117,7 @@ public class RadialShadingContext extends ShadingContext
         }
         catch (NoninvertibleTransformException ex)
         {
-            LOG.error("{}, matrix: {}", ex.getMessage(), matrix, ex);
+            LOG.error(() -> ex.getMessage() + ", matrix: " + matrix, ex);
             rat = new AffineTransform();
         }
 

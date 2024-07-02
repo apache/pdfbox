@@ -165,7 +165,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         }
         catch (IOException ex)
         {
-            LOG.error("Could not read ToUnicode CMap in font {}", getName(), ex);
+            LOG.error(() -> "Could not read ToUnicode CMap in font " + getName(), ex);
         }
         return cmap;
     }

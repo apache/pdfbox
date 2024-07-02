@@ -246,12 +246,12 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
                 }
                 catch (DamagedFontException e)
                 {
-                    LOG.warn("Can't read damaged embedded Type1 font {}", fd.getFontName(), e);
+                    LOG.warn(() -> "Can't read damaged embedded Type1 font " + fd.getFontName(), e);
                     fontIsDamaged = true;
                 }
                 catch (IOException e)
                 {
-                    LOG.error("Can't read the embedded Type1 font {}", fd.getFontName(), e);
+                    LOG.error(() -> "Can't read the embedded Type1 font " + fd.getFontName(), e);
                     fontIsDamaged = true;
                 }
             }

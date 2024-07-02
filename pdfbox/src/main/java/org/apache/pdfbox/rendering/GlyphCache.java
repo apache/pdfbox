@@ -91,7 +91,7 @@ final class GlyphCache
         {
             // todo: escalate this error?
             String fontName = ((PDFontLike) font).getName();
-            LOG.error("Glyph rendering failed for code {} in font {}", code, fontName, e);
+            LOG.error(() -> "Glyph rendering failed for code " + code + " in font " + fontName, e);
             return new GeneralPath();
         }
     }

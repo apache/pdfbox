@@ -178,7 +178,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 catch (IllegalArgumentException ex)
                 {
                     // Adobe Reader displays placeholders instead
-                    LOG.error("line text '{}' can't be shown", annotation.getContents(), ex);
+                    LOG.error(() -> "line text '" + annotation.getContents() + "' can't be shown", ex);
                 }
                 float xOffset = (lineLength - contentLength) / 2;
                 float yOffset;

@@ -645,7 +645,7 @@ public class COSParser extends BaseParser implements ICOSParser
             {
                 if (isLenient)
                 {
-                    LOG.error("object stream {} could not be parsed due to an exception",
+                    LOG.error(() -> "object stream {} could not be parsed due to an exception" +
                             objstmObjNr, ex);
                 }
                 else

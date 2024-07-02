@@ -235,7 +235,7 @@ public final class Hex
                 }
                 catch (NumberFormatException ex)
                 {
-                    LOG.error("Can't parse {}, aborting decode", hexByte, ex);
+                    LOG.error(() -> "Can't parse " + hexByte + ", aborting decode", ex);
                     break;
                 }
                 i += 2;
