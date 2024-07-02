@@ -86,7 +86,7 @@ class SimpleFont extends FontPane
                 }
                 catch (IOException ex)
                 {
-                    LOG.error("Couldn't render code {} ('{}') of font {}", index, glyphName,
+                    LOG.error("Couldn't render code " + index + " ('" + glyphName + "') of font " +
                             font.getName(), ex);
                     glyphs[index][3] = new GeneralPath();
                 }
