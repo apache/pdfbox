@@ -57,6 +57,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPopup;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
@@ -819,6 +820,12 @@ public class Splitter
                         }
                     }
                 }
+            }
+            if (annotationClone instanceof PDAnnotationWidget &&
+                annotationClone.getCOSObject().containsKey(COSName.PARENT))
+            {
+                // remove non-terminal field /Parent reference, because this may lead to orphan pages
+                annotationClone.getCOSObject().removeItem(COSName.PARENT);
             }
             if (annotation.getPage() != null)
             {
