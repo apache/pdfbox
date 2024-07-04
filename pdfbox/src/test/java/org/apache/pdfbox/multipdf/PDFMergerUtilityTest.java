@@ -1114,7 +1114,7 @@ class PDFMergerUtilityTest
                 {
                     PDAnnotationLink link = (PDAnnotationLink) ann;
                     PDActionGoTo action = (PDActionGoTo) link.getAction();
-                    PDPageDestination destination = (PDPageDestination) ((PDActionGoTo) action).getDestination();
+                    PDPageDestination destination = (PDPageDestination) action.getDestination();
                     assertNull(destination.getPage());
                 }
             }
