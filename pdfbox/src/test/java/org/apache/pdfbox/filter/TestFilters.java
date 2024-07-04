@@ -184,7 +184,7 @@ class TestFilters
     {
         assertThrows(IllegalArgumentException.class, () ->
         {
-            Filter.decode(null, new ArrayList(), new COSDictionary(), null, null);
+            Filter.decode(null, new ArrayList<>(), new COSDictionary(), null, null);
         });
     }
 
