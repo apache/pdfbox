@@ -166,8 +166,8 @@ public class PDNumberTreeNode implements COSObjectable
     }
 
     /**
-     * This will return a map of numbers.  The key will be a java.lang.Integer, the value will
-     * depend on where this class is being used.
+     * This will return a map of numbers on this level. The key will be a java.lang.Integer, the
+     * value will depend on where this class is being used.
      *
      * @return A map of COS objects.
      *
