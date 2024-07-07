@@ -390,10 +390,9 @@ public class PDDocument implements Closeable
         }
 
         PDSignatureField signatureField = null;
-        COSBase cosFieldBase = acroForm.getCOSObject().getDictionaryObject(COSName.FIELDS);
-        if (cosFieldBase instanceof COSArray)
+        COSArray fieldArray = acroForm.getCOSObject().getCOSArray(COSName.FIELDS);
+        if (fieldArray != null)
         {
-            COSArray fieldArray = (COSArray) cosFieldBase;
             fieldArray.setNeedToBeUpdated(true);
             signatureField = findSignatureField(acroForm.getFieldIterator(), sigObject);
         }
@@ -627,7 +626,7 @@ public class PDDocument implements Closeable
         //in case of an existing field keep the original rect
         if (existingRectangle == null || existingRectangle.getCOSArray().size() != 4)
         {
-            COSArray rectArray = (COSArray) annotDict.getDictionaryObject(COSName.RECT);
+            COSArray rectArray = annotDict.getCOSArray(COSName.RECT);
             PDRectangle rect = new PDRectangle(rectArray);
             firstWidget.setRectangle(rect);
         }
@@ -644,10 +643,9 @@ public class PDDocument implements Closeable
     private void assignAcroFormDefaultResource(PDAcroForm acroForm, COSDictionary newDict)
     {
         // read and set/update AcroForm default resource dictionary /DR if available
-        COSBase newBase = newDict.getDictionaryObject(COSName.DR);
-        if (newBase instanceof COSDictionary)
+        COSDictionary newDR = newDict.getCOSDictionary(COSName.DR);
+        if (newDR != null)
         {
-            COSDictionary newDR = (COSDictionary) newBase;
             PDResources defaultResources = acroForm.getDefaultResources();
             if (defaultResources == null)
             {
@@ -856,10 +854,10 @@ public class PDDocument implements Closeable
         if (documentCatalog == null)
         {
             COSDictionary trailer = document.getTrailer();
-            COSBase dictionary = trailer.getDictionaryObject(COSName.ROOT);
-            if (dictionary instanceof COSDictionary)
+            COSDictionary dictionary = trailer.getCOSDictionary(COSName.ROOT);
+            if (dictionary != null)
             {
-                documentCatalog = new PDDocumentCatalog(this, (COSDictionary) dictionary);
+                documentCatalog = new PDDocumentCatalog(this, dictionary);
             }
             else
             {
@@ -960,10 +958,10 @@ public class PDDocument implements Closeable
         List<PDSignature> signatures = new ArrayList<PDSignature>();
         for (PDSignatureField field : getSignatureFields())
         {
-            COSBase value = field.getCOSObject().getDictionaryObject(COSName.V);
+            COSDictionary value = field.getCOSObject().getCOSDictionary(COSName.V);
             if (value != null)
             {
-                signatures.add(new PDSignature((COSDictionary)value));
+                signatures.add(new PDSignature(value));
             }
         }
         return signatures;
