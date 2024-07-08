@@ -379,7 +379,7 @@
                     <copy todir="${basedir}/target/${project.version}" flatten="true">
                       <fileset dir="${basedir}/..">
                         <include name="RELEASE-NOTES.txt" />
-                        <include name="release/target/*-src.zip*" />
+                        <include name="target/*-src.zip*" />
                         <include name="fontbox/target/*-${project.version}.jar*" />
                         <include name="pdfbox/target/*-${project.version}.jar*" />
                         <include name="xmpbox/target/*-${project.version}.jar*" />
