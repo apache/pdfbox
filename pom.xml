@@ -377,7 +377,7 @@
                   <target name="prepare-release">
                     <mkdir dir="${basedir}/target/${project.version}" />
                     <copy todir="${basedir}/target/${project.version}" flatten="true">
-                      <fileset dir="${basedir}/..">
+                      <fileset dir="${basedir}">
                         <include name="RELEASE-NOTES.txt" />
                         <include name="target/*-src.zip*" />
                         <include name="fontbox/target/*-${project.version}.jar*" />
