@@ -372,7 +372,7 @@
                 <goals>
                   <goal>run</goal>
                 </goals>
-                <phase>install</phase>
+                <phase>deploy</phase>
                 <configuration>
                   <target name="prepare-release">
                     <mkdir dir="${basedir}/target/${project.version}" />
