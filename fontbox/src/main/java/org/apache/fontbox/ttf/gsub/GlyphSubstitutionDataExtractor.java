@@ -122,6 +122,10 @@ public class GlyphSubstitutionDataExtractor
                 ScriptTable value = scriptList.get(scriptName);
                 if (value != null)
                 {
+                    if (LOG.isDebugEnabled())
+                    {
+                        LOG.debug("Language decided: " + lang + " " + scriptName);
+                    }
                     return new ScriptTableDetails(lang, scriptName, value);
                 }
             }
