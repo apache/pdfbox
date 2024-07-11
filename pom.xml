@@ -43,9 +43,9 @@
   </organization>
 
   <scm>
-    <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/tags/2.0.32</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/tags/2.0.32</developerConnection>
-    <url>https://svn.apache.org/viewvc/pdfbox/tags/2.0.32</url>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/2.0</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/2.0</developerConnection>
+    <url>https://svn.apache.org/viewvc/pdfbox/branches/2.0</url>
   </scm>
 
   <issueManagement>
