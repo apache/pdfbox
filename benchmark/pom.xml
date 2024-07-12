@@ -94,6 +94,7 @@
                                     -->
                                     <artifact>*:*</artifact>
                                     <excludes>
+                                        <exclude>META-INF/maven/plugin.xml</exclude> <!-- MNG-8180 -->
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
