@@ -385,7 +385,7 @@ A release vote template has been generated for you:
               <plugin>
                   <groupId>org.owasp</groupId>
                   <artifactId>dependency-check-maven</artifactId>
-                  <version>10.0.2</version>
+                  <version>10.0.3</version>
                   <configuration>
                       <failBuildOnCVSS>0</failBuildOnCVSS>
                       <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
