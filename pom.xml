@@ -116,9 +116,6 @@
       <plugin>
           <artifactId>maven-release-plugin</artifactId>
           <configuration>
-              <useReleaseProfile>false</useReleaseProfile>
-              <goals>deploy</goals>
-              <arguments>-Papache-release,pedantic</arguments>
               <autoVersionSubmodules>true</autoVersionSubmodules>
           </configuration>
       </plugin>
@@ -317,7 +314,7 @@
               <plugin>
                   <groupId>org.owasp</groupId>
                   <artifactId>dependency-check-maven</artifactId>
-                  <version>10.0.2</version>
+                  <version>10.0.3</version>
                   <configuration>
                       <failBuildOnCVSS>0</failBuildOnCVSS>
                       <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
@@ -348,6 +345,8 @@
         <plugins>
           <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.6</version>
+            <inherited>false</inherited>
             <executions>
               <execution>
                 <goals>
@@ -356,16 +355,9 @@
                 <phase>package</phase>
                 <configuration>
                   <finalName>pdfbox-${project.version}</finalName>
-                  <skipAssembly>false</skipAssembly>
                   <descriptors>
                     <descriptor>assembly.xml</descriptor>
                   </descriptors>
-                </configuration>
-              </execution>
-             <execution>
-                <id>source-release-assembly</id>
-                <configuration>
-                  <skipAssembly>true</skipAssembly>
                 </configuration>
               </execution>
             </executions>
@@ -373,6 +365,7 @@
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
             <version>3.1.0</version>
+            <inherited>false</inherited>
             <executions>
               <execution>
                 <goals>
@@ -380,7 +373,7 @@
                 </goals>
                 <phase>deploy</phase>
                 <configuration>
-                  <target name="prepare-release">
+                  <target>
                     <mkdir dir="${basedir}/target/${project.version}" />
                     <copy todir="${basedir}/target/${project.version}" flatten="true">
                       <fileset dir="${basedir}">
