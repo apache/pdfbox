@@ -17,7 +17,6 @@ Release Contents
 ----------------
 
 Bug
-
 [PDFBOX-5303] - preflight-app fails on Java 11+ with NoClassDefFoundError: javax/activation/DataSource
 [PDFBOX-5784] - AppearanceGeneratorHelper assumes fontscale 1000
 [PDFBOX-5789] - Remove release subproject
@@ -43,16 +42,15 @@ Bug
 [PDFBOX-5848] - Infinite loop after splitting and saving PDF / giant result files
 
 Improvement
-
 [PDFBOX-5807] - JPEGFactory. Reduce logging severity when no image metadata is present
 [PDFBOX-5813] - Add test for surrogate pair character 𩸽
 [PDFBOX-5818] - Update unicode Scripts.txt
 [PDFBOX-5821] - Include a PDFA check with VeraPDF for CreatePDFATest
 [PDFBOX-5837] - Add center constructor parameter to PDFPageable and to pdfbox-app
 [PDFBOX-5840] - When splitting, keep named page destinations that are part of target document(s)
+[PDFBOX-5851] - When this PDF is rendered with the "f" Operator, a black screen appears.
 
 Task
-
 [PDFBOX-5820] - Investigate why we get "response contains wrong nonce value" during build tests
 
 
