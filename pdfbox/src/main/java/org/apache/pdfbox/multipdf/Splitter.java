@@ -686,12 +686,7 @@ public class Splitter
         destCatalog.setViewerPreferences(sourceCatalog.getViewerPreferences());
         destCatalog.setLanguage(sourceCatalog.getLanguage());
         destCatalog.setMarkInfo(sourceCatalog.getMarkInfo());
-        // copy the COS-object itself instead of the PD-object to avoid a malformed result
-        COSObject metaData = sourceCatalog.getCOSObject().getCOSObject(COSName.METADATA);
-        if (metaData != null)
-        {
-            destCatalog.getCOSObject().setItem(COSName.METADATA, metaData);
-        }
+        destCatalog.setMetadata(sourceCatalog.getMetadata());
         return document;
     }
 

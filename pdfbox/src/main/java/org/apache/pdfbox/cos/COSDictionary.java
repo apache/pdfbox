@@ -203,8 +203,18 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         else
         {
-            items.put(key, value);
-            getUpdateState().update(value);
+            if ((value instanceof COSDictionary || value instanceof COSArray) && !value.isDirect()
+                    && value.getKey() != null)
+            {
+                COSObject cosObject = new COSObject(value, value.getKey());
+                items.put(key, cosObject);
+                getUpdateState().update(cosObject);
+            }
+            else
+            {
+                items.put(key, value);
+                getUpdateState().update(value);
+            }
         }
     }
 
