@@ -68,8 +68,19 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void add( COSBase object )
     {
-        objects.add( object );
-        getUpdateState().update(object);
+        // wrap indirect objects
+        if ((object instanceof COSDictionary || object instanceof COSArray) && !object.isDirect()
+                && object.getKey() != null)
+        {
+            COSObject cosObject = new COSObject(object, object.getKey());
+            objects.add(cosObject);
+            getUpdateState().update(cosObject);
+        }
+        else
+        {
+            objects.add(object);
+            getUpdateState().update(object);
+        }
     }
 
     /**
@@ -84,8 +95,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         {
             base = object.getCOSObject();
         }
-        objects.add(base);
-        getUpdateState().update(base);
+        add(base);
     }
 
     /**
@@ -97,8 +107,19 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void add( int i, COSBase object)
     {
-        objects.add( i, object );
-        getUpdateState().update(object);
+        // wrap indirect objects
+        if ((object instanceof COSDictionary || object instanceof COSArray) && !object.isDirect()
+                && object.getKey() != null)
+        {
+            COSObject cosObject = new COSObject(object, object.getKey());
+            objects.add(i, cosObject);
+            getUpdateState().update(cosObject);
+        }
+        else
+        {
+            objects.add(i, object);
+            getUpdateState().update(object);
+        }
     }
 
     /**
@@ -186,8 +207,19 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void set( int index, COSBase object )
     {
-        objects.set( index, object );
-        getUpdateState().update(object);
+        // wrap indirect objects
+        if ((object instanceof COSDictionary || object instanceof COSArray) && !object.isDirect()
+                && object.getKey() != null)
+        {
+            COSObject cosObject = new COSObject(object, object.getKey());
+            objects.set(index, cosObject);
+            getUpdateState().update(cosObject);
+        }
+        else
+        {
+            objects.set(index, object);
+            getUpdateState().update(object);
+        }
     }
 
     /**
@@ -215,8 +247,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         {
             base = object.getCOSObject();
         }
-        objects.set( index, base );
-        getUpdateState().update(base);
+        set( index, base );
     }
 
     /**
