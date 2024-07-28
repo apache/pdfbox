@@ -1719,7 +1719,10 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Provides the document ID.
+     * Provides the document ID. This is not the trailer document ID but the time used to create it.
+     * Use {@link COSDocument#getDocumentID()} for the trailer document ID. Read
+     * <a href="https://issues.apache.org/jira/browse/PDFBOX-1613">PDFBOX-1613</a> for more details
+     * about the purpose.
      *
      * @return the document ID
      */
@@ -1729,8 +1732,11 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Sets the document ID to the given value.
-     * 
+     * Sets the document ID to the given value. This is not the trailer document ID but the time
+     * used to create it. Use {@link COSDocument#getDocumentID()} for the trailer document ID. Read
+     * <a href="https://issues.apache.org/jira/browse/PDFBOX-1613">PDFBOX-1613</a> for more details
+     * about the purpose.
+     *
      * @param docId the new document ID
      */
     public void setDocumentId(Long docId)
