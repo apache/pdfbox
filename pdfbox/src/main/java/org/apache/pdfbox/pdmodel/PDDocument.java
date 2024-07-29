@@ -1376,7 +1376,7 @@ public class PDDocument implements Closeable
 
     /**
      * Sets the document ID to the given value. This is not the trailer document ID but the time
-     * used to create it. Use {@link COSDocument#getDocumentID()} for the trailer document ID. Read
+     * used to create it. Use {@link COSDocument#setDocumentID(COSArray)} for the trailer document ID. Read
      * <a href="https://issues.apache.org/jira/browse/PDFBOX-1613">PDFBOX-1613</a> for more details
      * about the purpose.
      *
