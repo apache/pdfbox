@@ -197,16 +197,6 @@ class JPEGFactoryTest
     @Test
     void testCreateFromImage4BYTE_ABGR() throws IOException
     {
-        // workaround Open JDK bug
-        // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7044758
-        if (System.getProperty("java.runtime.name").equals("OpenJDK Runtime Environment")
-                && (System.getProperty("java.specification.version").equals("1.6")
-                || System.getProperty("java.specification.version").equals("1.7")
-                || System.getProperty("java.specification.version").equals("1.8")))
-        {
-            return;
-        }
-
         PDDocument document = new PDDocument();
         BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
 
@@ -243,16 +233,6 @@ class JPEGFactoryTest
     @Test
     void testCreateFromImageUSHORT_555_RGB() throws IOException
     {
-        // workaround Open JDK bug
-        // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7044758
-        if (System.getProperty("java.runtime.name").equals("OpenJDK Runtime Environment")
-                && (System.getProperty("java.specification.version").equals("1.6")
-                || System.getProperty("java.specification.version").equals("1.7")
-                || System.getProperty("java.specification.version").equals("1.8")))
-        {
-            return;
-        }
-
         PDDocument document = new PDDocument();
         BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
 
