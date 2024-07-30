@@ -37,6 +37,12 @@
       </description>
     <inceptionYear>2002</inceptionYear>
 
+  <scm>
+      <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/benchmark</connection>
+      <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/benchmark</developerConnection>
+      <url>https://svn.apache.org/viewvc/pdfbox/branches/3.0/benchmark</url>
+  </scm>
+
     <dependencies>
         <dependency>
             <groupId>org.openjdk.jmh</groupId>

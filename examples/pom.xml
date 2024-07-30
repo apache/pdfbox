@@ -24,7 +24,7 @@
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
     <version>3.0.3-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>pdfbox-examples</artifactId>
@@ -36,6 +36,12 @@
     This artefact contains examples on how the library can be used.
   </description>
   <inceptionYear>2002</inceptionYear>
+
+  <scm>
+      <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/examples</connection>
+      <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/examples</developerConnection>
+      <url>https://svn.apache.org/viewvc/pdfbox/branches/3.0/examples</url>
+  </scm>
 
   <properties>
     <lucene.version>7.7.2</lucene.version>

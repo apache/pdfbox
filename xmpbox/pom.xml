@@ -28,7 +28,7 @@
 		<groupId>org.apache.pdfbox</groupId>
 		<artifactId>pdfbox-parent</artifactId>
 		<version>3.0.3-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 
 	<dependencies>
@@ -44,6 +44,12 @@
           <version>${commons-logging.version}</version>
         </dependency>
 	</dependencies>
+
+  <scm>
+      <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/xmpbox</connection>
+      <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/xmpbox</developerConnection>
+      <url>https://svn.apache.org/viewvc/pdfbox/branches/3.0/xmpbox</url>
+  </scm>
 
 	<build>
 		<plugins>

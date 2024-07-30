@@ -24,7 +24,7 @@
         <groupId>org.apache.pdfbox</groupId>
         <artifactId>pdfbox-parent</artifactId>
         <version>3.0.3-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>pdfbox</artifactId>
@@ -39,6 +39,12 @@
     <properties>
     	<git.scmJavadocUrl>git:https://git-wip-us.apache.org/repos/asf/pdfbox-docs//content/docs/${project.version}/javadocs</git.scmJavadocUrl>
     </properties>
+
+    <scm>
+	<connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/pdfbox</connection>
+	<developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/pdfbox</developerConnection>
+	<url>https://svn.apache.org/viewvc/pdfbox/branches/3.0/pdfbox</url>
+    </scm>
     
     <dependencies>
         <dependency>

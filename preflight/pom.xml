@@ -27,13 +27,19 @@
 		<groupId>org.apache.pdfbox</groupId>
 		<artifactId>pdfbox-parent</artifactId>
 		<version>3.0.3-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
         
         <!-- enable the Bavaria tests with -Dskip-bavaria=false  -->
         <properties>
             <skip-bavaria>true</skip-bavaria>
         </properties>
+
+  <scm>
+      <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/preflight</connection>
+      <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/preflight</developerConnection>
+      <url>https://svn.apache.org/viewvc/pdfbox/branches/3.0/preflight</url>
+  </scm>
 
 	<build>
 		<plugins>

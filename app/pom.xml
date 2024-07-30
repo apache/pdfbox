@@ -24,12 +24,18 @@
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
     <version>3.0.3-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>pdfbox-app</artifactId>
   <packaging>bundle</packaging>
   <name>Apache PDFBox application</name>
+
+  <scm>
+      <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/app</connection>
+      <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/app</developerConnection>
+      <url>https://svn.apache.org/viewvc/pdfbox/branches/3.0/app</url>
+  </scm>
 
   <dependencies>
     <dependency>

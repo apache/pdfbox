@@ -21,57 +21,22 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.apache</groupId>
-    <artifactId>apache</artifactId>
-    <version>32</version>
-    <relativePath />
+    <groupId>org.apache.pdfbox</groupId>
+    <artifactId>pdfbox-parent</artifactId>
+    <version>3.0.3-SNAPSHOT</version>
+    <relativePath>parent/pom.xml</relativePath>
   </parent>
 
   <groupId>org.apache.pdfbox</groupId>
-  <artifactId>pdfbox-parent</artifactId>
+  <artifactId>pdfbox-reactor</artifactId>
   <packaging>pom</packaging>
   <version>3.0.3-SNAPSHOT</version>
 
-  <name>Apache PDFBox parent</name>
-  <inceptionYear>2002</inceptionYear>
-
-  <organization>
-    <name>The Apache Software Foundation</name>
-    <url>https://pdfbox.apache.org</url>
-  </organization>
-
-  <issueManagement>
-      <system>jira</system>
-      <url>https://issues.apache.org/jira/browse/PDFBOX</url>
-  </issueManagement>
-
-  <scm>
-      <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0</connection>
-      <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0</developerConnection>
-      <url>https://svn.apache.org/viewvc/pdfbox/branches/3.0</url>
-  </scm>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-    <bouncycastle.version>1.78.1</bouncycastle.version>
-    <junit.version>5.10.3</junit.version>
-    <jbig2.version>3.0.4</jbig2.version>
-    <jai.version>1.4.0</jai.version>
-    <commons-io.version>2.16.1</commons-io.version>
-    <commons-logging.version>1.3.3</commons-logging.version>
-    <picocli.version>4.7.6</picocli.version>
-    <log4j2.version>2.22.0</log4j2.version>
-    <!-- This is a default value to avoid problems when running single tests
-          see also https://stackoverflow.com/a/28695766/535646
-          https://maven.apache.org/surefire/maven-surefire-plugin/faq.html#late-property-evaluation
-    -->
-    <surefireArgLine />
-  </properties>
+  <name>Apache PDFBox Reactor</name>
 
 
   <modules>
+    <module>parent</module>
     <module>io</module>
     <module>fontbox</module>
     <module>xmpbox</module>
@@ -85,122 +50,15 @@
     <module>examples</module>
   </modules>
 
+  <scm>
+      <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0</connection>
+      <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0</developerConnection>
+      <url>https://svn.apache.org/viewvc/pdfbox/branches/3.0</url>
+  </scm>
+
   <build>
-    <plugins>
-      <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <configuration>
-              <argLine>@{surefireArgLine}</argLine>
-          </configuration>
-      </plugin>
-      <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <configuration>
-              <showDeprecation>true</showDeprecation>
-              <target>1.8</target>
-              <source>1.8</source>
-              <encoding>UTF-8</encoding>
-          </configuration>
-      </plugin>
-      <plugin>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <configuration>
-              <source>1.8</source>
-              <links>
-                  <link>https://docs.oracle.com/javase/8/docs/api/</link>
-              </links>
-              <encoding>UTF-8</encoding>
-              <notimestamp>true</notimestamp>
-              <locale>en</locale>
-          </configuration>
-      </plugin>
-      <plugin>
-          <artifactId>maven-release-plugin</artifactId>
-          <configuration>
-              <useReleaseProfile>false</useReleaseProfile>
-              <goals>deploy</goals>
-              <arguments>-Papache-release,pedantic</arguments>
-              <autoVersionSubmodules>true</autoVersionSubmodules>
-          </configuration>
-      </plugin>
-      <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <configuration>
-            <archive>
-              <manifest>
-                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-              </manifest>
-            </archive>
-          </configuration>
-      </plugin>
-      <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>animal-sniffer-maven-plugin</artifactId>
-          <version>1.24</version>
-          <executions>
-              <execution>
-                <id>check-java-version</id>
-                <phase>test</phase>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-                <configuration>
-                      <skip>${skipTests}</skip>
-                  <signature>
-                    <groupId>org.codehaus.mojo.signature</groupId>
-                    <artifactId>java18</artifactId>
-                    <version>1.0</version>
-                  </signature>
-                  <ignores>
-                      <ignore>java.lang.invoke.MethodHandle</ignore>
-                  </ignores>
-                </configuration>
-              </execution>
-          </executions>
-          </plugin>
-      <plugin>
-          <groupId>com.googlecode.maven-download-plugin</groupId>
-          <artifactId>download-maven-plugin</artifactId>
-          <version>1.9.0</version>
-          <configuration>
-              <skip>${skipTests}</skip>
-          </configuration>
-      </plugin>
-    </plugins>
     <pluginManagement>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                      <id>attach-sources</id>
-                      <goals>
-                        <goal>jar-no-fork</goal>
-                      </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.5.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules combine.children="append">
-                                <requireMavenVersion>
-                                    <version>3.6.3</version>
-                                </requireMavenVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
@@ -212,103 +70,11 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>5.1.9</version>
-            </plugin>
         </plugins>
     </pluginManagement>
   </build>
 
   <profiles>
-    <profile>
-        <id>default</id>
-        <activation>
-            <activeByDefault>true</activeByDefault>
-        </activation>
-    </profile>
-    <!-- call mvn with -Pjdk9 or call with -Daddmod="...." -->
-    <profile>
-        <id>jdk9</id>
-        <!--
-        allows automatic activation when jdk9 or jdk10 are used
-        https://maven.apache.org/guides/introduction/introduction-to-profiles.html
-        https://maven.apache.org/enforcer/enforcer-rules/versionRanges.html
-        -->
-        <activation>
-            <jdk>[9,10]</jdk>
-        </activation>
-    </profile>
-    <!-- need to specify release version so that if PDFBox is built with
-    &gt; Java 8, it can still be run with e.g. Java 6; PDFBOX-4715 -->
-    <profile>
-        <id>jdkGte9</id>
-        <activation>
-            <jdk>[1.9,)</jdk>
-        </activation>
-        <build>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <release>8</release>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </build>
-    </profile>
-    <profile>
-        <id>jdk11</id>
-        <activation>
-            <jdk>[11,)</jdk>
-        </activation>
-    </profile>
-    <profile>
-        <id>pedantic</id>
-        <build>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <systemPropertyVariables>
-                            <!-- we don't want to DoS the TSA server, thus we test this only in pedantic mode -->
-                            <org.apache.pdfbox.examples.pdmodel.tsa>http://time.certum.pl</org.apache.pdfbox.examples.pdmodel.tsa>
-                        </systemPropertyVariables>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.rat</groupId>
-                    <artifactId>apache-rat-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.owasp</groupId>
-                    <artifactId>dependency-check-maven</artifactId>
-                    <version>10.0.3</version>
-                    <configuration>
-                        <failBuildOnCVSS>0</failBuildOnCVSS>
-                        <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
-                        <skipSystemScope>true</skipSystemScope>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </build>
-    </profile>
     <profile>
       <id>apache-release</id>
       <build>
@@ -344,9 +110,9 @@
                   <target name="prepare-release">
                     <mkdir dir="${basedir}/target/${project.version}" />
                     <copy todir="${basedir}/target/${project.version}" flatten="true">
-                      <fileset dir="${basedir}/..">
+                      <fileset dir="${basedir}">
                         <include name="RELEASE-NOTES.txt" />
-                        <include name="release/target/*-src.zip*" />
+                        <include name="target/*-src.zip*" />
                         <include name="io/target/*-${project.version}.jar*" />
                         <include name="fontbox/target/*-${project.version}.jar*" />
                         <include name="pdfbox/target/*-${project.version}.jar*" />
@@ -419,170 +185,5 @@ A release vote template has been generated for you:
       </build>
     </profile>
   </profiles>
-
-    <!-- Developers listed by PMC Chair, PMC all alphabetical-->
-  <developers>
-      <developer>
-          <id>lehmi</id>
-          <name>Andreas Lehmkühler</name>
-          <roles>
-              <role>PMC Chair</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>adam</id>
-          <name>Adam Nichols</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>blitchfield</id>
-          <name>Ben Litchfield</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>carrier</id>
-          <name>Brian Carrier</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>danielwilson</id>
-          <name>Daniel Wilson</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>gbailleul</id>
-          <name>Guillaume Bailleul</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>hennejg</id>
-          <name>Jörg Henne</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>holdersn</id>
-          <name>Sebastian Holder</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>jahewson</id>
-          <name>John Hewson</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>jeremias</id>
-          <name>Jeremias Maerki</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>kjackson</id>
-          <name>Kevin Jackson</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>koch</id>
-          <name>Johannes Koch</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>koehlecn</id>
-          <name>Carolin Köhler</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>mmayer</id>
-          <name>Matthäus Mayer</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>msahyoun</id>
-          <name>Maruan Sahyoun</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>pkoch</id>
-          <name>Phillipp Koch</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>tallison</id>
-          <name>Tim Allison</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>tchojecki</id>
-          <name>Thomas Chojecki</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>tboehme</id>
-          <name>Timo Boehme</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>tilman</id>
-          <name>Tilman Hausherr</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>vfed</id>
-          <name>Villu Ruusmann</name>
-          <roles>
-              <role>PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>leleueri</id>
-          <name>Eric Leleu</name>
-          <roles>
-              <role>Emeritus PMC Member</role>
-          </roles>
-      </developer>
-      <developer>
-          <id>jukka</id>
-          <name>Jukka Zitting</name>
-          <roles>
-              <role>Emeritus PMC Member</role>
-          </roles>
-      </developer>
-  </developers>
 
 </project>

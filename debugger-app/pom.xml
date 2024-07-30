@@ -24,13 +24,19 @@
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
     <version>3.0.3-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>debugger-app</artifactId>
   <packaging>bundle</packaging>
   <name>Apache PDFBox Debugger application</name>
   <url>https://pdfbox.apache.org/</url>
+
+  <scm>
+      <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/debugger-app</connection>
+      <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/debugger-app</developerConnection>
+      <url>https://svn.apache.org/viewvc/pdfbox/branches/3.0/debugger-app</url>
+  </scm>
 
   <dependencies>
     <dependency>
