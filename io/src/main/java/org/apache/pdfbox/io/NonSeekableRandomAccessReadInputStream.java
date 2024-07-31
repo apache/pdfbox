@@ -194,8 +194,9 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
             // right after refilling the current buffer
             switchBuffers(CURRENT, LAST);
             bufferBytes[CURRENT] = is.read(buffers[CURRENT]);
-            if (bufferBytes[CURRENT] < 0)
+            if (bufferBytes[CURRENT] <= 0)
             {
+                bufferBytes[CURRENT] = -1;
                 return false;
             }
             size += bufferBytes[CURRENT];
