@@ -44,7 +44,6 @@ public final class FlateFilterDecoderStream extends FilterInputStream
     private byte[] decodedData = new byte[4096];
     // use nowrap mode to bypass zlib-header and checksum to avoid a DataFormatException
     private final Inflater inflater = new Inflater(true);
-    private boolean dataDecoded = false;
 
     /**
      * Constructor.
@@ -84,22 +83,13 @@ public final class FlateFilterDecoderStream extends FilterInputStream
         try
         {
             bytesDecoded = inflater.inflate(decodedData);
-            dataDecoded |= bytesDecoded > 0;
         }
         catch (DataFormatException exception)
         {
             isEOF = true;
-            if (dataDecoded)
-            {
-                // some data could be decoded -> don't throw an exception
-                LOG.warn("FlateFilter: premature end of stream due to a DataFormatException");
-                return false;
-            }
-            else
-            {
-                // nothing could be read -> re-throw exception wrapped in an IOException
-                throw new IOException(exception);
-            }
+            // don't throw an exception, use the already read data or an empty stream
+            LOG.warn("FlateFilter: premature end of stream due to a DataFormatException = {}",
+                    exception.getMessage());
         }
         return true;
     }
