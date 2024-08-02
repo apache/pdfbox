@@ -39,6 +39,10 @@ public class SetLineCapStyle extends OperatorProcessor
         {
             throw new MissingOperandException(operator, arguments);
         }
+        if (!checkArrayTypesClass(arguments, COSNumber.class))
+        {
+            return;
+        }
         int lineCapStyle = ((COSNumber)arguments.get( 0 )).intValue();
         context.getGraphicsState().setLineCap( lineCapStyle );
     }

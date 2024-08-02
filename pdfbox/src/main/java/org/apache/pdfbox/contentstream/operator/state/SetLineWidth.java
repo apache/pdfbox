@@ -41,6 +41,10 @@ public class SetLineWidth extends OperatorProcessor
         {
             throw new MissingOperandException(operator, arguments);
         }
+        if (!checkArrayTypesClass(arguments, COSNumber.class))
+        {
+            return;
+        }
         COSNumber width = (COSNumber) arguments.get(0);
         context.getGraphicsState().setLineWidth(width.floatValue());
     }
