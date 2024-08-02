@@ -659,7 +659,12 @@ class AppearanceGeneratorHelper {
      * @throws IOException
      */
     private void insertGeneratedCombAppearance(PDPageContentStream contents, PDAppearanceStream appearanceStream,
-            PDFont font, float fontSize) throws IOException {
+            PDFont font, float fontSize) throws IOException
+    {
+        if (value == null || value.isEmpty())
+        {
+            return;
+        }
         int maxLen = ((PDTextField) field).getMaxLen();
         int quadding = field.getQ();
         int numChars = Math.min(value.length(), maxLen);
