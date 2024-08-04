@@ -284,27 +284,22 @@ public abstract class PDButton extends PDTerminalField
     @Override
     void constructAppearances() throws IOException
     {
-        List<String> exportValues = getExportValues();
-        if (!exportValues.isEmpty())
+        for (PDAnnotationWidget widget : getWidgets())
         {
-            // the value is the index value of the option. So we need to get that
-            // and use it to set the value
-            try
+            PDAppearanceDictionary appearance = widget.getAppearance();
+            if (appearance == null)
             {
-                int optionsIndex = Integer.parseInt(getValue());
-                if (optionsIndex < exportValues.size())
-                {
-                    updateByOption(exportValues.get(optionsIndex));
-                }
-            } catch (NumberFormatException e)
-            {
-                // silently ignore that
-                // and don't update the appearance
+                continue;
             }
-        }
-        else
-        {
-            updateByValue(getValue());
+            PDAppearanceEntry appearanceEntry = appearance.getNormalAppearance();
+            if (appearanceEntry.getCOSObject().containsKey(getCOSObject().getCOSName(COSName.V)))
+            {
+                widget.setAppearanceState(getCOSObject().getCOSName(COSName.V).getName());
+            }
+            else
+            {
+                widget.setAppearanceState(COSName.Off.getName());
+            }
         }
     }  
 
@@ -442,5 +437,4 @@ public abstract class PDButton extends PDTerminalField
             }
         }
     }
-    
 }
