@@ -19,6 +19,7 @@ package org.apache.pdfbox.filter;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -82,15 +83,34 @@ public final class FlateFilterDecoderStream extends FilterInputStream
         }
         try
         {
+            // overwrite formerly read bytes
+            if (bytesDecoded > 0)
+            {
+                Arrays.fill(decodedData, 0, bytesDecoded, (byte) 0);
+            }
             bytesDecoded = inflater.inflate(decodedData);
         }
         catch (DataFormatException exception)
         {
             isEOF = true;
+            // check if some bytes could be read at all
+            int countZeros = 0;
+            for (int i = 0; i < decodedData.length; i++)
+            {
+                if (decodedData[i] == 0)
+                {
+                    countZeros++;
+                }
+                else
+                {
+                    countZeros = 0;
+                }
+            }
+            bytesDecoded = decodedData.length - countZeros;
             // don't throw an exception, use the already read data or an empty stream
             LOG.warn("FlateFilter: premature end of stream due to a DataFormatException = "
                     + exception.getMessage());
-            return false;
+            return bytesDecoded > 0;
         }
         return true;
     }
