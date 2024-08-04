@@ -24,6 +24,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -383,4 +385,48 @@ public class TestRadioButtons
             IOUtils.closeQuietly(testPdf);
         }
     }
+
+    /**
+     * PDFBOX-5831 Numeric value for Opt entry
+     * 
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    @Test
+    public void testPDFBox5831NumericValueForOpt() throws IOException, URISyntaxException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13069137/AU_Erklaerung_final.pdf";
+
+        PDDocument testPdf = null;
+        try
+        {
+            testPdf = PDDocument.load(new URL(sourceUrl).openStream());
+            PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
+            PDRadioButton field = (PDRadioButton) acroForm.getField("Formular1[0].Seite1[0].TF_P[0].Optionsfeldliste[0]");
+
+            field.setValue(0);
+            assertEquals("1", field.getValue());
+            assertEquals(COSName.getPDFName("0"), field.getCOSObject().getDictionaryObject(COSName.V));
+            assertEquals(0, field.getSelectedIndex());
+
+            field.setValue("1");
+            assertEquals("1", field.getValue());
+            assertEquals(COSName.getPDFName("0"), field.getCOSObject().getDictionaryObject(COSName.V));
+            assertEquals(0, field.getSelectedIndex());
+
+            field.setValue(1);
+            assertEquals("2", field.getValue());
+            assertEquals(COSName.getPDFName("1"), field.getCOSObject().getDictionaryObject(COSName.V));
+            assertEquals(1, field.getSelectedIndex());
+
+            field.setValue("2");
+            assertEquals("2", field.getValue());
+            assertEquals(COSName.getPDFName("1"), field.getCOSObject().getDictionaryObject(COSName.V));
+            assertEquals(1, field.getSelectedIndex());
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+    }    
 }
