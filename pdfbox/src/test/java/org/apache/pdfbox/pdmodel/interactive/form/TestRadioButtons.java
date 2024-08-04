@@ -359,4 +359,43 @@ class TestRadioButtons
                     "the index shall be equals with the set value of 4");
         }
     }
+
+    /**
+     * PDFBOX-5831 Numeric value for Opt entry
+     * 
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    @Test
+    void testPDFBox5831NumericValueForOpt() throws IOException, URISyntaxException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13069137/AU_Erklaerung_final.pdf";
+
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        {
+            PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
+            PDRadioButton field = (PDRadioButton) acroForm.getField("Formular1[0].Seite1[0].TF_P[0].Optionsfeldliste[0]");
+
+            field.setValue(0);
+            assertEquals("1", field.getValue());
+            assertEquals(COSName.getPDFName("0"), field.getCOSObject().getDictionaryObject(COSName.V));
+            assertEquals(0, field.getSelectedIndex());
+
+            field.setValue("1");
+            assertEquals("1", field.getValue());
+            assertEquals(COSName.getPDFName("0"), field.getCOSObject().getDictionaryObject(COSName.V));
+            assertEquals(0, field.getSelectedIndex());
+
+            field.setValue(1);
+            assertEquals("2", field.getValue());
+            assertEquals(COSName.getPDFName("1"), field.getCOSObject().getDictionaryObject(COSName.V));
+            assertEquals(1, field.getSelectedIndex());
+
+            field.setValue("2");
+            assertEquals("2", field.getValue());
+            assertEquals(COSName.getPDFName("1"), field.getCOSObject().getDictionaryObject(COSName.V));
+            assertEquals(1, field.getSelectedIndex());
+        }        
+    }
 }
