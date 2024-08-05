@@ -23,14 +23,14 @@
   <parent>
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
-    <version>3.0.3-SNAPSHOT</version>
+    <version>3.0.3</version>
     <relativePath>parent/pom.xml</relativePath>
   </parent>
 
   <groupId>org.apache.pdfbox</groupId>
   <artifactId>pdfbox-reactor</artifactId>
   <packaging>pom</packaging>
-  <version>3.0.3-SNAPSHOT</version>
+  <version>3.0.3</version>
 
   <name>Apache PDFBox Reactor</name>
 
@@ -51,9 +51,9 @@
   </modules>
 
   <scm>
-      <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0</connection>
-      <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0</developerConnection>
-      <url>https://svn.apache.org/viewvc/pdfbox/branches/3.0</url>
+      <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/tags/3.0.3</connection>
+      <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/tags/3.0.3</developerConnection>
+      <url>https://svn.apache.org/viewvc/pdfbox/tags/3.0.3</url>
   </scm>
 
   <build>
