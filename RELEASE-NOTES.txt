@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 3.0.2
+Release Notes -- Apache PDFBox -- Version 3.0.3
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 3.0.1 release. It contains
+This is an incremental bugfix release based on the earlier 3.0.2 release. It contains
 a couple of fixes and small improvements.
 
 A migration guide is available at https://pdfbox.apache.org/3.0/migration.html. It is
@@ -17,59 +17,68 @@ included in this release, please refer to the following issues on the
 PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
-
-[PDFBOX-2725] - [PATCH] Split pdf lose accessibility tags
-[PDFBOX-5375] - Allow creating of PDFXObjectImage without accessing to the image stream
-[PDFBOX-5704] - char not rendered
-[PDFBOX-5714] - PDFBox 3.0 regression: duplicate references in dictionary values
-[PDFBOX-5715] - Lines vanish when printing on MacOS
-[PDFBOX-5717] - NullPointerException calling saveIncrementalForExternalSigning
-[PDFBOX-5721] - The embedded font DroidSansFallbackFull reports an error when parsing, and finally uses lastResortFont, resulting in garbled fonts.
-[PDFBOX-5722] - Wrong scope for maven dependencies
-[PDFBOX-5723] - COSName caches already cached hashCode
-[PDFBOX-5724] - CharStringCommand.equals() does not conform to the contract of Object.equals
-[PDFBOX-5727] - Font operation takes a long time with 3.0.1
-[PDFBOX-5728] - NullPointerException in TTFSubsetter.buildPostTable()
-[PDFBOX-5730] - The expected SubstFormat for ExtensionSubstFormat1 subtable is 108 but should be 1
-[PDFBOX-5732] - Problem converting PDF to image (java.awt.color.CMMException: Can not access specified profile)
-[PDFBOX-5733] - lookupType is to be replaced by extensionLookupType in type 7 lookup table
-[PDFBOX-5735] - Set the default value for PDNonTerminalField
-[PDFBOX-5737] - java.lang.ArrayIndexOutOfBoundsException Bug Report
-[PDFBOX-5738] - Wrong colors in PDF since PDFBOX-5488
-[PDFBOX-5742] - Split result PDFs broken
-[PDFBOX-5744] - EOFException while readMultipleSubstitutionSubtable()
-[PDFBOX-5745] - EOFException while readSingleLookupSubTable()
-[PDFBOX-5748] - Cannot get overlayPDF working on command line interface
-[PDFBOX-5751] - Convert to image exception
-[PDFBOX-5752] - Font errors after copying a page to another document
-[PDFBOX-5754] - PDF conversion in this format is very slow. Is there any room for optimization?
-[PDFBOX-5757] - streamCacheCreateFunction not passed to PDFParser
-[PDFBOX-5758] - ExceptionInInitializerError when unmapping is not supported
-[PDFBOX-5760] - NPE in FIlter.decode() when called with empty list
-[PDFBOX-5763] - IllegalArgumentException: -Infinity is not a finite number
-[PDFBOX-5764] - Wrong chunksize when using a ByteBuffer to initialize a RandomAccessReadBuffer
-[PDFBOX-5772] - Inconsistent signature page handling when signing in existing signature fields
-[PDFBOX-5773] - Add leading "0" for octal values in MacOSRomanEncoding
-[PDFBOX-5775] - importPage destroys annotations
-[PDFBOX-5776] - DataFormatException: invalid distance too far back
-[PDFBOX-5778] - Grayscale JPEG rendered multicolor
-[PDFBOX-5781] - OutOfMemoryError in FileSystemFontsProvider.scanFonts
-[PDFBOX-5782] - NPE in PageDrawer.getPaint()
+[PDFBOX-5303] - preflight-app fails on Java 11+ with NoClassDefFoundError: javax/activation/DataSource
+[PDFBOX-5784] - AppearanceGeneratorHelper assumes fontscale 1000
+[PDFBOX-5785] - Issue with embedded Font and descendant Font
+[PDFBOX-5786] - NPE in COSWriter.getObjectKey() when saving broken file
+[PDFBOX-5787] - LCMS error 13: Mismatched alpha channels
+[PDFBOX-5789] - Remove release subproject
+[PDFBOX-5790] - Don't use a predefined CMap if a ToUnicode CMap is present
+[PDFBOX-5792] - Regression NPE in Splitter
+[PDFBOX-5794] - The content of the specified font is lost，Google Chrome can display it
+[PDFBOX-5795] - Crash for Softmask with incorrect backdrop color components
+[PDFBOX-5798] - Observable Timing Discrepancy (Timing Attack)
+[PDFBOX-5799] - Page with thousands of content streams takes extremely long to render or extract
+[PDFBOX-5802] - Black rectangle over image
+[PDFBOX-5806] - Wrong font substitution for Wingdings
+[PDFBOX-5809] - PDDocument#importPage slowed down by factor 1300
+[PDFBOX-5810] - Wrong glyph in Single Substitution Format 2 extraction to map
+[PDFBOX-5811] - Split aborts with broken destinations
+[PDFBOX-5812] - IllegalStateException are thrown by surrogate pair character 𩸽
+[PDFBOX-5822] - IllegalArgumentException: Parameter must be 1-based, but is 0 when using PDFTextStripperByArea
+[PDFBOX-5825] - Files created with PDFMergerExample are not correct PDF/A
+[PDFBOX-5826] - Missing /Subtype and /Type in Metadata not detected
+[PDFBOX-5827] - Multiple exceptions coming from org.apache.fontbox.ttf for different PDFs
+[PDFBOX-5829] - IOException: Error expected floating point numberactual='-12.-1'
+[PDFBOX-5830] - NullPointerException: Cannot invoke "String.codePointAt(int)" because "uni" is null
+[PDFBOX-5831] - Radio button can't be set
+[PDFBOX-5832] - Error when writing a document with OutlineItems containing null SE objects
+[PDFBOX-5835] - DomXmpParser - IllegalArgumentException: prefix cannot be "null" when creating a QName
+[PDFBOX-5839] - ClassCastException: org.apache.pdfbox.cos.COSNull cannot be cast to org.apache.pdfbox.cos.COSDictionary
+[PDFBOX-5841] - First split result document misses metadata after split
+[PDFBOX-5842] - IllegalArgumentException: Width (26) and height (0) must be non-zero
+[PDFBOX-5843] - There is an exception when getting embedded font, is it compatible?
+[PDFBOX-5845] - potential memory leak in TrueTypeCollection.java
+[PDFBOX-5848] - Infinite loop after splitting and saving PDF / giant result files
+[PDFBOX-5850] - Add fix MNG-8180
+[PDFBOX-5853] - the PDDocument.documentId does not seem to be written into the flat byteStream
+[PDFBOX-5855] - Fix last step of the build process
+[PDFBOX-5859] - StringIndexOutOfBoundsException in AppearanceGeneratorHelper
+[PDFBOX-5861] - ClassCastException in SetLineJoinStyle.process()
+[PDFBOX-5863] - bad comparison of byte with 128
 
 New Feature
-
-[PDFBOX-5768] - Enable Native Markdown Extraction in Apache PDFBox
+[PDFBOX-5808] - Add support for GSUB Lookup Type 3
 
 Improvement
-
-[PDFBOX-5729] - GsubWorkerForDevanagari and GsubWorkerForGujarati created
-[PDFBOX-5762] - When splitting, keep page destinations that are part of target document(s)
-[PDFBOX-5783] - Replace Exception with some repair attempt
+[PDFBOX-5675] - org.apache.pdfbox.filter.Filter#decode() Java heap space
+[PDFBOX-5793] - Remove redundant values for an object key
+[PDFBOX-5807] - JPEGFactory. Reduce logging severity when no image metadata is present
+[PDFBOX-5814] - Limit overwrite warning to non empty files
+[PDFBOX-5817] - Detect extreme componentCount values
+[PDFBOX-5818] - Update unicode Scripts.txt
+[PDFBOX-5819] - Make Type2CharStringParser thread-safe
+[PDFBOX-5821] - Include a PDFA check with VeraPDF for CreatePDFATest
+[PDFBOX-5823] - StringUtil.PATTERN_SPACE memory optmisation
+[PDFBOX-5824] - Allow COSDictionary.MAP_THRESHOLD to be defined as System property
+[PDFBOX-5837] - Add center constructor parameter to PDFPageable and to pdfbox-app
+[PDFBOX-5840] - When splitting, keep named page destinations that are part of target document(s)
+[PDFBOX-5847] - Improve performance of FileSystemFontProvider.scanFonts()
+[PDFBOX-5851] - When this PDF is rendered with the "f" Operator, a black screen appears.
 
 Task
+[PDFBOX-5820] - Investigate why we get "response contains wrong nonce value" during build tests
 
-[PDFBOX-5739] - Add test for PDFBOX-3347
-[PDFBOX-5741] - Add test for PDFBOX-4106
 
 Release Contents
 ----------------
