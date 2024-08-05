@@ -282,7 +282,7 @@ public final class PDFontFactory
     private static boolean isPfbFile(byte[] header)
     {
         // all PFB fonts start with 0x80 followed by either 0x01 or 0x02
-        return header[0] == 0x80 && (header[1] == 0x01 || header[1] == 0x02);
+        return header[0] == (byte) 0x80 && (header[1] == 0x01 || header[1] == 0x02);
     }
 
     private static boolean isCFFFile(byte[] header)
