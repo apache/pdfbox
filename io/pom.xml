@@ -24,7 +24,7 @@
         <groupId>org.apache.pdfbox</groupId>
         <artifactId>pdfbox-parent</artifactId>
         <version>4.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>pdfbox-io</artifactId>
@@ -36,6 +36,12 @@
         This artefact contains IO related classes.
     </description>
     <inceptionYear>2002</inceptionYear>
+
+    <scm>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk/io</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk/io</developerConnection>
+		<url>https://svn.apache.org/viewvc/pdfbox/trunk/io</url>
+	</scm>
 
     <dependencies>
         <dependency>

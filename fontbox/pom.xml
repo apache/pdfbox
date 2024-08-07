@@ -22,7 +22,7 @@
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
     <version>4.0.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>fontbox</artifactId>
@@ -36,6 +36,12 @@
 
   <inceptionYear>2008</inceptionYear>
   <url>http://pdfbox.apache.org/</url>
+
+	<scm>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk/fontbox</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk/fontbox</developerConnection>
+		<url>https://svn.apache.org/viewvc/pdfbox/trunk/fontbox</url>
+	</scm>
 
   <dependencies>
     <dependency>
