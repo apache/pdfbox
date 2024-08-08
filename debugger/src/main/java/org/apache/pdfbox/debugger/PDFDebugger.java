@@ -94,6 +94,7 @@ import org.apache.pdfbox.debugger.colorpane.CSSeparation;
 import org.apache.pdfbox.debugger.flagbitspane.FlagBitsPane;
 import org.apache.pdfbox.debugger.fontencodingpane.FontEncodingPaneController;
 import org.apache.pdfbox.debugger.pagepane.PagePane;
+import org.apache.pdfbox.debugger.signaturepane.SignaturePane;
 import org.apache.pdfbox.debugger.streampane.StreamPane;
 import org.apache.pdfbox.debugger.stringpane.StringPane;
 import org.apache.pdfbox.debugger.treestatus.TreeStatus;
@@ -800,6 +801,12 @@ public class PDFDebugger extends JFrame
                     showStream((COSStream) getUnderneathObject(selectedNode), path);
                     return;
                 }
+                if (path.getParentPath() != null &&
+                    isSignature(selectedNode, path.getParentPath().getLastPathComponent()))
+                {
+                    showSignaturePane(selectedNode);
+                    return;
+                }
                 if (isFont(selectedNode))
                 {
                     showFont(selectedNode, path);
@@ -823,6 +830,37 @@ public class PDFDebugger extends JFrame
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private void showSignaturePane(Object selectedNode)
+    {
+        COSString string = (COSString) getUnderneathObject(selectedNode);
+        replaceRightComponent(new SignaturePane(string).getPane());
+    }
+
+    private boolean isSignature(Object selectedNode, Object parentNode)
+    {
+        if (selectedNode instanceof MapEntry)
+        {
+            MapEntry entry = (MapEntry) selectedNode;
+            if (entry.getKey().equals(COSName.CONTENTS) &&
+                    parentNode instanceof MapEntry)
+            {
+                MapEntry mapEntry = (MapEntry) parentNode;
+                COSDictionary sigDict;
+                if (mapEntry.getValue() instanceof COSDictionary)
+                {
+                    sigDict = (COSDictionary)mapEntry.getValue();
+                    COSName type = sigDict.getCOSName(COSName.TYPE);
+                    if (type != null && type.equals(COSName.SIG))
+                    {
+                        LOG.info("Found signature contents entry");
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private boolean isSpecialColorSpace(Object selectedNode)
