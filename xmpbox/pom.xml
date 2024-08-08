@@ -28,8 +28,14 @@
 		<groupId>org.apache.pdfbox</groupId>
 		<artifactId>pdfbox-parent</artifactId>
 		<version>2.0.33-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
+
+  <scm>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/2.0/xmpbox</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/2.0/xmpbox</developerConnection>
+    <url>https://svn.apache.org/viewvc/pdfbox/branches/2.0/xmpbox</url>
+  </scm>
 
         <profiles>
             <profile>
