@@ -55,6 +55,7 @@ public class SignaturePane
         textPane.setText(getTextString(cosString));
         textPane.setEditable(false);
         textPane.setFont(FONT_MONOSPACED);
+        textPane.setCaretPosition(0);
         return textPane;
     }
 
