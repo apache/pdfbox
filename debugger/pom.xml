@@ -69,6 +69,11 @@
         <artifactId>jbig2-imageio</artifactId>
         <version>${jbig2.version}</version>
     </dependency>
+    <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcpkix-jdk18on</artifactId>
+        <version>${bouncycastle.version}</version>
+    </dependency>
     <!-- For legal reasons (incompatible license), these two dependencies 
         are to be used only in the tests and may not be distributed. 
         See also LEGAL-195 -->
