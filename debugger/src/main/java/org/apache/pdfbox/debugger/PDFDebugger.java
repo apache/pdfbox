@@ -834,10 +834,10 @@ public class PDFDebugger extends JFrame
 
     private void showSignaturePane(Object selectedNode)
     {
-        COSBase base = getUnderneathObject(selectedNode);
-        if (base instanceof COSString)
+        Object obj = getUnderneathObject(selectedNode);
+        if (obj instanceof COSString)
         {
-            replaceRightComponent(new SignaturePane((COSString) base).getPane());
+            replaceRightComponent(new SignaturePane((COSString) obj).getPane());
         }
     }
 
