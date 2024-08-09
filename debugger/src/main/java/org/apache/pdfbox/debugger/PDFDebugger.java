@@ -884,8 +884,11 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
 
     private void showSignaturePane(Object selectedNode)
     {
-        COSString string = (COSString) getUnderneathObject(selectedNode);
-        replaceRightComponent(new SignaturePane(string).getPane());
+        COSBase base = getUnderneathObject(selectedNode);
+        if (base instanceof COSString)
+        {
+            replaceRightComponent(new SignaturePane((COSString) base).getPane());
+        }
     }
 
     private boolean isSignature(Object selectedNode, Object parentNode)
