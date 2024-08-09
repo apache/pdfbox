@@ -367,7 +367,7 @@ public class COSDocument extends COSBase implements Closeable
      * This will set the document ID. This should be an array of two strings. This method cannot be
      * used to remove the document id by passing null or an empty array; it will be recreated. Only
      * the first existing string is used when writing, the second one is always recreated. If you
-     * don't want this, you'll have to modify the {@link COSWriter} class, look for {@link COSName#ID}.
+     * don't want this, you'll have to modify the {@code COSWriter} class, look for {@link COSName#ID}.
      *
      * @param id The document id.
      */
