@@ -277,6 +277,15 @@ public class PDEncryption implements COSObjectable
         if( owner != null )
         {
             o = owner.getBytes();
+            int r = getRevision();
+            if (r <= 4)
+            {
+                o = Arrays.copyOf(o, 32);
+            }
+            else if (r == 6)
+            {
+                o = Arrays.copyOf(o, 48);
+            }
         }
         return o;
     }
@@ -307,6 +316,15 @@ public class PDEncryption implements COSObjectable
         if( user != null )
         {
             u = user.getBytes();
+            int r = getRevision();
+            if (r <= 4)
+            {
+                u = Arrays.copyOf(u, 32);
+            }
+            else if (r == 6)
+            {
+                u = Arrays.copyOf(u, 48);
+            }
         }
         return u;
     }
