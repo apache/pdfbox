@@ -282,7 +282,7 @@ public class PDEncryption implements COSObjectable
             {
                 o = Arrays.copyOf(o, 32);
             }
-            else if (r == 6)
+            else if (r == 5 || r == 6)
             {
                 o = Arrays.copyOf(o, 48);
             }
@@ -321,7 +321,7 @@ public class PDEncryption implements COSObjectable
             {
                 u = Arrays.copyOf(u, 32);
             }
-            else if (r == 6)
+            else if (r == 5 || r == 6)
             {
                 u = Arrays.copyOf(u, 48);
             }
