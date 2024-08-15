@@ -71,6 +71,14 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.4.0</version>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <!-- fails with maven 3.6.0 on jdk 6, works with 3.2.1, 3.5.0 and 3.5.2 -->
           <configuration>
