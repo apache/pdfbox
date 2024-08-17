@@ -52,8 +52,8 @@ class TestSimpleMetadataProperties
     void testBooleanBadTypeDetection()
     {
         assertThrows(IllegalArgumentException.class, () -> {
-	        new BooleanType(parent, null, "test", "boolean", "Not a Boolean");
-	    });
+            new BooleanType(parent, null, "test", "boolean", "Not a Boolean");
+        });
     }
 
     /**
@@ -65,8 +65,8 @@ class TestSimpleMetadataProperties
     void testDateBadTypeDetection()
     {
         assertThrows(IllegalArgumentException.class, () -> {
-	        new DateType(parent, null, "test", "date", "Bad Date");
-	    });
+            new DateType(parent, null, "test", "date", "Bad Date");
+        });
     }
 
     /**
@@ -78,8 +78,8 @@ class TestSimpleMetadataProperties
     void testIntegerBadTypeDetection()
     {
         assertThrows(IllegalArgumentException.class, () -> {
-	        new IntegerType(parent, null, "test", "integer", "Not an int");
-	    });
+            new IntegerType(parent, null, "test", "integer", "Not an int");
+        });
     }
 
     /**
@@ -91,8 +91,8 @@ class TestSimpleMetadataProperties
     void testRealBadTypeDetection() throws Exception
     {
         assertThrows(IllegalArgumentException.class, () -> {
-	        new RealType(parent, null, "test", "real", "Not a real");
-	    });
+            new RealType(parent, null, "test", "real", "Not a real");
+        });
     }
 
     /**
@@ -105,8 +105,8 @@ class TestSimpleMetadataProperties
     {
         Calendar calendar = Calendar.getInstance();
         assertThrows(IllegalArgumentException.class, () -> {
-	        new TextType(parent, null, "test", "text", calendar);
-	    });   
+            new TextType(parent, null, "test", "text", calendar);
+        });   
     }
 
     /**
@@ -196,8 +196,8 @@ class TestSimpleMetadataProperties
     {
         Throwable throwable = new Throwable();
         assertThrows(IllegalArgumentException.class, () -> {
-	        throw new IllegalArgumentException("TEST", throwable);
-	    });
+            throw new IllegalArgumentException("TEST", throwable);
+        });
     }
 
     /**

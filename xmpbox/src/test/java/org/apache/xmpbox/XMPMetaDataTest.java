@@ -93,16 +93,16 @@ class XMPMetaDataTest
     void testTransformerExceptionMessage() throws XmpSerializationException
     {
         assertThrows(org.apache.xmpbox.xml.XmpSerializationException.class, () -> {
-	        throw new XmpSerializationException("TEST");
-	    });  
+            throw new XmpSerializationException("TEST");
+        });  
     }
 
     @Test
     void testTransformerExceptionWithCause() throws XmpSerializationException
     {
         assertThrows(org.apache.xmpbox.xml.XmpSerializationException.class, () -> {
-	        throw new XmpSerializationException("TEST", new Throwable());
-	    });
+            throw new XmpSerializationException("TEST", new Throwable());
+        });
     }
 
     @Test

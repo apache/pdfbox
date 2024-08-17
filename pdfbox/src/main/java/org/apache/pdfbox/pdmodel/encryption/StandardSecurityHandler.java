@@ -154,8 +154,8 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         
         // This is only used with security version 4 and 5.
         if (encryption.getVersion() >= REVISION_4) {
-	        setStreamFilterName(encryption.getStreamFilterName());
-	        setStringFilterName(encryption.getStringFilterName());
+            setStreamFilterName(encryption.getStreamFilterName());
+            setStringFilterName(encryption.getStringFilterName());
         }
         setDecryptMetadata(encryption.isEncryptMetaData());
         StandardDecryptionMaterial material = (StandardDecryptionMaterial)decryptionMaterial;

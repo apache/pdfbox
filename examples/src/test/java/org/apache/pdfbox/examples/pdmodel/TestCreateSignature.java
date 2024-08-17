@@ -246,7 +246,7 @@ class TestCreateSignature
      * @throws CertificateVerificationException
      */
     @ParameterizedTest
-	@MethodSource("signingTypes")
+    @MethodSource("signingTypes")
     void testDetachedSHA256(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException, URISyntaxException
@@ -286,7 +286,7 @@ class TestCreateSignature
      * @throws CertificateVerificationException
      */
     @ParameterizedTest
-	@MethodSource("signingTypes")
+    @MethodSource("signingTypes")
     void testDetachedSHA256WithTSA(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
@@ -398,7 +398,7 @@ class TestCreateSignature
      * @throws CertificateVerificationException
      */
     @ParameterizedTest
-	@MethodSource("signingTypes")
+    @MethodSource("signingTypes")
     void testCreateVisibleSignature(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
@@ -430,7 +430,7 @@ class TestCreateSignature
      * @throws CertificateVerificationException
      */
     @ParameterizedTest
-	@MethodSource("signingTypes")
+    @MethodSource("signingTypes")
     void testCreateVisibleSignature2(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
@@ -715,7 +715,7 @@ class TestCreateSignature
      * @throws Exception
      */
     @ParameterizedTest
-	@MethodSource("signingTypes")
+    @MethodSource("signingTypes")
     void testSaveIncrementalAfterSign(boolean externallySign) throws Exception
     {
         BufferedImage oldImage, expectedImage1, actualImage1, expectedImage2, actualImage2;

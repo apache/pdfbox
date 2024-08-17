@@ -72,8 +72,8 @@ class AdobePDFErrorsTest
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();
         String conformance = "kiohiohiohiohio";
         assertThrows(BadFieldValueException.class, () -> {
-	        pdfaid.setConformance(conformance);
-	    });
+            pdfaid.setConformance(conformance);
+        });
     }
 
     @Test
@@ -83,6 +83,6 @@ class AdobePDFErrorsTest
         pdfaid.setPartValueWithString("1");
         assertThrows(IllegalArgumentException.class, () -> {    
             pdfaid.setPartValueWithString("ojoj");
-	    });
+        });
     }
 }

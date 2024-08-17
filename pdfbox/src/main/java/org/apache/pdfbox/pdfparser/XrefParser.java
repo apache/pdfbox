@@ -489,35 +489,35 @@ public class XrefParser
                 // ensure that at least one whitespace is skipped in front of the object number
                 source.seek(offset - 1);
                 if (source.getPosition() < offset)
-	            {
+                {
                     if (!parser.isDigit())
-	                {
-	                    // anything else but a digit may be some garbage of the previous object -> just ignore it
+                    {
+                        // anything else but a digit may be some garbage of the previous object -> just ignore it
                         source.read();
-	                }
-	                else
-	                {
+                    }
+                    else
+                    {
                         long current = source.getPosition();
                         source.seek(--current);
                         while (parser.isDigit())
                             source.seek(--current);
                         long newObjNr = parser.readObjectNumber();
                         int newGenNr = parser.readGenerationNumber();
-	                    COSObjectKey newObjKey = new COSObjectKey(newObjNr, newGenNr);
-	                    Long existingOffset = xrefOffset.get(newObjKey);
-	                    // the found object number belongs to another uncompressed object at the same or nearby offset
-	                    // something has to be wrong
-	                    if (existingOffset != null && existingOffset > 0
-	                            && Math.abs(offset - existingOffset) < 10)
-	                    {
+                        COSObjectKey newObjKey = new COSObjectKey(newObjNr, newGenNr);
+                        Long existingOffset = xrefOffset.get(newObjKey);
+                        // the found object number belongs to another uncompressed object at the same or nearby offset
+                        // something has to be wrong
+                        if (existingOffset != null && existingOffset > 0
+                                && Math.abs(offset - existingOffset) < 10)
+                        {
                             LOG.debug("Found the object {} instead of {} at offset {} - ignoring",
                                     newObjKey, objectKey, offset);
-	                        return null;
-	                    }
-	                    // something seems to be wrong but it's hard to determine what exactly -> simply continue
+                            return null;
+                        }
+                        // something seems to be wrong but it's hard to determine what exactly -> simply continue
                         source.seek(offset);
-	                }
-	            }
+                    }
+                }
             }
             // try to read the given object/generation number
             long foundObjectNumber = parser.readObjectNumber();

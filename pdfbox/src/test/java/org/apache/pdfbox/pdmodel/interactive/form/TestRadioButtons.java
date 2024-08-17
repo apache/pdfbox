@@ -213,8 +213,8 @@ class TestRadioButtons
 
             // compare the messages
             String expectedMessage = "value 'Invalid' is not a valid option for the field Checking/Savings, valid values are: [Checking, Savings] and Off";
-	        String actualMessage = exception.getMessage();
-	 
+            String actualMessage = exception.getMessage();
+     
             assertTrue(actualMessage.contains(expectedMessage));
 
             assertEquals("Off", field.getValue(), "no option shall be selected");
@@ -284,8 +284,8 @@ class TestRadioButtons
 
             // compare the messages
             String expectedMessage = "index '6' is not a valid index for the field Checking/Savings, valid indices are from 0 to 5";
-	        String actualMessage = exception.getMessage();
-	 
+            String actualMessage = exception.getMessage();
+     
             assertTrue(actualMessage.contains(expectedMessage));
 
             assertEquals("Off", field.getValue(), "no option shall be selected");

@@ -144,8 +144,8 @@ class XMPSchemaTest
     void testBadRdfAbout() throws Exception
     {
         assertThrows(BadFieldValueException.class, () -> {
-	        schem.setAbout(new Attribute(null, "about", ""));
-	    });
+            schem.setAbout(new Attribute(null, "about", ""));
+        });
     }
 
     @Test

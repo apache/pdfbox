@@ -268,10 +268,10 @@ public class BlendMode
             	if (cosBase instanceof COSName)
             	{
                     result = BLEND_MODES.get(cosBase);
-	                if (result != null)
-	                {
-	                    break;
-	                }
+                    if (result != null)
+                    {
+                        break;
+                    }
             	}
             }
         }
