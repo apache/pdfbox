@@ -171,6 +171,11 @@ public final class TextPosition
         return unicode;
     }
 
+    void setUnicode(String unicode)
+    {
+        this.unicode = unicode;
+    }
+
     /**
      * Same as {@link #getUnicode()} except that returned text is ensured to be
      * visually ordered (i.e. same order you would see them displayed on screen when
