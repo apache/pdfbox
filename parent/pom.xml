@@ -115,7 +115,9 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
-                    <skip>true</skip>
+                    <skip>${skipTests}</skip>
+                    <configLocation>checkstyle.xml</configLocation>
+                    <consoleOutput>true</consoleOutput>
                 </configuration>
             </plugin>
             <plugin>
