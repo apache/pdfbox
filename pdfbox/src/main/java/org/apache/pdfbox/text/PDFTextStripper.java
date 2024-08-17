@@ -25,8 +25,10 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.text.Bidi;
 import java.text.Normalizer;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -41,10 +43,16 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequence;
+import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequenceWithProperties;
+import org.apache.pdfbox.contentstream.operator.markedcontent.EndMarkedContentSequence;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
 import org.apache.pdfbox.util.IterativeMergeSort;
@@ -148,6 +156,12 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
     private List<PDRectangle> beadRectangles = null;
 
+    // use a stack so we don't get confused if another BDC within "/ActualText... BDC" block
+    private final Deque<PDMarkedContent> currentMarkedContents = new ArrayDeque<PDMarkedContent>();
+    // to replace the unicode of the first TextPosition and empty the others
+    boolean firstActualTextPosition = false; 
+    String actualText = null;
+
     /**
      * The charactersByArticle is used to extract text by article divisions. For example a PDF that has two columns like
      * a newspaper, we want to extract the first column and then the second column. In this example the PDF would have 2
@@ -181,6 +195,9 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      */
     public PDFTextStripper() throws IOException
     {
+        addOperator(new BeginMarkedContentSequenceWithProperties());
+        addOperator(new BeginMarkedContentSequence());
+        addOperator(new EndMarkedContentSequence());
     }
 
     /**
@@ -777,6 +794,35 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         return second < first + variance && second > first - variance;
     }
 
+    @Override
+    public void beginMarkedContentSequence(COSName tag, COSDictionary properties)
+    {
+        PDMarkedContent markedContent = PDMarkedContent.create(tag, properties);
+        currentMarkedContents.push(markedContent);
+        actualText = markedContent.getActualText();
+        if (actualText != null)
+        {
+            actualText = actualText.replace("\u00ad", ""); // remove soft hyphens
+            firstActualTextPosition = true;
+        }
+        super.beginMarkedContentSequence(tag, properties);
+    }
+
+    @Override
+    public void endMarkedContentSequence()
+    {
+        PDMarkedContent markedContent = currentMarkedContents.peek();
+        if (markedContent != null)
+        {
+            if (markedContent.getActualText() != null)
+            {
+                actualText = null;
+            }
+            currentMarkedContents.pop();
+        }
+        super.endMarkedContentSequence();
+    }
+
     /**
      * This will process a TextPosition object and add the text to the list of characters on a page. It takes care of
      * overlapping text.
@@ -786,8 +832,20 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     @Override
     protected void processTextPosition(TextPosition text)
     {
+        if (actualText != null)
+        {
+            if (firstActualTextPosition)
+            {
+                text.setUnicode(actualText);
+                firstActualTextPosition = false;
+            }
+            else
+            {
+                text.setUnicode("");
+            }
+        }
         boolean showCharacter = true;
-        if (suppressDuplicateOverlappingText)
+        if (suppressDuplicateOverlappingText && actualText == null)
         {
             showCharacter = false;
             String textCharacter = text.getUnicode();
