@@ -1,4 +1,3 @@
-package org.apache.pdfbox.pdmodel.interactive.form;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,6 +14,8 @@ package org.apache.pdfbox.pdmodel.interactive.form;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pdfbox.pdmodel.interactive.form;
+
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
 
 public interface ScriptingHandler
