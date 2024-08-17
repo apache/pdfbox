@@ -91,7 +91,7 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
     List<ShadedTriangle> collectTriangles(AffineTransform xform, Matrix matrix)
             throws IOException
     {
-    	int bitsPerFlag = getBitsPerFlag();
+        int bitsPerFlag = getBitsPerFlag();
         COSDictionary dict = getCOSObject();
         if (!(dict instanceof COSStream))
         {

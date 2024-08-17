@@ -229,4 +229,14 @@ abstract class Patch
     {
         return Math.abs(p0.getX() - p1.getX()) < 0.001 && Math.abs(p0.getY() - p1.getY()) < 0.001;
     }
+
+    static Point2D[] clonedPoint2DArray(Point2D[] input)
+    {
+        Point2D[] cloned = new Point2D[input.length];
+        for (int i = 0; i < input.length; ++i)
+        {
+            cloned[i] = (Point2D) input[i].clone();
+        }
+        return cloned;
+    }
 }

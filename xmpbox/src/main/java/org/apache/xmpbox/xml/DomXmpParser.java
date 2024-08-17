@@ -847,11 +847,11 @@ public class DomXmpParser
      */
     private void removeComments(Node root)
     {
-    	// will hold the nodes which are to be deleted
-    	List<Node> forDeletion = new ArrayList<>();
-    	
-    	NodeList nl = root.getChildNodes();
-    	
+        // will hold the nodes which are to be deleted
+        List<Node> forDeletion = new ArrayList<>();
+        
+        NodeList nl = root.getChildNodes();
+        
         if (nl.getLength()<=1) 
         {
             // There is only one node so we do not remove it
@@ -864,15 +864,15 @@ public class DomXmpParser
             if (node instanceof Comment)
             {
                 // comments to be deleted
-            	forDeletion.add(node);
+                forDeletion.add(node);
             }
             else if (node instanceof Text)
             {
                 if (node.getTextContent().trim().isEmpty())
                 {
-                	// TODO: verify why this is necessary
-                	// empty text nodes to be deleted
-                	forDeletion.add(node);
+                    // TODO: verify why this is necessary
+                    // empty text nodes to be deleted
+                    forDeletion.add(node);
                 }
             }
             else if (node instanceof Element)

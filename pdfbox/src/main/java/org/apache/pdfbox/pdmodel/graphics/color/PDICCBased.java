@@ -262,7 +262,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
             if (profileData[ICC_Profile.icHdrRenderingIntent] == ICC_Profile.icPerceptual)
             {
                 LOG.warn("ICC profile is Perceptual, ignoring, treating as Display class");
-            	intToBigEndian(ICC_Profile.icSigDisplayClass, profileData, ICC_Profile.icHdrDeviceClass);
+                intToBigEndian(ICC_Profile.icSigDisplayClass, profileData, ICC_Profile.icHdrDeviceClass);
                 return ICC_Profile.getInstance(profileData);
             }
         }

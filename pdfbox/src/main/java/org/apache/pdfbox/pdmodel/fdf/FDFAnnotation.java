@@ -967,16 +967,16 @@ public abstract class FDFAnnotation implements COSObjectable
             }
             else if (child instanceof CDATASection)
             {
-            	sb.append("<![CDATA[").append(((CDATASection) child).getData()).append("]]>");
+                sb.append("<![CDATA[").append(((CDATASection) child).getData()).append("]]>");
             }
             else if (child instanceof Text)
             {
-            	String cdata = ((Text) child).getData();
-            	if (cdata!=null)
-            	{
-            		cdata = cdata.replace("&", "&amp;").replace("<", "&lt;");
-            	}
-            	sb.append(cdata);
+                String cdata = ((Text) child).getData();
+                if (cdata!=null)
+                {
+                    cdata = cdata.replace("&", "&amp;").replace("<", "&lt;");
+                }
+                sb.append(cdata);
             }
         }
         if (root)
@@ -992,7 +992,7 @@ public abstract class FDFAnnotation implements COSObjectable
             String attributeNodeValue = attribute.getNodeValue();
             if (attributeNodeValue!=null)
             {
-            	attributeNodeValue = attributeNodeValue.replace("\"", "&quot;");
+                attributeNodeValue = attributeNodeValue.replace("\"", "&quot;");
             }
             builder.append(String.format(" %s=\"%s\"", attribute.getNodeName(),
                     attributeNodeValue));

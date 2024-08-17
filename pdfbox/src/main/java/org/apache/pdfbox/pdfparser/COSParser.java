@@ -910,11 +910,11 @@ public class COSParser extends BaseParser implements ICOSParser
 
     protected BruteForceParser getBruteForceParser() throws IOException
     {
-    	if (bruteForceParser == null)
-    	{
+        if (bruteForceParser == null)
+        {
             bruteForceParser = new BruteForceParser(document, this);
         }
-    	return bruteForceParser;
+        return bruteForceParser;
     }
     
     /**

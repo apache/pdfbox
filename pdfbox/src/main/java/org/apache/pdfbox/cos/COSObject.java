@@ -148,7 +148,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
     @Override
     public String toString()
     {
-    	return "COSObject{" + getKey() + "}";
+        return "COSObject{" + getKey() + "}";
     }
 
     /**

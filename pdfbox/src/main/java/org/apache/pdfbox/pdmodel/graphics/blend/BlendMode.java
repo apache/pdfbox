@@ -200,8 +200,8 @@ public class BlendMode
      */
     private BlendMode(COSName name, BlendChannelFunction blendChannel, BlendFunction blend)
     {
-    	this.name = name;
-    	this.blendChannel = blendChannel;
+        this.name = name;
+        this.blendChannel = blendChannel;
         this.blend = blend;
         isSeparable = blendChannel != null;
     }
@@ -213,7 +213,7 @@ public class BlendMode
      */
     public COSName getCOSName()
     {
-    	return name;
+        return name;
     }
 
     /**
@@ -264,15 +264,15 @@ public class BlendMode
             COSArray cosBlendModeArray = (COSArray) cosBlendMode;
             for (int i = 0; i < cosBlendModeArray.size(); i++)
             {
-            	COSBase cosBase = cosBlendModeArray.getObject(i);
-            	if (cosBase instanceof COSName)
-            	{
+                COSBase cosBase = cosBlendModeArray.getObject(i);
+                if (cosBase instanceof COSName)
+                {
                     result = BLEND_MODES.get(cosBase);
                     if (result != null)
                     {
                         break;
                     }
-            	}
+                }
             }
         }
         return result != null ? result : BlendMode.NORMAL;
