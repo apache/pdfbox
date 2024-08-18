@@ -16,8 +16,6 @@
 
 package org.apache.pdfbox.cos;
 
-import static org.junit.Assert.assertNull;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
