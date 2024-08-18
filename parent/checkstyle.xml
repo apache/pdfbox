@@ -56,7 +56,6 @@
     <module name="AvoidStarImport"/>
     <module name="RedundantImport"/>
     <module name="UnusedImports"/>
-    <module name="OuterTypeFilename"/>
     <!--
     <module name="OneTopLevelClass"/>
     <module name="LeftCurly"/>
