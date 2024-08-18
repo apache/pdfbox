@@ -114,11 +114,33 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.4.0</version>
+                <!-- this one is for checkstyle:check -->
                 <configuration>
                     <skip>${skipTests}</skip>
                     <configLocation>checkstyle.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <testSourceDirectories>${project.basedir}/src/test/java</testSourceDirectories>
+                    <failsOnError>true</failsOnError>
                 </configuration>
+                <!-- this one is for checkstyle in the complete build -->
+                <executions>
+                    <execution>
+                        <id>check</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipTests}</skip>
+                            <configLocation>checkstyle.xml</configLocation>
+                            <consoleOutput>true</consoleOutput>
+                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                            <testSourceDirectories>${project.basedir}/src/test/java</testSourceDirectories>
+                            <failsOnError>true</failsOnError>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
