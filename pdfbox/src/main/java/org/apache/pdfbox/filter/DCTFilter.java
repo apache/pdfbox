@@ -91,6 +91,10 @@ final class DCTFilter extends Filter
                 {
                     // I'd like to use ImageReader#readRaster but it is buggy and can't read RGB correctly
                     BufferedImage image = reader.read(0, irp);
+                    if (image.getColorModel().getNumColorComponents() == 4)
+                    {
+                        throw new IIOException("CMYK image");
+                    }
                     raster = image.getRaster();
                 }
                 catch (IIOException e)
