@@ -51,17 +51,6 @@
     <url>https://svn.apache.org/viewvc/pdfbox/trunk</url>
   </scm>
 
-  <dependencyManagement>
-    <dependencies>
-        <!-- not used directly, updated to have less output from versions plugin -->
-        <dependency>
-            <groupId>org.apache.maven.plugin-tools</groupId>
-            <artifactId>maven-plugin-annotations</artifactId>
-            <version>3.14.0</version>
-        </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <build>
     <pluginManagement>
         <plugins>
