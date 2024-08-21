@@ -766,7 +766,9 @@ public class PreflightParser extends PDFParser
                 else
                 {
 
-                    addValidationError(new ValidationError(ERROR_SYNTAX_OBJ_DELIMITER, "Single space expected [offset="+offset+"; key="+offsetOrObjstmObNr.toString()+"; line="+line+"; object="+pdfObject.toString()+"]"));
+                    addValidationError(new ValidationError(ERROR_SYNTAX_OBJ_DELIMITER,
+                            "Single space expected [offset="+offset+"; key="+offsetOrObjstmObNr.toString()+
+                                    "; line="+line+"; object="+pdfObject.toString()+"]"));
 
                     // reset source cursor to read object information
                     source.seek(offset);
