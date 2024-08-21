@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.encryption;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.security.Security;
 import java.util.HashMap;
 import java.util.Map;
 
