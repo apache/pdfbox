@@ -78,40 +78,7 @@ final class DCTFilter extends Filter
             irp.setSourceRegion(options.getSourceRegion());
             options.setFilterSubsampled(true);
 
-            String numChannels = getNumChannels(reader);
-
-            // get the raster using horrible JAI workarounds
-            ImageIO.setUseCache(false);
-            Raster raster;
-
-            // Strategy: use read() for RGB or "can't get metadata"
-            // use readRaster() for CMYK and gray and as fallback if read() fails 
-            // after "can't get metadata" because "no meta" file was CMYK
-            if ("3".equals(numChannels) || numChannels.isEmpty())
-            {
-                try
-                {
-                    // I'd like to use ImageReader#readRaster but it is buggy and can't read RGB correctly
-                    BufferedImage image = reader.read(0, irp);
-                    if (image.getColorModel().getNumColorComponents() == 4)
-                    {
-                        throw new IIOException("CMYK image");
-                    }
-                    raster = image.getRaster();
-                }
-                catch (IIOException e)
-                {
-                    // JAI can't read CMYK JPEGs using ImageReader#read or ImageIO.read but
-                    // fortunately ImageReader#readRaster isn't buggy when reading 4-channel files
-                    raster = reader.readRaster(0, irp);
-                }
-            }
-            else
-            {
-                // JAI can't read CMYK JPEGs using ImageReader#read or ImageIO.read but
-                // fortunately ImageReader#readRaster isn't buggy when reading 4-channel files
-                raster = reader.readRaster(0, irp);
-            }
+            Raster raster = readImageRaster(reader, irp);
 
             // special handling for 4-component images
             if (raster.getNumBands() == 4)
@@ -174,6 +141,43 @@ final class DCTFilter extends Filter
             reader.dispose();
         }
         return new DecodeResult(parameters);
+    }
+
+    private Raster readImageRaster(ImageReader reader, ImageReadParam irp) throws IOException
+    {
+        String numChannels = getNumChannels(reader);
+        // get the raster using horrible JAI workarounds
+        ImageIO.setUseCache(false);
+        Raster raster;
+        // Strategy: use read() for RGB or "can't get metadata"
+        // use readRaster() for CMYK and gray and as fallback if read() fails
+        // after "can't get metadata" because "no meta" file was CMYK
+        if ("3".equals(numChannels) || numChannels.isEmpty())
+        {
+            try
+            {
+                // I'd like to use ImageReader#readRaster but it is buggy and can't read RGB correctly
+                BufferedImage image = reader.read(0, irp);
+                if (image.getColorModel().getNumColorComponents() == 4)
+                {
+                    throw new IIOException("CMYK image");
+                }
+                raster = image.getRaster();
+            }
+            catch (IIOException e)
+            {
+                // JAI can't read CMYK JPEGs using ImageReader#read or ImageIO.read but
+                // fortunately ImageReader#readRaster isn't buggy when reading 4-channel files
+                raster = reader.readRaster(0, irp);
+            }
+        }
+        else
+        {
+            // JAI can't read CMYK JPEGs using ImageReader#read or ImageIO.read but
+            // fortunately ImageReader#readRaster isn't buggy when reading 4-channel files
+            raster = reader.readRaster(0, irp);
+        }
+        return raster;
     }
 
     @Override
