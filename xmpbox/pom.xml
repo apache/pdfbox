@@ -73,14 +73,6 @@
 				<artifactId>maven-bundle-plugin</artifactId>
 				<extensions>true</extensions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.17</version>
-				<configuration>
-					<configLocation>../pdfbox-checkstyle-5.xml</configLocation>
-				</configuration>
-			</plugin>
                         
                         <!-- JDK9 -->
                         <plugin>
