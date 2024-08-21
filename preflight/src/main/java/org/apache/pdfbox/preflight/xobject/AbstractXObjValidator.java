@@ -24,7 +24,6 @@ package org.apache.pdfbox.preflight.xobject;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_TRANSPARENCY_SMASK;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_UNEXPECTED_KEY;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY;
-import static org.apache.pdfbox.preflight.PreflightConstants.TRANSPARENCY_DICTIONARY_VALUE_SOFT_MASK_NONE;
 import static org.apache.pdfbox.preflight.PreflightConstants.XOBJECT_DICTIONARY_VALUE_SUBTYPE_POSTSCRIPT;
 
 import org.apache.pdfbox.cos.COSBase;
@@ -34,7 +33,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 
 /**
  * This class processes commons validations of XObjects.
