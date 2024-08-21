@@ -22,7 +22,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -169,13 +168,13 @@ public final class PDFToImage
             else if( args[i].equals( CROPBOX ) )
             {
                 i++;
-                cropBoxLowerLeftX = Float.valueOf(args[i]);
+                cropBoxLowerLeftX = Float.parseFloat(args[i]);
                 i++;
-                cropBoxLowerLeftY = Float.valueOf(args[i]);
+                cropBoxLowerLeftY = Float.parseFloat(args[i]);
                 i++;
-                cropBoxUpperRightX = Float.valueOf(args[i]);
+                cropBoxUpperRightX = Float.parseFloat(args[i]);
                 i++;
-                cropBoxUpperRightY = Float.valueOf(args[i]);
+                cropBoxUpperRightY = Float.parseFloat(args[i]);
             }
             else if( args[i].equals( TIME ) )
             {
