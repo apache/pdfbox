@@ -149,7 +149,7 @@ public abstract class Filter
     }
 
     /**
-     * Finds a suitable image raster reader for an image format.
+     * Finds a suitable image reader for an image format.
      *
      * @param formatName The image format to search for.
      * @param errorCause The probably cause if something goes wrong.
@@ -163,11 +163,10 @@ public abstract class Filter
         while (readers.hasNext())
         {
             ImageReader reader = readers.next();
-            if (reader.canReadRaster())
+            if (reader != null)
             {
                 return reader;
             }
-            reader.dispose();
         }
         throw new MissingImageReaderException("Cannot read " + formatName + " image: " + errorCause);
     }
