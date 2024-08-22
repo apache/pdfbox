@@ -64,7 +64,7 @@ final class JBIG2Filter extends Filter
     public DecodeResult decode(InputStream encoded, OutputStream decoded, COSDictionary
             parameters, int index, DecodeOptions options) throws IOException
     {
-        ImageReader reader = findImageReader("JBIG2", "jbig2-imageio is not installed");
+        ImageReader reader = findImageReader("JBIG2", "jbig2-imageio is not installed", false);
         if (reader.getClass().getName().contains("levigo"))
         {
             logLevigoDonated();

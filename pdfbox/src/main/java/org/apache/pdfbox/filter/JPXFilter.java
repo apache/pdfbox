@@ -120,7 +120,8 @@ public final class JPXFilter extends Filter
     // try to read using JAI Image I/O
     private BufferedImage readJPX(InputStream input, DecodeOptions options, DecodeResult result) throws IOException
     {
-        ImageReader reader = findImageReader("JPEG2000", "Java Advanced Imaging (JAI) Image I/O Tools are not installed");
+        ImageReader reader = findImageReader("JPEG2000",
+                "Java Advanced Imaging (JAI) Image I/O Tools are not installed", false);
         // PDFBOX-4121: ImageIO.createImageInputStream() is much slower
         try (ImageInputStream iis = new MemoryCacheImageInputStream(input))
         {

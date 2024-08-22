@@ -153,17 +153,18 @@ public abstract class Filter
      *
      * @param formatName The image format to search for.
      * @param errorCause The probably cause if something goes wrong.
+     * @param raster Whether the reader needs to support readRaster().
      * @return The image reader for the format.
      * @throws MissingImageReaderException if no image reader is found.
      */
-    public static final ImageReader findImageReader(String formatName, String errorCause)
+    public static final ImageReader findImageReader(String formatName, String errorCause, boolean raster)
             throws MissingImageReaderException
     {
         Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName(formatName);
         while (readers.hasNext())
         {
             ImageReader reader = readers.next();
-            if (reader != null)
+            if (reader != null && (!raster || reader.canReadRaster()))
             {
                 return reader;
             }
