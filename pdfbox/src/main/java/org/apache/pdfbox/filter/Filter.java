@@ -168,6 +168,10 @@ public abstract class Filter
             {
                 return reader;
             }
+            if (reader != null)
+            {
+                reader.dispose();
+            }
         }
         throw new MissingImageReaderException("Cannot read " + formatName + " image: " + errorCause);
     }
