@@ -148,8 +148,7 @@ public final class JPEGFactory
     private static Dimensions retrieveDimensions(ByteArrayInputStream stream) throws IOException
     {
         ImageReader reader =
-                Filter.findImageReader("JPEG", "a suitable JAI I/O image filter is not installed",
-                true);
+                Filter.findRasterReader("JPEG", "a suitable JAI I/O image filter is not installed");
         try (ImageInputStream iis = ImageIO.createImageInputStream(stream))
         {
             reader.setInput(iis);
