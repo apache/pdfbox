@@ -47,6 +47,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.MissingImageReaderException;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -148,17 +149,8 @@ public final class JPEGFactory
 
     private static Dimensions retrieveDimensions(ByteArrayInputStream stream) throws IOException
     {
-        // find suitable image reader
-        Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("JPEG");
-        ImageReader reader = null;
-        while (readers.hasNext())
-        {
-            reader = readers.next();
-            if (reader.canReadRaster())
-            {
-                break;
-            }
-        }
+        ImageReader reader =
+                Filter.findRasterReader("JPEG", "a suitable JAI I/O image filter is not installed");
 
         if (reader == null)
         {
