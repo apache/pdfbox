@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.filter;
 
+import java.awt.image.BufferedImage;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
 
@@ -29,6 +31,7 @@ public final class DecodeResult
 {
     private final COSDictionary parameters;
     private PDJPXColorSpace colorSpace;
+    private BufferedImage smask;
 
     DecodeResult(COSDictionary parameters)
     {
@@ -73,5 +76,15 @@ public final class DecodeResult
     void setColorSpace(PDJPXColorSpace colorSpace)
     {
         this.colorSpace = colorSpace;
+    }
+
+    void setJPXSMask(BufferedImage smask)
+    {
+        this.smask = smask;
+    }
+
+    public BufferedImage getJPXSMask()
+    {
+        return smask;
     }
 }
