@@ -83,6 +83,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     private boolean hasJPXFilter = false;
     // is set to true after reading some values from a JPX-based image
     private boolean jpxValuesInitialized = false;
+    private BufferedImage jpxSMask = null;
 
     /**
      * current resource dictionary (has color spaces)
@@ -489,8 +490,15 @@ public final class PDImageXObject extends PDXObject implements PDImage
         final BufferedImage image;
         final PDImageXObject softMask = getSoftMask();
         final PDImageXObject mask = getMask();
+        if (jpxSMask != null)
+        {
+            // PDFBOX-5657: handle JPEG2000 SMaskInData
+            image = applyMask(SampledImageReader.getRGBImage(this, region, subsampling, getColorKeyMask()),
+                    jpxSMask, false, true,
+                    null);
+        }
         // soft mask (overrides explicit mask)
-        if (softMask != null)
+        else if (softMask != null)
         {
             image = applyMask(SampledImageReader.getRGBImage(this, region, subsampling, getColorKeyMask()),
                     softMask.getOpaqueImage(region, subsampling), softMask.getInterpolate(), true,
@@ -750,6 +758,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
             {
                 colorSpace = decodeResult.getJPXColorSpace();
             }
+            jpxSMask = decodeResult.getJPXSMask();
             jpxValuesInitialized = true;
         }
         catch (IOException exception)
