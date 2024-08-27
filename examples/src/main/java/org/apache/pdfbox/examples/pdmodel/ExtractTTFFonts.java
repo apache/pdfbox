@@ -19,11 +19,15 @@ package org.apache.pdfbox.examples.pdmodel;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.pdfbox.cos.COSDictionary;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDCIDFont;
@@ -34,6 +38,13 @@ import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
+import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 
 /**
  * This will extract all true type-fonts of a pdf.
@@ -44,6 +55,8 @@ public final class ExtractTTFFonts
     private int fontCounter = 1;
 
     @SuppressWarnings({"squid:S2068"})
+    private final Set<COSDictionary> fontSet = new HashSet<>();
+    private int currentPage;
     private static final String PASSWORD = "-password";
     private static final String PREFIX = "-prefix";
     private static final String ADDKEY = "-addkey";
@@ -124,11 +137,21 @@ public final class ExtractTTFFonts
                 try
                 {
                     document = PDDocument.load(new File(pdfFile), password);
-                    for (PDPage page : document.getPages())
+                    PDPageTree pageTree = document.getPages();
+                    for (PDPage page : pageTree)
                     {
-                        PDResources resources = page.getResources();
+                        currentPage = pageTree.indexOf(page) + 1;
                         // extract all fonts which are part of the page resources
-                        processResources(resources, prefix, addKey);
+                        processResources(page.getResources(), prefix, addKey);
+                        
+                        for (PDAnnotation ann : page.getAnnotations())
+                        {
+                            PDAppearanceStream nas = ann.getNormalAppearanceStream();
+                            if (nas != null)
+                            {
+                                processResources(nas.getResources(), prefix, addKey);
+                            }
+                        }
                     }
                 }
                 finally
@@ -152,6 +175,12 @@ public final class ExtractTTFFonts
         for (COSName key : resources.getFontNames())
         {
             PDFont font = resources.getFont(key);
+            System.out.println(font.getName() + " on page " + currentPage);
+            if (fontSet.contains(font.getCOSObject()))
+            {
+                continue;
+            }
+            fontSet.add(font.getCOSObject());
             // write the font
             if (font instanceof PDTrueTypeFont)
             {
@@ -191,11 +220,33 @@ public final class ExtractTTFFonts
             if (xobject instanceof PDFormXObject)
             {
                 PDFormXObject xObjectForm = (PDFormXObject) xobject;
-                PDResources formResources = xObjectForm.getResources();
-                processResources(formResources, prefix, addKey);
+                processResources(xObjectForm.getResources(), prefix, addKey);
             }
         }
 
+        for (COSName name : resources.getPatternNames())
+        {
+            PDAbstractPattern pattern = resources.getPattern(name);
+            if (pattern instanceof PDTilingPattern)
+            {
+                PDTilingPattern tilingPattern = (PDTilingPattern) pattern;
+                processResources(tilingPattern.getResources(), prefix, addKey);
+            }
+        }
+
+        for (COSName name : resources.getExtGStateNames())
+        {
+            PDExtendedGraphicsState extGState = resources.getExtGState(name);
+            PDSoftMask softMask = extGState.getSoftMask();
+            if (softMask != null)
+            {
+                PDTransparencyGroup group = softMask.getGroup();
+                if (group != null)
+                {
+                    processResources(group.getResources(), prefix, addKey);
+                }
+            }
+        }
     }
 
     private void writeFont(PDFontDescriptor fd, String name) throws IOException
