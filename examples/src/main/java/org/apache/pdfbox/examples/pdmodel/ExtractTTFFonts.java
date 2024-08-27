@@ -58,7 +58,7 @@ public final class ExtractTTFFonts
     private int fontCounter = 1;
 
     @SuppressWarnings({"squid:S2068"})
-    private final Set<COSDictionary> fontSet = new HashSet<>();
+    private final Set<COSDictionary> fontSet = new HashSet<COSDictionary>();
     private int currentPage;
     private static final String PASSWORD = "-password";
     private static final String PREFIX = "-prefix";
