@@ -44,7 +44,10 @@ import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 
 /**
  * This will extract all true type-fonts of a pdf.
@@ -137,6 +140,11 @@ public final class ExtractTTFFonts
                 try
                 {
                     document = PDDocument.load(new File(pdfFile), password);
+                    PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+                    if (acroForm != null)
+                    {
+                        processResources(acroForm.getDefaultResources(), prefix, addKey);
+                    }
                     PDPageTree pageTree = document.getPages();
                     for (PDPage page : pageTree)
                     {
@@ -150,6 +158,19 @@ public final class ExtractTTFFonts
                             if (nas != null)
                             {
                                 processResources(nas.getResources(), prefix, addKey);
+                            }
+                            PDAppearanceDictionary appearance = ann.getAppearance();
+                            if (appearance != null)
+                            {
+                                PDAppearanceEntry nae = appearance.getNormalAppearance();
+                                if (nae != null)
+                                {
+                                    nas = nae.getAppearanceStream();
+                                    if (nas != null)
+                                    {
+                                        processResources(nas.getResources(), prefix, addKey);
+                                    }
+                                }
                             }
                         }
                     }
