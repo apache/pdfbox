@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.pdfbox.Loader;
@@ -163,12 +164,17 @@ public final class ExtractTTFFonts
                             if (appearance != null)
                             {
                                 PDAppearanceEntry nae = appearance.getNormalAppearance();
-                                if (nae != null)
+                                if (nae != null && nae.isStream())
                                 {
                                     nas = nae.getAppearanceStream();
-                                    if (nas != null)
+                                    processResources(nas.getResources(), prefix, addKey);
+                                }
+                                else if (nae != null && nae.isSubDictionary())
+                                {
+                                    Map<COSName, PDAppearanceStream> subDic = nae.getSubDictionary();
+                                    for (PDAppearanceStream as : subDic.values())
                                     {
-                                        processResources(nas.getResources(), prefix, addKey);
+                                        processResources(as.getResources(), prefix, addKey);
                                     }
                                 }
                             }
@@ -189,7 +195,8 @@ public final class ExtractTTFFonts
         for (COSName key : resources.getFontNames())
         {
             PDFont font = resources.getFont(key);
-            System.out.println(font.getName() + " on page " + currentPage);
+            System.out.println((font == null || font.getName() == null ? "(null)" : font.getName()) +
+                    " on page " + currentPage);
             if (fontSet.contains(font.getCOSObject()))
             {
                 continue;
