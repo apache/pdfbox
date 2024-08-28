@@ -366,10 +366,10 @@ final class FileSystemFontProvider extends FontProvider
                 }
                 else
                 {
-                    LOG.warn("Building on-disk font cache, this may take a while");
+                    LOG.info("Building on-disk font cache, this may take a while");
                     scanFonts(files);
                     saveDiskCache();
-                    LOG.warn("Finished building on-disk font cache, found " + fontInfoList.size()
+                    LOG.info("Finished building on-disk font cache, found " + fontInfoList.size()
                             + " fonts");
                 }
             }
@@ -662,7 +662,7 @@ final class FileSystemFontProvider extends FontProvider
         if (!pending.isEmpty())
         {
             // re-build the entire cache if we encounter un-cached fonts (could be optimised)
-            LOG.warn(pending.size() + " new fonts found, font cache will be re-built");
+            LOG.info(pending.size() + " new fonts found, font cache will be re-built");
             return null;
         }
         
