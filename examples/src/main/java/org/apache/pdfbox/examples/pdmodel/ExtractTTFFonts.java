@@ -202,7 +202,11 @@ public final class ExtractTTFFonts
         for (COSName key : resources.getFontNames())
         {
             PDFont font = resources.getFont(key);
-            System.out.println((font == null || font.getName() == null ? "(null)" : font.getName()) +
+            if (font == null)
+            {
+                continue;
+            }
+            System.out.println((font.getName() == null ? "(null)" : font.getName()) +
                     " on page " + currentPage);
             if (fontSet.contains(font.getCOSObject()))
             {
