@@ -192,6 +192,12 @@ public final class ExtractTTFFonts
             return;
         }
 
+        processResourcesFonts(resources, addKey, prefix);
+        processNestedResources(resources, prefix, addKey);
+    }
+
+    private void processResourcesFonts(PDResources resources, boolean addKey, String prefix) throws IOException
+    {
         for (COSName key : resources.getFontNames())
         {
             PDFont font = resources.getFont(key);
@@ -238,7 +244,11 @@ public final class ExtractTTFFonts
                 }
             }
         }
+    }
 
+    private void processNestedResources(PDResources resources, String prefix, boolean addKey)
+            throws IOException
+    {
         for (COSName name : resources.getXObjectNames())
         {
             PDXObject xobject = resources.getXObject(name);
