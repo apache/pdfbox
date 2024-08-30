@@ -199,6 +199,12 @@ public final class ExtractTTFFonts
             return;
         }
 
+        processResourcesFonts(resources, addKey, prefix);
+        processNestedResources(resources, prefix, addKey);
+    }
+
+    private void processResourcesFonts(PDResources resources, boolean addKey, String prefix) throws IOException
+    {
         for (COSName key : resources.getFontNames())
         {
             PDFont font = resources.getFont(key);
@@ -216,7 +222,7 @@ public final class ExtractTTFFonts
             // write the font
             if (font instanceof PDTrueTypeFont)
             {
-                String name = null;
+                String name;
                 if (addKey)
                 {
                     name = getUniqueFileName(prefix + "_" + key, "ttf");
@@ -232,7 +238,7 @@ public final class ExtractTTFFonts
                 PDCIDFont descendantFont = ((PDType0Font) font).getDescendantFont();
                 if (descendantFont instanceof PDCIDFontType2)
                 {
-                    String name = null;
+                    String name;
                     if (addKey)
                     {
                         name = getUniqueFileName(prefix + "_" + key, "ttf");
@@ -245,7 +251,11 @@ public final class ExtractTTFFonts
                 }
             }
         }
+    }
 
+    private void processNestedResources(PDResources resources, String prefix, boolean addKey)
+            throws IOException
+    {
         for (COSName name : resources.getXObjectNames())
         {
             PDXObject xobject = resources.getXObject(name);
