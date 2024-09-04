@@ -751,8 +751,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         COSInputStream is = null;
         try
         {
-            DecodeOptions options = new DecodeOptions(cachedImageSubsampling);
-            is = stream.createInputStream(options);
+            is = stream.createInputStream();
             DecodeResult decodeResult = is.getDecodeResult();
             stream.getCOSObject().addAll(decodeResult.getParameters());
             if (colorSpace == null)
