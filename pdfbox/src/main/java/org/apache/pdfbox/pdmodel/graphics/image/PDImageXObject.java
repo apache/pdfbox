@@ -713,8 +713,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         // bits per component
         // the colorspace of the image is used if the dictionary doesn't provide any value
         PDStream stream = getStream();
-        DecodeOptions options = new DecodeOptions(cachedImageSubsampling);
-        try (COSInputStream is = stream.createInputStream(options))
+        try (COSInputStream is = stream.createInputStream())
         {
             DecodeResult decodeResult = is.getDecodeResult();
             stream.getCOSObject().addAll(decodeResult.getParameters());
