@@ -55,14 +55,28 @@ public final class COSString extends COSBase
             Boolean.getBoolean("org.apache.pdfbox.forceParsing");
 
     /**
-     * Creates a new PDF string from a byte array. This method can be used to read a string from
-     * an existing PDF file, or to create a new byte string.
+     * Creates a new PDF string from a byte array. This method can be used to read a string from an existing PDF file,
+     * or to create a new byte string.
      *
      * @param bytes The raw bytes of the PDF text string or byte string.
      */
     public COSString(byte[] bytes)
     {
-        setValue(bytes);
+        this(bytes, false);
+    }
+
+    /**
+     * Creates a new PDF string from a byte array. This method can be used to read a string from an existing PDF file,
+     * or to create a new byte string.
+     *
+     * @param bytes The raw bytes of the PDF text string or byte string.
+     * @param forceHex forces the hexadecimal presentation of the string if set to true
+     * 
+     */
+    public COSString(byte[] bytes, boolean forceHex)
+    {
+        forceHexForm = forceHex;
+        this.bytes = Arrays.copyOf(bytes, bytes.length);
     }
 
     /**
@@ -72,6 +86,19 @@ public final class COSString extends COSBase
      */
     public COSString(String text)
     {
+        this(text, false);
+    }
+
+    /**
+     * Creates a new <i>text string</i> from a Java String.
+     *
+     * @param text The string value of the object.
+     * @param forceHex forces the hexadecimal presentation of the string if set to true
+     * 
+     */
+    public COSString(String text, boolean forceHex)
+    {
+        forceHexForm = forceHex;
         // check whether the string uses only characters available in PDFDocEncoding
         boolean isOnlyPDFDocEncoding = true;
         for (char c : text.toCharArray())
@@ -151,7 +178,7 @@ public final class COSString extends COSBase
     @Deprecated
     public void setValue(byte[] value)
     {
-        bytes = value.clone();
+        bytes = Arrays.copyOf(value, value.length);
     }
 
     /**
@@ -221,7 +248,7 @@ public final class COSString extends COSBase
      */
     public byte[] getBytes()
     {
-        return bytes.clone();
+        return Arrays.copyOf(bytes, bytes.length);
     }
 
     /**
