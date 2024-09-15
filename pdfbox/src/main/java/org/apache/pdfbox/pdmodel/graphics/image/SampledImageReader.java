@@ -275,84 +275,89 @@ final class SampledImageReader
         final float[] decode = getDecodeArray(pdImage);
         DecodeOptions options = new DecodeOptions();
 
-        // read bit stream
-        try (ImageInputStream iis = new MemoryCacheImageInputStream(pdImage.createInputStream(options)))
+        // MemoryCacheImageInputStream doesn't close the wrapped stream
+        try (InputStream imageStream = pdImage.createInputStream(options))
         {
-            final int inputWidth = pdImage.getWidth();
-            final int scanWidth = pdImage.getWidth();
-            final int scanHeight = pdImage.getHeight();
-
-            // create stream
-            final float sampleMax = (float) Math.pow(2, bitsPerComponent) - 1f;
-            final boolean isIndexed = colorSpace instanceof PDIndexed;
-
-            // calculate row padding
-            int padding = 0;
-            if (inputWidth * numComponents * bitsPerComponent % 8 > 0)
+            // read bit stream
+            try (ImageInputStream iis = new MemoryCacheImageInputStream(imageStream))
             {
-                padding = 8 - (inputWidth * numComponents * bitsPerComponent % 8);
-            }
+                final int inputWidth = pdImage.getWidth();
+                final int scanWidth = pdImage.getWidth();
+                final int scanHeight = pdImage.getHeight();
 
-            // read stream
-            final boolean isShort = raster.getDataBuffer().getDataType() == DataBuffer.TYPE_USHORT;
-            assert !isIndexed || !isShort;
-            final byte[] srcColorValuesBytes = isShort ? null : new byte[numComponents];
-            final short[] srcColorValuesShort = isShort ? new short[numComponents] : null;
-            for (int y = 0; y < scanHeight; y++)
-            {
-                for (int x = 0; x < scanWidth; x++)
+                // create stream
+                final float sampleMax = (float) Math.pow(2, bitsPerComponent) - 1f;
+                final boolean isIndexed = colorSpace instanceof PDIndexed;
+
+                // calculate row padding
+                int padding = 0;
+                if (inputWidth * numComponents * bitsPerComponent % 8 > 0)
                 {
-                    for (int c = 0; c < numComponents; c++)
+                    padding = 8 - (inputWidth * numComponents * bitsPerComponent % 8);
+                }
+
+                // read stream
+                final boolean isShort = raster.getDataBuffer()
+                        .getDataType() == DataBuffer.TYPE_USHORT;
+                assert !isIndexed || !isShort;
+                final byte[] srcColorValuesBytes = isShort ? null : new byte[numComponents];
+                final short[] srcColorValuesShort = isShort ? new short[numComponents] : null;
+                for (int y = 0; y < scanHeight; y++)
+                {
+                    for (int x = 0; x < scanWidth; x++)
                     {
-                        int value = (int) iis.readBits(bitsPerComponent);
-
-                        // decode array
-                        final float dMin = decode[c * 2];
-                        final float dMax = decode[(c * 2) + 1];
-
-                        // interpolate to domain
-                        float output = dMin + (value * ((dMax - dMin) / sampleMax));
-
-                        if (isIndexed)
+                        for (int c = 0; c < numComponents; c++)
                         {
-                            // indexed color spaces get the raw value, because the TYPE_BYTE
-                            // below cannot be reversed by the color space without it having
-                            // knowledge of the number of bits per component
-                            srcColorValuesBytes[c] = (byte) Math.round(output);
-                        }
-                        else
-                        {
-                            if (isShort)
+                            int value = (int) iis.readBits(bitsPerComponent);
+
+                            // decode array
+                            final float dMin = decode[c * 2];
+                            final float dMax = decode[(c * 2) + 1];
+
+                            // interpolate to domain
+                            float output = dMin + (value * ((dMax - dMin) / sampleMax));
+
+                            if (isIndexed)
                             {
-                                // interpolate to TYPE_SHORT
-                                int outputShort = Math
-                                        .round(((output - Math.min(dMin, dMax)) / Math.abs(dMax - dMin)) * 65535f);
-
-                                srcColorValuesShort[c] = (short) outputShort;
+                                // indexed color spaces get the raw value, because the TYPE_BYTE
+                                // below cannot be reversed by the color space without it having
+                                // knowledge of the number of bits per component
+                                srcColorValuesBytes[c] = (byte) Math.round(output);
                             }
                             else
                             {
-                                // interpolate to TYPE_BYTE
-                                int outputByte = Math
-                                        .round(((output - Math.min(dMin, dMax)) / Math.abs(dMax - dMin)) * 255f);
+                                if (isShort)
+                                {
+                                    // interpolate to TYPE_SHORT
+                                    int outputShort = Math.round(((output - Math.min(dMin, dMax))
+                                            / Math.abs(dMax - dMin)) * 65535f);
 
-                                srcColorValuesBytes[c] = (byte) outputByte;
+                                    srcColorValuesShort[c] = (short) outputShort;
+                                }
+                                else
+                                {
+                                    // interpolate to TYPE_BYTE
+                                    int outputByte = Math.round(((output - Math.min(dMin, dMax))
+                                            / Math.abs(dMax - dMin)) * 255f);
+
+                                    srcColorValuesBytes[c] = (byte) outputByte;
+                                }
                             }
+                        }
+
+                        if (isShort)
+                        {
+                            raster.setDataElements(x, y, srcColorValuesShort);
+                        }
+                        else
+                        {
+                            raster.setDataElements(x, y, srcColorValuesBytes);
                         }
                     }
 
-                    if (isShort)
-                    {
-                        raster.setDataElements(x, y, srcColorValuesShort);
-                    }
-                    else
-                    {
-                        raster.setDataElements(x, y, srcColorValuesBytes);
-                    }
+                    // rows are padded to the nearest byte
+                    iis.readBits(padding);
                 }
-
-                // rows are padded to the nearest byte
-                iis.readBits(padding);
             }
         }
     }
@@ -564,131 +569,141 @@ final class SampledImageReader
 
         DecodeOptions options = new DecodeOptions(currentSubsampling);
         options.setSourceRegion(clipped);
-        // read bit stream
-        try (ImageInputStream iis = new MemoryCacheImageInputStream(pdImage.createInputStream(options)))
+        // MemoryCacheImageInputStream doesn't close the wrapped stream
+        try (InputStream imageStream = pdImage.createInputStream(options))
         {
-            final int inputWidth;
-            final int startx;
-            final int starty;
-            final int scanWidth;
-            final int scanHeight;
-            if (options.isFilterSubsampled())
+            // read bit stream
+            try (ImageInputStream iis = new MemoryCacheImageInputStream(imageStream))
             {
-                // Decode options were honored, and so there is no need for additional clipping or subsampling
-                inputWidth = width;
-                startx = 0;
-                starty = 0;
-                scanWidth = width;
-                scanHeight = height;
-                currentSubsampling = 1;
-            }
-            else
-            {
-                // Decode options not honored, so we need to clip and subsample ourselves.
-                inputWidth = pdImage.getWidth();
-                startx = clipped.x;
-                starty = clipped.y;
-                scanWidth = clipped.width;
-                scanHeight = clipped.height;
-            }
-            final float sampleMax = (float) Math.pow(2, bitsPerComponent) - 1f;
-            final boolean isIndexed = colorSpace instanceof PDIndexed;
-
-            // init color key mask
-            float[] colorKeyRanges = null;
-            BufferedImage colorKeyMask = null;
-            if (colorKey != null)
-            {
-                if (colorKey.size() >= numComponents * 2)
+                final int inputWidth;
+                final int startx;
+                final int starty;
+                final int scanWidth;
+                final int scanHeight;
+                if (options.isFilterSubsampled())
                 {
-                    colorKeyRanges = colorKey.toFloatArray();
-                    colorKeyMask = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+                    // Decode options were honored, and so there is no need for additional clipping or subsampling
+                    inputWidth = width;
+                    startx = 0;
+                    starty = 0;
+                    scanWidth = width;
+                    scanHeight = height;
+                    currentSubsampling = 1;
                 }
                 else
                 {
-                    LOG.warn("colorKey mask size is {}, should be {}, ignored", colorKey.size(),
-                            numComponents * 2);
+                    // Decode options not honored, so we need to clip and subsample ourselves.
+                    inputWidth = pdImage.getWidth();
+                    startx = clipped.x;
+                    starty = clipped.y;
+                    scanWidth = clipped.width;
+                    scanHeight = clipped.height;
                 }
-            }
+                final float sampleMax = (float) Math.pow(2, bitsPerComponent) - 1f;
+                final boolean isIndexed = colorSpace instanceof PDIndexed;
 
-            // calculate row padding
-            int padding = 0;
-            if (inputWidth * numComponents * bitsPerComponent % 8 > 0)
-            {
-                padding = 8 - (inputWidth * numComponents * bitsPerComponent % 8);
-            }
-
-            // read stream
-            byte[] srcColorValues = new byte[numComponents];
-            byte[] alpha = new byte[1];
-            for (int y = 0; y < starty + scanHeight; y++)
-            {
-                for (int x = 0; x < startx + scanWidth; x++)
+                // init color key mask
+                float[] colorKeyRanges = null;
+                BufferedImage colorKeyMask = null;
+                if (colorKey != null)
                 {
-                    boolean isMasked = true;
-                    for (int c = 0; c < numComponents; c++)
+                    if (colorKey.size() >= numComponents * 2)
                     {
-                        int value = (int)iis.readBits(bitsPerComponent);
-
-                        // color key mask requires values before they are decoded
-                        if (colorKeyRanges != null)
-                        {
-                            isMasked &= value >= colorKeyRanges[c * 2] &&
-                                        value <= colorKeyRanges[c * 2 + 1];
-                        }
-
-                        // decode array
-                        final float dMin = decode[c * 2];
-                        final float dMax = decode[(c * 2) + 1];
-
-                        // interpolate to domain
-                        float output = dMin + (value * ((dMax - dMin) / sampleMax));
-
-                        if (isIndexed)
-                        {
-                            // indexed color spaces get the raw value, because the TYPE_BYTE
-                            // below cannot be reversed by the color space without it having
-                            // knowledge of the number of bits per component
-                            srcColorValues[c] = (byte)Math.round(output);
-                        }
-                        else
-                        {
-                            // interpolate to TYPE_BYTE
-                            int outputByte = Math.round(((output - Math.min(dMin, dMax)) /
-                                    Math.abs(dMax - dMin)) * 255f);
-
-                            srcColorValues[c] = (byte)outputByte;
-                        }
+                        colorKeyRanges = colorKey.toFloatArray();
+                        colorKeyMask = new BufferedImage(width, height,
+                                BufferedImage.TYPE_BYTE_GRAY);
                     }
-                    // only write to output if within requested region and subsample.
-                    if (x >= startx && y >= starty && x % currentSubsampling == 0 && y % currentSubsampling == 0)
+                    else
                     {
-                        raster.setDataElements((x - startx) / currentSubsampling, (y - starty) / currentSubsampling, srcColorValues);
-
-                        // set alpha channel in color key mask, if any
-                        if (colorKeyMask != null)
-                        {
-                            alpha[0] = (byte)(isMasked ? 255 : 0);
-                            colorKeyMask.getRaster().setDataElements((x - startx) / currentSubsampling, (y - starty) / currentSubsampling, alpha);
-                        }
+                        LOG.warn("colorKey mask size is {}, should be {}, ignored", colorKey.size(),
+                                numComponents * 2);
                     }
                 }
 
-                // rows are padded to the nearest byte
-                iis.readBits(padding);
-            }
+                // calculate row padding
+                int padding = 0;
+                if (inputWidth * numComponents * bitsPerComponent % 8 > 0)
+                {
+                    padding = 8 - (inputWidth * numComponents * bitsPerComponent % 8);
+                }
 
-            // use the color space to convert the image to RGB
-            BufferedImage rgbImage = colorSpace.toRGBImage(raster);
+                // read stream
+                byte[] srcColorValues = new byte[numComponents];
+                byte[] alpha = new byte[1];
+                for (int y = 0; y < starty + scanHeight; y++)
+                {
+                    for (int x = 0; x < startx + scanWidth; x++)
+                    {
+                        boolean isMasked = true;
+                        for (int c = 0; c < numComponents; c++)
+                        {
+                            int value = (int) iis.readBits(bitsPerComponent);
 
-            // apply color mask, if any
-            if (colorKeyMask != null)
-            {
-                return applyColorKeyMask(rgbImage, colorKeyMask);
-            }
-            else
-            {
-                return rgbImage;
+                            // color key mask requires values before they are decoded
+                            if (colorKeyRanges != null)
+                            {
+                                isMasked &= value >= colorKeyRanges[c * 2]
+                                        && value <= colorKeyRanges[c * 2 + 1];
+                            }
+
+                            // decode array
+                            final float dMin = decode[c * 2];
+                            final float dMax = decode[(c * 2) + 1];
+
+                            // interpolate to domain
+                            float output = dMin + (value * ((dMax - dMin) / sampleMax));
+
+                            if (isIndexed)
+                            {
+                                // indexed color spaces get the raw value, because the TYPE_BYTE
+                                // below cannot be reversed by the color space without it having
+                                // knowledge of the number of bits per component
+                                srcColorValues[c] = (byte) Math.round(output);
+                            }
+                            else
+                            {
+                                // interpolate to TYPE_BYTE
+                                int outputByte = Math.round(
+                                        ((output - Math.min(dMin, dMax)) / Math.abs(dMax - dMin))
+                                                * 255f);
+
+                                srcColorValues[c] = (byte) outputByte;
+                            }
+                        }
+                        // only write to output if within requested region and subsample.
+                        if (x >= startx && y >= starty && x % currentSubsampling == 0
+                                && y % currentSubsampling == 0)
+                        {
+                            raster.setDataElements((x - startx) / currentSubsampling,
+                                    (y - starty) / currentSubsampling, srcColorValues);
+
+                            // set alpha channel in color key mask, if any
+                            if (colorKeyMask != null)
+                            {
+                                alpha[0] = (byte) (isMasked ? 255 : 0);
+                                colorKeyMask.getRaster().setDataElements(
+                                        (x - startx) / currentSubsampling,
+                                        (y - starty) / currentSubsampling, alpha);
+                            }
+                        }
+                    }
+
+                    // rows are padded to the nearest byte
+                    iis.readBits(padding);
+                }
+
+                // use the color space to convert the image to RGB
+                BufferedImage rgbImage = colorSpace.toRGBImage(raster);
+
+                // apply color mask, if any
+                if (colorKeyMask != null)
+                {
+                    return applyColorKeyMask(rgbImage, colorKeyMask);
+                }
+                else
+                {
+                    return rgbImage;
+                }
             }
         }
     }

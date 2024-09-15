@@ -21,6 +21,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -87,64 +88,66 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
         List<Patch> list = new ArrayList<>();
         long maxSrcCoord = (long) Math.pow(2, getBitsPerCoordinate()) - 1;
         long maxSrcColor = (long) Math.pow(2, getBitsPerComponent()) - 1;
-        COSStream cosStream = (COSStream) dict;
 
-        try (ImageInputStream mciis = new MemoryCacheImageInputStream(
-                cosStream.createInputStream()))
+        // MemoryCacheImageInputStream doesn't close the wrapped stream
+        try (InputStream imageStream = ((COSStream) dict).createInputStream())
         {
-            Point2D[] implicitEdge = new Point2D[4];
-            float[][] implicitCornerColor = new float[2][colRange.length];
-            byte flag = 0;
-
-            try
+            try (ImageInputStream mciis = new MemoryCacheImageInputStream(imageStream))
             {
-                flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
-            }
-            catch (EOFException ex)
-            {
-                LOG.error(ex);
-                return list;
-            }
-
-            boolean eof = false;
-            while (!eof)
-            {
+                Point2D[] implicitEdge = new Point2D[4];
+                float[][] implicitCornerColor = new float[2][colRange.length];
+                byte flag = 0;
+    
                 try
                 {
-                    boolean isFree = (flag == 0);
-                    Patch current = readPatch(mciis, isFree, implicitEdge, implicitCornerColor,
-                            maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, matrix, xform,
-                            controlPoints);
-                    if (current == null)
-                    {
-                        break;
-                    }
-                    list.add(current);
                     flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
-                    switch (flag)
-                    {
-                    case 0:
-                        break;
-                    case 1:
-                        implicitEdge = current.getFlag1Edge();
-                        implicitCornerColor = current.getFlag1Color();
-                        break;
-                    case 2:
-                        implicitEdge = current.getFlag2Edge();
-                        implicitCornerColor = current.getFlag2Color();
-                        break;
-                    case 3:
-                        implicitEdge = current.getFlag3Edge();
-                        implicitCornerColor = current.getFlag3Color();
-                        break;
-                    default:
-                        LOG.warn("bad flag: {}", flag);
-                        break;
-                    }
                 }
                 catch (EOFException ex)
                 {
-                    eof = true;
+                    LOG.error(ex);
+                    return list;
+                }
+    
+                boolean eof = false;
+                while (!eof)
+                {
+                    try
+                    {
+                        boolean isFree = (flag == 0);
+                        Patch current = readPatch(mciis, isFree, implicitEdge, implicitCornerColor,
+                                maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, matrix, xform,
+                                controlPoints);
+                        if (current == null)
+                        {
+                            break;
+                        }
+                        list.add(current);
+                        flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
+                        switch (flag)
+                        {
+                        case 0:
+                            break;
+                        case 1:
+                            implicitEdge = current.getFlag1Edge();
+                            implicitCornerColor = current.getFlag1Color();
+                            break;
+                        case 2:
+                            implicitEdge = current.getFlag2Edge();
+                            implicitCornerColor = current.getFlag2Color();
+                            break;
+                        case 3:
+                            implicitEdge = current.getFlag3Edge();
+                            implicitCornerColor = current.getFlag3Color();
+                            break;
+                        default:
+                            LOG.warn("bad flag: {}", flag);
+                            break;
+                        }
+                    }
+                    catch (EOFException ex)
+                    {
+                        eof = true;
+                    }
                 }
             }
         }
