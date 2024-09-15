@@ -85,10 +85,11 @@ final class SampledImageReader
         // avoid getting a BufferedImage for the mask to lessen memory footprint.
         // Such masks are always bpc=1 and have no colorspace, but have a decode.
         // (see 8.9.6.2 Stencil Masking)
+        InputStream imageStream = pdImage.createInputStream();
         ImageInputStream iis = null;
         try
         {
-            iis = new MemoryCacheImageInputStream(pdImage.createInputStream());
+            iis = new MemoryCacheImageInputStream(imageStream);
             final float[] decode = getDecodeArray(pdImage);
             int value = decode[0] < decode[1] ? 1 : 0;
             int rowLen = width / 8;
@@ -135,6 +136,8 @@ final class SampledImageReader
             {
                 iis.close();
             }
+            // MemoryCacheImageInputStream doesn't close the wrapped stream
+            imageStream.close();
         }
 
         return masked;
@@ -294,10 +297,11 @@ final class SampledImageReader
         DecodeOptions options = new DecodeOptions();
 
         // read bit stream
+        InputStream imageStream = pdImage.createInputStream(options);
         ImageInputStream iis = null;
         try
         {
-            iis = new MemoryCacheImageInputStream(pdImage.createInputStream(options));
+            iis = new MemoryCacheImageInputStream(imageStream);
 
             final int inputWidth = pdImage.getWidth();
             final int scanWidth = pdImage.getWidth();
@@ -382,6 +386,8 @@ final class SampledImageReader
             {
                 iis.close();
             }
+            // MemoryCacheImageInputStream doesn't close the wrapped stream
+            imageStream.close();
         }
     }
 
@@ -601,10 +607,11 @@ final class SampledImageReader
         DecodeOptions options = new DecodeOptions(currentSubsampling);
         options.setSourceRegion(clipped);
         // read bit stream
+        InputStream imageStream = pdImage.createInputStream(options);
         ImageInputStream iis = null;
         try
         {
-            iis = new MemoryCacheImageInputStream(pdImage.createInputStream(options));
+            iis = new MemoryCacheImageInputStream(imageStream);
 
             final int inputWidth;
             final int startx;
@@ -737,6 +744,8 @@ final class SampledImageReader
             {
                 iis.close();
             }
+            // MemoryCacheImageInputStream doesn't close the wrapped stream
+            imageStream.close();
         }
     }
 

@@ -20,6 +20,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.EOFException;
+import java.io.InputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -87,9 +88,8 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
         List<Patch> list = new ArrayList<Patch>();
         long maxSrcCoord = (long) Math.pow(2, getBitsPerCoordinate()) - 1;
         long maxSrcColor = (long) Math.pow(2, getBitsPerComponent()) - 1;
-        COSStream cosStream = (COSStream) dict;
-
-        ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.createInputStream());
+        InputStream imageStream = ((COSStream) dict).createInputStream();
+        ImageInputStream mciis = new MemoryCacheImageInputStream(imageStream);
         try
         {
             Point2D[] implicitEdge = new Point2D[4];
@@ -151,6 +151,8 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
         finally
         {
             mciis.close();
+            // MemoryCacheImageInputStream doesn't close the wrapped stream
+            imageStream.close();
         }
         return list;
     }

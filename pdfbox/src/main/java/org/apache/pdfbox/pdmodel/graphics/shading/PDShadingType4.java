@@ -21,6 +21,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -117,9 +118,9 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
         List<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
         long maxSrcCoord = (long) Math.pow(2, getBitsPerCoordinate()) - 1;
         long maxSrcColor = (long) Math.pow(2, getBitsPerComponent()) - 1;
-        COSStream stream = (COSStream) dict;
 
-        ImageInputStream mciis = new MemoryCacheImageInputStream(stream.createInputStream());
+        InputStream imageStream = ((COSStream) dict).createInputStream();
+        ImageInputStream mciis = new MemoryCacheImageInputStream(imageStream);
         try
         {
             byte flag = (byte) 0;
@@ -203,6 +204,8 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
         finally
         {
             mciis.close();
+            // MemoryCacheImageInputStream doesn't close the wrapped stream
+            imageStream.close();
         }
         return list;
     }
