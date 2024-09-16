@@ -16,15 +16,12 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.pdfbox.util.Matrix;
 
@@ -62,11 +59,11 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
     }
 
     @Override
-    protected Map<Point, Integer> calcPixelTable(Rectangle deviceBounds) throws IOException
+    protected Integer[][] calcPixelTableArray(Rectangle deviceBounds) throws IOException
     {
-        Map<Point, Integer> map = new HashMap<>();
-        super.calcPixelTable(triangleList, map, deviceBounds);
-        return map;
+        Integer[][] array = new Integer[deviceBounds.width + 1][deviceBounds.height + 1];
+        calcPixelTable(triangleList, array, deviceBounds);
+        return array;
     }
 
     @Override
