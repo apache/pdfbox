@@ -271,8 +271,8 @@ class TestExtractText
             "-o", path.toString() });
 
         String result = new String(Files.readAllBytes(path), "UTF-8");
-        assertTrue(result.contains("Horizontal Text"), result);
-        assertTrue(result.contains("Vertical Text"), result);
+        assertTrue(result.contains("Horizontal Text"));
+        assertTrue(result.contains("Vertical Text"));
     }
 
 }
