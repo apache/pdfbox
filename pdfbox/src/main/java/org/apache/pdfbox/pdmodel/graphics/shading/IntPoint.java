@@ -23,13 +23,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Point class with faster hashCode() to speed up the rendering of Gouraud shadings. Should only be
- * used for maps or sets when all elements are of this type, because the hashCode() method violates
- * its general contract "If two objects are equal according to the equals(Object) method, then
- * calling the hashCode method on each of the two objects must produce the same" when IntPoint is
- * mixed with Point, because IntPoint(x,y) would have a different hashCode than Point(x,y).
+ * Point class with faster hashCode() to speed up the rendering of Gouraud shadings. Should only be used for maps or
+ * sets when all elements are of this type, because the hashCode() method violates its general contract "If two objects
+ * are equal according to the equals(Object) method, then calling the hashCode method on each of the two objects must
+ * produce the same" when IntPoint is mixed with Point, because IntPoint(x,y) would have a different hashCode than
+ * Point(x,y).
  *
  * @author Tilman Hausherr
+ * 
+ * @deprecated the map in question was replaced with an array, so that this class is no longer needed
  */
 class IntPoint extends Point
 {
