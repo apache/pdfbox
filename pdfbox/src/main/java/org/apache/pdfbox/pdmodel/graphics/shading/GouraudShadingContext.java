@@ -22,7 +22,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -64,9 +64,16 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
     @Override
     protected Map<Point, Integer> calcPixelTable(Rectangle deviceBounds) throws IOException
     {
-        Map<Point, Integer> map = new HashMap<Point, Integer>();
-        super.calcPixelTable(triangleList, map, deviceBounds);
-        return map;
+        // deprecated
+        return Collections.emptyMap();
+    }
+
+    @Override
+    protected Integer[][] calcPixelTableArray(Rectangle deviceBounds) throws IOException
+    {
+        Integer[][] array = new Integer[deviceBounds.width + 1][deviceBounds.height + 1];
+        calcPixelTable(triangleList, array, deviceBounds);
+        return array;
     }
 
     @Override

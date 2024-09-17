@@ -20,7 +20,7 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -63,12 +63,19 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     @Override
     protected Map<Point, Integer> calcPixelTable(Rectangle deviceBounds)  throws IOException
     {
-        Map<Point, Integer> map = new HashMap<Point, Integer>();
+        // deprecated
+        return Collections.emptyMap();
+    }
+
+    @Override
+    protected Integer[][] calcPixelTableArray(Rectangle deviceBounds) throws IOException
+    {
+        Integer[][] array = new Integer[deviceBounds.width][deviceBounds.height];
         for (Patch it : patchList)
         {
-            super.calcPixelTable(it.listOfTriangles, map, deviceBounds);
+            calcPixelTable(it.listOfTriangles, array, deviceBounds);
         }
-        return map;
+        return array;
     }
 
     @Override
