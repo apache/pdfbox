@@ -125,7 +125,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext
                 {
                     for (int y = boundary[2]; y <= boundary[3]; y++)
                     {
-                        Point p = new IntPoint(x, y);
+                        Point p = new Point(x, y);
                         if (tri.contains(p))
                         {
                             addValueToArray(p, evalFunctionAndConvertToRGB(tri.calcColor(p)),
@@ -136,11 +136,11 @@ abstract class TriangleBasedShadingContext extends ShadingContext
 
                 // "fatten" triangle by drawing the borders with Bresenham's line algorithm
                 // Inspiration: Raph Levien in http://bugs.ghostscript.com/show_bug.cgi?id=219588
-                Point p0 = new IntPoint((int) Math.round(tri.corner[0].getX()),
+                Point p0 = new Point((int) Math.round(tri.corner[0].getX()),
                         (int) Math.round(tri.corner[0].getY()));
-                Point p1 = new IntPoint((int) Math.round(tri.corner[1].getX()),
+                Point p1 = new Point((int) Math.round(tri.corner[1].getX()),
                         (int) Math.round(tri.corner[1].getY()));
-                Point p2 = new IntPoint((int) Math.round(tri.corner[2].getX()),
+                Point p2 = new Point((int) Math.round(tri.corner[2].getX()),
                         (int) Math.round(tri.corner[2].getY()));
                 Line l1 = new Line(p0, p1, tri.color[0], tri.color[1]);
                 Line l2 = new Line(p1, p2, tri.color[1], tri.color[2]);
