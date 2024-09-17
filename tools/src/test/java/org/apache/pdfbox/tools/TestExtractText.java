@@ -47,9 +47,9 @@ class TestExtractText
     final PrintStream originalOut = System.out;
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     PrintStream printStream = null;
-    static final String testfile1 = "src/test/resources/org/apache/pdfbox/testPDFPackage.pdf";
-    static final String testfile2 = "src/test/resources/org/apache/pdfbox/hello3.pdf";
-    static final String testfile3 = "src/test/resources/org/apache/pdfbox/AngledExample.pdf";
+    static final String TESTFILE1 = "src/test/resources/org/apache/pdfbox/testPDFPackage.pdf";
+    static final String TESTFILE2 = "src/test/resources/org/apache/pdfbox/hello3.pdf";
+    static final String TESTFILE3 = "src/test/resources/org/apache/pdfbox/AngledExample.pdf";
     static String filename1 = null;
     static String filename2 = null;
 
@@ -57,8 +57,8 @@ class TestExtractText
     public static void setupFilenames()
     {
         // the filename representation is platform dependent
-        filename1 = Paths.get(testfile1).toString();
-        filename2 = Paths.get(testfile2).toString();
+        filename1 = Paths.get(TESTFILE1).toString();
+        filename2 = Paths.get(TESTFILE2).toString();
     }
 
     @BeforeEach
@@ -97,7 +97,7 @@ class TestExtractText
     {
         ExtractText app = new ExtractText();
         CommandLine cmd = new CommandLine(app);
-        int exitCode = cmd.execute("-i", testfile1, "-console");
+        int exitCode = cmd.execute("-i", TESTFILE1, "-console");
         assertEquals(0, exitCode);
 
         String result = out.toString("UTF-8");
@@ -119,7 +119,7 @@ class TestExtractText
     {
         ExtractText app = new ExtractText();
         CommandLine cmd = new CommandLine(app);
-        int exitCode = cmd.execute("-i", testfile1, "-console", "-addFileName");
+        int exitCode = cmd.execute("-i", TESTFILE1, "-console", "-addFileName");
         assertEquals(0, exitCode);
 
         String result = out.toString("UTF-8");
@@ -139,8 +139,8 @@ class TestExtractText
     @Test
     void testPDFBoxRepeatableSubcommand() throws Exception
     {
-        PDFBox.main(new String[] { "export:text", "-i", testfile1, "-console", //
-                "export:text", "-i", testfile2, "-console" });
+        PDFBox.main(new String[] { "export:text", "-i", TESTFILE1, "-console", //
+                "export:text", "-i", TESTFILE2, "-console" });
 
         String result = out.toString("UTF-8");
         assertTrue(result.contains("PDF1"));
@@ -159,8 +159,8 @@ class TestExtractText
     @Test
     void testPDFBoxRepeatableSubcommandAddFileName() throws Exception
     {
-        PDFBox.main(new String[] { "export:text", "-i", testfile1, "-console", "-addFileName",
-                "export:text", "-i", testfile2, "-console", "-addFileName" });
+        PDFBox.main(new String[] { "export:text", "-i", TESTFILE1, "-console", "-addFileName",
+                "export:text", "-i", TESTFILE2, "-console", "-addFileName" });
 
         String result = out.toString("UTF-8");
         assertTrue(result.contains("PDF1"));
@@ -193,9 +193,9 @@ class TestExtractText
         }
         assertNotNull(path);
 
-        PDFBox.main(new String[] { "export:text", "-i", testfile1, "-encoding", "UTF-8",
+        PDFBox.main(new String[] { "export:text", "-i", TESTFILE1, "-encoding", "UTF-8",
                 "-addFileName", "-o", path.toString(), //
-                "export:text", "-i", testfile2, "-encoding", "UTF-8", //
+                "export:text", "-i", TESTFILE2, "-encoding", "UTF-8", //
                 "-addFileName", "-o", path.toString() });
 
         String result = new String(Files.readAllBytes(path), "UTF-8");
@@ -230,9 +230,9 @@ class TestExtractText
         }
         assertNotNull(path);
 
-        PDFBox.main(new String[] { "export:text", "-i", testfile1, "-encoding", "UTF-8",
+        PDFBox.main(new String[] { "export:text", "-i", TESTFILE1, "-encoding", "UTF-8",
                 "-addFileName", "-o", path.toString(), //
-                "export:text", "-i", testfile2, "-encoding", "UTF-8",
+                "export:text", "-i", TESTFILE2, "-encoding", "UTF-8",
                 "-addFileName", "-o", path.toString(), "-append" });
 
         String result = new String(Files.readAllBytes(path), "UTF-8");
@@ -267,7 +267,7 @@ class TestExtractText
         }
         assertNotNull(path);
 
-        PDFBox.main(new String[] { "export:text", "-rotationMagic", "-i", testfile3,
+        PDFBox.main(new String[] { "export:text", "-rotationMagic", "-i", TESTFILE3,
             "-o", path.toString() });
 
         String result = new String(Files.readAllBytes(path), "UTF-8");
