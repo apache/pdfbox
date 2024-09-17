@@ -334,7 +334,7 @@ public final class ExtractText  implements Callable<Integer>
                         stripper.writeText(document, output);
 
                         // remove prepended transformation
-                        ((COSArray) page.getCOSObject().getItem(COSName.CONTENTS)).remove(0);
+                        page.getCOSObject().getCOSArray(COSName.CONTENTS).remove(0);
                     }
                     page.setRotation(rotation);
                 }
