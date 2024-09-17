@@ -52,4 +52,25 @@ public class TestExtractText extends TestCase
         assertTrue(result.contains("PDF1"));
         assertTrue(result.contains("PDF2"));
     }
+
+    public void testRotationMagic() throws Exception 
+    {
+        ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
+        PrintStream stdout = System.out;
+        System.setOut(new PrintStream(outBytes));
+        try 
+        {
+            ExtractText.main(new String[]{"src/test/resources/org/apache/pdfbox/AngledExample.pdf",
+                    "-console", "-rotationMagic", "-encoding UTF-8"});
+        } 
+        finally 
+        {
+            // Restore stdout
+            System.setOut(stdout);
+        }
+
+        String result = outBytes.toString("UTF-8");
+        assertTrue(result.contains("Horizontal Text"));
+        assertTrue(result.contains("Vertical Text"));
+    }
 }
