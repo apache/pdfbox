@@ -49,6 +49,7 @@ class TestExtractText
     PrintStream printStream = null;
     static final String testfile1 = "src/test/resources/org/apache/pdfbox/testPDFPackage.pdf";
     static final String testfile2 = "src/test/resources/org/apache/pdfbox/hello3.pdf";
+    static final String testfile3 = "src/test/resources/org/apache/pdfbox/AngledExample.pdf";
     static String filename1 = null;
     static String filename2 = null;
 
@@ -241,6 +242,37 @@ class TestExtractText
         assertTrue(result.contains("Hello"));
         assertTrue(result.contains("World."));
         assertTrue(result.contains("PDF file: " + filename2));
+    }
+
+    /**
+     * Simple test to check that the rotationMagic feature works.
+     *
+     * @param tempDir
+     * @throws Exception 
+     */
+    @Test
+    void testRotationMagic(@TempDir Path tempDir) throws Exception
+    {
+        Path path = null;
+
+        try 
+        {
+            path = tempDir.resolve("outfile.txt");
+            Files.deleteIfExists(path);
+        }
+        catch (InvalidPathException ipe)
+        {
+            System.err.println(
+                    "Error creating temporary test file in " + this.getClass().getSimpleName());
+        }
+        assertNotNull(path);
+
+        PDFBox.main(new String[] { "export:text", "-rotationMagic", "-i", testfile3,
+            "-o", path.toString() });
+
+        String result = new String(Files.readAllBytes(path), "UTF-8");
+        assertTrue(result.contains("Horizontal Text"), result);
+        assertTrue(result.contains("Vertical Text"), result);
     }
 
 }
