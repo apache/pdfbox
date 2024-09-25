@@ -36,7 +36,7 @@ import org.apache.pdfbox.util.Matrix;
 abstract class TriangleBasedShadingContext extends ShadingContext
 {
     // array of pixels within triangles to their RGB color
-    private Integer[][] pixelTableArray;
+    private int[][] pixelTableArray;
 
     // offset to be used for the array index
     private int xOffset = 0;
@@ -72,12 +72,12 @@ abstract class TriangleBasedShadingContext extends ShadingContext
      *
      * @return an array which contains all the points' positions and colors of one image
      */
-    abstract Integer[][] calcPixelTableArray(Rectangle deviceBounds) throws IOException;
+    abstract int[][] calcPixelTableArray(Rectangle deviceBounds) throws IOException;
 
     /**
      * Get the points from the triangles, calculate their color and add point-color mappings.
      */
-    protected void calcPixelTable(List<ShadedTriangle> triangleList, Integer[][] array,
+    protected void calcPixelTable(List<ShadedTriangle> triangleList, int[][] array,
             Rectangle deviceBounds) throws IOException
     {
         for (ShadedTriangle tri : triangleList)
@@ -85,11 +85,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext
             int degree = tri.getDeg();
             if (degree == 2)
             {
-                Line line = tri.getLine();
-                for (Point p : line.linePoints)
-                {
-                    addValueToArray(p, evalFunctionAndConvertToRGB(line.calcColor(p)), array);
-                }
+                addLinePoints(tri.getLine(), array);
             }
             else
             {
@@ -111,7 +107,6 @@ abstract class TriangleBasedShadingContext extends ShadingContext
                         }
                     }
                 }
-
                 // "fatten" triangle by drawing the borders with Bresenham's line algorithm
                 // Inspiration: Raph Levien in http://bugs.ghostscript.com/show_bug.cgi?id=219588
                 Point p0 = new Point((int) Math.round(tri.corner[0].getX()),
@@ -120,26 +115,22 @@ abstract class TriangleBasedShadingContext extends ShadingContext
                                      (int) Math.round(tri.corner[1].getY()));
                 Point p2 = new Point((int) Math.round(tri.corner[2].getX()),
                                      (int) Math.round(tri.corner[2].getY()));
-                Line l1 = new Line(p0, p1, tri.color[0], tri.color[1]);
-                Line l2 = new Line(p1, p2, tri.color[1], tri.color[2]);
-                Line l3 = new Line(p2, p0, tri.color[2], tri.color[0]);
-                for (Point p : l1.linePoints)
-                {
-                    addValueToArray(p, evalFunctionAndConvertToRGB(l1.calcColor(p)), array);
-                }
-                for (Point p : l2.linePoints)
-                {
-                    addValueToArray(p, evalFunctionAndConvertToRGB(l2.calcColor(p)), array);
-                }
-                for (Point p : l3.linePoints)
-                {
-                    addValueToArray(p, evalFunctionAndConvertToRGB(l3.calcColor(p)), array);
-                }
+                addLinePoints(new Line(p0, p1, tri.color[0], tri.color[1]), array);
+                addLinePoints(new Line(p1, p2, tri.color[1], tri.color[2]), array);
+                addLinePoints(new Line(p2, p0, tri.color[2], tri.color[0]), array);
             }
         }
     }
 
-    private void addValueToArray(Point p, int value, Integer[][] array)
+    private void addLinePoints(Line line, int[][] array) throws IOException
+    {
+        for (Point p : line.linePoints)
+        {
+            addValueToArray(p, evalFunctionAndConvertToRGB(line.calcColor(p)), array);
+        }
+    }
+
+    private void addValueToArray(Point p, int value, int[][] array)
     {
         int xIndex = p.x + xOffset;
         int yIndex = p.y + yOffset;
@@ -150,14 +141,14 @@ abstract class TriangleBasedShadingContext extends ShadingContext
         array[xIndex][yIndex] = value;
     }
 
-    private Integer getValueFromArray(int x, int y)
+    private int getValueFromArray(int x, int y)
     {
         int xIndex = x + xOffset;
         int yIndex = y + yOffset;
         if (xIndex < 0 || yIndex < 0 || xIndex >= pixelTableArray.length
                 || yIndex >= pixelTableArray[0].length)
         {
-            return null;
+            return -1;
         }
         return pixelTableArray[xIndex][yIndex];
     }
@@ -191,27 +182,17 @@ abstract class TriangleBasedShadingContext extends ShadingContext
             {
                 for (int col = 0; col < w; col++)
                 {
-                    int value;
-                    Integer v = getValueFromArray(x + col, y + row);
-                    if (v != null)
+                    int value = getValueFromArray(x + col, y + row);
+                    if (value >= 0)
                     {
-                        value = v;
+                        int index = (row * w + col) * 4;
+                        data[index] = value & 255;
+                        value >>= 8;
+                        data[index + 1] = value & 255;
+                        value >>= 8;
+                        data[index + 2] = value & 255;
+                        data[index + 3] = 255;
                     }
-                    else
-                    {
-                        if (getBackground() == null)
-                        {
-                            continue;
-                        }
-                        value = getRgbBackground();
-                    }
-                    int index = (row * w + col) * 4;
-                    data[index] = value & 255;
-                    value >>= 8;
-                    data[index + 1] = value & 255;
-                    value >>= 8;
-                    data[index + 2] = value & 255;
-                    data[index + 3] = 255;
                 }
             }
         }

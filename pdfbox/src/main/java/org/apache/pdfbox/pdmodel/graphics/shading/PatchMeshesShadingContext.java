@@ -19,6 +19,7 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.pdfbox.util.Matrix;
@@ -57,9 +58,14 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     }
 
     @Override
-    protected Integer[][] calcPixelTableArray(Rectangle deviceBounds) throws IOException
+    protected int[][] calcPixelTableArray(Rectangle deviceBounds) throws IOException
     {
-        Integer[][] array = new Integer[deviceBounds.width][deviceBounds.height];
+        int[][] array = new int[deviceBounds.width][deviceBounds.height];
+        int initialValue = getBackground() != null ? getRgbBackground() : -1;
+        for (int i = 0; i < deviceBounds.width + 1; i++)
+        {
+            Arrays.fill(array[i], initialValue);
+        }
         for (Patch it : patchList)
         {
             calcPixelTable(it.listOfTriangles, array, deviceBounds);

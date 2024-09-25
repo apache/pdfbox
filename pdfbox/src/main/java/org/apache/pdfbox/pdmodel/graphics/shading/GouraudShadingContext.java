@@ -21,6 +21,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.pdfbox.util.Matrix;
@@ -59,9 +60,14 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
     }
 
     @Override
-    protected Integer[][] calcPixelTableArray(Rectangle deviceBounds) throws IOException
+    protected int[][] calcPixelTableArray(Rectangle deviceBounds) throws IOException
     {
-        Integer[][] array = new Integer[deviceBounds.width + 1][deviceBounds.height + 1];
+        int[][] array = new int[deviceBounds.width + 1][deviceBounds.height + 1];
+        int initialValue = getBackground() != null ? getRgbBackground() : -1;
+        for (int i = 0; i < deviceBounds.width + 1; i++)
+        {
+            Arrays.fill(array[i], initialValue);
+        }
         calcPixelTable(triangleList, array, deviceBounds);
         return array;
     }
