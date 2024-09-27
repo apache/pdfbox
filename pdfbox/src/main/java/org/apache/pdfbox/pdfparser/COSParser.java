@@ -933,10 +933,12 @@ public class COSParser extends BaseParser implements ICOSParser
             streamLength = streamLengthObj.longValue();
             // skip stream
             source.seek(source.getPosition() + streamLengthObj.intValue());
+            dic.setLong(COSName.LENGTH, streamLength);
         }
         else
         {
             streamLength = readUntilEndStream(new EndstreamFilterStream());
+            dic.setLong(COSName.LENGTH, streamLength);
         }
         String endStream = readString();
         if (endStream.equals("endobj") && isLenient)
@@ -1072,30 +1074,33 @@ public class COSParser extends BaseParser implements ICOSParser
 
     private boolean validateStreamLength(long streamLength) throws IOException
     {
-        boolean streamLengthIsValid = true;
         long originOffset = source.getPosition();
+        if (streamLength <= 0)
+        {
+            LOG.warn("Invalid stream length: " + streamLength + ", stream start position: "
+                    + originOffset);
+            return false;
+        }
         long expectedEndOfStream = originOffset + streamLength;
         if (expectedEndOfStream > fileLen)
         {
-            streamLengthIsValid = false;
             LOG.warn("The end of the stream is out of range, using workaround to read the stream, "
                     + "stream start position: " + originOffset + ", length: " + streamLength
                     + ", expected end position: " + expectedEndOfStream);
+            return false;
         }
-        else
+        source.seek(expectedEndOfStream);
+        skipSpaces();
+        if (!isString(ENDSTREAM))
         {
-            source.seek(expectedEndOfStream);
-            skipSpaces();
-            if (!isString(ENDSTREAM))
-            {
-                streamLengthIsValid = false;
-                LOG.warn("The end of the stream doesn't point to the correct offset, using workaround to read the stream, "
-                        + "stream start position: " + originOffset + ", length: " + streamLength
-                        + ", expected end position: " + expectedEndOfStream);
-            }
-            source.seek(originOffset);
+            LOG.warn(
+                    "The end of the stream doesn't point to the correct offset, using workaround to read the stream, "
+                            + "stream start position: " + originOffset + ", length: " + streamLength
+                            + ", expected end position: " + expectedEndOfStream);
+            return false;
         }
-        return streamLengthIsValid;
+        source.seek(originOffset);
+        return true;
     }
 
     /**
