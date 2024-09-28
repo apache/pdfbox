@@ -933,12 +933,14 @@ public class COSParser extends BaseParser implements ICOSParser
             streamLength = streamLengthObj.longValue();
             // skip stream
             source.seek(source.getPosition() + streamLengthObj.intValue());
-            dic.setLong(COSName.LENGTH, streamLength);
         }
         else
         {
             streamLength = readUntilEndStream(new EndstreamFilterStream());
-            dic.setLong(COSName.LENGTH, streamLength);
+            if (streamLengthObj == null || streamLengthObj.longValue() != streamLength)
+            {
+                dic.setLong(COSName.LENGTH, streamLength);
+            }
         }
         String endStream = readString();
         if (endStream.equals("endobj") && isLenient)
@@ -1091,7 +1093,9 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         source.seek(expectedEndOfStream);
         skipSpaces();
-        if (!isString(ENDSTREAM))
+        boolean endStreamFound = isString(ENDSTREAM);
+        source.seek(originOffset);
+        if (!endStreamFound)
         {
             LOG.warn(
                     "The end of the stream doesn't point to the correct offset, using workaround to read the stream, "
@@ -1099,7 +1103,6 @@ public class COSParser extends BaseParser implements ICOSParser
                             + ", expected end position: " + expectedEndOfStream);
             return false;
         }
-        source.seek(originOffset);
         return true;
     }
 
