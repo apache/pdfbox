@@ -62,7 +62,7 @@
     <commons-io.version>2.17.0</commons-io.version>
     <commons-logging.version>1.3.4</commons-logging.version>
     <picocli.version>4.7.6</picocli.version>
-    <log4j2.version>2.24.0</log4j2.version>
+    <log4j2.version>2.24.1</log4j2.version>
     <!-- This is a default value to avoid problems when running single tests
           see also https://stackoverflow.com/a/28695766/535646
           https://maven.apache.org/surefire/maven-surefire-plugin/faq.html#late-property-evaluation
