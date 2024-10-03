@@ -21,10 +21,9 @@ import java.awt.Composite;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.pdfbox.cos.COSBase;
 
@@ -46,7 +45,7 @@ public class PDGraphicsState implements Cloneable
 {
     private boolean isClippingPathDirty;
     private List<Path2D> clippingPaths = new ArrayList<>(1);
-    private Map<Path2D, Area> clippingCache = new IdentityHashMap<>();
+    private Area clippingPathCache = null;
     private Matrix currentTransformationMatrix = new Matrix();
     private PDColor strokingColor = PDDeviceGray.INSTANCE.getInitialColor();
     private PDColor nonStrokingColor = PDDeviceGray.INSTANCE.getInitialColor();
@@ -488,7 +487,7 @@ public class PDGraphicsState implements Cloneable
             clone.nonStrokingColor = nonStrokingColor; // immutable
             clone.lineDashPattern = lineDashPattern; // immutable
             clone.clippingPaths = clippingPaths; // not cloned, see intersectClippingPath
-            clone.clippingCache = clippingCache;
+            clone.clippingPathCache = clippingPathCache;
             clone.isClippingPathDirty = false;
             clone.textLineMatrix = textLineMatrix == null ? null : textLineMatrix.clone();
             clone.textMatrix = textMatrix == null ? null : textMatrix.clone();
@@ -597,12 +596,12 @@ public class PDGraphicsState implements Cloneable
         {
             // shallow copy
             clippingPaths = new ArrayList<>(clippingPaths);
-
             isClippingPathDirty = true;
         }
-
         // add path to current clipping paths, combined later (see getCurrentClippingPath)
         clippingPaths.add(clonePath ? (Path2D) path.clone() : path);
+        // clear cache
+        clippingPathCache = null;
     }
 
     /**
@@ -622,24 +621,40 @@ public class PDGraphicsState implements Cloneable
      */
     public Area getCurrentClippingPath()
     {
+        // If there is just a single clipping path, no intersections are needed.
         if (clippingPaths.size() == 1)
         {
-            // If there is just a single clipping path, no intersections are needed.
-            Path2D path = clippingPaths.get(0);
-            return clippingCache.computeIfAbsent(path, Area::new);
+            if (clippingPathCache == null)
+            {
+                clippingPathCache = new Area(clippingPaths.get(0));
+            }
+            return clippingPathCache;
         }
-        // If there are multiple clipping paths, combine them to a single area.
-        Area clippingArea = new Area();
-        clippingArea.add(new Area(clippingPaths.get(0)));
+        // calculate the intersected overall bounding box for all clipping paths
+        Rectangle2D boundingBox = clippingPaths.get(0).getBounds2D();
         for (int i = 1; i < clippingPaths.size(); i++)
         {
-            clippingArea.intersect(new Area(clippingPaths.get(i)));
+            Rectangle2D.intersect(boundingBox, clippingPaths.get(i).getBounds2D(), boundingBox);
         }
-        // Replace the list of individual clipping paths with the intersection, and add it to the cache.
-        Path2D newPath = new Path2D.Double(clippingArea);
+        // use the overall bounding box as starting area
+        Area clippingArea = new Area(boundingBox);
+        // combine all clipping paths to a single area
+        for (int i = 0; i < clippingPaths.size(); i++)
+        {
+            Area nextArea = new Area(clippingPaths.get(i));
+            // skip rectangular areas as they were already taken into account when calculating the overall bounding box
+            if (nextArea.isRectangular())
+            {
+                nextArea.reset();
+                continue;
+            }
+            clippingArea.intersect(nextArea);
+            nextArea.reset();
+        }
+        clippingPathCache = clippingArea;
+        // Replace the list of individual clipping paths with the intersection
         clippingPaths = new ArrayList<>(1);
-        clippingPaths.add(newPath);
-        clippingCache.put(newPath, clippingArea);
+        clippingPaths.add(new Path2D.Double(clippingArea));
         return clippingArea;
     }
 
