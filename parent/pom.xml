@@ -342,6 +342,7 @@
                       https://github.com/jeremylong/DependencyCheck/issues/6515#issuecomment-2012014015
                       <nvdDatafeedUrl>https://dependency-check.github.io/DependencyCheck_Builder/nvd_cache/</nvdDatafeedUrl>
                       -->
+                      <suppressionFile>suppressions.xml</suppressionFile>
                   </configuration>
                   <executions>
                       <execution>
