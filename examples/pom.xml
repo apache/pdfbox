@@ -44,7 +44,7 @@
 	</scm>
 
   <properties>
-    <lucene.version>9.9.2</lucene.version>
+    <lucene.version>9.12.0</lucene.version>
   </properties>
 
   <dependencies>
