@@ -44,7 +44,7 @@
   </scm>
 
   <properties>
-    <lucene.version>7.7.2</lucene.version>
+    <lucene.version>7.7.3</lucene.version>
     <!-- be careful when updating this, because Lucene 8 requires jdk11 -->
   </properties>
 
