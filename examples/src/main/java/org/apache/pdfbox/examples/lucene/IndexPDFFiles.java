@@ -40,6 +40,9 @@ import org.apache.lucene.util.Version;
  * usage information.
  * <p>
  * It's based on a demo provided by the lucene project.
+ * <p>
+ * <b>Important:</b> The pom.xml uses an outdated lucene version. Replace that version with the
+ * latest version to avoid security risks like CVE-2024-45772.
  */
 public final class IndexPDFFiles
 {
