@@ -57,7 +57,7 @@
 
     <bouncycastle.version>1.78.1</bouncycastle.version>
     <log4j2.version>2.24.1</log4j2.version>
-    <junit.version>5.11.1</junit.version>
+    <junit.version>5.11.2</junit.version>
     <jbig2.version>3.0.4</jbig2.version>
     <jai.version>1.4.0</jai.version>
     <commons-io.version>2.17.0</commons-io.version>
@@ -206,7 +206,7 @@
                 <plugin>
                     <groupId>com.googlecode.maven-download-plugin</groupId>
                     <artifactId>download-maven-plugin</artifactId>
-                    <version>1.9.0</version>
+                    <version>1.10.0</version>
                     <configuration>
                         <skip>${skipTests}</skip>
                     </configuration>
