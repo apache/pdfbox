@@ -104,6 +104,13 @@ public final class PDColor
         this.components = components.clone();
         this.patternName = null;
         this.colorSpace = colorSpace;
+        if (colorSpace != null && colorSpace.getNumberOfComponents() != components.length)
+        {
+            // PDFBOX-5882
+            LOG.warn("Colorspace component count {} doesn't match components length {}",
+                    colorSpace.getNumberOfComponents(),
+                    components.length);
+        }
     }
 
     /**
@@ -129,6 +136,16 @@ public final class PDColor
         this.components = components.clone();
         this.patternName = patternName;
         this.colorSpace = colorSpace;
+        if (colorSpace instanceof PDPattern)
+        {
+            PDColorSpace ucs = ((PDPattern) colorSpace).getUnderlyingColorSpace();
+            if (ucs != null && ucs.getNumberOfComponents() != components.length)
+            {
+                // PDFBOX-5882
+                LOG.warn("Pattern colorspace component count {} doesn't match components length {}",
+                        ucs.getNumberOfComponents(), components.length);
+            }
+        }
     }
 
     /**
