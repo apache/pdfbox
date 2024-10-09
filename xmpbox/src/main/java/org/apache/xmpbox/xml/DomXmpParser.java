@@ -466,11 +466,14 @@ public class DomXmpParser
                     + whatFound
                     + " [prefix=" + prefix + "; name=" + name + "]");
         }
-        if (!bagOrSeq.getLocalName().equals(type.card().name()))
+        String bosname = bagOrSeq.getLocalName();
+        if (!type.card().name().equals(bosname) && (strictParsing || 
+            !(type.card()==Cardinality.Seq && Cardinality.Bag.name().equals(bosname)) &&
+            !(type.card()==Cardinality.Bag && Cardinality.Seq.name().equals(bosname))) )
         {
             // not the good array type
             throw new XmpParsingException(ErrorType.Format, "Invalid array type, expecting " + type.card()
-                    + " and found " + bagOrSeq.getLocalName() + " [prefix="+prefix+"; name="+name+"]");
+                    + " and found " + bosname + " [prefix="+prefix+"; name="+name+"]");
         }
         ArrayProperty array = tm.createArrayProperty(namespace, prefix, name, type.card());
         container.addProperty(array);
