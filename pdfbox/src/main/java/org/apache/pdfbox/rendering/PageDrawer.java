@@ -2285,7 +2285,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             else if (base instanceof COSDictionary)
             {
                 // Another OCG
-                PDPropertyList prop = PDOptionalContentGroup.create((COSDictionary) base);
+                PDPropertyList prop = PDPropertyList.create((COSDictionary) base);
                 boolean isHidden = isHiddenOCG(prop);
                 if (isHidden)
                 {
@@ -2314,7 +2314,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             else if (base instanceof COSDictionary)
             {
                 // Another OCG
-                PDPropertyList prop = PDOptionalContentGroup.create((COSDictionary) base);
+                PDPropertyList prop = PDPropertyList.create((COSDictionary) base);
                 boolean isHidden = isHiddenOCG(prop);
                 if (!isHidden)
                 {
@@ -2340,7 +2340,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         else if (base instanceof COSDictionary)
         {
             // Another OCG
-            PDPropertyList prop = PDOptionalContentGroup.create((COSDictionary) base);
+            PDPropertyList prop = PDPropertyList.create((COSDictionary) base);
             return !isHiddenOCG(prop);
         }
         return false;
