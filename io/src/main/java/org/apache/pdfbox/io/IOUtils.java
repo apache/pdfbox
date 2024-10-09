@@ -34,6 +34,7 @@ import java.io.OutputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
@@ -237,15 +238,20 @@ public final class IOUtils
                  */
                 final MethodHandle cleanMethod = lookup.findVirtual(cleanerClass, "clean",
                         methodType(void.class));
-                final MethodHandle nonNullTest = lookup
-                        .findStatic(Objects.class, "nonNull",
-                                methodType(boolean.class, Object.class))
-                        .asType(methodType(boolean.class, cleanerClass));
+
+                final MethodType objectType = methodType(boolean.class, Object.class);
+                final MethodType cleanerType = methodType(boolean.class, cleanerClass);
+                final MethodHandle nonNullMethodHandle = lookup
+                        .findStatic(Objects.class, "nonNull", objectType);
+                final MethodHandle nonNullTest = nonNullMethodHandle.asType(cleanerType);
+
                 final MethodHandle noop = dropArguments(
                         constant(Void.class, null).asType(methodType(void.class)), 0, cleanerClass);
-                final MethodHandle unmapper = filterReturnValue(directBufferCleanerMethod,
-                        guardWithTest(nonNullTest, cleanMethod, noop))
-                                .asType(methodType(void.class, ByteBuffer.class));
+                final MethodType voidBufferType = methodType(void.class, ByteBuffer.class);
+                final MethodHandle guardMethodHandle = guardWithTest(nonNullTest, cleanMethod, noop);
+                final MethodHandle unmapper = filterReturnValue(directBufferCleanerMethod, guardMethodHandle)
+                        .asType(voidBufferType);
+
                 return newBufferCleaner(directBufferClass, unmapper);
             }
         }
