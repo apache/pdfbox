@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Deque;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -179,29 +180,59 @@ public class DomXmpParser
         // Now, parse the content of root
         Element rdfRdf = findDescriptionsParent(root);
         List<Element> descriptions = DomHelper.getElementChildren(rdfRdf);
-        List<Element> dataDescriptions = new ArrayList<>(descriptions.size());
-        for (Element description : descriptions)
+        for (final Element description : descriptions)
         {
-            Element first = DomHelper.getFirstChildElement(description);
-            if (first != null && "pdfaExtension".equals(first.getPrefix()))
-            {
-                PdfaExtensionHelper.validateNaming(xmp, description);
-                parseDescriptionRoot(xmp, description);
-            }
-            else
-            {
-                dataDescriptions.add(description);
-            }
+            parseSchemaExtensions(xmp, description);
         }
         // find schema description
         PdfaExtensionHelper.populateSchemaMapping(xmp);
         // parse data description
-        for (Element description : dataDescriptions)
+        for (Element description : descriptions)
         {
             parseDescriptionRoot(xmp, description);
         }
 
         return xmp;
+    }
+
+    private boolean isSchemaExtensionProperty(final Element element)
+    {
+        return element != null && "pdfaExtension".equals(element.getPrefix());
+    }
+
+    private void parseSchemaExtensions(final XMPMetadata xmp, final Element description) throws XmpParsingException
+    {
+        final TypeMapping tm = xmp.getTypeMapping();
+        nsFinder.push(description);
+        try
+        {
+            final List<Element> schemaExtensions = DomHelper.getElementChildren(description)
+                    .stream()
+                    .filter(this::isSchemaExtensionProperty)
+                    .collect(Collectors.toList());
+            for (final Element schemaExtension : schemaExtensions)
+            {
+                final String namespace = schemaExtension.getNamespaceURI();
+                if (!tm.isDefinedSchema(schemaExtension.getNamespaceURI()))
+                {
+                    throw new XmpParsingException(ErrorType.NoSchema,
+                            "This namespace is not a schema or a structured type : " + namespace);
+                }
+                PropertyType type = checkPropertyDefinition(xmp, DomHelper.getQName(schemaExtension));
+                final XMPSchema schema = tm.getSchemaFactory(namespace).createXMPSchema(xmp, schemaExtension.getPrefix());
+                loadAttributes(schema, description);
+                ComplexPropertyContainer container = schema.getContainer();
+                createProperty(xmp, schemaExtension, type, container);
+            }
+        }
+        catch (XmpSchemaException e)
+        {
+            throw new XmpParsingException(ErrorType.Undefined, "Parsing failed", e);
+        }
+        finally
+        {
+            nsFinder.pop();
+        }
     }
 
     private void parseDescriptionRoot(XMPMetadata xmp, Element description) throws XmpParsingException
@@ -310,6 +341,10 @@ public class DomXmpParser
             {
                 throw new XmpParsingException(ErrorType.NoSchema,
                         "This namespace is not a schema or a structured type : " + namespace);
+            }
+            if (isSchemaExtensionProperty(property))
+            {
+                continue;
             }
             XMPSchema schema = xmp.getSchema(namespace);
             if (schema == null)
@@ -857,8 +892,8 @@ public class DomXmpParser
             // There is only one node so we do not remove it
             return;
         }
-        
-        for (int i = 0; i < nl.getLength(); i++) 
+
+        for (int i = 0; i < nl.getLength(); i++)
         {
             Node node = nl.item(i);
             if (node instanceof Comment)
