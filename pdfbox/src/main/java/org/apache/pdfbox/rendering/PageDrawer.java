@@ -2252,17 +2252,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             return false;
         }
-        switch (op)
+        if ("And".equals(op))
         {
-            case "And":
-                return isHiddenAndVisibilityExpression(veArray);
-            case "Or":
-                return isHiddenOrVisibilityExpression(veArray);
-            case "Not":
-                return isHiddenNotVisibilityExpression(veArray);
-            default:
-                return false;
+            return isHiddenAndVisibilityExpression(veArray);
         }
+        if ("Or".equals(op))
+        {
+            return isHiddenOrVisibilityExpression(veArray);
+        }
+        if ("Not".equals(op))
+        {
+            return isHiddenNotVisibilityExpression(veArray);
+        }
+        return false;
     }
 
     private boolean isHiddenAndVisibilityExpression(COSArray veArray)
