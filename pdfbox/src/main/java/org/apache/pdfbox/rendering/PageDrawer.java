@@ -2100,10 +2100,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private boolean isHiddenOCMD(PDOptionalContentMembershipDictionary ocmd)
     {
-        if (ocmd.getCOSObject().getCOSArray(COSName.VE) != null)
+        COSArray veArray = ocmd.getCOSObject().getCOSArray(COSName.VE);
+        if (veArray != null && veArray.size() > 0)
         {
-            // support seems to be optional, and is approximated by /P and /OCGS
-            LOG.info("/VE entry ignored in Optional Content Membership Dictionary");
+            return isHiddenVisibilityExpression(veArray);
         }
         List<PDPropertyList> oCGs = ocmd.getOCGs();
         if (oCGs.isEmpty())
@@ -2135,6 +2135,109 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // visible if any of the entries in OCGs are ON
         // AnyOn is default
         return visibles.stream().noneMatch(v -> v);
+    }
+
+    private boolean isHiddenVisibilityExpression(COSArray veArray)
+    {
+        if (veArray.size() == 0)
+        {
+            return false;
+        }
+        String op = veArray.getName(0);
+        if (op == null)
+        {
+            return false;
+        }
+        switch (op)
+        {
+            case "And":
+                return isHiddenAndVisibilityExpression(veArray);
+            case "Or":
+                return isHiddenOrVisibilityExpression(veArray);
+            case "Not":
+                return isHiddenNotVisibilityExpression(veArray);
+            default:
+                return false;
+        }
+    }
+
+    private boolean isHiddenAndVisibilityExpression(COSArray veArray)
+    {
+        // hidden if at least one isn't visible
+        for (int i = 1; i < veArray.size(); ++i)
+        {
+            COSBase base = veArray.getObject(i);
+            if (base instanceof COSArray)
+            {
+                // Another VE
+                boolean isHidden = isHiddenVisibilityExpression((COSArray) base);
+                if (isHidden)
+                {
+                    return true;
+                }
+            }
+            else if (base instanceof COSDictionary)
+            {
+                // Another OCG
+                PDPropertyList prop = PDOptionalContentGroup.create((COSDictionary) base);
+                boolean isHidden = isHiddenOCG(prop);
+                if (isHidden)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isHiddenOrVisibilityExpression(COSArray veArray)
+    {
+        // hidden only if all are hidden
+        for (int i = 1; i < veArray.size(); ++i)
+        {
+            COSBase base = veArray.getObject(i);
+            if (base instanceof COSArray)
+            {
+                // Another VE
+                boolean isHidden = isHiddenVisibilityExpression((COSArray) base);
+                if (!isHidden)
+                {
+                    return false;
+                }
+            }
+            else if (base instanceof COSDictionary)
+            {
+                // Another OCG
+                PDPropertyList prop = PDOptionalContentGroup.create((COSDictionary) base);
+                boolean isHidden = isHiddenOCG(prop);
+                if (!isHidden)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean isHiddenNotVisibilityExpression(COSArray veArray)
+    {
+        if (veArray.size() != 2)
+        {
+            return false;
+        }
+        COSBase base = veArray.getObject(1);
+        if (base instanceof COSArray)
+        {
+            // Another VE
+            return !isHiddenVisibilityExpression((COSArray) base);
+        }
+        else if (base instanceof COSDictionary)
+        {
+            // Another OCG
+            PDPropertyList prop = PDOptionalContentGroup.create((COSDictionary) base);
+            return !isHiddenOCG(prop);
+        }
+        return false;
     }
 
     private LookupTable getInvLookupTable()
