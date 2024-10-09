@@ -22,6 +22,9 @@ package org.apache.fontbox.type1;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 /**
@@ -74,6 +77,93 @@ class Type1Lexer
         //System.out.println(curToken); // for debugging
         aheadToken = readToken(curToken);
         return curToken;
+    }
+
+    /**
+     * Reads a procedure.
+     */
+    public List<Token> readProc() throws IOException
+    {
+        List<Token> value = new ArrayList<>();
+
+        int openProc = 1;
+        while (true)
+        {
+            if (this.peekToken() == null)
+            {
+                throw new IOException("Malformed procedure: missing token");
+            }
+
+            if (this.peekKind(Token.START_PROC))
+            {
+                openProc++;
+            }
+
+            Token token = this.nextToken();
+            value.add(token);
+
+            if (token.getKind() == Token.END_PROC)
+            {
+                openProc--;
+                if (openProc == 0)
+                {
+                    break;
+                }
+            }
+        }
+        Token executeonly = readMaybe(Token.NAME, "executeonly");
+        if (executeonly != null)
+        {
+            value.add(executeonly);
+        }
+
+        return value;
+    }
+
+    /**
+     * Reads a procedure but without returning anything.
+     */
+    public void readProcVoid() throws IOException
+    {
+        int openProc = 1;
+        while (true)
+        {
+            if (this.peekToken() == null)
+            {
+                throw new IOException("Malformed procedure: missing token");
+            }
+            if (this.peekKind(Token.START_PROC))
+            {
+                openProc++;
+            }
+
+            Token token = this.nextToken();
+
+            if (token.getKind() == Token.END_PROC)
+            {
+                openProc--;
+                if (openProc == 0)
+                {
+                    break;
+                }
+            }
+        }
+        readMaybe(Token.NAME, "executeonly");
+    }
+
+    /**
+     * Reads the next token if and only if it is of the given kind and
+     * has the given value.
+     *
+     * @return token or null if not the expected one
+     */
+    public Token readMaybe(Token.Kind kind, String name) throws IOException
+    {
+        if (this.peekKind(kind) && this.peekToken().getText().equals(name))
+        {
+            return this.nextToken();
+        }
+        return null;
     }
 
     /**
