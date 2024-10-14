@@ -44,6 +44,7 @@
 	</scm>
 
   <properties>
+    <!-- can't update to 10, needs jdk21 -->
     <lucene.version>9.12.0</lucene.version>
   </properties>
 
