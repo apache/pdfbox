@@ -642,12 +642,6 @@ public class PDGraphicsState implements Cloneable
         for (int i = 0; i < clippingPaths.size(); i++)
         {
             Area nextArea = new Area(clippingPaths.get(i));
-            // skip rectangular areas as they were already taken into account when calculating the overall bounding box
-            if (nextArea.isRectangular())
-            {
-                nextArea.reset();
-                continue;
-            }
             clippingArea.intersect(nextArea);
             nextArea.reset();
         }
