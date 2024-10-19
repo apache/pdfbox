@@ -216,7 +216,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
                 COSName subtype = dict.getCOSName(COSName.SUBTYPE);
                 if (subtype != null)
                 {
-                    sb.append("  /S:").append(subtype.getName());
+                    sb.append(" /S:").append(subtype.getName());
                 }
             }
 
@@ -225,7 +225,25 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
                 COSName subtype = dict.getCOSName(COSName.S);
                 if (subtype != null)
                 {
-                    sb.append("  /S:").append(subtype.getName());
+                    sb.append(" /S:").append(subtype.getName());
+                }
+            }
+
+            if (dict.containsKey(COSName.PATTERN_TYPE))
+            {
+                int pt = dict.getInt(COSName.PATTERN_TYPE);
+                if (pt > -1)
+                {
+                    sb.append(" /PatternType:").append(pt);
+                }
+            }
+
+            if (dict.containsKey(COSName.SHADING_TYPE))
+            {
+                int st = dict.getInt(COSName.SHADING_TYPE);
+                if (st > -1)
+                {
+                    sb.append(" /ShadingType:").append(st);
                 }
             }
             return sb.toString();
