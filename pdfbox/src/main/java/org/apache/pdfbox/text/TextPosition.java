@@ -608,6 +608,56 @@ public final class TextPosition
     }
 
     /**
+     * Determine if this TextPosition perfectly contains another (i.e. the other TextPosition
+     * overlaps 100% with this one and fits entirely inside its bounding box when they are rendered
+     * on top of each other).
+     *
+     * @param tp2 The other TestPosition to compare against
+     * @return True if tp2 is contained completely inside the bounding box of this text.
+     */
+    public boolean completelyContains(TextPosition tp2)
+    {
+        //  Note: (0, 0) is in the upper left and y-coordinate is top of TextPosition
+         
+        //      +---thisTop------------+
+        //      |    +--tp2Top---+     |
+        //      |    |           |     |
+        //  thisLeft |       tp2Right  |
+        //      | tp2Left        | thisRight
+        //      |    |           |     |
+        //      |    +-tp2Bottom-+     |
+        //      +---------thisBottom---+
+
+        float thisLeft = getXDirAdj();
+        float thisWidth = getWidthDirAdj();
+        float thisRight = thisLeft + thisWidth;
+
+        float tp2Left = tp2.getXDirAdj();
+        float tp2Width = tp2.getWidthDirAdj();
+        float tp2Right = tp2Left + tp2Width;
+
+        if (thisLeft > tp2Left || tp2Right > thisRight)
+        {
+            return false;
+        }
+
+        float thisTop = getYDirAdj();
+        float thisHeight = getHeightDir();
+        float thisBottom = thisTop + thisHeight;
+
+        float tp2Top = tp2.getYDirAdj();
+        float tp2Height = tp2.getHeightDir();
+        float tp2Bottom = tp2Top + tp2Height;
+        
+        if (thisTop > tp2Top || tp2Bottom > thisBottom)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Merge a single character TextPosition into the current object. This is to be used only for
      * cases where we have a diacritic that overlaps an existing TextPosition. In a graphical
      * display, we could overlay them, but for text extraction we need to merge them. Use the
