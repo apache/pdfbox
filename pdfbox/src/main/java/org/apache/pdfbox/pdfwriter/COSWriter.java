@@ -631,9 +631,14 @@ public class COSWriter implements ICOSVisitor
      */
     public void doWriteObject( COSBase obj ) throws IOException
     {
-            writtenObjects.add( obj );
             // find the physical reference
-            currentObjectKey = getObjectKey( obj );
+            COSObjectKey currentObj =  getObjectKey( obj );
+            if ( currentObj == null )
+            {
+                return;
+            }
+            currentObjectKey = currentObj;
+            writtenObjects.add( obj );
             doWriteObject(currentObjectKey, obj);
     }
 
@@ -1085,10 +1090,17 @@ public class COSWriter implements ICOSVisitor
                 return key;
             }
         }
+        // check is null avoids objectKeys.computeIfAbsent NPE
+        if ( actual == null )
+        {
+            return null;
+        }
         else
         {
             actual = obj;
         }
+        // PDFBOX-4540: because objectKeys is accessible from outside, it is possible
+        // that a COSObject obj is already in the objectKeys map.
         COSObjectKey actualKey = objectKeys.computeIfAbsent(actual,
                 k -> new COSObjectKey(++number, 0));
         // check if the returned key and the origin key of the given object are the same
@@ -1383,6 +1395,10 @@ public class COSWriter implements ICOSVisitor
     public void writeReference(COSBase obj) throws IOException
     {
             COSObjectKey key = getObjectKey(obj);
+            if ( key == null )
+            {
+                return;
+            }
             getStandardOutput().write(String.valueOf(key.getNumber()).getBytes(StandardCharsets.ISO_8859_1));
             getStandardOutput().write(SPACE);
             getStandardOutput().write(String.valueOf(key.getGeneration()).getBytes(StandardCharsets.ISO_8859_1));
