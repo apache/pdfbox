@@ -133,7 +133,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         }
         else if (nodeValue instanceof COSInteger)
         {
-            result = Integer.toString(((COSInteger) nodeValue).intValue());
+            result = Long.toString(((COSInteger) nodeValue).longValue());
         }
         else if (nodeValue instanceof COSString)
         {

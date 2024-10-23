@@ -46,11 +46,11 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
 import javax.imageio.spi.IIORegistry;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Sides;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
@@ -1199,25 +1199,25 @@ public class PDFDebugger extends JFrame
     private String convertToString( Object selectedNode )
     {
         String data = null;
-        if(selectedNode instanceof COSBoolean)
+        if (selectedNode instanceof COSBoolean)
         {
-            data = "" + ((COSBoolean)selectedNode).getValue();
+            data = Boolean.toString(((COSBoolean) selectedNode).getValue());
         }
-        else if( selectedNode instanceof COSFloat )
+        else if (selectedNode instanceof COSFloat)
         {
-            data = "" + ((COSFloat)selectedNode).floatValue();
+            data = Float.toString(((COSFloat) selectedNode).floatValue());
         }
-        else if( selectedNode instanceof COSNull )
+        else if (selectedNode instanceof COSNull)
         {
             data = "null";
         }
-        else if( selectedNode instanceof COSInteger )
+        else if (selectedNode instanceof COSInteger)
         {
-            data = "" + ((COSInteger)selectedNode).intValue();
+            data = Long.toString(((COSInteger) selectedNode).longValue());
         }
-        else if( selectedNode instanceof COSName )
+        else if (selectedNode instanceof COSName)
         {
-            data = "" + ((COSName)selectedNode).getName();
+            data = ((COSName) selectedNode).getName();
         }
         else if( selectedNode instanceof COSString )
         {
