@@ -1237,7 +1237,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         }
         if (selectedNode instanceof COSInteger)
         {
-            return Integer.toString(((COSInteger) selectedNode).intValue());
+            return Long.toString(((COSInteger) selectedNode).longValue());
         }
         if (selectedNode instanceof COSName)
         {
