@@ -18,31 +18,22 @@ import java.util.List;
 public class NepaliPdfGeneration {
 
     public static void main(String[] args) {
-        PDDocument document = null;
-        PDPageContentStream contentStream = null;
+        PDDocument document;
+        PDPageContentStream contentStream;
 
 
         // Load the font file
-        String noto = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/NotoSansDevanagari.ttf";
-        String kokila = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/kokila.ttf";
-        String nirmala = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/Nirmala.ttf";
-
-        String kalimati ="examples/src/main/resources/org/apache/pdfbox/resources/otf/KalimatiRegular.otf";
-        String mangal = "examples/src/main/resources/org/apache/pdfbox/resources/otf/MangalRegular.otf";
-
-        String adobeDevanagari = "examples/src/main/resources/org/apache/pdfbox/resources/otf/AdobeDevanagari-Regular.otf"; //CFF related problem with this font
-
-        List<String> fonts = Arrays.asList(noto, kalimati, mangal, kokila, nirmala);
+        List<String> fonts = getStrings();
         List<String> fontNames = Arrays.asList("नोटो सान्स देवनागरी","कालिमाटी", "मङ्गल", "कोकिल", "निर्मला");
 
         // Text to display
         //String text ="प्राकृतिक दृश्यले मन्त्रमुग्ध अन्नपूर्ण आनन्दित संस्कृतिलाई छन्।";
-        String text = "फिनल्याण्ड";
+        String text = "फिनल्याण्डन् भन्छिन् भ्न्नि गर्थ्यी प्रश्न गर्छे";
 
         // Define initial position
         float startX = 100;
         float startY = 750;
-        float fontSize = 40;
+        float fontSize = 20;
         float leading = 1.5f * fontSize;
 
 
@@ -83,5 +74,19 @@ public class NepaliPdfGeneration {
             System.out.println("PROBLEM: "+e.getMessage());
         }
         }
+
+    private static List<String> getStrings() {
+        String noto = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/NotoSansDevanagari.ttf";
+        String kokila = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/kokila.ttf";
+        String nirmala = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/Nirmala.ttf";
+
+        String kalimati ="examples/src/main/resources/org/apache/pdfbox/resources/otf/KalimatiRegular.otf";
+        String mangal = "examples/src/main/resources/org/apache/pdfbox/resources/otf/MangalRegular.otf";
+
+        String adobeDevanagari = "examples/src/main/resources/org/apache/pdfbox/resources/otf/AdobeDevanagari-Regular.otf"; //CFF related problem with this font
+
+        return Arrays.asList(noto, kalimati, mangal, kokila, nirmala);
+
     }
+}
 

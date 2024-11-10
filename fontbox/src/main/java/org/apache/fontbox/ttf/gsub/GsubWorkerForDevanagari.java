@@ -47,17 +47,33 @@ public class GsubWorkerForDevanagari implements GsubWorker
      * This sequence is very important. This has been taken from <a href=
      * "https://docs.microsoft.com/en-us/typography/script-development/devanagari">https://docs.microsoft.com/en-us/typography/script-development/devanagari</a>
      */
-    private static final List<String> FEATURES_IN_ORDER = Arrays.asList("locl", "nukt", "akhn",
-            "rphf", RKRF_FEATURE,"blwf", "half", VATU_FEATURE, "cjct", "pres", "abvs", "blws",
-            "psts", "haln", "calt");
+    private static final List<String> FEATURES_IN_ORDER =
+            Arrays.asList(
+                    "locl",
+                    "nukt",
+                    "akhn",
+                    "rphf",
+                    RKRF_FEATURE,
+                    "blwf",
+                    "half",
+                    VATU_FEATURE,
+                    "cjct",
+                    "pres",
+                    "abvs",
+                    "blws",
+                    "psts",
+                    "haln",
+                    "calt");
 
     // Reph glyphs
-    private static final char[] REPH_CHARS = {'\u0930', '\u094D'};
+    private static final char[] REPH_CHARS = {'र', '्'};
     // Glyphs to precede reph
-    private static final char[] BEFORE_REPH_CHARS={'\u093E','\u0940'};
+    // *** TODO
+    // *** This may need correction, other dependent vowels should be added
+    private static final char[] BEFORE_REPH_CHARS={'ा','ी'};
 
     // Devanagari vowel sign I
-    private static final char BEFORE_HALF_CHAR = '\u093F';
+    private static final char BEFORE_HALF_CHAR = 'ि';
 
     private final CmapLookup cmapLookup;
     private final GsubData gsubData;
@@ -146,6 +162,9 @@ public class GsubWorkerForDevanagari implements GsubWorker
         return rkrfList;
     }
 
+    // *** TODO
+    // *** This function requires improvement
+    // *** It works for र्यो but doesn't work for र्थ्यो or र्न्थ्यो
     private List<Integer> adjustRephPosition(List<Integer> originalGlyphIds)
     {
         List<Integer> rephAdjustedList = new ArrayList<>(originalGlyphIds);
