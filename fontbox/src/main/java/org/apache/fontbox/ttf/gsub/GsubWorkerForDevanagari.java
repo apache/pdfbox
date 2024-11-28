@@ -95,9 +95,12 @@ public class GsubWorkerForDevanagari implements GsubWorker
     public List<Integer> applyTransforms(List<Integer> originalGlyphIds)
     {
         List<Integer> intermediateGlyphsFromGsub = adjustRephPosition(originalGlyphIds);
+        // *** reph position is adjusted
         intermediateGlyphsFromGsub = repositionGlyphs(intermediateGlyphsFromGsub);
+        // *** ि position is adjusted
         for (String feature : FEATURES_IN_ORDER)
         {
+            // *** all the features may not be supported by the particular script/font, the information is available in GSubData
             if (!gsubData.isFeatureSupported(feature))
             {
                 if (feature.equals(RKRF_FEATURE) && gsubData.isFeatureSupported(VATU_FEATURE))
@@ -119,18 +122,22 @@ public class GsubWorkerForDevanagari implements GsubWorker
         return Collections.unmodifiableList(intermediateGlyphsFromGsub);
     }
 
+    // *** applying rakar
     private List<Integer> applyRKRFFeature(ScriptFeature rkrfGlyphsForSubstitution,
             List<Integer> originalGlyphIds)
     {
         Set<List<Integer>> rkrfGlyphIds = rkrfGlyphsForSubstitution.getAllGlyphIdsForSubstitution();
         if (rkrfGlyphIds.isEmpty())
         {
+            // *** no substitution is available for rkrf feature
             LOG.debug("Glyph substitution list for {} is empty.", rkrfGlyphsForSubstitution.getName());
             return originalGlyphIds;
         }
         // Replace this with better implementation to get second GlyphId from rkrfGlyphIds
         int rkrfReplacement = 0;
         for (List<Integer> firstList : rkrfGlyphIds)
+        // *** TOD0
+        // *** Look for the features in the rkrf table
         {
             if (firstList.size() > 1)
             {
@@ -154,6 +161,8 @@ public class GsubWorkerForDevanagari implements GsubWorker
                 int viramaGlyph = originalGlyphIds.get(index - 1);
                 if (viramaGlyph == rephGlyphIds.get(1))
                 {
+                    // *** found an ् + र form which takes the rkrf
+                    // *** the replacement is available as script feature
                     rkrfList.set(index - 1, rkrfReplacement);
                     rkrfList.remove(index);
                 }
@@ -194,6 +203,9 @@ public class GsubWorkerForDevanagari implements GsubWorker
         return rephAdjustedList;
     }
 
+    // *** ि as beforeHalfGlyph
+    // *** TODO
+    // *** does it handle the situation where there are multiple half consonants before a consonant followed by ि
     private List<Integer> repositionGlyphs(List<Integer> originalGlyphIds)
     {
         List<Integer> repositionedGlyphIds = new ArrayList<>(originalGlyphIds);
@@ -206,11 +218,14 @@ public class GsubWorkerForDevanagari implements GsubWorker
             int prevIndex = foundIndex + 1;
             if (beforeHalfGlyphIds.contains(glyph))
             {
+                // *** the ि is brought in front of the base character
                 repositionedGlyphIds.remove(foundIndex);
                 repositionedGlyphIds.add(nextIndex--, glyph);
             }
             else if (rephGlyphIds.get(1).equals(glyph) && prevIndex < listSize)
             {
+                // *** if the current character is ् and it is not the last character
+                // *** we check if the character next to ् is ि
                 int prevGlyph = repositionedGlyphIds.get(prevIndex);
                 if (beforeHalfGlyphIds.contains(prevGlyph))
                 {
