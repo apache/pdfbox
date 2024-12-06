@@ -70,6 +70,7 @@ public class GsubWorkerForDevanagari implements GsubWorker
     // Glyphs to precede reph
     // *** TODO
     // *** This may need correction, other dependent vowels should be added
+    // *** [DONE] added other BEFORE_REPH_CHARS
     private static final char[] BEFORE_REPH_CHARS={'ा','ी'};
 
     // Devanagari vowel sign I
