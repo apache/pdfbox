@@ -71,7 +71,7 @@ public class GsubWorkerForDevanagari implements GsubWorker
     // *** TODO
     // *** This may need correction, other dependent vowels should be added
     // *** [DONE] added other BEFORE_REPH_CHARS
-    private static final char[] BEFORE_REPH_CHARS={'ा','ी'};
+    private static final char[] BEFORE_REPH_CHARS={'ा','ी','ो'};
 
     // Devanagari vowel sign I
     private static final char BEFORE_HALF_CHAR = 'ि';
@@ -182,21 +182,30 @@ public class GsubWorkerForDevanagari implements GsubWorker
         {
             int raGlyph = originalGlyphIds.get(index);
             int viramaGlyph = originalGlyphIds.get(index + 1);
-            if (raGlyph == rephGlyphIds.get(0) && viramaGlyph == rephGlyphIds.get(1))
+            if (raGlyph == rephGlyphIds.get(0) && viramaGlyph == rephGlyphIds.get(1) )
             {
-                int nextConsonantGlyph = originalGlyphIds.get(index + 2);
-                rephAdjustedList.set(index, nextConsonantGlyph);
-                rephAdjustedList.set(index + 1, raGlyph);
-                rephAdjustedList.set(index + 2, viramaGlyph);
+//                int nextConsonantGlyph = originalGlyphIds.get(index + 2);
+//                rephAdjustedList.set(index, nextConsonantGlyph);
+//                rephAdjustedList.set(index + 1, raGlyph);
+//                rephAdjustedList.set(index + 2, viramaGlyph);
+                int nextIndex = index +2;
 
-                if (index + 3 < originalGlyphIds.size())
+                while((nextIndex+1)<originalGlyphIds.size() && originalGlyphIds.get(nextIndex+1)==viramaGlyph){
+                    nextIndex=nextIndex+2;
+                }
+                rephAdjustedList.remove(index);// र
+                rephAdjustedList.remove(index);// ्
+                rephAdjustedList.add(nextIndex-1,raGlyph);
+                rephAdjustedList.add(nextIndex,viramaGlyph);
+
+                if (nextIndex + 1 < originalGlyphIds.size())
                 {
-                    int matraGlyph = originalGlyphIds.get(index + 3);
+                    int matraGlyph = originalGlyphIds.get(nextIndex + 1);
                     if (beforeRephGlyphIds.contains(matraGlyph))
                     {
-                        rephAdjustedList.set(index + 1, matraGlyph);
-                        rephAdjustedList.set(index + 2, raGlyph);
-                        rephAdjustedList.set(index + 3, viramaGlyph);
+                        rephAdjustedList.set(nextIndex -1, matraGlyph);
+                        rephAdjustedList.set(nextIndex , raGlyph);
+                        rephAdjustedList.set(nextIndex + 1, viramaGlyph);
                     }
                 }
             }
