@@ -207,6 +207,7 @@ public class GsubWorkerForDevanagari implements GsubWorker
     // *** ि as beforeHalfGlyph
     // *** TODO
     // *** does it handle the situation where there are multiple half consonants before a consonant followed by ि
+    // *** DONE : works perfectly for न्थ्यि but not for र्न्थ्यि
     private List<Integer> repositionGlyphs(List<Integer> originalGlyphIds)
     {
         List<Integer> repositionedGlyphIds = new ArrayList<>(originalGlyphIds);
