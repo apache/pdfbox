@@ -249,22 +249,27 @@ public class GsubWorkerForDevanagari implements GsubWorker
         return repositionedGlyphIds;
     }
 
+    // ** we need the gsub feature specific implementation so, the exceptional behaviors can be handled
     private List<Integer> applyGsubFeature(ScriptFeature scriptFeature, List<Integer> originalGlyphs)
     {
+        // *** this is only the keyset for particular script feature in the substitution table
         Set<List<Integer>> allGlyphIdsForSubstitution = scriptFeature.getAllGlyphIdsForSubstitution();
         if (allGlyphIdsForSubstitution.isEmpty())
         {
             LOG.debug("getAllGlyphIdsForSubstitution() for {} is empty", scriptFeature.getName());
             return originalGlyphs;
         }
+
         GlyphArraySplitter glyphArraySplitter = new GlyphArraySplitterRegexImpl(
                 allGlyphIdsForSubstitution);
         List<List<Integer>> tokens = glyphArraySplitter.split(originalGlyphs);
         List<Integer> gsubProcessedGlyphs = new ArrayList<>(tokens.size());
         tokens.forEach(chunk ->
         {
+            // *** if there is substitution for the chunk: group of glyphs in input obtained after splitting
             if (scriptFeature.canReplaceGlyphs(chunk))
             {
+                // ** search in the map obtained from gsub tables
                 List<Integer> replacementForGlyphs = scriptFeature.getReplacementForGlyphs(chunk);
                 gsubProcessedGlyphs.addAll(replacementForGlyphs);
             }
