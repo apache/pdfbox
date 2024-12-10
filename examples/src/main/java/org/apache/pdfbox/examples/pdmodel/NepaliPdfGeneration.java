@@ -27,7 +27,7 @@ public class NepaliPdfGeneration {
         List<String> fonts = getStrings();
 
         List<String> fontNames = Arrays.asList("नोटो सान्स देवनागरी","कालिमाटी", "मङ्गल", "कोकिल", "निर्मला");
-//        List<String> fontNames = Arrays.asList("नोटो सान्स देवनागरी");
+//        List<String> fontNames = Arrays.asList("कोकिल");
 
         // Text to display
         //String text ="प्राकृतिक दृश्यले मन्त्रमुग्ध अन्नपूर्ण आनन्दित संस्कृतिलाई छन्।";
@@ -36,7 +36,8 @@ public class NepaliPdfGeneration {
 //                "यो लिपि स्वर, व्यञ्जन, र संयुक्ताक्षरहरूको संयोजनमा समृद्ध छ।" +
 //                "\"श्र\", \"द्य\", \"क्ष्म\" जस्ता अक्षरहरूले यसको जटिलता झल्काउँछन्।";
 //        String text = " र्क र्का र्कि र्की र्के र्कै र्को र्कौ र्कँ र्न्थ्यि र्थ्यो";
-String text ="र्थ्यो सङ्क्षिप्त ड्कि";
+String text ="र्थ्यो सङ्क्षिप्त ड्कि छन्";
+//        String text ="छन्";
         // Define initial position
         float startX = 50;
         float startY = 700;
@@ -104,7 +105,7 @@ String text ="र्थ्यो सङ्क्षिप्त ड्कि";
         String adobeDevanagari = "examples/src/main/resources/org/apache/pdfbox/resources/otf/AdobeDevanagari-Regular.otf"; //CFF related problem with this font
 
         return Arrays.asList(noto, kalimati, mangal, kokila, nirmala);
-//        return Arrays.asList(noto);
+//        return Arrays.asList(kokila);
 
     }
 
