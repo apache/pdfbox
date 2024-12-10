@@ -184,10 +184,6 @@ public class GsubWorkerForDevanagari implements GsubWorker
             int viramaGlyph = originalGlyphIds.get(index + 1);
             if (raGlyph == rephGlyphIds.get(0) && viramaGlyph == rephGlyphIds.get(1) )
             {
-//                int nextConsonantGlyph = originalGlyphIds.get(index + 2);
-//                rephAdjustedList.set(index, nextConsonantGlyph);
-//                rephAdjustedList.set(index + 1, raGlyph);
-//                rephAdjustedList.set(index + 2, viramaGlyph);
                 int nextIndex = index +2;
 
                 while((nextIndex+1)<originalGlyphIds.size() && originalGlyphIds.get(nextIndex+1)==viramaGlyph){
@@ -252,6 +248,7 @@ public class GsubWorkerForDevanagari implements GsubWorker
     // ** we need the gsub feature specific implementation so, the exceptional behaviors can be handled
     private List<Integer> applyGsubFeature(ScriptFeature scriptFeature, List<Integer> originalGlyphs)
     {
+
         // *** this is only the keyset for particular script feature in the substitution table
         Set<List<Integer>> allGlyphIdsForSubstitution = scriptFeature.getAllGlyphIdsForSubstitution();
         if (allGlyphIdsForSubstitution.isEmpty())
@@ -262,6 +259,15 @@ public class GsubWorkerForDevanagari implements GsubWorker
 
         GlyphArraySplitter glyphArraySplitter = new GlyphArraySplitterRegexImpl(
                 allGlyphIdsForSubstitution);
+
+        // *** lets check alternate solution
+        if(scriptFeature==gsubData.getFeature("half")){
+            // *** add the exceptional features
+            System.out.println("Applying half feature");
+
+        }
+
+
         List<List<Integer>> tokens = glyphArraySplitter.split(originalGlyphs);
         List<Integer> gsubProcessedGlyphs = new ArrayList<>(tokens.size());
         tokens.forEach(chunk ->
@@ -269,7 +275,7 @@ public class GsubWorkerForDevanagari implements GsubWorker
             // *** if there is substitution for the chunk: group of glyphs in input obtained after splitting
             if (scriptFeature.canReplaceGlyphs(chunk))
             {
-                // ** search in the map obtained from gsub tables
+                // *** search in the map obtained from gsub tables
                 List<Integer> replacementForGlyphs = scriptFeature.getReplacementForGlyphs(chunk);
                 gsubProcessedGlyphs.addAll(replacementForGlyphs);
             }
@@ -281,6 +287,7 @@ public class GsubWorkerForDevanagari implements GsubWorker
         LOG.debug("originalGlyphs: {}, gsubProcessedGlyphs: {}", originalGlyphs, gsubProcessedGlyphs);
         return gsubProcessedGlyphs;
     }
+
 
     private List<Integer> getBeforeHalfGlyphIds()
     {

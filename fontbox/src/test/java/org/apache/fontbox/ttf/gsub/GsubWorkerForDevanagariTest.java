@@ -30,6 +30,8 @@ import java.util.List;
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.ttf.model.GsubData;
+import org.apache.fontbox.ttf.model.ScriptFeature;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -52,6 +54,7 @@ class GsubWorkerForDevanagariTest
 
     private CmapLookup cmapLookup;
     private GsubWorker gsubWorkerForDevanagari;
+    private GsubData gsubData;
 
     @BeforeEach
     public void init() throws IOException
@@ -59,6 +62,7 @@ class GsubWorkerForDevanagariTest
         try (TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(LOHIT_DEVANAGARI_TTF)))
         {
             cmapLookup = ttf.getUnicodeCmapLookup();
+            gsubData = ttf.getGsubData();
             gsubWorkerForDevanagari = new GsubWorkerFactory().getGsubWorker(cmapLookup, ttf.getGsubData());
         }
     }
@@ -162,6 +166,20 @@ class GsubWorkerForDevanagariTest
 
         // when
         List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("ह्स्भ्त्"));
+
+        // then
+        assertEquals(glyphsAfterGsub, result);
+    }
+
+    @Test
+    void testApplyTransforms_private_half_exception() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method privateMethod = gsubWorkerForDevanagari.getClass().getDeclaredMethod("applyGsubFeature", ScriptFeature.class,List.class );
+        privateMethod.setAccessible(true);
+        // given
+        List<Integer> glyphsAfterGsub = Arrays.asList(332,345,382);// छन्
+
+        // when
+        List<Integer> result = (List<Integer>) privateMethod.invoke(gsubWorkerForDevanagari,gsubData.getFeature("half"),Arrays.asList(332,345,382));
 
         // then
         assertEquals(glyphsAfterGsub, result);
