@@ -36,7 +36,7 @@ public class NepaliPdfGeneration {
 //                "यो लिपि स्वर, व्यञ्जन, र संयुक्ताक्षरहरूको संयोजनमा समृद्ध छ।" +
 //                "\"श्र\", \"द्य\", \"क्ष्म\" जस्ता अक्षरहरूले यसको जटिलता झल्काउँछन्।";
 //        String text = " र्क र्का र्कि र्की र्के र्कै र्को र्कौ र्कँ र्न्थ्यि र्थ्यो";
-String text ="र्थ्यो";
+String text ="र्थ्यो सङ्क्षिप्त ड्कि";
         // Define initial position
         float startX = 50;
         float startY = 700;
@@ -83,6 +83,7 @@ String text ="र्थ्यो";
 
             contentStream.close();
             document.save("examples/src/main/resources/org/apache/pdfbox/examples/nepali-pdf/nepali.pdf");
+            System.out.println("PDF Created Successfully.");
             document.close();
 
 

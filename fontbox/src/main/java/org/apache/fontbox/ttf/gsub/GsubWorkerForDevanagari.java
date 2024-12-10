@@ -71,7 +71,7 @@ public class GsubWorkerForDevanagari implements GsubWorker
     // *** TODO
     // *** This may need correction, other dependent vowels should be added
     // *** [DONE] added other BEFORE_REPH_CHARS
-    private static final char[] BEFORE_REPH_CHARS={'ा','ी','ो'};
+    private static final char[] BEFORE_REPH_CHARS={'ा','ी','ो','ौ','े','ै'};
 
     // Devanagari vowel sign I
     private static final char BEFORE_HALF_CHAR = 'ि';
@@ -82,11 +82,22 @@ public class GsubWorkerForDevanagari implements GsubWorker
     private final List<Integer> rephGlyphIds;
     private final List<Integer> beforeRephGlyphIds;
     private final List<Integer> beforeHalfGlyphIds;
+    private final List<Integer> noHalfCharacterGlyphIds;
+
+
+    private static final List<Character> NO_HALF_CONSONANTS= Arrays.asList(
+            'ङ',
+            'ट',
+            'ठ',
+            'ड',
+            'ढ',
+            'द');
 
     GsubWorkerForDevanagari(CmapLookup cmapLookup, GsubData gsubData)
     {
         this.cmapLookup = cmapLookup;
         this.gsubData = gsubData;
+        noHalfCharacterGlyphIds = getNoHalfConsonants();
         beforeHalfGlyphIds = getBeforeHalfGlyphIds();
         rephGlyphIds = getRephGlyphIds();
         beforeRephGlyphIds = getbeforeRephGlyphIds();
@@ -175,6 +186,7 @@ public class GsubWorkerForDevanagari implements GsubWorker
     // *** TODO
     // *** This function requires improvement
     // *** It works for र्यो but doesn't work for र्थ्यो or र्न्थ्यो
+    // *** DONE for र्थ्यो
     private List<Integer> adjustRephPosition(List<Integer> originalGlyphIds)
     {
         List<Integer> rephAdjustedList = new ArrayList<>(originalGlyphIds);
@@ -213,6 +225,8 @@ public class GsubWorkerForDevanagari implements GsubWorker
     // *** TODO
     // *** does it handle the situation where there are multiple half consonants before a consonant followed by ि
     // *** DONE : works perfectly for न्थ्यि but not for र्न्थ्यि
+    // *** TODO
+    // *** for ड्कि ङ्कि
     private List<Integer> repositionGlyphs(List<Integer> originalGlyphIds)
     {
         List<Integer> repositionedGlyphIds = new ArrayList<>(originalGlyphIds);
@@ -234,10 +248,16 @@ public class GsubWorkerForDevanagari implements GsubWorker
                 // *** if the current character is ् and it is not the last character
                 // *** we check if the character next to ् is ि
                 int prevGlyph = repositionedGlyphIds.get(prevIndex);
+
+                // *** let's skip the swap for consonants that does not have half forms
                 if (beforeHalfGlyphIds.contains(prevGlyph))
                 {
-                    repositionedGlyphIds.remove(prevIndex);
-                    repositionedGlyphIds.add(nextIndex--, prevGlyph);
+
+                    int nextGlyph = repositionedGlyphIds.get(nextIndex);
+                    if(!noHalfCharacterGlyphIds.contains(nextGlyph)){
+                        repositionedGlyphIds.remove(prevIndex);
+                        repositionedGlyphIds.add(nextIndex--, prevGlyph);
+                    }
                 }
             }
             foundIndex = nextIndex--;
@@ -257,6 +277,7 @@ public class GsubWorkerForDevanagari implements GsubWorker
             return originalGlyphs;
         }
 
+        // *** here we prepare the regexExpression inside CompoundCharacterTokenizer where: Set<List<Integer>> ---> Set<String> ----> String or Regex Pattern
         GlyphArraySplitter glyphArraySplitter = new GlyphArraySplitterRegexImpl(
                 allGlyphIdsForSubstitution);
 
@@ -292,6 +313,15 @@ public class GsubWorkerForDevanagari implements GsubWorker
     private List<Integer> getBeforeHalfGlyphIds()
     {
         return List.of(getGlyphId(BEFORE_HALF_CHAR));
+    }
+    private List<Integer> getNoHalfConsonants()
+    {
+        List<Integer> glyphIds = new ArrayList<>();
+        for (char character : NO_HALF_CONSONANTS)
+        {
+            glyphIds.add(getGlyphId(character));
+        }
+        return Collections.unmodifiableList(glyphIds);
     }
 
     private List<Integer> getRephGlyphIds()
