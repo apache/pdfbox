@@ -231,6 +231,9 @@ public class GsubWorkerForDevanagari implements GsubWorker {
                     if (!noHalfCharacterGlyphIds.contains(nextGlyph)) {
                         repositionedGlyphIds.remove(prevIndex);
                         repositionedGlyphIds.add(nextIndex--, prevGlyph);
+                    } else if(nextIndex>0 && repositionedGlyphIds.get(nextIndex-1)==rephGlyphIds.get(1)  ){
+                        repositionedGlyphIds.remove(prevIndex);
+                        repositionedGlyphIds.add(nextIndex--, prevGlyph);
                     }
                 }
             }
