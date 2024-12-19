@@ -17,11 +17,7 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.model.GsubData;
@@ -68,7 +64,7 @@ public class GsubWorkerForDevanagari implements GsubWorker {
     // *** TODO
     // *** This may need correction, other dependent vowels should be added
     // *** [DONE] added other BEFORE_REPH_CHARS
-    private static final char[] BEFORE_REPH_CHARS = {'ा', 'ी', 'ो', 'ौ', 'े', 'ै'};
+    private static final char[] BEFORE_REPH_CHARS = {'ा','ि' ,'ी', 'ो', 'ौ', 'े', 'ै'};
 
     // Devanagari vowel sign I
     private static final char BEFORE_HALF_CHAR = 'ि';
@@ -177,14 +173,19 @@ public class GsubWorkerForDevanagari implements GsubWorker {
         for (int index = 0; index < originalGlyphIds.size() - 2; index++) {
             int raGlyph = originalGlyphIds.get(index);
             int viramaGlyph = originalGlyphIds.get(index + 1);
+            // *** found the reph in originalGlyphIds jump to the next glyph if available
             if (raGlyph == rephGlyphIds.get(0) && viramaGlyph == rephGlyphIds.get(1)) {
                 int nextIndex = index + 2;
 
+                // *** for multiple half consonants after the reph
                 while ((nextIndex + 1) < originalGlyphIds.size() && originalGlyphIds.get(nextIndex + 1) == viramaGlyph) {
                     nextIndex = nextIndex + 2;
                 }
-                rephAdjustedList.remove(index);// र
-                rephAdjustedList.remove(index);// ्
+                // *** remove the reph from the original position
+                for (int i = 0; i < 2; i++) {
+                    rephAdjustedList.remove(index);// र
+                }// ्
+                // *** place the reph in the current found position
                 rephAdjustedList.add(nextIndex - 1, raGlyph);
                 rephAdjustedList.add(nextIndex, viramaGlyph);
 
@@ -231,7 +232,7 @@ public class GsubWorkerForDevanagari implements GsubWorker {
                     if (!noHalfCharacterGlyphIds.contains(nextGlyph)) {
                         repositionedGlyphIds.remove(prevIndex);
                         repositionedGlyphIds.add(nextIndex--, prevGlyph);
-                    } else if(nextIndex>0 && repositionedGlyphIds.get(nextIndex-1)==rephGlyphIds.get(1)  ){
+                    } else if(nextIndex>0 && Objects.equals(repositionedGlyphIds.get(nextIndex - 1), rephGlyphIds.get(1))){
                         repositionedGlyphIds.remove(prevIndex);
                         repositionedGlyphIds.add(nextIndex--, prevGlyph);
                     }
@@ -283,7 +284,7 @@ public class GsubWorkerForDevanagari implements GsubWorker {
         for (int chunkIndex = 0; chunkIndex < tokens.size(); chunkIndex++) {
             List<Integer> chunk = tokens.get(chunkIndex);
 
-            boolean isHalfFeature = scriptFeature.getName() == "half";
+            boolean isHalfFeature = Objects.equals(scriptFeature.getName(), "half");
             if (isHalfFeature) {
 //                 *** check for last chunk: like छन् ---> [छ] [न‌ ्]
                 boolean isLastChunk = (chunkIndex == tokens.size() - 1);
