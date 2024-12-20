@@ -16,6 +16,12 @@
  */
 package org.apache.pdfbox.pdfwriter;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -28,14 +34,13 @@ import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
-import org.junit.jupiter.api.Test;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.io.File;
-import java.util.List;
-import java.util.Map;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 /**
  * This test attempts to save different documents compressed, without causing errors, it also checks, whether the PDF is
@@ -258,4 +263,25 @@ class COSDocumentCompressionTest
         }
     }
 
+    /**
+     * Check that the bug from PDFBOX-5927 is fixed. This one caused a dictionary key to be written
+     * as an indirect object in an object stream.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox5927() throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PDDocument doc = Loader.loadPDF(new File("target/pdfs","PDFBOX-5927.pdf")))
+        {
+            doc.save(baos);
+        }
+        try (PDDocument doc = Loader.loadPDF(baos.toByteArray()))
+        {
+            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            PDCheckBox cb = (PDCheckBox) acroForm.getField("chkPrivacy1");
+            assertTrue(cb.isChecked());
+        }
+    }
 }
