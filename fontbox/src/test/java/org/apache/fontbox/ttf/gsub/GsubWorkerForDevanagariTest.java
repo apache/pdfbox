@@ -122,7 +122,20 @@ class GsubWorkerForDevanagariTest
     void testApplyTransforms_rphf()
     {
         // given
-        List<Integer> glyphsAfterGsub = Arrays.asList(342,382,352,380,353,382);
+        List<Integer> glyphsAfterGsub = Arrays.asList(538, 352, 673);
+
+        // when
+        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("र्थ्यो"));
+
+        // then
+        assertEquals(glyphsAfterGsub, result);
+    }
+
+    @Test
+    void test_ApplyTransforms_rphf()
+    {
+        // given
+        List<Integer> glyphsAfterGsub = Arrays.asList(538, 352, 673);
 
         // when
         List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("र्थ्यो"));
