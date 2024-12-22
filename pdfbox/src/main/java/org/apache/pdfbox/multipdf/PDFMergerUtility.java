@@ -310,7 +310,8 @@ public class PDFMergerUtility
     /**
      * Add a source to the list of documents to merge.
      *
-     * @param source RandomAccessRead representing source document
+     * @param source RandomAccessRead representing source document. To pass an InputStream, wrap it
+     * into a {@link RandomAccessReadBuffer}.
      */
     public void addSource(RandomAccessRead source)
     {
