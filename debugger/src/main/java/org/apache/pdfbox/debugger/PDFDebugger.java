@@ -181,7 +181,6 @@ public class PDFDebugger extends JFrame
     private JMenuItem saveAsMenuItem;
     private JMenu recentFilesMenu;
     private JMenuItem printMenuItem;
-    private JMenu printDpiMenu;
     private JMenuItem reopenMenuItem;
     
     // edit > find menu
@@ -484,9 +483,7 @@ public class PDFDebugger extends JFrame
 
         fileMenu.addSeparator();
         fileMenu.add(printMenuItem);
-
-        printDpiMenu = PrintDpiMenu.getInstance().getMenu();
-        fileMenu.add(printDpiMenu);
+        fileMenu.add(PrintDpiMenu.getInstance().getMenu());
 
         if (!IS_MAC_OS)
         {
