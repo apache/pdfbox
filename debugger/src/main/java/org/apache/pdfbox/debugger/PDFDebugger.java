@@ -195,7 +195,6 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
     private JMenuItem saveAsMenuItem;
     private JMenu recentFilesMenu;
     private JMenuItem printMenuItem;
-    private JMenu printDpiMenu;
     private JMenuItem reopenMenuItem;
 
     // edit > find menu
@@ -602,9 +601,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
 
         fileMenu.addSeparator();
         fileMenu.add(printMenuItem);
-
-        printDpiMenu = PrintDpiMenu.getInstance().getMenu();
-        fileMenu.add(printDpiMenu);
+        fileMenu.add(PrintDpiMenu.getInstance().getMenu());
 
         if (!IS_MAC_OS)
         {
