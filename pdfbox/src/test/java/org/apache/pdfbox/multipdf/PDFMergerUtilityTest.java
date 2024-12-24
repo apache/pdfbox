@@ -49,12 +49,14 @@ import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
+import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPopup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationText;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitDestination;
@@ -885,10 +887,35 @@ public class PDFMergerUtilityTest extends TestCase
             {
                 COSDictionary obj = (COSDictionary) kdict.getDictionaryObject(COSName.OBJ);
                 COSBase type = obj.getDictionaryObject(COSName.TYPE);
-                if (COSName.ANNOT.equals(type))
+                COSBase subtype = obj.getDictionaryObject(COSName.SUBTYPE);
+                if (COSName.ANNOT.equals(type) || COSName.LINK.equals(subtype))
                 {
                     PDAnnotation annotation = PDAnnotation.createAnnotation(obj);
                     PDPage page = annotation.getPage();
+                    if (annotation instanceof PDAnnotationLink)
+                    {
+                        PDAnnotationLink link = (PDAnnotationLink) annotation;
+                        PDDestination destination = link.getDestination();
+                        if (destination == null)
+                        {
+                            PDAction action = link.getAction();
+                            if (action instanceof PDActionGoTo)
+                            {
+                                PDActionGoTo goToAction = (PDActionGoTo) action;
+                                destination = goToAction.getDestination();
+                            }
+                        }
+                        if (destination instanceof PDPageDestination)
+                        {
+                            PDPageDestination pageDestination = (PDPageDestination) destination;
+                            PDPage destPage = pageDestination.getPage();
+                            if (destPage != null)
+                            {
+                                Assert.assertNotEquals("Annotation destination page is not in the page tree: " + destPage, 
+                                        -1, pageTree.indexOf(destPage));
+                            }
+                        }
+                    }
                     if (page != null)
                     {
                         if (pageTree.indexOf(page) == -1)
@@ -910,7 +937,7 @@ public class PDFMergerUtilityTest extends TestCase
                 {
                     //TODO needs to be investigated. Specification mentions
                     // "such as an XObject or an annotation"
-                    fail("Other type: " + type);
+                    fail("Other type: " + type + ", obj: " + obj);
                 }
             }
         }
