@@ -894,6 +894,7 @@ public class PDFMergerUtilityTest extends TestCase
                     PDPage page = annotation.getPage();
                     if (annotation instanceof PDAnnotationLink)
                     {
+                        // PDFBOX-5928: check whether the destination of a link annotation is an orphan
                         PDAnnotationLink link = (PDAnnotationLink) annotation;
                         PDDestination destination = link.getDestination();
                         if (destination == null)
@@ -1082,6 +1083,33 @@ public class PDFMergerUtilityTest extends TestCase
         assertNull(pd3.getPage());
         assertNull(pd4.getPage());
         assertNull(pd5.getPage());
+        dstDoc.close();
+        doc.close();
+    }
+
+    /**
+     * PDFBOX-5929: Check that orphan annotations are removed from the structure tree if annotations
+     * were removed from the pages (don't do that!).
+     *
+     * @throws IOException
+     */
+    public void testSplitWithStructureTreeAndDestinationsAndRemovedAnnotations() throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File(SRCDIR, "PDFBOX-5762-722238.pdf"));
+        Splitter splitter = new Splitter();
+        for (PDPage page : doc.getPages())
+        {
+            page.setAnnotations(Collections.EMPTY_LIST);
+        }
+        splitter.setStartPage(1);
+        splitter.setEndPage(2);
+        splitter.setSplitAtPage(2);
+        List<PDDocument> splitResult = splitter.split(doc);
+        assertEquals(1, splitResult.size());
+        PDDocument dstDoc = splitResult.get(0);
+
+        assertEquals(2, dstDoc.getNumberOfPages());
+        checkForPageOrphans(dstDoc);
         dstDoc.close();
         doc.close();
     }

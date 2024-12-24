@@ -455,6 +455,10 @@ public class Splitter
                     // replace annotation with clone
                     dstDict.setItem(COSName.OBJ, dstObj);
                 }
+                else
+                {
+                    removePossibleOrphanAnnotation(srcObj, srcDict, currentPageDict, dstDict);
+                }
             }
             else
             {
@@ -492,6 +496,35 @@ public class Splitter
                 roleSet.add(s);
             }
             return dstDict;
+        }
+
+        private void removePossibleOrphanAnnotation(COSDictionary srcObj, COSDictionary srcDict,
+                COSDictionary currentPageDict, COSDictionary dstDict)
+        {
+            // PDFBOX-5929: Check whether this is an "orphan" annotation that isn't in the page
+            COSBase objType = srcObj.getDictionaryObject(COSName.TYPE);
+            COSBase objSubtype = srcObj.getDictionaryObject(COSName.SUBTYPE);
+            if (COSName.ANNOT.equals(objType) || COSName.LINK.equals(objSubtype))
+            {
+                COSDictionary srcPageDict = srcDict.getCOSDictionary(COSName.PG);
+                if (srcPageDict == null)
+                {
+                    // /Pg entry is not always on this level
+                    srcPageDict = currentPageDict;
+                }
+                if (srcPageDict != null)
+                {
+                    COSArray annotationArray = srcPageDict.getCOSArray(COSName.ANNOTS);
+                    if (annotationArray == null || annotationArray.indexOfObject(srcObj) == -1)
+                    {
+                        // Ideally the entire OBJR entry should be removed.
+                        // Removing the OBJ entry is done to avoid potential page orphans
+                        // from the annotation destination.
+                        LOG.warn("An annotation OBJ that isn't in the page has been removed from the structure tree");
+                        dstDict.removeItem(COSName.OBJ);
+                    }
+                }
+            }
         }
     }
 
