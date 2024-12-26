@@ -80,9 +80,10 @@ public class PrintTextLocations extends PDFTextStripper
     {
         for (TextPosition text : textPositions)
         {
-            System.out.println( "String[" + text.getXDirAdj() + "," +
-                    text.getYDirAdj() + " fs=" + text.getFontSize() + " xscale=" +
-                    text.getXScale() + " height=" + text.getHeightDir() + " space=" +
+            System.out.println( "String[" + 
+                    text.getXDirAdj() + "," + text.getYDirAdj() + 
+                    " font=" + text.getFont().getName() + ":" + text.getFontSize() +
+                    " xscale=" + text.getXScale() + " height=" + text.getHeightDir() + " space=" +
                     text.getWidthOfSpace() + " width=" +
                     text.getWidthDirAdj() + "]" + text.getUnicode() );
         }
