@@ -63,7 +63,7 @@ public class PrintTextLocations extends PDFTextStripper
             {
                 PDFTextStripper stripper = new PrintTextLocations();
                 stripper.setSortByPosition( true );
-                stripper.setStartPage( 0 );
+                stripper.setStartPage( 1 );
                 stripper.setEndPage( document.getNumberOfPages() );
 
                 Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());

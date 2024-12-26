@@ -93,7 +93,7 @@ public class PrintTextColors extends PDFTextStripper
             {
                 PDFTextStripper stripper = new PrintTextColors();
                 stripper.setSortByPosition(true);
-                stripper.setStartPage(0);
+                stripper.setStartPage(1);
                 stripper.setEndPage(document.getNumberOfPages());
 
                 Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
