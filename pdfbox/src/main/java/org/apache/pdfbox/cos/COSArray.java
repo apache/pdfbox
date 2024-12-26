@@ -554,8 +554,12 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
                     return i;
                 }
             }
-            else if (item.equals(object)
-                    || item instanceof COSObject && ((COSObject) item).getObject().equals(object))
+            else if (item.equals(object))
+            {
+                return i;
+            }
+            else if (item instanceof COSObject && ((COSObject) item).getObject() != null &&
+                      ((COSObject) item).getObject().equals(object))
             {
                 return i;
             }
