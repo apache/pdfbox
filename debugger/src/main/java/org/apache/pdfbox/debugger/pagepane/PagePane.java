@@ -148,6 +148,10 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
     private void collectLinkLocation(PDAnnotationLink linkAnnotation) throws IOException
     {
+        if (linkAnnotation.getRectangle() == null)
+        {
+            return;
+        }
         PDAction action = linkAnnotation.getAction();
         if (action instanceof PDActionURI)
         {
@@ -208,7 +212,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             {
                 // check if the annotation widget is on this page
                 // (checking widget.getPage() also works, but it is sometimes null)
-                if (dictionarySet.contains(widget.getCOSObject()))
+                if (dictionarySet.contains(widget.getCOSObject()) && widget.getRectangle() != null)
                 {
                     rectMap.put(widget.getRectangle(), "Field name: " + field.getFullyQualifiedName());
                 }
