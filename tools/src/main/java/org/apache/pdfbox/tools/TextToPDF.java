@@ -210,7 +210,7 @@ public class TextToPDF
                 }
                 while (lineIndex < lineWords.length && lengthIfUsingNextWord < maxStringLength);
 
-                if (y < margin)
+                if (y - lineHeight < margin)
                 {
                     // We have crossed the end-of-page boundary and need to extend the
                     // document by another page.
@@ -224,7 +224,7 @@ public class TextToPDF
                     contentStream = new PDPageContentStream(doc, page);
                     contentStream.setFont(font, fontSize);
                     contentStream.beginText();
-                    y = page.getMediaBox().getHeight() - margin + lineHeight;
+                    y = page.getMediaBox().getHeight() - margin;
                     contentStream.newLineAtOffset(margin, y);
                 }
 
@@ -244,7 +244,7 @@ public class TextToPDF
                     contentStream = new PDPageContentStream(doc, page);
                     contentStream.setFont(font, fontSize);
                     contentStream.beginText();
-                    y = page.getMediaBox().getHeight() - margin + lineHeight;
+                    y = page.getMediaBox().getHeight() - margin;
                     contentStream.newLineAtOffset(margin, y);
                 }
             }
