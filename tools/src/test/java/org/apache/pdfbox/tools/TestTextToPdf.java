@@ -158,10 +158,10 @@ public class TestTextToPdf extends TestCase
                 + "accumsan et iusto odio dignissim qui blandit\n"
                 + "praesent luptatum zzril delenit augue duis dolore\n"
                 + "te feugait nulla facilisi. Lorem ipsum dolor sit\n"
-                + "amet, consectetuer adipiscing elit, sed diam\n"
-                + "nonummy nibh euismod tincidunt ut laoreet";
+                + "amet, consectetuer adipiscing elit, sed diam";
         String expectedPage2Text
-                = "dolore magna aliquam erat volutpat.\n"
+                = "nonummy nibh euismod tincidunt ut laoreet\n"
+                + "dolore magna aliquam erat volutpat.\n"
                 + "\n"
                 + "Ut wisi enim ad minim veniam, quis nostrud\n"
                 + "exerci tation ullamcorper suscipit lobortis nisl ut\n"
