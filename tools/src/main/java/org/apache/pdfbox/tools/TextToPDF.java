@@ -115,12 +115,12 @@ public class TextToPDF
     public void createPDFFromText( PDDocument doc, Reader text ) throws IOException
     {
         final int margin = 40;
-        float height = font.getBoundingBox().getHeight() / FONTSCALE;
+        float fontHeight = font.getBoundingBox().getHeight() / FONTSCALE;
         PDRectangle actualMediaBox =
                 landscape ? new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth()) : mediaBox;
 
-        //calculate font height and increase by a factor.
-        height = height * fontSize * LINE_HEIGHT_FACTOR;
+        // calculate line height and increase by a factor.
+        float lineHeight = fontHeight * fontSize * LINE_HEIGHT_FACTOR;
         BufferedReader data = new BufferedReader(text);
         String nextLine;
         PDPage page = new PDPage(actualMediaBox);
@@ -224,7 +224,7 @@ public class TextToPDF
                     contentStream = new PDPageContentStream(doc, page);
                     contentStream.setFont(font, fontSize);
                     contentStream.beginText();
-                    y = page.getMediaBox().getHeight() - margin + height;
+                    y = page.getMediaBox().getHeight() - margin + lineHeight;
                     contentStream.newLineAtOffset(margin, y);
                 }
 
@@ -232,8 +232,8 @@ public class TextToPDF
                 {
                     throw new IOException("Error:Expected non-null content stream.");
                 }
-                contentStream.newLineAtOffset(0, -height);
-                y -= height;
+                contentStream.newLineAtOffset(0, -lineHeight);
+                y -= lineHeight;
                 contentStream.showText(nextLineToDraw.toString());
                 if (ff)
                 {
@@ -244,7 +244,7 @@ public class TextToPDF
                     contentStream = new PDPageContentStream(doc, page);
                     contentStream.setFont(font, fontSize);
                     contentStream.beginText();
-                    y = page.getMediaBox().getHeight() - margin + height;
+                    y = page.getMediaBox().getHeight() - margin + lineHeight;
                     contentStream.newLineAtOffset(margin, y);
                 }
             }
