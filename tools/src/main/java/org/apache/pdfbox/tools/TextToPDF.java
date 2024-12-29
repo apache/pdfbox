@@ -62,9 +62,10 @@ public class TextToPDF
     /**
      * The line height as a factor of the font size
      */
-    private static final float LINE_HEIGHT_FACTOR = 1.05f;
+    private static final float DEFAULT_LINE_HEIGHT_FACTOR = 1.05f;
 
     private float fontSize = DEFAULT_FONT_SIZE;
+    private float lineSpacing = DEFAULT_LINE_HEIGHT_FACTOR;
     private PDRectangle mediaBox = PDRectangle.LETTER;
     private boolean landscape = false;
     private PDFont font = DEFAULT_FONT;
@@ -120,7 +121,7 @@ public class TextToPDF
                 landscape ? new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth()) : mediaBox;
 
         // calculate line height and increase by a factor.
-        float lineHeight = fontHeight * fontSize * LINE_HEIGHT_FACTOR;
+        float lineHeight = fontHeight * fontSize * lineSpacing;
         BufferedReader data = new BufferedReader(text);
         String nextLine;
         PDPage page = new PDPage(actualMediaBox);
@@ -225,6 +226,7 @@ public class TextToPDF
                     contentStream.setFont(font, fontSize);
                     contentStream.beginText();
                     y = page.getMediaBox().getHeight() - margin;
+                    y += lineHeight - fontHeight * fontSize; // adjust for lineSpacing != 1
                     contentStream.newLineAtOffset(margin, y);
                 }
 
@@ -245,6 +247,7 @@ public class TextToPDF
                     contentStream.setFont(font, fontSize);
                     contentStream.beginText();
                     y = page.getMediaBox().getHeight() - margin;
+                    y += lineHeight - fontHeight * fontSize; // adjust for lineSpacing != 1
                     contentStream.newLineAtOffset(margin, y);
                 }
             }
@@ -314,6 +317,11 @@ public class TextToPDF
                     {
                         i++;
                         app.setFontSize( Float.parseFloat( args[i] ) );
+                    }
+                    else if( args[i].equals( "-lineSpacing" ))
+                    {
+                        i++;
+                        app.setLineSpacing( Float.parseFloat( args[i] ) );
                     }
                     else if( args[i].equals( "-pageSize" ))
                     {
@@ -432,6 +440,7 @@ public class TextToPDF
         message.append("  -ttf <ttf file>      : The TTF font to use.\n");
         message.append("  -charset <charset>   : default: ").append(Charset.defaultCharset()).append("\n");
         message.append("  -fontSize <fontSize> : default: ").append(DEFAULT_FONT_SIZE).append("\n");
+        message.append("  -lineSpacing <factor>: default: ").append(DEFAULT_LINE_HEIGHT_FACTOR).append("\n");
         message.append("  -pageSize <pageSize> : Letter (default)\n");
         message.append("                         Legal\n");
         message.append("                         A0\n");
@@ -511,6 +520,26 @@ public class TextToPDF
     public void setFontSize(float aFontSize)
     {
         this.fontSize = aFontSize;
+    }
+
+    /**
+     * @return Returns the lineSpacing.
+     */
+    public float getLineSpacing()
+    {
+        return lineSpacing;
+    }
+
+    /**
+     * @param lineSpacing The lineSpacing to set.
+     */
+    public void setLineSpacing(float lineSpacing)
+    {
+        if (lineSpacing <= 0)
+        {
+            throw new IllegalArgumentException("line spacing must be positive: " + lineSpacing);
+        }
+        this.lineSpacing = lineSpacing;
     }
 
     /**
