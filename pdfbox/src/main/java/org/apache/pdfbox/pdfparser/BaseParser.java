@@ -999,6 +999,15 @@ public abstract class BaseParser
         {
             source.rewind(1);
         }
+
+        // PDFBOX-5025: catch "74191endobj"
+        char lastc = buf.charAt(buf.length() - 1);
+        if (lastc == 'e' || lastc == 'E')
+        {
+            buf.deleteCharAt(buf.length() - 1);
+            source.rewind(1);
+        }
+
         return COSNumber.get(buf.toString());
     }
 
