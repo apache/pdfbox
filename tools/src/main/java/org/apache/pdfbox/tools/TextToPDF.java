@@ -57,14 +57,14 @@ public class TextToPDF
     /**
      * The default font size
      */
-    private static final int DEFAULT_FONT_SIZE = 10;
+    private static final float DEFAULT_FONT_SIZE = 10;
     
     /**
      * The line height as a factor of the font size
      */
     private static final float LINE_HEIGHT_FACTOR = 1.05f;
 
-    private int fontSize = DEFAULT_FONT_SIZE;
+    private float fontSize = DEFAULT_FONT_SIZE;
     private PDRectangle mediaBox = PDRectangle.LETTER;
     private boolean landscape = false;
     private PDFont font = DEFAULT_FONT;
@@ -313,7 +313,7 @@ public class TextToPDF
                     else if( args[i].equals( "-fontSize" ))
                     {
                         i++;
-                        app.setFontSize( Integer.parseInt( args[i] ) );
+                        app.setFontSize( Float.parseFloat( args[i] ) );
                     }
                     else if( args[i].equals( "-pageSize" ))
                     {
@@ -485,17 +485,30 @@ public class TextToPDF
     {
         this.font = aFont;
     }
+
     /**
-     * @return Returns the fontSize.
+     * @return Returns the fontSize, truncated to integer.
      */
     public int getFontSize()
     {
-        return fontSize;
+        return (int) fontSize;
     }
+
+    /**
+     * @param aFontSize The fontSize to set.
+     * 
+     * @deprecated use {@link #setFontSize(float)}
+     */
+    @Deprecated
+    public void setFontSize(int aFontSize)
+    {
+        this.fontSize = aFontSize;
+    }
+
     /**
      * @param aFontSize The fontSize to set.
      */
-    public void setFontSize(int aFontSize)
+    public void setFontSize(float aFontSize)
     {
         this.fontSize = aFontSize;
     }
