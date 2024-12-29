@@ -58,7 +58,7 @@ public class TextToPDF implements Callable<Integer>
     /**
      * The default font size
      */
-    private static final int DEFAULT_FONT_SIZE = 10;
+    private static final float DEFAULT_FONT_SIZE = 10;
     
     /**
      * The line height as a factor of the font size
@@ -72,9 +72,9 @@ public class TextToPDF implements Callable<Integer>
     @SuppressWarnings("squid:S106")
     private final PrintStream SYSERR;
 
-    @Option(names = "-fontSize", description = "the size of the font to use (default: ${DEFAULT-VALUE}")
-    private int fontSize = DEFAULT_FONT_SIZE;
-    
+    @Option(names = "-fontSize", description = "the size of the font to use (default: ${DEFAULT-VALUE})")
+    private float fontSize = DEFAULT_FONT_SIZE;
+
     @Option(names = "-landscape", description = "set orientation to landscape")
     private boolean landscape = false;
 
@@ -399,17 +399,18 @@ public class TextToPDF implements Callable<Integer>
     {
         this.font = aFont;
     }
+
     /**
      * @return Returns the fontSize.
      */
-    public int getFontSize()
+    public float getFontSize()
     {
         return fontSize;
     }
     /**
      * @param aFontSize The fontSize to set.
      */
-    public void setFontSize(int aFontSize)
+    public void setFontSize(float aFontSize)
     {
         this.fontSize = aFontSize;
     }
