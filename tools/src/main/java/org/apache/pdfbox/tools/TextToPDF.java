@@ -63,7 +63,7 @@ public class TextToPDF implements Callable<Integer>
     /**
      * The line height as a factor of the font size
      */
-    private static final float LINE_HEIGHT_FACTOR = 1.05f;
+    private static final float DEFAULT_LINE_HEIGHT_FACTOR = 1.05f;
 
     private PDRectangle mediaBox = PDRectangle.LETTER;
     private PDFont font = null;
@@ -74,6 +74,9 @@ public class TextToPDF implements Callable<Integer>
 
     @Option(names = "-fontSize", description = "the size of the font to use (default: ${DEFAULT-VALUE})")
     private float fontSize = DEFAULT_FONT_SIZE;
+    
+    @Option(names = "-lineSpacing", description = "the factor of the font size for the line height (default: ${DEFAULT-VALUE})")
+    private float lineSpacing = DEFAULT_LINE_HEIGHT_FACTOR;
 
     @Option(names = "-landscape", description = "set orientation to landscape")
     private boolean landscape = false;
@@ -240,7 +243,7 @@ public class TextToPDF implements Callable<Integer>
                 landscape ? new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth()) : mediaBox;
 
         // calculate line height and increase by a factor.
-        float lineHeight = fontHeight * fontSize * LINE_HEIGHT_FACTOR;
+        float lineHeight = fontHeight * fontSize * lineSpacing;
         BufferedReader data = new BufferedReader(text);
         String nextLine;
         PDPage page = new PDPage(actualMediaBox);
@@ -345,6 +348,7 @@ public class TextToPDF implements Callable<Integer>
                     contentStream.setFont(font, fontSize);
                     contentStream.beginText();
                     y = page.getMediaBox().getHeight() - margin;
+                    y += lineHeight - fontHeight * fontSize; // adjust for lineSpacing != 1
                     contentStream.newLineAtOffset(margin, y);
                 }
 
@@ -365,6 +369,7 @@ public class TextToPDF implements Callable<Integer>
                     contentStream.setFont(font, fontSize);
                     contentStream.beginText();
                     y = page.getMediaBox().getHeight() - margin;
+                    y += lineHeight - fontHeight * fontSize; // adjust for lineSpacing != 1
                     contentStream.newLineAtOffset(margin, y);
                 }
             }
@@ -407,12 +412,33 @@ public class TextToPDF implements Callable<Integer>
     {
         return fontSize;
     }
+
     /**
      * @param aFontSize The fontSize to set.
      */
     public void setFontSize(float aFontSize)
     {
         this.fontSize = aFontSize;
+    }
+
+    /**
+     * @return Returns the lineSpacing.
+     */
+    public float getLineSpacing()
+    {
+        return lineSpacing;
+    }
+
+    /**
+     * @param lineSpacing The lineSpacing to set.
+     */
+    public void setLineSpacing(float lineSpacing)
+    {
+        if (lineSpacing <= 0)
+        {
+            throw new IllegalArgumentException("line spacing must be positive: " + lineSpacing);
+        }
+        this.lineSpacing = lineSpacing;
     }
 
     /**
