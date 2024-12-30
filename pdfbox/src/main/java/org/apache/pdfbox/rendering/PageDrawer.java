@@ -1539,21 +1539,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public void showAnnotation(PDAnnotation annotation) throws IOException
     {
         lastClips = null;
-        int deviceType = -1;
-        GraphicsConfiguration graphicsConfiguration = graphics.getDeviceConfiguration();
-        if (graphicsConfiguration != null)
-        {
-            GraphicsDevice graphicsDevice = graphicsConfiguration.getDevice();
-            if (graphicsDevice != null)
-            {
-                deviceType = graphicsDevice.getType();
-            }
-        }
-        if (deviceType == GraphicsDevice.TYPE_PRINTER && !annotation.isPrinted())
+        if (destination == RenderDestination.PRINT && !annotation.isPrinted())
         {
             return;
         }
-        if (deviceType == GraphicsDevice.TYPE_RASTER_SCREEN && annotation.isNoView())
+        if ((destination == RenderDestination.VIEW || destination == RenderDestination.EXPORT) &&
+                annotation.isNoView())
         {
             return;
         }
