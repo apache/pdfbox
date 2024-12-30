@@ -64,6 +64,11 @@ public class TextToPDF implements Callable<Integer>
      * The line height as a factor of the font size
      */
     private static final float DEFAULT_LINE_HEIGHT_FACTOR = 1.05f;
+    
+    /**
+     * The default margin
+     */
+    private static final float DEFAULT_MARGIN = 40;
 
     private PDRectangle mediaBox = PDRectangle.LETTER;
     private PDFont font = null;
@@ -87,6 +92,9 @@ public class TextToPDF implements Callable<Integer>
     @Option(names = "-charset", description = "the charset to use. \n(default: ${DEFAULT-VALUE})")
     private Charset charset = Charset.defaultCharset();
 
+    @Option(names = "-margins", arity="0..4", description = "Left Right Top Bottom margins (default: ${DEFAULT-VALUE})")
+    private float margins[] = {DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN};
+
     @Option(names = "-standardFont", 
         description = "the font to use for the text. Either this or -ttf should be specified but not both.\nCandidates: ${COMPLETION-CANDIDATES} (default: ${DEFAULT-VALUE})")
     private FontName standardFont = FontName.HELVETICA;
@@ -100,6 +108,10 @@ public class TextToPDF implements Callable<Integer>
     @Option(names = {"-o", "--output"}, description = "the generated PDF file", required = true)
     private File outfile;
 
+    private float leftMargin = DEFAULT_MARGIN;
+    private float rightMargin = DEFAULT_MARGIN;
+    private float topMargin = DEFAULT_MARGIN;
+    private float bottomMargin = DEFAULT_MARGIN;
 
     private enum PageSizes
     {
@@ -167,7 +179,12 @@ public class TextToPDF implements Callable<Integer>
             setFontSize(fontSize);
             setMediaBox(pageSize.getPageSize());
             setLandscape(landscape);
-            
+            setLineSpacing(lineSpacing);
+            setLeftMargin(margins[0]);
+            setRightMargin(margins[1]);
+            setTopMargin(margins[2]);
+            setBottomMargin(margins[3]);
+
             boolean hasUtf8BOM = false;
             if (charset.equals(StandardCharsets.UTF_8))
             {
@@ -237,7 +254,6 @@ public class TextToPDF implements Callable<Integer>
         {
             font = new PDType1Font(standardFont);
         }
-        final int margin = 40;
         float fontHeight = font.getBoundingBox().getHeight() / FONTSCALE;
         PDRectangle actualMediaBox =
                 landscape ? new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth()) : mediaBox;
@@ -249,7 +265,7 @@ public class TextToPDF implements Callable<Integer>
         PDPage page = new PDPage(actualMediaBox);
         PDPageContentStream contentStream = null;
         float y = -1;
-        float maxStringLength = page.getMediaBox().getWidth() - 2 * margin;
+        float maxStringLength = page.getMediaBox().getWidth() - leftMargin - rightMargin;
 
         // There is a special case of creating a PDF document from an empty string.
         boolean textIsEmpty = true;
@@ -333,7 +349,7 @@ public class TextToPDF implements Callable<Integer>
                 }
                 while (lineIndex < lineWords.length && lengthIfUsingNextWord < maxStringLength);
 
-                if (y - lineHeight < margin)
+                if (y - lineHeight < bottomMargin)
                 {
                     // We have crossed the end-of-page boundary and need to extend the
                     // document by another page.
@@ -347,9 +363,9 @@ public class TextToPDF implements Callable<Integer>
                     contentStream = new PDPageContentStream(doc, page);
                     contentStream.setFont(font, fontSize);
                     contentStream.beginText();
-                    y = page.getMediaBox().getHeight() - margin;
+                    y = page.getMediaBox().getHeight() - topMargin;
                     y += lineHeight - fontHeight * fontSize; // adjust for lineSpacing != 1
-                    contentStream.newLineAtOffset(margin, y);
+                    contentStream.newLineAtOffset(leftMargin, y);
                 }
 
                 if (contentStream == null)
@@ -368,9 +384,9 @@ public class TextToPDF implements Callable<Integer>
                     contentStream = new PDPageContentStream(doc, page);
                     contentStream.setFont(font, fontSize);
                     contentStream.beginText();
-                    y = page.getMediaBox().getHeight() - margin;
+                    y = page.getMediaBox().getHeight() - topMargin;
                     y += lineHeight - fontHeight * fontSize; // adjust for lineSpacing != 1
-                    contentStream.newLineAtOffset(margin, y);
+                    contentStream.newLineAtOffset(leftMargin, y);
                 }
             }
         }
@@ -439,6 +455,70 @@ public class TextToPDF implements Callable<Integer>
             throw new IllegalArgumentException("line spacing must be positive: " + lineSpacing);
         }
         this.lineSpacing = lineSpacing;
+    }
+
+    /**
+     * @return Returns the left margin.
+     */
+    public float getLeftMargin()
+    {
+        return leftMargin;
+    }
+
+    /**
+     * @param leftMargin The left margin to be set.
+     */
+    public void setLeftMargin(float leftMargin)
+    {
+        this.leftMargin = leftMargin;
+    }
+
+    /**
+     * @return Returns the right margin.
+     */
+    public float getRightMargin()
+    {
+        return rightMargin;
+    }
+
+    /**
+     * @param rightMargin The right margin to be set.
+     */
+    public void setRightMargin(float rightMargin)
+    {
+        this.rightMargin = rightMargin;
+    }
+
+    /**
+     * @return Returns the top margin.
+     */
+    public float getTopMargin()
+    {
+        return topMargin;
+    }
+
+    /**
+     * @param topMargin The top margin to be set.
+     */
+    public void setTopMargin(float topMargin)
+    {
+        this.topMargin = topMargin;
+    }
+
+    /**
+     * @return Returns the bottom margin.
+     */
+    public float getBottomMargin()
+    {
+        return bottomMargin;
+    }
+
+    /**
+     * @param bottomMargin The bottom margin to be set.
+     */
+    public void setBottomMargin(float bottomMargin)
+    {
+        this.bottomMargin = bottomMargin;
     }
 
     /**
