@@ -16,7 +16,7 @@
  */
 package org.apache.fontbox.cmap;
 
-import java.nio.charset.StandardCharsets;
+import org.apache.fontbox.util.Charsets;
 
 import junit.framework.TestCase;
 
@@ -33,7 +33,7 @@ public class CMapStringsTest extends TestCase
     public void testGetMappingOneByte()
     {
         byte[] minValueOneByte = new byte[] { 0 };
-        String minValueMapping = new String(minValueOneByte, StandardCharsets.ISO_8859_1);
+        String minValueMapping = new String(minValueOneByte, Charsets.ISO_8859_1);
         // the given values are equal
         assertEquals(CMapStrings.getMapping(minValueOneByte),
                 CMapStrings.getMapping(minValueOneByte));
@@ -44,7 +44,7 @@ public class CMapStringsTest extends TestCase
         assertEquals(minValueMapping, CMapStrings.getMapping(minValueOneByte));
 
         byte[] maxValueOneByte = new byte[] { (byte) 0xff };
-        String maxValueMapping = new String(maxValueOneByte, StandardCharsets.ISO_8859_1);
+        String maxValueMapping = new String(maxValueOneByte, Charsets.ISO_8859_1);
         assertEquals(CMapStrings.getMapping(maxValueOneByte),
                 CMapStrings.getMapping(maxValueOneByte));
         assertTrue(
@@ -52,7 +52,7 @@ public class CMapStringsTest extends TestCase
         assertEquals(maxValueMapping, CMapStrings.getMapping(maxValueOneByte));
 
         byte[] anyValueOneByte = new byte[] { 98 };
-        String anyValueMapping = new String(anyValueOneByte, StandardCharsets.ISO_8859_1);
+        String anyValueMapping = new String(anyValueOneByte, Charsets.ISO_8859_1);
         assertEquals(CMapStrings.getMapping(anyValueOneByte),
                 CMapStrings.getMapping(anyValueOneByte));
         assertTrue(
@@ -63,7 +63,7 @@ public class CMapStringsTest extends TestCase
     public void testGetMappingTwoByte()
     {
         byte[] minValueTwoByte = new byte[] { 0, 0 };
-        String minValueMapping = new String(minValueTwoByte, StandardCharsets.UTF_16BE);
+        String minValueMapping = new String(minValueTwoByte, Charsets.UTF_16BE);
         // the given values are equal
         assertEquals(CMapStrings.getMapping(minValueTwoByte),
                 CMapStrings.getMapping(minValueTwoByte));
@@ -74,7 +74,7 @@ public class CMapStringsTest extends TestCase
         assertEquals(minValueMapping, CMapStrings.getMapping(minValueTwoByte));
 
         byte[] maxValueTwoByte = new byte[] { (byte) 0xff, (byte) 0xff };
-        String maxValueMapping = new String(maxValueTwoByte, StandardCharsets.UTF_16BE);
+        String maxValueMapping = new String(maxValueTwoByte, Charsets.UTF_16BE);
         assertEquals(CMapStrings.getMapping(maxValueTwoByte),
                 CMapStrings.getMapping(maxValueTwoByte));
         assertTrue(
@@ -82,7 +82,7 @@ public class CMapStringsTest extends TestCase
         assertEquals(maxValueMapping, CMapStrings.getMapping(maxValueTwoByte));
 
         byte[] anyValueTwoByte1 = new byte[] { 0x62, 0x43 };
-        String anyValueMapping1 = new String(anyValueTwoByte1, StandardCharsets.UTF_16BE);
+        String anyValueMapping1 = new String(anyValueTwoByte1, Charsets.UTF_16BE);
         assertEquals(CMapStrings.getMapping(anyValueTwoByte1),
                 CMapStrings.getMapping(anyValueTwoByte1));
         assertTrue(CMapStrings.getMapping(anyValueTwoByte1) == CMapStrings
@@ -90,7 +90,7 @@ public class CMapStringsTest extends TestCase
         assertEquals(anyValueMapping1, CMapStrings.getMapping(anyValueTwoByte1));
 
         byte[] anyValueTwoByte2 = new byte[] { (byte) 0xff, 0x43 };
-        String anyValueMapping2 = new String(anyValueTwoByte2, StandardCharsets.UTF_16BE);
+        String anyValueMapping2 = new String(anyValueTwoByte2, Charsets.UTF_16BE);
         assertEquals(CMapStrings.getMapping(anyValueTwoByte2),
                 CMapStrings.getMapping(anyValueTwoByte2));
         assertTrue(CMapStrings.getMapping(anyValueTwoByte2) == CMapStrings
@@ -98,7 +98,7 @@ public class CMapStringsTest extends TestCase
         assertEquals(anyValueMapping2, CMapStrings.getMapping(anyValueTwoByte2));
 
         byte[] anyValueTwoByte3 = new byte[] { 0x38, (byte) 0xff };
-        String anyValueMapping3 = new String(anyValueTwoByte3, StandardCharsets.UTF_16BE);
+        String anyValueMapping3 = new String(anyValueTwoByte3, Charsets.UTF_16BE);
         assertEquals(CMapStrings.getMapping(anyValueTwoByte3),
                 CMapStrings.getMapping(anyValueTwoByte3));
         assertTrue(CMapStrings.getMapping(anyValueTwoByte3) == CMapStrings
