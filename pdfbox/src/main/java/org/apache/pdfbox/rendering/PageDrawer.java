@@ -1239,7 +1239,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 BufferedImage image = pdImage.getStencilImage(getNonStrokingPaint());
 
                 // draw the image
-                drawBufferedImage(image, at);
+                drawBufferedImage(pdImage, image, at);
             }
         }
         else
@@ -1248,12 +1248,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 int subsampling = getSubsampling(pdImage, at);
                 // draw the subsampled image
-                drawBufferedImage(pdImage.getImage(null, subsampling), at);
+                drawBufferedImage(pdImage, pdImage.getImage(null, subsampling), at);
             }
             else
             {
                 // subsampling not allowed, draw the image
-                drawBufferedImage(pdImage.getImage(), at);
+                drawBufferedImage(pdImage, pdImage.getImage(), at);
             }
         }
 
@@ -1297,7 +1297,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         return subsampling;
     }
 
-    private void drawBufferedImage(BufferedImage image, AffineTransform at) throws IOException
+    private void drawBufferedImage(PDImage pdImage, BufferedImage image, AffineTransform at) throws IOException
     {
         AffineTransform originalTransform = graphics.getTransform();
         AffineTransform imageTransform = new AffineTransform(at);
@@ -1307,7 +1307,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         imageTransform.translate(0, -height);
 
         PDSoftMask softMask = getGraphicsState().getSoftMask();
-        if( softMask != null )
+
+        // PDFBOX-5307 / PDF.js PR#19269
+        // From section 11.6.4.3 Mask Shape and Opacity in the PDF specification:
+        // "Either form of mask in the image dictionary shall override the current soft mask
+        //  in the graphics state"
+        boolean hasImageMask = pdImage.getCOSObject().containsKey(COSName.MASK) ||
+                               pdImage.getCOSObject().containsKey(COSName.SMASK);
+
+        if (softMask != null && !hasImageMask)
         {
             Rectangle2D rectangle = new Rectangle2D.Float(0, 0, width, height);
             Paint awtPaint = new TexturePaint(image, rectangle);
