@@ -271,17 +271,17 @@ class PDAcroFormTest
             PDPage page = new PDPage();
             doc.addPage(page);
 
-            PDAcroForm acroForm = new PDAcroForm(document);
-            doc.getDocumentCatalog().setAcroForm(acroForm);
-            acroForm.setDefaultResources(new PDResources());
+            PDAcroForm theAcroForm = new PDAcroForm(document);
+            doc.getDocumentCatalog().setAcroForm(theAcroForm);
+            theAcroForm.setDefaultResources(new PDResources());
 
-            PDTextField textBox = new PDTextField(acroForm);
+            PDTextField textBox = new PDTextField(theAcroForm);
             textBox.setPartialName("SampleField");
 
             // https://stackoverflow.com/questions/50609478/
             // "tf" is a typo, should have been "Tf" and this results that no font is chosen
             textBox.setDefaultAppearance("/Helv 0 tf 0 g");
-            acroForm.getFields().add(textBox);
+            theAcroForm.getFields().add(textBox);
 
             PDAnnotationWidget widget = textBox.getWidgets().get(0);
             PDRectangle rect = new PDRectangle(50, 750, 200, 20);
@@ -422,12 +422,12 @@ class PDAcroFormTest
                     PDAcroFormFromAnnotsTest.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"), 
                     false);
 
-            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
-            PDResources resources = acroForm.getDefaultResources();
+            PDAcroForm theAcroForm = doc.getDocumentCatalog().getAcroForm();
+            PDResources resources = theAcroForm.getDefaultResources();
             String fontName = resources.add(load).getName();
             String defaultAppearanceString = "/" + fontName + " 12 Tf 0 g";
 
-            PDTextField myField = (PDTextField) acroForm.getField("Name");
+            PDTextField myField = (PDTextField) theAcroForm.getField("Name");
             myField.setDefaultAppearance(defaultAppearanceString);
             myField.getWidgets().get(0).setAppearance(null);
             myField.setValue("ŞŞ"); // Text with the Ş character made it crash
