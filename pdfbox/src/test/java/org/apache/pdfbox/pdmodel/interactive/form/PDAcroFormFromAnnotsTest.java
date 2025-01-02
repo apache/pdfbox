@@ -148,8 +148,6 @@ public class PDAcroFormFromAnnotsTest
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
-
-        int numCosFormFields = 0;
         
         PDDocument testPdf = null;
         try
@@ -159,7 +157,7 @@ public class PDAcroFormFromAnnotsTest
             // need to do a low level cos access as the PDModel access will build the AcroForm 
             COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
             COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
-            numCosFormFields = cosFields.size();
+            int numCosFormFields = cosFields.size();
             assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
             PDAcroForm acroForm = catalog.getAcroForm(null);
             assertEquals("After call without correction there shall be " + numCosFormFields + " fields", numCosFormFields, acroForm.getFields().size());

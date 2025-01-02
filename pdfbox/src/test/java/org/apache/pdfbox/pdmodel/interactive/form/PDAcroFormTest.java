@@ -134,8 +134,8 @@ public class PDAcroFormTest
     public void testFlattenWidgetNoRef() throws IOException
     {
         PDDocument testPdf = PDDocument.load(new File(IN_DIR, "AlignmentTests.pdf"));
-        PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
-        for (PDField field : acroForm.getFieldTree()) {
+        PDAcroForm theAcroForm = testPdf.getDocumentCatalog().getAcroForm();
+        for (PDField field : theAcroForm.getFieldTree()) {
         	for (PDAnnotationWidget widget : field.getWidgets()) {
         		widget.getCOSObject().removeItem(COSName.P);
         	}
@@ -219,7 +219,6 @@ public class PDAcroFormTest
         catch (IOException e)
         {
             System.err.println("Couldn't create test document, test skipped");
-            return;
         }
     } 
     
@@ -257,7 +256,6 @@ public class PDAcroFormTest
         catch (IOException e)
         {
             System.err.println("Couldn't create test document, test skipped");
-            return;
         }
     }
 
@@ -289,7 +287,6 @@ public class PDAcroFormTest
         catch (IOException e)
         {
             System.err.println("Couldn't create test document, test skipped");
-            return;
         }
     }
 
@@ -308,17 +305,17 @@ public class PDAcroFormTest
         PDPage page = new PDPage();
         doc.addPage(page);
 
-        PDAcroForm acroForm = new PDAcroForm(document);
-        doc.getDocumentCatalog().setAcroForm(acroForm);
-        acroForm.setDefaultResources(new PDResources());
+        PDAcroForm theAcroForm = new PDAcroForm(document);
+        doc.getDocumentCatalog().setAcroForm(theAcroForm);
+        theAcroForm.setDefaultResources(new PDResources());
 
-        PDTextField textBox = new PDTextField(acroForm);
+        PDTextField textBox = new PDTextField(theAcroForm);
         textBox.setPartialName("SampleField");
 
         // https://stackoverflow.com/questions/50609478/
         // "tf" is a typo, should have been "Tf" and this results that no font is chosen
         textBox.setDefaultAppearance("/Helv 0 tf 0 g");
-        acroForm.getFields().add(textBox);
+        theAcroForm.getFields().add(textBox);
 
         PDAnnotationWidget widget = textBox.getWidgets().get(0);
         PDRectangle rect = new PDRectangle(50, 750, 200, 20);
@@ -345,6 +342,8 @@ public class PDAcroFormTest
     /**
      * PDFBOX-3732, PDFBOX-4303, PDFBOX-4393: Test whether /Helv and /ZaDb get added, but only if
      * they don't exist.
+     * 
+     * @throws IOException
      */
     @Test
     public void testAcroFormDefaultFonts() throws IOException
@@ -462,7 +461,9 @@ public class PDAcroFormTest
     }
 
     /***
-     * PDFBOX-5797: Check that Sejda generated files have their widget /DA entries changed. 
+     * PDFBOX-5797: Check that Sejda generated files have their widget /DA entries changed.
+     * 
+     * @throws IOException
      */
     @Test
     public void testPDFBox5797() throws IOException
@@ -473,12 +474,12 @@ public class PDAcroFormTest
                 PDAcroFormFromAnnotsTest.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"), 
                 false);
 
-        PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
-        PDResources resources = acroForm.getDefaultResources();
+        PDAcroForm theAcroForm = doc.getDocumentCatalog().getAcroForm();
+        PDResources resources = theAcroForm.getDefaultResources();
         String fontName = resources.add(load).getName();
         String defaultAppearanceString = "/" + fontName + " 12 Tf 0 g";
 
-        PDTextField myField = (PDTextField) acroForm.getField("Name");
+        PDTextField myField = (PDTextField) theAcroForm.getField("Name");
         myField.setDefaultAppearance(defaultAppearanceString);
         myField.getWidgets().get(0).setAppearance(null);
         myField.setValue("ŞŞ"); // Text with the Ş character made it crash
@@ -496,12 +497,12 @@ public class PDAcroFormTest
 
     private byte[] createAcroFormWithMissingResourceInformation() throws IOException
     {
-        PDDocument document = new PDDocument();
+        PDDocument doc = new PDDocument();
         PDPage page = new PDPage();
-        document.addPage(page);
+        doc.addPage(page);
 
-        PDAcroForm newAcroForm = new PDAcroForm(document);
-        document.getDocumentCatalog().setAcroForm(newAcroForm);
+        PDAcroForm newAcroForm = new PDAcroForm(doc);
+        doc.getDocumentCatalog().setAcroForm(newAcroForm);
 
         PDTextField textBox = new PDTextField(newAcroForm);
         textBox.setPartialName("SampleField");
@@ -518,8 +519,8 @@ public class PDAcroFormTest
         // acroForm.getField("SampleField").getCOSObject().setString(COSName.V, "content");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        document.save(baos); // this is a working PDF
-        document.close();
+        doc.save(baos); // this is a working PDF
+        doc.close();
         return baos.toByteArray();
     }
 
