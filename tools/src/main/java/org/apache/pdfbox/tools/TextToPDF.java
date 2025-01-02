@@ -93,7 +93,7 @@ public class TextToPDF implements Callable<Integer>
     private Charset charset = Charset.defaultCharset();
 
     @Option(names = "-margins", arity="0..4", description = "Left Right Top Bottom margins (default: ${DEFAULT-VALUE})")
-    private float margins[] = {DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN};
+    private float[] margins = {DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN};
 
     @Option(names = "-standardFont", 
         description = "the font to use for the text. Either this or -ttf should be specified but not both.\nCandidates: ${COMPLETION-CANDIDATES} (default: ${DEFAULT-VALUE})")
