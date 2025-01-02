@@ -145,10 +145,8 @@ class PDAcroFormFlattenTest
     @Test
     void flattenSingleField() throws IOException
     {
-        final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
-        final String NAME_OF_PDF = "MultilineFields.pdf";
-
-        PDDocument document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
+        String filename = "src/test/resources/org/apache/pdfbox/pdmodel/interactive/form/MultilineFields.pdf";
+        PDDocument document = Loader.loadPDF(new File(filename));
         PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
         int numFieldsBefore = acroForm.getFields().size();
     
