@@ -187,19 +187,19 @@ public class PDInlineImageTest extends TestCase
 
     public void testShortCCITT1() throws IOException
     {
-        byte ba[] = new byte [] { 8, 0x10, 0x20, 0x40, (byte) 0x81, 2, 4, 8, 0x10, 0, 0x40, 4, 0, 0x40, 4, 0, 0x40, 4 };
+        byte[] ba = new byte [] { 8, 0x10, 0x20, 0x40, (byte) 0x81, 2, 4, 8, 0x10, 0, 0x40, 4, 0, 0x40, 4, 0, 0x40, 4 };
         doInlineCcittImage(23, 10, ba);
     }
 
     public void testShortCCITT2() throws IOException
     {
-        byte ba[] = new byte [] { 8, 0x10, 0x20, 0x40, (byte) 0x81, 2, 0, 8, 0, (byte) 0x80, 8, 8, (byte) 0x80, 8, 0, (byte) 0x80};
+        byte[] ba = new byte [] { 8, 0x10, 0x20, 0x40, (byte) 0x81, 2, 0, 8, 0, (byte) 0x80, 8, 8, (byte) 0x80, 8, 0, (byte) 0x80};
         doInlineCcittImage(23, 7, ba);
     }
 
     public void testShortCCITT3() throws IOException
     {
-        byte ba[] = new byte [] { 103, 44, 103, 44, 103, 44, 103, 44, 0, 16, 1, 0, 16, 1, 0, 16, 1, 10};
+        byte[] ba = new byte [] { 103, 44, 103, 44, 103, 44, 103, 44, 0, 16, 1, 0, 16, 1, 0, 16, 1, 10};
         doInlineCcittImage(683, 4, ba);
     }
 

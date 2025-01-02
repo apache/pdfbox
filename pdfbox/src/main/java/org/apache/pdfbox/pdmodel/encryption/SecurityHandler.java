@@ -497,7 +497,7 @@ public abstract class SecurityHandler
         {
             // PDFBOX-3229 check case where metadata is not encrypted despite /EncryptMetadata missing
             InputStream is = stream.createRawInputStream();
-            byte buf[] = new byte[10];
+            byte[] buf = new byte[10];
             IOUtils.populateBuffer(is, buf);
             is.close();
             if (Arrays.equals(buf, "<?xpacket ".getBytes(Charsets.ISO_8859_1)))
