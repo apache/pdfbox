@@ -63,6 +63,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 
@@ -87,6 +88,9 @@ public abstract class PDFStreamEngine
 
     // used to monitor potentially recursive operations.
     private int level = 0;
+
+    // false in certain cases, e.g. type3 charprocs with d1 or uncolored tiling patterns
+    private boolean shouldProcessColorOperators;
 
     /**
      * Creates a new PDFStreamEngine.
@@ -525,18 +529,40 @@ public abstract class PDFStreamEngine
         List<COSBase> arguments = new ArrayList<COSBase>();
         PDFStreamParser parser = new PDFStreamParser(contentStream);
         Object token = parser.parseNextToken();
-        while (token != null)
+
+        boolean isFirstOperator = true;
+        boolean oldShouldProcessColorOperators = shouldProcessColorOperators;
+        shouldProcessColorOperators = true;
+        if (contentStream instanceof PDTilingPattern &&
+            ((PDTilingPattern) contentStream).getPaintType() == PDTilingPattern.PAINT_UNCOLORED)
         {
-            if (token instanceof Operator)
+            shouldProcessColorOperators = false;
+        }
+        try
+        {
+            while (token != null)
             {
-                processOperator((Operator) token, arguments);
-                arguments.clear();
+                if (token instanceof Operator)
+                {
+                    if (isFirstOperator && contentStream instanceof PDType3CharProc && 
+                        OperatorName.TYPE3_D1.equals(((Operator) token).getName()))
+                    {
+                        shouldProcessColorOperators = false;
+                    }
+                    isFirstOperator = false;
+                    processOperator((Operator) token, arguments);
+                    arguments.clear();
+                }
+                else
+                {
+                    arguments.add((COSBase) token);
+                }
+                token = parser.parseNextToken();
             }
-            else
-            {
-                arguments.add((COSBase) token);
-            }
-            token = parser.parseNextToken();
+        }
+        finally
+        {
+            shouldProcessColorOperators = oldShouldProcessColorOperators;
         }
     }
 
@@ -1206,5 +1232,10 @@ public abstract class PDFStreamEngine
         {
             LOG.error("level is " + level);
         }
+    }
+
+    public boolean isShouldProcessColorOperators()
+    {
+        return shouldProcessColorOperators;
     }
 }

@@ -37,6 +37,10 @@ public class SetStrokingColorSpace extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
+        if (!context.isShouldProcessColorOperators())
+        {
+            return;
+        }
         if (arguments.isEmpty())
         {
             return;

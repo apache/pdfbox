@@ -33,8 +33,13 @@ import java.util.List;
  */
 public class SetStrokingDeviceGrayColor extends SetStrokingColor
 {
+    @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
+        if (!context.isShouldProcessColorOperators())
+        {
+            return;
+        }
         PDColorSpace cs = context.getResources().getColorSpace(COSName.DEVICEGRAY);
         context.getGraphicsState().setStrokingColorSpace(cs);
         super.process(operator, arguments);
