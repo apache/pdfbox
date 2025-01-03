@@ -1171,6 +1171,13 @@ public abstract class PDFStreamEngine
         }
     }
 
+    /**
+     * Tells whether color operators should be processed. To be used in some OperatorProcessor
+     * classes.
+     *
+     * @return true if color operators should be processed, false if not, e.g. in type3 charprocs
+     * with d1 or in uncolored tiling patterns.
+     */
     public boolean isShouldProcessColorOperators()
     {
         return shouldProcessColorOperators;
