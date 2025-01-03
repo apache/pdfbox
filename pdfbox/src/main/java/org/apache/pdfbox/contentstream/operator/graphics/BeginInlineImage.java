@@ -42,6 +42,10 @@ public final class BeginInlineImage extends GraphicsOperatorProcessor
         PDImage image = new PDInlineImage(operator.getImageParameters(),
                                           operator.getImageData(),
                                           context.getResources());
+        if (!image.isStencil() && !context.isShouldProcessColorOperators())
+        {
+            return;
+        }
         context.drawImage(image);
     }
 

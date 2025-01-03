@@ -63,7 +63,11 @@ public final class DrawObject extends GraphicsOperatorProcessor
         }
         else if (xobject instanceof PDImageXObject)
         {
-            PDImageXObject image = (PDImageXObject)xobject;
+            PDImageXObject image = (PDImageXObject) xobject;
+            if (!image.isStencil() && !context.isShouldProcessColorOperators())
+            {
+                return;
+            }
             context.drawImage(image);
         }
         else if (xobject instanceof PDFormXObject)
