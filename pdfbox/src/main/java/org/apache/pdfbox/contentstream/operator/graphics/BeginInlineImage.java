@@ -54,6 +54,10 @@ public final class BeginInlineImage extends GraphicsOperatorProcessor
         {
             return;
         }
+        if (!image.isStencil() && !context.isShouldProcessColorOperators())
+        {
+            return;
+        }
         context.drawImage(image);
     }
 
