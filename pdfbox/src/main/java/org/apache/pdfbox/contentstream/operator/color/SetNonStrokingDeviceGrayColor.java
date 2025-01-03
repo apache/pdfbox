@@ -43,6 +43,10 @@ public class SetNonStrokingDeviceGrayColor extends SetNonStrokingColor
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
         PDFStreamEngine context = getContext();
+        if (!context.isShouldProcessColorOperators())
+        {
+            return;
+        }
         PDColorSpace cs = context.getResources().getColorSpace(COSName.DEVICEGRAY);
         context.getGraphicsState().setNonStrokingColorSpace(cs);
         super.process(operator, arguments);

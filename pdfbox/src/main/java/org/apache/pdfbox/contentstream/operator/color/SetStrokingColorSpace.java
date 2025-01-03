@@ -53,6 +53,10 @@ public class SetStrokingColorSpace extends OperatorProcessor
             return;
         }
         PDFStreamEngine context = getContext();
+        if (!context.isShouldProcessColorOperators())
+        {
+            return;
+        }
         PDColorSpace cs = context.getResources().getColorSpace((COSName) base);
         context.getGraphicsState().setStrokingColorSpace(cs);
         context.getGraphicsState().setStrokingColor(cs.getInitialColor());
