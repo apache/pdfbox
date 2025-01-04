@@ -79,7 +79,7 @@ public class CMapStrings
             return null;
         }
         return bytes.length == 1 ? oneByteMappings.get(CMap.toInt(bytes, 1))
-                : twoByteMappings.get(CMap.toInt(bytes, 2));
+                : twoByteMappings.get(CMap.toInt(bytes, bytes.length));
     }
 
     /**
