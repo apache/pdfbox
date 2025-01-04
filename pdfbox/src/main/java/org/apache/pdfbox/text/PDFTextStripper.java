@@ -161,8 +161,8 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     // use a stack so we don't get confused if another BDC within "/ActualText... BDC" block
     private final Deque<PDMarkedContent> currentMarkedContents = new ArrayDeque<>();
     // to replace the unicode of the first TextPosition and empty the others
-    boolean firstActualTextPosition = false; 
-    String actualText = null;
+    private boolean firstActualTextPosition = false; 
+    private String actualText = null;
 
     /**
      * The charactersByArticle is used to extract text by article divisions. For example a PDF that has two columns like
