@@ -647,8 +647,10 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Remove the page from the document.
-     * 
+     * Remove the page from the document. Do not use this method if other pages link to this one or
+     * if your document has a structure tree for accessibility unless you are able to fix these as
+     * well. In such cases it is better to use the splitter() class which will do these fixes.
+     *
      * @param page The page to remove from the document.
      */
     public void removePage(PDPage page)
@@ -657,7 +659,9 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Remove the page from the document.
+     * Remove the page from the document. Do not use this method if other pages link to this one or
+     * if your document has a structure tree for accessibility unless you are able to fix these as
+     * well. In such cases it is better to use the splitter() class which will do these fixes.
      * 
      * @param pageNumber 0 based index to page number.
      */
