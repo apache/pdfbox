@@ -22,7 +22,10 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * This is an example on how to remove pages from a PDF document.
+ * This is an example on how to remove pages from a PDF document. Do not use this tool if other
+ * pages link to this one or if your document has a structure tree for accessibility unless you are
+ * able to fix these as well. In such cases it is better to use the splitter() class which will do
+ * these fixes.
  *
  * @author Ben Litchfield
  */
