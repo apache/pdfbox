@@ -575,8 +575,6 @@ public abstract class PDFont implements COSObjectable, PDFontLike
                     try
                     {
                         // PDFBOX-5920: try with encoding, which gets the correct code
-                        encode(" "); // this throws an exception if space doesn't exist,
-                                         // getStringWidth() not always
                         fontWidthOfSpace = getStringWidth(" ");
                     }
                     catch (IllegalArgumentException | UnsupportedOperationException ex)
