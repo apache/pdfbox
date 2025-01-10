@@ -38,8 +38,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
@@ -186,7 +186,7 @@ class TestCreateSignature
      * answer is too old".
      */
     @Test
-    void testTimeDifference() throws IOException
+    void testTimeDifference() throws IOException, URISyntaxException
     {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
@@ -211,7 +211,7 @@ class TestCreateSignature
             String dateString;
             try
             {
-                HttpsURLConnection con = (HttpsURLConnection) new URL("https://www.google.com/").openConnection();
+                HttpsURLConnection con = (HttpsURLConnection) new URI("https://www.google.com/").toURL().openConnection();
                 if (con.getResponseCode() != HttpsURLConnection.HTTP_OK)
                 {
                     System.out.println("Google returns " + con.getResponseCode());
