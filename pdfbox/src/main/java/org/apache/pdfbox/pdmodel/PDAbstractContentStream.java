@@ -1695,7 +1695,9 @@ abstract class PDAbstractContentStream implements Closeable
                 {
                     source = "?";
                 }
-                throw new IllegalStateException("could not find the glyphId for the character: " + source);
+                throw new IllegalStateException("could not find the glyphId for the character: " +
+                        source + ", codePoint: " + codePoint +
+                        " (0x" + Integer.toHexString(codePoint).toUpperCase() + ")");
             }
             originalGlyphIds.add(glyphId);
         }
