@@ -655,7 +655,7 @@ this.getClass().getResourceAsStream("/org/apache/pdfbox/resources/ttf/Liberation
             }
             catch (IllegalStateException e)
             {
-                assertEquals("could not find the glyphId for the character: あ", e.getMessage());
+                assertEquals("could not find the glyphId for the character: あ, codePoint: 12354 (0x3042)", e.getMessage());
                 return;
             }
 
@@ -684,7 +684,7 @@ this.getClass().getResourceAsStream("/org/apache/pdfbox/resources/ttf/Liberation
             }
             catch (IllegalStateException e)
             {
-                assertEquals("could not find the glyphId for the character: 𩸽" ,e.getMessage());
+                assertEquals("could not find the glyphId for the character: 𩸽, codePoint: 171581 (0x29E3D)" ,e.getMessage());
                 return;
             }
 
