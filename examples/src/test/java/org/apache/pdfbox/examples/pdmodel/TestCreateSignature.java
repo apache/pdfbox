@@ -936,7 +936,7 @@ class TestCreateSignature
             byte[] contents = signature.getContents();
             PDDocumentCatalog docCatalog = doc.getDocumentCatalog();
             COSDictionary dssDict = docCatalog.getCOSObject().getCOSDictionary(COSName.getPDFName("DSS"));
-            COSArray dssCertArray = dssDict.getCOSArray(COSName.getPDFName("Certs"));
+            COSArray dssCertArray = dssDict.getCOSArray(COSName.CERTS);
             COSDictionary vriDict = dssDict.getCOSDictionary(COSName.getPDFName("VRI"));
             // Check that all known signature certificates are in the VRI/signaturehash/Cert array
             byte[] signatureHash = MessageDigest.getInstance("SHA-1").digest(contents);
