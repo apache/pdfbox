@@ -154,9 +154,6 @@ public class TestCreateSignature
 
         certificate = keyStore.getCertificateChain(keyStore.aliases().nextElement())[0];
         tsa = System.getProperty("org.apache.pdfbox.examples.pdmodel.tsa");
-        
-        //tsa = "https://freetsa.org/tsr";
-        tsa = "http://time.certum.pl";
     }
 
     /**
@@ -872,7 +869,7 @@ public class TestCreateSignature
 
         PDDocumentCatalog docCatalog = doc.getDocumentCatalog();
         COSDictionary dssDict = docCatalog.getCOSObject().getCOSDictionary(COSName.getPDFName("DSS"));
-        COSArray dssCertArray = dssDict.getCOSArray(COSName.getPDFName("Certs"));
+        COSArray dssCertArray = dssDict.getCOSArray(COSName.CERTS);
         COSDictionary vriDict = dssDict.getCOSDictionary(COSName.getPDFName("VRI"));
 
         // Check that all known signature certificates are in the VRI/signaturehash/Cert array
