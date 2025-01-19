@@ -963,11 +963,11 @@ class TestCreateSignature
                 {
                     continue; // not relevant here
                 }
-                // disabled until PDFBOX-5203 is fixed
-//                assertTrue(sigCertHolderSetFromVRIArray.contains(holder),
-//                        "File '" + outFile + "' Root/DSS/VRI/" + hexSignatureHash +
-//                                "/Cert array doesn't contain a certificate with subject '" +
-//                                holder.getSubject() + "' and serial " + holder.getSerialNumber());
+                assertTrue(sigCertHolderSetFromVRIArray.contains(holder),
+                        "File '" + outFile + "' Root/DSS/VRI/" + hexSignatureHash +
+                                "/Cert array doesn't contain a certificate with subject '" +
+                                holder.getSubject() +
+                                "' and serial " + holder.getSerialNumber().toString(16).toUpperCase());
             }
             // Get all certificates. Each one should either be issued (= signed) by a certificate of the set
             Set<X509Certificate> certSet = new HashSet<>();
@@ -995,9 +995,8 @@ class TestCreateSignature
                         // not the issuer
                     }
                 }
-                // disabled until PDFBOX-5203 is fixed
-//                assertTrue(verified,
-//                    "Certificate " + cert.getSubjectX500Principal() + " not issued by any certificate in the Certs array");
+                assertTrue(verified,
+                    "Certificate " + cert.getSubjectX500Principal() + " not issued by any certificate in the Certs array");
             }
             // Each CRL should be signed by one of the certificates in Certs
             Set<X509CRL> crlSet = new HashSet<>();

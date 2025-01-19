@@ -243,17 +243,18 @@ public class CertInformationCollector
             return;
         }
 
+        int count = 0;
         for (X509Certificate issuer : certificateSet)
         {
             try
             {
                 certificate.verify(issuer.getPublicKey(), SecurityProvider.getProvider());
-                LOG.info("Found the right Issuer Cert! for Cert: " + certificate.getSubjectX500Principal()
+                LOG.info("Found issuer for Cert: " + certificate.getSubjectX500Principal()
                     + "\n" + issuer.getSubjectX500Principal());
                 certInfo.issuerCertificate = issuer;
                 certInfo.certChain = new CertSignatureInformation();
                 traverseChain(issuer, certInfo.certChain, maxDepth - 1);
-                break;
+                ++count;
             }
             catch (GeneralSecurityException ex)
             {
@@ -266,6 +267,11 @@ public class CertInformationCollector
                     "No Issuer Certificate found for Cert: '" +
                             certificate.getSubjectX500Principal() + "', i.e. Cert '" +
                             certificate.getIssuerX500Principal() + "' is missing in the chain");
+        }
+        if (count > 1)
+        {
+            // not a bug, see comment by mkl in PDFBOX-5203
+            LOG.info("Several issuers for Cert: '" + certificate.getSubjectX500Principal() + "'");
         }
     }
 
