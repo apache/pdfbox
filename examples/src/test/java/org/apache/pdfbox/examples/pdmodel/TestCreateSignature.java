@@ -154,9 +154,6 @@ public class TestCreateSignature
 
         certificate = keyStore.getCertificateChain(keyStore.aliases().nextElement())[0];
         tsa = System.getProperty("org.apache.pdfbox.examples.pdmodel.tsa");
-        
-        //tsa = "https://freetsa.org/tsr";
-        tsa = "http://time.certum.pl";
     }
 
     /**
