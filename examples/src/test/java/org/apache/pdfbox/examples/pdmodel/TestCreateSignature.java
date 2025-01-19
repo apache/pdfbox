@@ -154,6 +154,9 @@ public class TestCreateSignature
 
         certificate = keyStore.getCertificateChain(keyStore.aliases().nextElement())[0];
         tsa = System.getProperty("org.apache.pdfbox.examples.pdmodel.tsa");
+        
+        //tsa = "https://freetsa.org/tsr";
+        tsa = "http://time.certum.pl";
     }
 
     /**
@@ -881,7 +884,7 @@ public class TestCreateSignature
         HashSet<X509CertificateHolder> certificateHolderSet =
                 new HashSet<X509CertificateHolder>(certificatesStore.getMatches(null));
         COSDictionary sigDict = vriDict.getCOSDictionary(COSName.getPDFName(hexSignatureHash));
-        COSArray sigCertArray = sigDict.getCOSArray(COSName.getPDFName("Cert"));
+        COSArray sigCertArray = sigDict.getCOSArray(COSName.CERT);
         Set<X509CertificateHolder> sigCertHolderSetFromVRIArray = new HashSet<X509CertificateHolder>();
         for (int i = 0; i < sigCertArray.size(); ++i)
         {
@@ -970,7 +973,7 @@ public class TestCreateSignature
 
             // Check that the issueing certificate is in the VRI array
             COSDictionary crlSigDict = vriDict.getCOSDictionary(COSName.getPDFName(hexCrlSignatureHash));
-            COSArray certArray2 = crlSigDict.getCOSArray(COSName.getPDFName("Cert"));
+            COSArray certArray2 = crlSigDict.getCOSArray(COSName.CERT);
             COSStream certStream = (COSStream) certArray2.getObject(0);
             InputStream is2 = certStream.createInputStream();
             X509CertificateHolder certHolder2 = new X509CertificateHolder(IOUtils.toByteArray(is2));
@@ -1010,7 +1013,7 @@ public class TestCreateSignature
             COSDictionary ocspSigDict = vriDict.getCOSDictionary(COSName.getPDFName(hexOcspSignatureHash));
 
             // Check that the Cert is in the VRI array
-            COSArray certArray2 = ocspSigDict.getCOSArray(COSName.getPDFName("Cert"));
+            COSArray certArray2 = ocspSigDict.getCOSArray(COSName.CERT);
             COSStream certStream = (COSStream) certArray2.getObject(0);
             InputStream is2 = certStream.createInputStream();
             X509CertificateHolder certHolder2 = new X509CertificateHolder(IOUtils.toByteArray(is2));
