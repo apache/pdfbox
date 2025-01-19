@@ -896,11 +896,11 @@ public class TestCreateSignature
             {
                 continue; // not relevant here
             }
-            // disabled until PDFBOX-5203 is fixed
-//            Assert.assertTrue("File '" + outFile + "' Root/DSS/VRI/" + hexSignatureHash +
-//                    "/Cert array doesn't contain a certificate with subject '" +
-//                    holder.getSubject() + "' and serial " + holder.getSerialNumber(),
-//                    sigCertHolderSetFromVRIArray.contains(holder));
+            Assert.assertTrue("File '" + outFile + "' Root/DSS/VRI/" + hexSignatureHash +
+                    "/Cert array doesn't contain a certificate with subject '" +
+                    holder.getSubject() + "' and serial " +
+                    holder.getSerialNumber().toString(16).toUpperCase(),
+                    sigCertHolderSetFromVRIArray.contains(holder));
         }
 
         // Get all certificates. Each one should either be issued (= signed) by a certificate of the set
@@ -928,9 +928,8 @@ public class TestCreateSignature
                     // not the issuer
                 }
             }
-            // disabled until PDFBOX-5203 is fixed
-//            Assert.assertTrue("Certificate " + cert.getSubjectX500Principal() +
-//                    " not issued by any certificate in the Certs array", verified);
+            Assert.assertTrue("Certificate " + cert.getSubjectX500Principal() +
+                    " not issued by any certificate in the Certs array", verified);
         }
 
         // Each CRL should be signed by one of the certificates in Certs
