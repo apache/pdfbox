@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 3.0.3
+Release Notes -- Apache PDFBox -- Version 3.0.4
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 3.0.2 release. It contains
+This is an incremental bugfix release based on the earlier 3.0.3 release. It contains
 a couple of fixes and small improvements.
 
 A migration guide is available at https://pdfbox.apache.org/3.0/migration.html. It is
@@ -17,67 +17,71 @@ included in this release, please refer to the following issues on the
 PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
-[PDFBOX-5303] - preflight-app fails on Java 11+ with NoClassDefFoundError: javax/activation/DataSource
-[PDFBOX-5784] - AppearanceGeneratorHelper assumes fontscale 1000
-[PDFBOX-5785] - Issue with embedded Font and descendant Font
-[PDFBOX-5786] - NPE in COSWriter.getObjectKey() when saving broken file
-[PDFBOX-5787] - LCMS error 13: Mismatched alpha channels
-[PDFBOX-5789] - Remove release subproject
-[PDFBOX-5790] - Don't use a predefined CMap if a ToUnicode CMap is present
-[PDFBOX-5792] - Regression NPE in Splitter
-[PDFBOX-5794] - The content of the specified font is lost，Google Chrome can display it
-[PDFBOX-5795] - Crash for Softmask with incorrect backdrop color components
-[PDFBOX-5798] - Observable Timing Discrepancy (Timing Attack)
-[PDFBOX-5799] - Page with thousands of content streams takes extremely long to render or extract
-[PDFBOX-5802] - Black rectangle over image
-[PDFBOX-5806] - Wrong font substitution for Wingdings
-[PDFBOX-5809] - PDDocument#importPage slowed down by factor 1300
-[PDFBOX-5810] - Wrong glyph in Single Substitution Format 2 extraction to map
-[PDFBOX-5811] - Split aborts with broken destinations
-[PDFBOX-5812] - IllegalStateException are thrown by surrogate pair character 𩸽
-[PDFBOX-5822] - IllegalArgumentException: Parameter must be 1-based, but is 0 when using PDFTextStripperByArea
-[PDFBOX-5825] - Files created with PDFMergerExample are not correct PDF/A
-[PDFBOX-5826] - Missing /Subtype and /Type in Metadata not detected
-[PDFBOX-5827] - Multiple exceptions coming from org.apache.fontbox.ttf for different PDFs
-[PDFBOX-5829] - IOException: Error expected floating point numberactual='-12.-1'
-[PDFBOX-5830] - NullPointerException: Cannot invoke "String.codePointAt(int)" because "uni" is null
-[PDFBOX-5831] - Radio button can't be set
-[PDFBOX-5832] - Error when writing a document with OutlineItems containing null SE objects
-[PDFBOX-5835] - DomXmpParser - IllegalArgumentException: prefix cannot be "null" when creating a QName
-[PDFBOX-5839] - ClassCastException: org.apache.pdfbox.cos.COSNull cannot be cast to org.apache.pdfbox.cos.COSDictionary
-[PDFBOX-5841] - First split result document misses metadata after split
-[PDFBOX-5842] - IllegalArgumentException: Width (26) and height (0) must be non-zero
-[PDFBOX-5843] - There is an exception when getting embedded font, is it compatible?
-[PDFBOX-5845] - potential memory leak in TrueTypeCollection.java
-[PDFBOX-5848] - Infinite loop after splitting and saving PDF / giant result files
-[PDFBOX-5850] - Add fix MNG-8180
-[PDFBOX-5853] - the PDDocument.documentId does not seem to be written into the flat byteStream
-[PDFBOX-5855] - Fix last step of the build process
-[PDFBOX-5859] - StringIndexOutOfBoundsException in AppearanceGeneratorHelper
-[PDFBOX-5861] - ClassCastException in SetLineJoinStyle.process()
-[PDFBOX-5863] - bad comparison of byte with 128
+[PDFBOX-3690] - Character positions shifted
+[PDFBOX-3774] - Incorrectly extracted text (broken words)
+[PDFBOX-4627] - Wrong color of uncolored tiling pattern
+[PDFBOX-4718] - OutOfMemoryError - during renderImageWithDPI
+[PDFBOX-5025] - BaseParser fails when a number is followed by a string starting with 'e'
+[PDFBOX-5054] - Type3 font is not rendered
+[PDFBOX-5225] - Flattening removes all annotations when widget annotation has no page
+[PDFBOX-5307] - Image lost on page render
+[PDFBOX-5487] - extra whitespaces when extracting Arabic text
+[PDFBOX-5657] - SMaskInData not supported for JPX images
+[PDFBOX-5766] - CharStringCommand-mapping does not work for HintMask-cmd
+[PDFBOX-5797] - Kid Widget /DA is ignored in setDefaultAppearance() call
+[PDFBOX-5854] - PDFBox is unable to remove ID
+[PDFBOX-5866] - Unable to load password protected pdf
+[PDFBOX-5868] - PDFBox not extracting text of non-latin languages(tamil, bengali) properly but adobe reader's save as text does
+[PDFBOX-5869] - Checkstyle
+[PDFBOX-5870] - [PATCH] Detect CMYK image without relying on metadata
+[PDFBOX-5879] - Regression from PDFBOX-5841: Text extraction with rotation magic fails for PDF with multiple content streams in a page
+[PDFBOX-5880] - PDF render blank page: The end of the stream doesn't point to the correct offset, using workaround to read the stream, stream start position: 196, length: 0, expected end position: 196
+[PDFBOX-5881] - CVE for Lucene libraries
+[PDFBOX-5882] - The pattern created with PDFBox shows inconsistent colors between Safari and Adobe.
+[PDFBOX-5890] - BDC sequence with resource reference instead of with MCID
+[PDFBOX-5894] - Problem loading FDF
+[PDFBOX-5896] - StackOverflowError in PDFieldFactory.findFieldType
+[PDFBOX-5900] - ClassCastException in AnnotationValidator
+[PDFBOX-5902] - The CPU usage of a PDF file with a size of 85.6 MB is abnormal
+[PDFBOX-5905] - Many ZapfDingbats symbols do not appear when page is rendered.
+[PDFBOX-5906] - IOException when reading isolated "+"
+[PDFBOX-5908] - IllegalArgumentException: capacity < 0: (-75475220 < 0) in RandomAccessReadBuffer constructor
+[PDFBOX-5913] - FontBox spawns a `cmd` subprocess to read an environment variable (on Windows)
+[PDFBOX-5914] - Implement PDF 2.0 dash phase clarification (2)
+[PDFBOX-5915] - false "Unknown charstring command in glyph" messages
+[PDFBOX-5917] - Particular PDF fails on renderImageWithDPI call
+[PDFBOX-5919] - PDPage.getTrimBox() returns null
+[PDFBOX-5920] - PDType0Font return invalid space width
+[PDFBOX-5924] - Icons of text annotations sometimes too large
+[PDFBOX-5927] - Saved file has "Invalid dictionary" when reloading
+[PDFBOX-5928] - Orphan page check doesn't check annotation destinations
+[PDFBOX-5931] - NPE in COSArray.indexOfObject
+[PDFBOX-5932] - NPE in PagePane.mouseMoved()
+[PDFBOX-5936] - TestCreateSignature.testCreateSignedTimeStamp checkLTV build test fail (2) / Support several issuers
 
 New Feature
-[PDFBOX-5808] - Add support for GSUB Lookup Type 3
+[PDFBOX-5865] - Show ASN.1 decoded Contents for Signature-Dictionary
 
 Improvement
-[PDFBOX-5675] - org.apache.pdfbox.filter.Filter#decode() Java heap space
-[PDFBOX-5793] - Remove redundant values for an object key
-[PDFBOX-5807] - JPEGFactory. Reduce logging severity when no image metadata is present
-[PDFBOX-5814] - Limit overwrite warning to non empty files
-[PDFBOX-5817] - Detect extreme componentCount values
-[PDFBOX-5818] - Update unicode Scripts.txt
-[PDFBOX-5819] - Make Type2CharStringParser thread-safe
-[PDFBOX-5821] - Include a PDFA check with VeraPDF for CreatePDFATest
-[PDFBOX-5823] - StringUtil.PATTERN_SPACE memory optmisation
-[PDFBOX-5824] - Allow COSDictionary.MAP_THRESHOLD to be defined as System property
-[PDFBOX-5837] - Add center constructor parameter to PDFPageable and to pdfbox-app
-[PDFBOX-5840] - When splitting, keep named page destinations that are part of target document(s)
-[PDFBOX-5847] - Improve performance of FileSystemFontProvider.scanFonts()
-[PDFBOX-5851] - When this PDF is rendered with the "f" Operator, a black screen appears.
+[PDFBOX-1529] - Exchange hard-coded values for variables and provide command-line options in TextToPDF component
+[PDFBOX-4743] - Long rendering time of fonts in a specific PDF
+[PDFBOX-5872] - Support imageio-jnr / imageio-openjpeg library for JPEG2000 decoding
+[PDFBOX-5873] - Improve ExtractTTFFonts
+[PDFBOX-5874] - Change Loglevel from Warn to info when rebuilding font cache
+[PDFBOX-5884] - Support OCG visibility expressions
+[PDFBOX-5887] - Add page getter/setter to PDObjectReference
+[PDFBOX-5889] - Support long values for COSInteger objects
+[PDFBOX-5891] - Empty constructor for PDViewerPreferences
+[PDFBOX-5892] - Add check of /P to PDFMergerUtilityTest
+[PDFBOX-5893] - Restore PreflightParser constructor with non file parameter
+[PDFBOX-5895] - support Markdown extraction from the command line
+[PDFBOX-5911] - Calculate dpi dynamically when printing with raster
+[PDFBOX-5921] - Show usage of non-latin language in FreeText annotation example
+[PDFBOX-5929] - Remove orphan annotations in structure tree
+[PDFBOX-5930] - Add font name to PrintTextLocations
 
-Task
-[PDFBOX-5820] - Investigate why we get "response contains wrong nonce value" during build tests
+Wish
+[PDFBOX-3345] - Improve detection whether printing or viewing
 
 
 Release Contents
