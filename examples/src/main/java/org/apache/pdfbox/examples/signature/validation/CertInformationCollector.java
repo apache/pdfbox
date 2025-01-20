@@ -108,6 +108,9 @@ public class CertInformationCollector
     {
         rootCertInfo = new CertSignatureInformation();
 
+        // https://www.etsi.org/deliver/etsi_ts/102700_102799/10277804/01.01.02_60/ts_10277804v010102p.pdf
+        // The key of each entry in this dictionary is the base-16-encoded (uppercase)
+        // SHA1 digest of the signature to which it applies
         rootCertInfo.signatureHash = CertInformationHelper.getSha1Hash(signatureContent);
 
         try
@@ -253,7 +256,7 @@ public class CertInformationCollector
                 certificate.verify(issuer.getPublicKey(), SecurityProvider.getProvider().getName());
                 LOG.info("Found issuer for Cert: " + certificate.getSubjectX500Principal()
                     + "\n" + issuer.getSubjectX500Principal());
-                certInfo.issuerCertificate = issuer;
+                certInfo.issuerCertificates.add(issuer);
                 certInfo.certChain = new CertSignatureInformation();
                 traverseChain(issuer, certInfo.certChain, maxDepth - 1);
                 ++count;
@@ -263,7 +266,7 @@ public class CertInformationCollector
                 // not the issuer
             }                
         }
-        if (certInfo.issuerCertificate == null)
+        if (certInfo.issuerCertificates.isEmpty())
         {
             throw new IOException(
                     "No Issuer Certificate found for Cert: '" +
@@ -416,7 +419,7 @@ public class CertInformationCollector
         private String ocspUrl;
         private String crlUrl;
         private String issuerUrl;
-        private X509Certificate issuerCertificate;
+        private Set<X509Certificate> issuerCertificates = new HashSet<X509Certificate>();
         private CertSignatureInformation certChain;
         private CertSignatureInformation tsaCerts;
         private CertSignatureInformation alternativeCertChain;
@@ -451,9 +454,9 @@ public class CertInformationCollector
             return isSelfSigned;
         }
 
-        public X509Certificate getIssuerCertificate()
+        public Set<X509Certificate> getIssuerCertificates()
         {
-            return issuerCertificate;
+            return issuerCertificates;
         }
 
         public String getSignatureHash()
