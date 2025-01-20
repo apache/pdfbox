@@ -495,9 +495,9 @@ public class AddValidationInformation
             CertificateVerificationException
     {
         X509CRL crl = CRLVerifier.downloadCRLFromWeb(certInfo.getCrlUrl());
-        X509Certificate issuerCertificate = certInfo.getIssuerCertificate();
 
         // find the issuer certificate (usually issuer of signature certificate)
+        X509Certificate issuerCertificate = null;
         for (X509Certificate certificate : certInformationHelper.getCertificateSet())
         {
             if (certificate.getSubjectX500Principal().equals(crl.getIssuerX500Principal()))
@@ -505,6 +505,10 @@ public class AddValidationInformation
                 issuerCertificate = certificate;
                 break;
             }
+        }
+        if (issuerCertificate == null)
+        {
+            throw new CertificateVerificationException("Can't find issuer of CRL for " + certInfo.getCrlUrl());
         }
         crl.verify(issuerCertificate.getPublicKey(), SecurityProvider.getProvider().getName());
         CRLVerifier.checkRevocation(crl, certInfo.getCertificate(), signDate.getTime(), certInfo.getCrlUrl());
