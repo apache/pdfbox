@@ -279,7 +279,7 @@ public class AddValidationInformation
         boolean isRevocationInfoFound = foundRevocationInformation.contains(certInfo.getCertificate());
         if (!isRevocationInfoFound)
         {
-            if (certInfo.getOcspUrl() != null && certInfo.getIssuerCertificate() != null)
+            if (certInfo.getOcspUrl() != null && !certInfo.getIssuerCertificates().isEmpty())
             {
                 isRevocationInfoFound = fetchOcspData(certInfo);
             }
@@ -328,7 +328,8 @@ public class AddValidationInformation
         }
         catch (OCSPException | CertificateProccessingException | IOException | URISyntaxException e)
         {
-            LOG.error("Failed fetching OCSP at {}", certInfo.getOcspUrl(), e);
+            LOG.error("Failed fetching OCSP at '{}' for '{}'", certInfo.getOcspUrl(), 
+                    certInfo.getCertificate().getSubjectX500Principal(), e);
             return false;
         }
         catch (RevokedCertificateException e)
@@ -371,13 +372,21 @@ public class AddValidationInformation
             CertificateProccessingException, RevokedCertificateException, URISyntaxException
     {
         X509Certificate certificate = certInfo.getCertificate();
-        X509Certificate issuerCertificate = certInfo.getIssuerCertificate();
-        String ocspURL = certInfo.getOcspUrl();
         if (ocspChecked.contains(certificate))
         {
             // This certificate has been OCSP-checked before
             return;
         }
+        for (X509Certificate issuerCertificate : certInfo.getIssuerCertificates())
+        {
+            addOcspData(certificate, issuerCertificate, certInfo.getOcspUrl());
+        }
+    }
+
+    private void addOcspData(X509Certificate certificate, X509Certificate issuerCertificate, String ocspURL)
+            throws IOException, OCSPException, CertificateProccessingException,
+            RevokedCertificateException, URISyntaxException
+    {
         OcspHelper ocspHelper = new OcspHelper(
                 certificate,
                 signDate.getTime(),
