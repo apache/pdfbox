@@ -370,19 +370,22 @@ public class AddValidationInformation
     private void addOcspData(CertSignatureInformation certInfo) throws IOException, OCSPException,
             CertificateProccessingException, RevokedCertificateException, URISyntaxException
     {
-        if (ocspChecked.contains(certInfo.getCertificate()))
+        X509Certificate certificate = certInfo.getCertificate();
+        X509Certificate issuerCertificate = certInfo.getIssuerCertificate();
+        String ocspURL = certInfo.getOcspUrl();
+        if (ocspChecked.contains(certificate))
         {
             // This certificate has been OCSP-checked before
             return;
         }
         OcspHelper ocspHelper = new OcspHelper(
-                certInfo.getCertificate(),
+                certificate,
                 signDate.getTime(),
-                certInfo.getIssuerCertificate(),
+                issuerCertificate,
                 new HashSet<>(certInformationHelper.getCertificateSet()),
-                certInfo.getOcspUrl());
+                ocspURL);
         OCSPResp ocspResp = ocspHelper.getResponseOcsp();
-        ocspChecked.add(certInfo.getCertificate());
+        ocspChecked.add(certificate);
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
         X509Certificate ocspResponderCertificate = ocspHelper.getOcspResponderCertificate();
         certInformationHelper.addAllCertsFromHolders(basicResponse.getCerts());
@@ -424,7 +427,7 @@ public class AddValidationInformation
         {
             correspondingOCSPs.add(ocspStream);
         }
-        foundRevocationInformation.add(certInfo.getCertificate());
+        foundRevocationInformation.add(certificate);
     }
 
     /**
