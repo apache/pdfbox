@@ -99,8 +99,8 @@ class StreamImageView implements ActionListener, AncestorListener
     private Image zoomImage(BufferedImage origin, float scale, int rotation)
     {
         BufferedImage rotatedImage = ImageUtil.getRotatedImage(origin, rotation);
-        int resizedWidth = (int) (rotatedImage.getWidth() * scale);
-        int resizedHeight = (int) (rotatedImage.getHeight() * scale);
+        int resizedWidth = (int) Math.ceil(rotatedImage.getWidth() * scale);
+        int resizedHeight = (int) Math.ceil(rotatedImage.getHeight() * scale);
         return rotatedImage.getScaledInstance(resizedWidth, resizedHeight, Image.SCALE_SMOOTH);
     }
 
