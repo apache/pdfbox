@@ -81,17 +81,22 @@ public class NepaliDevanagariPdfGeneration {
 
     private static Map<String, String> getFontMap() {
         String noto = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/NotoSansDevanagariRegular.ttf";
+        String noto_the_group = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/NotoTheGroup.ttf";
         String kokila = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/Kokila.ttf";
         String nirmala = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/Nirmala.ttf";
+        String nirmala_the_group = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/NirmalaTheGroup.ttf";
         String mangal = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/MangalRegular.ttf";
         String lohit = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/LohitDevanagari.ttf";
         String tiro = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/TiroDevanagariHindiRegular.ttf";
 
-        Map<String, String> fontMap = new HashMap<>();
+
+        Map<String, String> fontMap = new LinkedHashMap<>();
         fontMap.put("नोटो सान्स देवनागरी", noto);
+        fontMap.put("नोटो द ग्रुप", noto_the_group);
         fontMap.put("मङ्गल", mangal);
         fontMap.put("कोकिल", kokila);
         fontMap.put("निर्मला", nirmala);
+        fontMap.put("निर्मला द ग्रुप", nirmala_the_group);
         fontMap.put("लोहित",lohit);
         fontMap.put("टिरो",tiro);
         return fontMap;
@@ -129,7 +134,9 @@ public class NepaliDevanagariPdfGeneration {
 //                "\"श्र\", \"द्य\", \"क्ष्म\" जस्ता अक्षरहरूले यसको जटिलता झल्काउँछन्।";
 //        String text = " र्क र्का र्कि र्की र्के र्कै र्को र्कौ र्कँ र्न्थ्यि र्थ्यो";
 
-        String textOnPdf = " र्के र्खे र्थ्यो मार्द्विक राष्ट्रिय भर्त्स्यौनी वर्त्स्य सङ्क्षिप्त छन् अन्तर्द्वन्द्व अन्तर्द्वार";
+//        String textOnPdf = "वर्त्स्य टर्कि गर्छन्";
+
+        String textOnPdf = "वर्त्स्य टर्कि गर्छन् द्दु द्दि द्म द्ग ड्डु ड्डि राष्ट्रिय";
         return textOnPdf;
     }
 }

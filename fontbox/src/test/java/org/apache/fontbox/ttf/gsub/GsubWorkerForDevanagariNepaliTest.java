@@ -1,31 +1,4 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.fontbox.ttf.gsub;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.TTFParser;
@@ -37,23 +10,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-/**
- * Integration test for {@link GsubWorkerForDevanagari}. Has various combinations of glyphs to test
- * proper working of the GSUB system.
- * <p>
- * Not all tests are enabled at this time (12/2023). Please read the comment of 10/Dec/23 in
- * PDFBOX-5729.
- *
- * @author JAVAUSER
- *
- */
-class GsubWorkerForDevanagariTest
-{
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class GsubWorkerForDevanagariNepaliTest {
+
     private static final String LOHIT_DEVANAGARI_TTF =
             "src/test/resources/ttf/Lohit-Devanagari.ttf";
 
     private CmapLookup cmapLookup;
-    private GsubWorker gsubWorkerForDevanagari;
+    private GsubWorker gsubWorkerForDevanagariNepali;
     private GsubData gsubData;
 
     @BeforeEach
@@ -63,7 +35,7 @@ class GsubWorkerForDevanagariTest
         {
             cmapLookup = ttf.getUnicodeCmapLookup();
             gsubData = ttf.getGsubData();
-            gsubWorkerForDevanagari = new GsubWorkerFactory().getGsubWorker(cmapLookup, ttf.getGsubData());
+            gsubWorkerForDevanagariNepali = new GsubWorkerFactory().getGsubWorker(cmapLookup, ttf.getGsubData());
         }
     }
 
@@ -74,7 +46,7 @@ class GsubWorkerForDevanagariTest
         List<Integer> glyphsAfterGsub = Arrays.asList(642);
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("प्त"));
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("प्त"));
         System.out.println("result: " + result);
 
         // then
@@ -88,7 +60,7 @@ class GsubWorkerForDevanagariTest
         List<Integer> glyphsAfterGsub = Arrays.asList(400,396,393);
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("य़ज़क़"));
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("य़ज़क़"));
 
         // then
         assertEquals(glyphsAfterGsub, result);
@@ -101,7 +73,7 @@ class GsubWorkerForDevanagariTest
         List<Integer> glyphsAfterGsub = Arrays.asList(520,521);
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("क्षज्ञ"));
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("क्षज्ञ"));
 
         // then
         assertEquals(glyphsAfterGsub, result);
@@ -111,9 +83,9 @@ class GsubWorkerForDevanagariTest
     @Test
     void testApplyTransform_rephReposition() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         // get the private method by name
-        Method privateMethod = gsubWorkerForDevanagari.getClass().getDeclaredMethod("adjustRephPosition",List.class );
+        Method privateMethod = gsubWorkerForDevanagariNepali.getClass().getDeclaredMethod("adjustRephPosition",List.class );
         privateMethod.setAccessible(true);
-        List<Integer> result = (List<Integer>) privateMethod.invoke(gsubWorkerForDevanagari,Arrays.asList(353,382,342,382,352,380));
+        List<Integer> result = (List<Integer>) privateMethod.invoke(gsubWorkerForDevanagariNepali,Arrays.asList(353,382,342,382,352,380));
         // then
         assertEquals(Arrays.asList(342,382,352,380,353,382), result);
     }
@@ -125,7 +97,7 @@ class GsubWorkerForDevanagariTest
         List<Integer> glyphsAfterGsub = Arrays.asList(538, 352, 673);
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("र्थ्यो"));
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("र्थ्यो"));
         // र्थ्यो -> र ् थ ् य ो
 
         // then
@@ -140,7 +112,7 @@ class GsubWorkerForDevanagariTest
         List<Integer> glyphsAfterGsub = Arrays.asList(588,597,595,602);
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("क्रब्रप्रह्र"));
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("क्रब्रप्रह्र"));
 
         // then
         assertEquals(glyphsAfterGsub, result);
@@ -153,7 +125,7 @@ class GsubWorkerForDevanagariTest
         List<Integer> glyphsAfterGsub = Arrays.asList(602,336,516);
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("ह्रट्र"));
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("ह्रट्र"));
 
         // then
         assertEquals(glyphsAfterGsub, result);
@@ -166,7 +138,7 @@ class GsubWorkerForDevanagariTest
         List<Integer> glyphsAfterGsub = Arrays.asList(558,557,546,537);
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("ह्स्भ्त्"));
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("ह्स्भ्त्"));
 
         // then
         assertEquals(glyphsAfterGsub, result);
@@ -174,13 +146,13 @@ class GsubWorkerForDevanagariTest
 
     @Test
     void testApplyTransforms_private_half_exception() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method privateMethod = gsubWorkerForDevanagari.getClass().getDeclaredMethod("applyGsubFeature", ScriptFeature.class,List.class );
+        Method privateMethod = gsubWorkerForDevanagariNepali.getClass().getDeclaredMethod("applyGsubFeature", ScriptFeature.class,List.class );
         privateMethod.setAccessible(true);
         // given
         List<Integer> glyphsAfterGsub = Arrays.asList(332,345,382);// छन्
 
         // when
-        List<Integer> result = (List<Integer>) privateMethod.invoke(gsubWorkerForDevanagari,gsubData.getFeature("half"),Arrays.asList(332,345,382));
+        List<Integer> result = (List<Integer>) privateMethod.invoke(gsubWorkerForDevanagariNepali,gsubData.getFeature("half"),Arrays.asList(332,345,382));
 
         // then
         assertEquals(glyphsAfterGsub, result);
@@ -194,7 +166,7 @@ class GsubWorkerForDevanagariTest
         List<Integer> glyphsAfterGsub = Arrays.asList(517,593,601,665);
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("श्रत्रस्रघ्र"));
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("श्रत्रस्रघ्र"));
 
         // then
         assertEquals(glyphsAfterGsub, result);
@@ -208,7 +180,7 @@ class GsubWorkerForDevanagariTest
         List<Integer> glyphsAfterGsub = Arrays.asList(638,688,636,640,639);
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("द्मद्ध्र्यब्दद्वद्य"));
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("द्मद्ध्र्यब्दद्वद्य"));
 
         // then
         assertEquals(glyphsAfterGsub, result);
@@ -221,7 +193,7 @@ class GsubWorkerForDevanagariTest
         List<Integer> glyphsAfterGsub = Arrays.asList(603,605,617,652);
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("शृक्तज्जह्ण"));
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("शृक्तज्जह्ण"));
 
         // then
         assertEquals(glyphsAfterGsub, result);
@@ -235,7 +207,7 @@ class GsubWorkerForDevanagariTest
         List<Integer> glyphsAfterGsub = Arrays.asList(353,512,353,675,353,673);
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("र्रैंरौंर्रो"));
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("र्रैंरौंर्रो"));
 
         // then
         assertEquals(glyphsAfterGsub, result);
@@ -249,7 +221,7 @@ class GsubWorkerForDevanagariTest
         List<Integer> glyphsAfterGsub = Arrays.asList(660,663,336,584,336,583);
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("दृहृट्रूट्रु"));
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("दृहृट्रूट्रु"));
 
         // then
         assertEquals(glyphsAfterGsub, result);
@@ -263,7 +235,7 @@ class GsubWorkerForDevanagariTest
         List<Integer> glyphsAfterGsub = Arrays.asList(326,704,326,582,661,662);
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("किंर्कींरुरू"));
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("किंर्कींरुरू"));
 
         // then
         assertEquals(glyphsAfterGsub, result);
@@ -276,7 +248,7 @@ class GsubWorkerForDevanagariTest
         List<Integer> glyphsAfterGsub = Arrays.asList(539);
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("द्"));
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("द्"));
 
         // then
         assertEquals(glyphsAfterGsub, result);
@@ -289,12 +261,12 @@ class GsubWorkerForDevanagariTest
         List<Integer> glyphsAfterGsub = Arrays.asList();
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds(""));
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds(""));
 
         // then
-        assertEquals(glyphsAfterGsub, result);   
+        assertEquals(glyphsAfterGsub, result);
     }
-    
+
     private List<Integer> getGlyphIds(String word)
     {
         List<Integer> originalGlyphIds = new ArrayList<>();
@@ -308,5 +280,4 @@ class GsubWorkerForDevanagariTest
 
         return originalGlyphIds;
     }
-
 }
