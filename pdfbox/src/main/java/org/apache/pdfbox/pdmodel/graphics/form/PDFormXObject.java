@@ -121,9 +121,9 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     }
 
     /**
-     * Returns the group attributes dictionary.
+     * Returns the transparency group attributes dictionary.
      *
-     * @return the group attributes dictionary
+     * @return the transparency group attributes dictionary, never null.
      */
     public PDTransparencyGroupAttributes getGroup()
     {
@@ -137,7 +137,18 @@ public class PDFormXObject extends PDXObject implements PDContentStream
         }
         return group;
     }
-    
+
+    /**
+     * Sets the transparency group attributes dictionary.
+     *
+     * @param group a transparency group attributes dictionary.
+     */
+    public void setGroup(PDTransparencyGroupAttributes group)
+    {
+        this.group = group;
+        getCOSObject().setItem(COSName.GROUP, group);
+    }
+
     public PDStream getContentStream()
     {
         return new PDStream(getCOSObject());
