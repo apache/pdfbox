@@ -19,8 +19,6 @@ package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 import java.io.IOException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDFormContentStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -32,6 +30,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationHighlight;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroupAttributes;
 
 /**
  * 
@@ -128,10 +127,7 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
                 mwfofrmCS.drawForm(frm2);
             }
             frm1.setBBox(annotation.getRectangle());
-            COSDictionary groupDict = new COSDictionary();
-            groupDict.setItem(COSName.S, COSName.TRANSPARENCY);
-            //TODO PDFormXObject.setGroup() is missing
-            frm1.getCOSObject().setItem(COSName.GROUP, groupDict);
+            frm1.setGroup(new PDTransparencyGroupAttributes());
             cs.drawForm(frm1);
             frm2.setBBox(annotation.getRectangle());
             try (PDFormContentStream frm2CS = new PDFormContentStream(frm2))
