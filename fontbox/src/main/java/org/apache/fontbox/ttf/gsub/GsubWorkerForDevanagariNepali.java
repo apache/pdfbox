@@ -29,6 +29,7 @@ import org.apache.logging.log4j.Logger;
  * Devanagari-specific implementation of GSUB system
  *
  * @author JAVAUSER
+ * @author Harish
  */
 public class GsubWorkerForDevanagariNepali implements GsubWorker {
     private static final Logger LOG = LogManager.getLogger(GsubWorkerForDevanagariNepali.class);
@@ -97,8 +98,8 @@ public class GsubWorkerForDevanagariNepali implements GsubWorker {
 
     @Override
     public List<Integer> applyTransforms(List<Integer> originalGlyphIds) {
-        List<Integer> intermediateGlyphsFromGsub = adjustRephPosition(originalGlyphIds);
         // *** reph position is adjusted
+        List<Integer> intermediateGlyphsFromGsub = adjustRephPosition(originalGlyphIds);
         intermediateGlyphsFromGsub = repositionGlyphs(intermediateGlyphsFromGsub);
         // *** ि position is adjusted
         for (String feature : FEATURES_IN_ORDER) {

@@ -88,6 +88,8 @@ public class NepaliDevanagariPdfGeneration {
         String mangal = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/MangalRegular.ttf";
         String lohit = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/LohitDevanagari.ttf";
         String tiro = "examples/src/main/resources/org/apache/pdfbox/resources/ttf/TiroDevanagariHindiRegular.ttf";
+        String kalimati ="examples/src/main/resources/org/apache/pdfbox/resources/ttf/Kalimati.ttf";
+        String kanjirowa ="examples/src/main/resources/org/apache/pdfbox/resources/ttf/Kanjirowa.ttf";
 
 
         Map<String, String> fontMap = new LinkedHashMap<>();
@@ -99,6 +101,9 @@ public class NepaliDevanagariPdfGeneration {
         fontMap.put("निर्मला द ग्रुप", nirmala_the_group);
         fontMap.put("लोहित",lohit);
         fontMap.put("टिरो",tiro);
+        fontMap.put("कालिमाटी", kalimati);
+        fontMap.put("काञ्जिरोवा", kanjirowa);
+
         return fontMap;
     }
     private static List<String> wrapText(String text, PDType0Font font, float fontSize, float maxWidth) throws IOException {
@@ -126,6 +131,14 @@ public class NepaliDevanagariPdfGeneration {
     }
 
     private static String getStringText(){
+
+        String loclText = "ख झ ५ ८ ९";
+        String akhnText ="क्ष त्र ज्ञ";
+        String rphfText = "र्य र्त्य र्त्स्य र्यि र्यी र्त्स्यि";
+        String rkrfText = "क्र प्र श्र क्ष्र त्र ज्ञ्र";
+        String blwfText = "ङ्र ट्र ठ्र ड्र ढ्र";
+        String halfText = "";
+
         // Text to display
         //String text ="प्राकृतिक दृश्यले मन्त्रमुग्ध अन्नपूर्ण आनन्दित संस्कृतिलाई छन्।";
 //        String text ="Dura नेपाली भाषाको लेखन प्रणाली देवनागरी लिपिमा आधारित छ।" +
@@ -136,7 +149,8 @@ public class NepaliDevanagariPdfGeneration {
 
 //        String textOnPdf = "वर्त्स्य टर्कि गर्छन्";
 
-        String textOnPdf = "वर्त्स्य टर्कि गर्छन् द्दु द्दि द्म द्ग ड्डु ड्डि राष्ट्रिय";
-        return textOnPdf;
+//        String textOnPdf = "वर्त्स्य टर्कि गर्छन् द्दु द्दि द्म द्ग ड्डु ड्डि राष्ट्रिय";
+        String textOnPdf =" की गी";
+        return loclText;
     }
 }
