@@ -93,12 +93,12 @@ public class NepaliDevanagariPdfGeneration {
 
 
         Map<String, String> fontMap = new LinkedHashMap<>();
-        fontMap.put("नोटो सान्स देवनागरी", noto);
-        fontMap.put("नोटो द ग्रुप", noto_the_group);
+//        fontMap.put("नोटो सान्स देवनागरी", noto);
+//        fontMap.put("नोटो द ग्रुप", noto_the_group);
         fontMap.put("मङ्गल", mangal);
         fontMap.put("कोकिल", kokila);
-        fontMap.put("निर्मला", nirmala);
-        fontMap.put("निर्मला द ग्रुप", nirmala_the_group);
+//        fontMap.put("निर्मला", nirmala);
+//        fontMap.put("निर्मला द ग्रुप", nirmala_the_group);
         fontMap.put("लोहित",lohit);
         fontMap.put("टिरो",tiro);
         fontMap.put("कालिमाटी", kalimati);
@@ -137,7 +137,13 @@ public class NepaliDevanagariPdfGeneration {
         String rphfText = "र्य र्त्य र्त्स्य र्यि र्यी र्त्स्यि";
         String rkrfText = "क्र प्र श्र क्ष्र त्र ज्ञ्र";
         String blwfText = "ङ्र ट्र ठ्र ड्र ढ्र";
-        String halfText = "";
+        String halfText = "क्य ख्य ग्य छ्य थ्य ष्ट न्थ्य क्र्क र्क्क";
+        String cjctText = "ङ्क ङ्क्त ट्क ड्म द्ध द्म द्द द्द्र";
+        String presText = "क्क क्त क्न ग्न च्च ष्ट्र ल्ल";
+        String abvsText ="काँ किँ कीँ केँ कैँ कोँ कौँ र्काँ र्किँ र्कीँ र्केँ र्कैँ र्कोँ र्कौँ ";
+        String blwsText = "रु रू ट्रु ट्रू ङ्कु";
+        String pstsText ="की खी गी झी";
+        String halnText = "द् ट् ढ् ड्";
 
         // Text to display
         //String text ="प्राकृतिक दृश्यले मन्त्रमुग्ध अन्नपूर्ण आनन्दित संस्कृतिलाई छन्।";
@@ -149,8 +155,8 @@ public class NepaliDevanagariPdfGeneration {
 
 //        String textOnPdf = "वर्त्स्य टर्कि गर्छन्";
 
-//        String textOnPdf = "वर्त्स्य टर्कि गर्छन् द्दु द्दि द्म द्ग ड्डु ड्डि राष्ट्रिय";
-        String textOnPdf =" की गी";
-        return loclText;
+        String textOnPdf = "वर्त्स्य टर्कि गर्छन्   राष्ट्रिय";
+
+        return halnText;
     }
 }
