@@ -99,6 +99,10 @@ public class GsubWorkerForDevanagariNepali implements GsubWorker {
     @Override
     public List<Integer> applyTransforms(List<Integer> originalGlyphIds) {
         // *** reph position is adjusted
+        // *** TODO
+        // *** reph positioning is simply based on 1st find the र् sequence but it affects the formation of half form of rakaar
+        // *** so the reph feature should be applied for the र् sequence at the start of the syllable otherwise the र् will form rakaar with the preceeding half consonant
+
         List<Integer> intermediateGlyphsFromGsub = adjustRephPosition(originalGlyphIds);
         intermediateGlyphsFromGsub = repositionGlyphs(intermediateGlyphsFromGsub);
         // *** ि position is adjusted
@@ -123,7 +127,7 @@ public class GsubWorkerForDevanagariNepali implements GsubWorker {
         return Collections.unmodifiableList(intermediateGlyphsFromGsub);
     }
 
-    // *** applying rakar
+    // *** applying rakaar
     private List<Integer> applyRKRFFeature(ScriptFeature rkrfGlyphsForSubstitution,
                                            List<Integer> originalGlyphIds) {
         Set<List<Integer>> rkrfGlyphIds = rkrfGlyphsForSubstitution.getAllGlyphIdsForSubstitution();
@@ -169,13 +173,20 @@ public class GsubWorkerForDevanagariNepali implements GsubWorker {
     // *** This function requires improvement
     // *** It works for र्यो but doesn't work for र्थ्यो or र्न्थ्यो
     // *** DONE for र्थ्यो
+    // *** Resolve the issue of half form of rakaar forming reph forms: forming र्क्क instead क्र्क
+
     private List<Integer> adjustRephPosition(List<Integer> originalGlyphIds) {
         List<Integer> rephAdjustedList = new ArrayList<>(originalGlyphIds);
         for (int index = 0; index < originalGlyphIds.size() - 2; index++) {
             int raGlyph = originalGlyphIds.get(index);
             int viramaGlyph = originalGlyphIds.get(index + 1);
             // *** found the reph in originalGlyphIds jump to the next glyph if available
+            // *** TODO
+            // *** after finding the reph position check if it is at the starting of the syllable otherwise skip repositioning
             if (raGlyph == rephGlyphIds.get(0) && viramaGlyph == rephGlyphIds.get(1)) {
+//                if(!(index>0 && originalGlyphIds.get(index-1)==rephGlyphIds.get(1))){
+//                    continue;
+//                }
                 int nextIndex = index + 2;
 
                 // *** for multiple half consonants after the reph

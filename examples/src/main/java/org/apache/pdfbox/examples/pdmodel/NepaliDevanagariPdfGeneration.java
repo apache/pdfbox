@@ -155,8 +155,8 @@ public class NepaliDevanagariPdfGeneration {
 
 //        String textOnPdf = "वर्त्स्य टर्कि गर्छन्";
 
-        String textOnPdf = "वर्त्स्य टर्कि गर्छन्   राष्ट्रिय";
+        String textOnPdf = "वर्त्स्य टर्कि गर्छन्  राष्ट्रिय र्ट्";
 
-        return halnText;
+        return textOnPdf ;
     }
 }
