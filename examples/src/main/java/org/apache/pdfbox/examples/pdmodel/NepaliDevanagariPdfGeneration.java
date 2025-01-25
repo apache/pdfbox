@@ -28,8 +28,6 @@ public class NepaliDevanagariPdfGeneration {
         float startY = 700;
         float fontSize = 12;
         float leading = 1.5f * fontSize;
-
-
         try{
             document = new PDDocument();
             PDPage page = new PDPage();
@@ -66,9 +64,8 @@ public class NepaliDevanagariPdfGeneration {
                 startY -= wrappedText.size() * leading + 1.5 * leading; // Extra gap between font blocks
             }
 
-
             contentStream.close();
-            document.save("examples/src/main/resources/org/apache/pdfbox/examples/nepali/nepali.pdf");
+            document.save("examples/src/main/resources/org/apache/pdfbox/examples/nepali/nepali_new.pdf");
             System.out.println("PDF created successfully.");
             document.close();
 
@@ -92,17 +89,12 @@ public class NepaliDevanagariPdfGeneration {
         String kanjirowa ="examples/src/main/resources/org/apache/pdfbox/resources/ttf/Kanjirowa.ttf";
 
 
+
         Map<String, String> fontMap = new LinkedHashMap<>();
-//        fontMap.put("नोटो सान्स देवनागरी", noto);
-//        fontMap.put("नोटो द ग्रुप", noto_the_group);
         fontMap.put("मङ्गल", mangal);
-        fontMap.put("कोकिल", kokila);
-//        fontMap.put("निर्मला", nirmala);
-//        fontMap.put("निर्मला द ग्रुप", nirmala_the_group);
+        fontMap.put("नोटो सान्स देवनागरी", noto);
         fontMap.put("लोहित",lohit);
-        fontMap.put("टिरो",tiro);
         fontMap.put("कालिमाटी", kalimati);
-        fontMap.put("काञ्जिरोवा", kanjirowa);
 
         return fontMap;
     }
@@ -145,17 +137,7 @@ public class NepaliDevanagariPdfGeneration {
         String pstsText ="की खी गी झी";
         String halnText = "द् ट् ढ् ड्";
 
-        // Text to display
-        //String text ="प्राकृतिक दृश्यले मन्त्रमुग्ध अन्नपूर्ण आनन्दित संस्कृतिलाई छन्।";
-//        String text ="Dura नेपाली भाषाको लेखन प्रणाली देवनागरी लिपिमा आधारित छ।" +
-//                "\"क्ष\", \"त्र\", \"ज्ञ\" जस्ता जटिल संयुक्ताक्षरहरू प्रचुर छन्।" +
-//                "यो लिपि स्वर, व्यञ्जन, र संयुक्ताक्षरहरूको संयोजनमा समृद्ध छ।" +
-//                "\"श्र\", \"द्य\", \"क्ष्म\" जस्ता अक्षरहरूले यसको जटिलता झल्काउँछन्।";
-//        String text = " र्क र्का र्कि र्की र्के र्कै र्को र्कौ र्कँ र्न्थ्यि र्थ्यो";
-
-//        String textOnPdf = "वर्त्स्य टर्कि गर्छन्";
-
-        String textOnPdf = "वर्त्स्य टर्कि गर्छन्  राष्ट्रिय र्ट्";
+        String textOnPdf = "वर्त्स्य  टर्कि  गर्छन् ";
 
         return textOnPdf ;
     }

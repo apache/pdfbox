@@ -187,30 +187,33 @@ public class GsubWorkerForDevanagariNepali implements GsubWorker {
 //                if(!(index>0 && originalGlyphIds.get(index-1)==rephGlyphIds.get(1))){
 //                    continue;
 //                }
-                int nextIndex = index + 2;
 
-                // *** for multiple half consonants after the reph
-                while ((nextIndex + 1) < originalGlyphIds.size() && originalGlyphIds.get(nextIndex + 1) == viramaGlyph) {
-                    nextIndex = nextIndex + 2;
-                }
-                // *** remove the reph from the original position
-                for (int i = 0; i < 2; i++) {
-                    rephAdjustedList.remove(index);// र
-                }// ्
-                // *** place the reph in the current found position
-                rephAdjustedList.add(nextIndex - 1, raGlyph);
-                rephAdjustedList.add(nextIndex, viramaGlyph);
+//               if(index+2<=originalGlyphIds.size()){
+                   int nextIndex = index + 2;
 
-                if (nextIndex + 1 < originalGlyphIds.size()) {
-                    int matraGlyph = originalGlyphIds.get(nextIndex + 1);
-                    if (beforeRephGlyphIds.contains(matraGlyph)) {
-                        rephAdjustedList.set(nextIndex - 1, matraGlyph);
-                        rephAdjustedList.set(nextIndex, raGlyph);
-                        rephAdjustedList.set(nextIndex + 1, viramaGlyph);
-                    }
-                }
+                   // *** for multiple half consonants after the reph
+                   while ((nextIndex + 1) < originalGlyphIds.size() && originalGlyphIds.get(nextIndex + 1) == viramaGlyph) {
+                       nextIndex = nextIndex + 2;
+                   }
+                   // *** remove the reph from the original position
+                   for (int i = 0; i < 2; i++) {
+                       rephAdjustedList.remove(index);// र
+                   }// ्
+                   // *** place the reph in the current found position
+                   rephAdjustedList.add(nextIndex - 1, raGlyph);
+                   rephAdjustedList.add(nextIndex, viramaGlyph);
+
+                   if (nextIndex + 1 < originalGlyphIds.size()) {
+                       int matraGlyph = originalGlyphIds.get(nextIndex + 1);
+                       if (beforeRephGlyphIds.contains(matraGlyph)) {
+                           rephAdjustedList.set(nextIndex - 1, matraGlyph);
+                           rephAdjustedList.set(nextIndex, raGlyph);
+                           rephAdjustedList.set(nextIndex + 1, viramaGlyph);
+                       }
+                   }
+               }
             }
-        }
+//        }
         return rephAdjustedList;
     }
 
