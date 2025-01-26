@@ -759,16 +759,25 @@ public final class TextPosition
         float[] widths2 = new float[widths.length + 1];
         System.arraycopy(widths, 0, widths2, 0, i);
 
+        // First we add a zero-width entry for the diacritic in the widths array
+        widths2[i] = widths[i];
+        widths2[i + 1] = 0;
+        System.arraycopy(widths, i + 1, widths2, i + 2, widths.length - i - 1);
+
         // Unicode combining diacritics always go after the base character, regardless of whether
         // the string is in presentation order or logical order
         sb.append(unicode.charAt(i));
-        widths2[i] = widths[i];
+        
+        // If a surrogate starts at the current position, make sure we preserve it
+        if (i < unicode.length() - 1 && Character.isSurrogatePair(unicode.charAt(i), unicode.charAt(i + 1))) {
+            sb.append(unicode.charAt(i + 1));
+            i++;
+        }
+
         sb.append(combineDiacritic(diacritic.getUnicode()));
-        widths2[i + 1] = 0;
 
         // get the rest of the string
         sb.append(unicode.substring(i + 1));
-        System.arraycopy(widths, i + 1, widths2, i + 2, widths.length - i - 1);
 
         unicode = sb.toString();
         widths = widths2;
