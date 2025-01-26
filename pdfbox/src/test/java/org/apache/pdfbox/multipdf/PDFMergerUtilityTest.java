@@ -1271,4 +1271,24 @@ public class PDFMergerUtilityTest extends TestCase
         assertTrue(((PDActionGoTo) link.getAction()).getDestination() instanceof PDNamedDestination);
         doc.close();
     }
+
+    /**
+     * PDFBOX-5939: merge a file with an outline that has itself as a parent without producing a
+     * stack overflow.
+     *
+     * @throws IOException 
+     */
+    public void testOutlinesSelfParent() throws IOException
+    {
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+        pdfMergerUtility.addSource(new File(TARGETPDFDIR, "PDFBOX-5939-google-docs-1.pdf"));
+        pdfMergerUtility.addSource(new File(TARGETPDFDIR, "PDFBOX-5939-google-docs-1.pdf"));
+        pdfMergerUtility.setDestinationFileName(TARGETTESTDIR + "PDFBOX-5939-google-docs-result.pdf");
+        pdfMergerUtility.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+
+        PDDocument mergedDoc =
+                PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-5939-google-docs-result.pdf"));
+        assertEquals(2, mergedDoc.getNumberOfPages());
+        mergedDoc.close();
+    }
 }
