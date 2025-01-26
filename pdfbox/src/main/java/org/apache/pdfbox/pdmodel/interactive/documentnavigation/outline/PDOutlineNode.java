@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -28,6 +30,7 @@ import org.apache.pdfbox.pdmodel.common.PDDictionaryWrapper;
  */
 public abstract class PDOutlineNode extends PDDictionaryWrapper
 {
+    private static final Log LOG = LogFactory.getLog(PDOutlineNode.class);
 
     /**
      * Default Constructor.
@@ -283,6 +286,12 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
         PDOutlineNode parent = getParent();
         if (parent != null)
         {
+            if (getCOSObject() == parent.getCOSObject())
+            {
+                // PDFBOX-5939
+                LOG.warn("Outline parent points to itself");
+                return;
+            }
             if (parent.isNodeOpen())
             {
                 parent.setOpenCount(parent.getOpenCount() + delta);
