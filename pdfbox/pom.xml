@@ -94,6 +94,7 @@
             <version>${jbig2.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- can't use 5.*, doesn't support jdk8 -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -822,6 +823,19 @@
                             <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
                             <outputFileName>PDFBOX-5025.pdf</outputFileName>
                             <sha512>d56d05eea079290133246f10ae327b3d51bd213f9e121717cb70155009608fe3164a174f80f92678e42ac00a9b2041ae7933f4f2c5734c9765cf2b145a28fc64</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-5939</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13074264/google-docs-1.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5939-google-docs-1.pdf</outputFileName>
+                            <sha512>5900c8deb9ec44579ee70d92af27635f27ccb73c8817ae43f61962dec5ad017864bbbcd1aaf41114455693d808c68880bcb61ef5618c86aa15c21cdf3efef733</sha512>
                         </configuration>
                     </execution>
                 </executions>
