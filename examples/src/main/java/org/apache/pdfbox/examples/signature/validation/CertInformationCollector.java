@@ -235,14 +235,7 @@ public class CertInformationCollector
             certInfo.crlUrl = CertInformationHelper.getCrlUrlFromExtensionValue(crlExtensionValue);
         }
 
-        try
-        {
-            certInfo.isSelfSigned = CertificateVerifier.isSelfSigned(certificate);
-        }
-        catch (GeneralSecurityException ex)
-        {
-            throw new CertificateProccessingException(ex);
-        }
+        certInfo.isSelfSigned = CertificateVerifier.isSelfSigned(certificate);
         if (maxDepth <= 0 || certInfo.isSelfSigned)
         {
             return;

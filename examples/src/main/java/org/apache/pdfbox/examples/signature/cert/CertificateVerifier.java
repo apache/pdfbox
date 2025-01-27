@@ -22,9 +22,7 @@ package org.apache.pdfbox.examples.signature.cert;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
 import java.security.PublicKey;
-import java.security.SignatureException;
 import java.security.cert.CertPathBuilder;
 import java.security.cert.CertPathBuilderException;
 import java.security.cert.CertStore;
@@ -268,10 +266,9 @@ public final class CertificateVerifier
     /**
      * Checks whether given X.509 certificate is self-signed.
      * @param cert The X.509 certificate to check.
-     * @return true if the certificate is self-signed, false if not.
-     * @throws java.security.GeneralSecurityException 
+     * @return true if the certificate is self-signed, false if error or not self-signed.
      */
-    public static boolean isSelfSigned(X509Certificate cert) throws GeneralSecurityException
+    public static boolean isSelfSigned(X509Certificate cert)
     {
         try
         {
@@ -280,13 +277,13 @@ public final class CertificateVerifier
             cert.verify(key, SecurityProvider.getProvider().getName());
             return true;
         }
-        catch (SignatureException ex)
+        catch (GeneralSecurityException ex)
         {
             // Invalid signature --> not self-signed
             LOG.debug("Couldn't get signature information - returning false", ex);
             return false;
         }
-        catch (InvalidKeyException ex)
+        catch (IllegalArgumentException ex)
         {
             // Invalid signature --> not self-signed
             LOG.debug("Couldn't get signature information - returning false", ex);
