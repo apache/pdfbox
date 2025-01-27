@@ -138,6 +138,9 @@ public abstract class CreateSignatureBase implements SignatureInterface
         {
             CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
             X509Certificate cert = (X509Certificate) certificateChain[0];
+            // cert.getSigAlgName() returns the algorithm the certificate itself has been signed with,
+            // this is usually also the algorithm to use for signing, but not always.
+            // See also the comment by mkl at the bottom of https://issues.apache.org/jira/browse/PDFBOX-5940
             ContentSigner sha1Signer = new JcaContentSignerBuilder(cert.getSigAlgName()).build(privateKey);
             gen.addSignerInfoGenerator(new JcaSignerInfoGeneratorBuilder(new JcaDigestCalculatorProviderBuilder().build()).build(sha1Signer, cert));
             gen.addCertificates(new JcaCertStore(Arrays.asList(certificateChain)));
