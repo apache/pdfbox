@@ -697,6 +697,8 @@ public class PDDocument implements Closeable
      */
     public PDPage importPage(PDPage page) throws IOException
     {
+        // BEWARE: when making changes here, make sure that these changes don't mess with the code
+        // in the splitter, and avoid making changes in the source document (as happened in PDFBOX-5809)
         PDPage importedPage = new PDPage(new COSDictionary(page.getCOSObject()), resourceCache);
         importedPage.getCOSObject().removeItem(COSName.PARENT);
         PDStream dest = new PDStream(this, page.getContents(), COSName.FLATE_DECODE);
