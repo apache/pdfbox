@@ -330,6 +330,13 @@ final class Type1Parser
         int length = read(Token.INTEGER).intValue();
         read(Token.NAME, "dict");
         readMaybe(Token.NAME, "dup");
+
+        if (readMaybe(Token.NAME, "def") != null)
+        {
+            // PDFBOX-5942 empty dict
+            return dict;
+        }
+
         read(Token.NAME, "begin");
 
         for (int i = 0; i < length; i++)
