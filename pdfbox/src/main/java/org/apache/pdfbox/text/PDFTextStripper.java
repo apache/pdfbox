@@ -378,6 +378,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
             super.processPage(page);
             writePage();
             endPage(page);
+            page.removePageResourceFromCache();
         }
     }
 
