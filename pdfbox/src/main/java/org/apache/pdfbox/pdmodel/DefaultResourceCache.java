@@ -62,11 +62,7 @@ public class DefaultResourceCache implements ResourceCache
     public PDFont getFont(COSObject indirect)
     {
         SoftReference<PDFont> font = fonts.get(indirect);
-        if (font != null)
-        {
-            return font.get();
-        }
-        return null;
+        return font != null ? font.get() : null;
     }
 
     @Override
@@ -76,14 +72,17 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
+    public PDFont removeFont(COSObject indirect)
+    {
+        SoftReference<PDFont> font = fonts.remove(indirect);
+        return font != null ? font.get() : null;
+    }
+
+    @Override
     public PDColorSpace getColorSpace(COSObject indirect)
     {
         SoftReference<PDColorSpace> colorSpace = colorSpaces.get(indirect);
-        if (colorSpace != null)
-        {
-            return colorSpace.get();
-        }
-        return null;
+        return colorSpace != null ? colorSpace.get() : null;
     }
 
     @Override
@@ -93,14 +92,17 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
+    public PDColorSpace removeColorSpace(COSObject indirect)
+    {
+        SoftReference<PDColorSpace> colorSpace = colorSpaces.remove(indirect);
+        return colorSpace != null ? colorSpace.get() : null;
+    }
+
+    @Override
     public PDExtendedGraphicsState getExtGState(COSObject indirect)
     {
         SoftReference<PDExtendedGraphicsState> extGState = extGStates.get(indirect);
-        if (extGState != null)
-        {
-            return extGState.get();
-        }
-        return null;
+        return extGState != null ? extGState.get() : null;
     }
 
     @Override
@@ -110,14 +112,17 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
+    public PDExtendedGraphicsState removeExtState(COSObject indirect)
+    {
+        SoftReference<PDExtendedGraphicsState> extGState = extGStates.remove(indirect);
+        return extGState != null ? extGState.get() : null;
+    }
+
+    @Override
     public PDShading getShading(COSObject indirect)
     {
         SoftReference<PDShading> shading = shadings.get(indirect);
-        if (shading != null)
-        {
-            return shading.get();
-        }
-        return null;
+        return shading != null ? shading.get() : null;
     }
 
     @Override
@@ -127,14 +132,17 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
+    public PDShading removeShading(COSObject indirect)
+    {
+        SoftReference<PDShading> shading = shadings.remove(indirect);
+        return shading != null ? shading.get() : null;
+    }
+
+    @Override
     public PDAbstractPattern getPattern(COSObject indirect)
     {
         SoftReference<PDAbstractPattern> pattern = patterns.get(indirect);
-        if (pattern != null)
-        {
-            return pattern.get();
-        }
-        return null;
+        return pattern != null ? pattern.get() : null;
     }
 
     @Override
@@ -144,14 +152,17 @@ public class DefaultResourceCache implements ResourceCache
     }
     
     @Override
+    public PDAbstractPattern removePattern(COSObject indirect)
+    {
+        SoftReference<PDAbstractPattern> pattern = patterns.remove(indirect);
+        return pattern != null ? pattern.get() : null;
+    }
+
+    @Override
     public PDPropertyList getProperties(COSObject indirect)
     {
         SoftReference<PDPropertyList> propertyList = properties.get(indirect);
-        if (propertyList != null)
-        {
-            return propertyList.get();
-        }
-        return null;
+        return propertyList != null ? propertyList.get() : null;
     }
 
     @Override
@@ -161,19 +172,29 @@ public class DefaultResourceCache implements ResourceCache
     }
 
     @Override
+    public PDPropertyList removeProperties(COSObject indirect)
+    {
+        SoftReference<PDPropertyList> propertyList = properties.remove(indirect);
+        return propertyList != null ? propertyList.get() : null;
+    }
+
+    @Override
     public PDXObject getXObject(COSObject indirect)
     {
         SoftReference<PDXObject> xobject = xobjects.get(indirect);
-        if (xobject != null)
-        {
-            return xobject.get();
-        }
-        return null;
+        return xobject != null ? xobject.get() : null;
     }
 
     @Override
     public void put(COSObject indirect, PDXObject xobject)
     {
         xobjects.put(indirect, new SoftReference<>(xobject));
+    }
+
+    @Override
+    public PDXObject removeXObject(COSObject indirect)
+    {
+        SoftReference<PDXObject> xobject = xobjects.remove(indirect);
+        return xobject != null ? xobject.get() : null;
     }
 }

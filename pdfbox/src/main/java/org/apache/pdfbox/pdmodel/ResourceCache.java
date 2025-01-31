@@ -144,4 +144,68 @@ public interface ResourceCache
      * @param xobject the XObject to be cached
      */
     void put(COSObject indirect, PDXObject xobject);
+
+    /**
+     * Removes the given indirect color space resource from the cache.
+     * 
+     * @param indirect the indirect reference of the color space to be removed
+     * 
+     * @return the removed resource if present
+     */
+    PDColorSpace removeColorSpace(COSObject indirect);
+
+    /**
+     * Removes the given indirect extended graphics state resource from the cache.
+     * 
+     * @param indirect the indirect reference of the extended graphics state to be removed
+     * 
+     * @return the removed resource if present
+     */
+    PDExtendedGraphicsState removeExtState(COSObject indirect);
+
+    /**
+     * Removes the given indirect font resource from the cache.
+     * 
+     * @param indirect the indirect reference of the font to be removed
+     * 
+     * @return the removed resource if present
+     */
+    PDFont removeFont(COSObject indirect);
+
+    /**
+     * Removes the given indirect shading resource from the cache.
+     * 
+     * @param indirect the indirect reference of the shading to be removed
+     * 
+     * @return the removed resource if present
+     */
+    PDShading removeShading(COSObject indirect);
+
+    /**
+     * Removes the given indirect pattern resource from the cache.
+     * 
+     * @param indirect the indirect reference of the pattern to be removed
+     * 
+     * @return the removed resource if present
+     */
+    PDAbstractPattern removePattern(COSObject indirect);
+
+    /**
+     * Removes the given indirect property list resource from the cache.
+     * 
+     * @param indirect the indirect reference of the property list to be removed
+     * 
+     * @return the removed resource if present
+     */
+    PDPropertyList removeProperties(COSObject indirect);
+
+    /**
+     * Removes the given indirect XObject resource from the cache.
+     * 
+     * @param indirect the indirect reference of the XObject to be removed
+     * 
+     * @return the removed resource if present
+     */
+    PDXObject removeXObject(COSObject indirect);
+
 }
