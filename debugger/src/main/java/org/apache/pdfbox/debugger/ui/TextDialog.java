@@ -22,6 +22,7 @@ import java.awt.Frame;
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import org.apache.pdfbox.debugger.PDFDebugger;
 
 /**
  * Window for text extraction result.
@@ -42,6 +43,17 @@ public class TextDialog extends JDialog
 
         textPane = new JTextPane();
         Font font = textPane.getFont();
+        String prop = PDFDebugger.configuration.getProperty("textFontHeight");
+        if (prop == null)
+        {
+            // this part will be removed in 4.0
+            textPane.setFont(font.deriveFont(font.getSize2D() * 1.5f));
+        }
+        else
+        {
+            float textFontHeight = Float.parseFloat(prop);
+            textPane.setFont(font.deriveFont(textFontHeight));
+        }
         textPane.setFont(font.deriveFont(font.getSize2D() * 1.5f));
         scrollPane = new JScrollPane(textPane);
         getContentPane().add(scrollPane);
