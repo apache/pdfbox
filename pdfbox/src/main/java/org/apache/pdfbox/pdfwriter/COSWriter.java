@@ -803,7 +803,7 @@ public class COSWriter implements ICOSVisitor
     private void fillGapsWithFreeEntries()
     {
         List<NormalXReference> normalXReferences = getXRefEntries().stream() //
-                .filter(e -> e instanceof NormalXReference) //
+                .filter(NormalXReference.class::isInstance) //
                 .map(NormalXReference.class::cast) //
                 .sorted() //
                 .collect(Collectors.toList());
