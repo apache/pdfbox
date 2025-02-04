@@ -69,7 +69,6 @@ class GsubWorkerForDevanagariTest
 
         // when
         List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("प्त"));
-        System.out.println("result: " + result);
 
         // then
         assertEquals(glyphsAfterGsub, result);
@@ -208,7 +207,6 @@ class GsubWorkerForDevanagariTest
         assertEquals(glyphsAfterGsub, result);
     }
 
-    @Disabled
     @Test
     void testApplyTransforms_blws()
     {
