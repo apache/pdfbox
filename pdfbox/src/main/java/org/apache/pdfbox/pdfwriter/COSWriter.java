@@ -613,17 +613,18 @@ public class COSWriter implements ICOSVisitor, Closeable
         getStandardOutput().writeEOL();
 
         COSDictionary trailer = doc.getTrailer();
-        //sort xref, needed only if object keys not regenerated
-        Collections.sort(getXRefEntries());
-        COSWriterXRefEntry lastEntry = getXRefEntries().get( getXRefEntries().size()-1);
-        trailer.setLong(COSName.SIZE, lastEntry.getKey().getNumber()+1);
         // Only need to stay, if an incremental update will be performed
         if (!incrementalUpdate) 
         {
-          trailer.removeItem( COSName.PREV );
+            // sort xref, needed only if object keys not regenerated
+            Collections.sort(getXRefEntries());
+            COSWriterXRefEntry lastEntry = getXRefEntries().get(getXRefEntries().size() - 1);
+            trailer.setLong(COSName.SIZE, lastEntry.getKey().getNumber() + 1);
+            trailer.removeItem(COSName.PREV);
         }
         if (!doc.isXRefStream())
         {
+            trailer.setLong(COSName.SIZE, number + 1);
             trailer.removeItem( COSName.XREF_STM );
         }
         // Remove a checksum if present
