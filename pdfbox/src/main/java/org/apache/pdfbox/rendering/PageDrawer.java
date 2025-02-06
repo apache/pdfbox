@@ -1580,6 +1580,16 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         if (annotation.isNoRotate() && getCurrentPage().getRotation() != 0)
         {
+            appearance = annotation.getAppearance();
+            if (appearance != null && appearance.getNormalAppearance() != null &&
+                appearance.getNormalAppearance().isStream() &&
+                hasTransparency(appearance.getNormalAppearance().getAppearanceStream()))
+            {
+                // PDFBOX-4744: avoid appearances with transparency groups until we have fixed
+                // the rendering. A real solution should probably be
+                // in PDFStreamEngine.processAnnotation().
+                annotation.constructAppearances();
+            }
             PDRectangle rect = annotation.getRectangle();
             AffineTransform savedTransform = graphics.getTransform();
             // "The upper-left corner of the annotation remains at the same point in
@@ -1588,11 +1598,38 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     rect.getLowerLeftX(), rect.getUpperRightY());
             super.showAnnotation(annotation);
             graphics.setTransform(savedTransform);
+            annotation.setAppearance(appearance); // restore
         }
         else
         {
             super.showAnnotation(annotation);
         }
+    }
+
+    private boolean hasTransparency(PDFormXObject form) throws IOException
+    {
+        if (form == null)
+        {
+            return false;
+        }
+        PDResources resources = form.getResources();
+        if (resources == null)
+        {
+            return false;
+        }
+        for (COSName name : resources.getXObjectNames())
+        {
+            PDXObject xObject = resources.getXObject(name);
+            if (xObject instanceof PDTransparencyGroup)
+            {
+                return true;
+            }
+            if (xObject instanceof PDFormXObject && hasTransparency((PDFormXObject) xObject))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
