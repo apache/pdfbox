@@ -109,7 +109,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
                     drawNote(annotation, contentStream);
                     break;
                 case PDAnnotationText.NAME_CROSS:
-                    drawCross(annotation, contentStream);
+                    drawZapf(annotation, contentStream, 19, 0, "a22"); // 0x2716
                     break;
                 case PDAnnotationText.NAME_CIRCLE:
                     drawCircles(annotation, contentStream);
@@ -269,41 +269,6 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.lineTo(1, 1);
         contentStream.lineTo(bbox.getWidth() - 2, 1);
         contentStream.closeAndFillAndStroke();
-    }
-
-    private void drawCross(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
-            throws IOException
-    {
-        PDRectangle bbox = adjustRectAndBBox(annotation, 19, 19);
-
-        // should be a square, but who knows...
-        float min = Math.min(bbox.getWidth(), bbox.getHeight());
-
-        // small = offset nearest bbox edge
-        // large = offset second nearest bbox edge
-        float small = min / 10;
-        float large = min / 5;
-
-        contentStream.setMiterLimit(4);
-        contentStream.setLineJoinStyle(1);
-        contentStream.setLineCapStyle(0);
-        contentStream.setLineWidth(0.59f); // value from Adobe
-
-        contentStream.moveTo(small, large);
-        contentStream.lineTo(large, small);
-        contentStream.lineTo(min / 2, min / 2 - small);
-        contentStream.lineTo(min - large, small);
-        contentStream.lineTo(min - small, large);
-        contentStream.lineTo(min / 2 + small, min / 2);
-        contentStream.lineTo(min - small, min - large);
-        contentStream.lineTo(min - large, min - small);
-        contentStream.lineTo(min / 2, min / 2 + small);
-        contentStream.lineTo(large, min - small);
-        contentStream.lineTo(small, min - large);
-        contentStream.lineTo(min / 2 - small, min / 2);
-        contentStream.closeAndFillAndStroke();
-        
-        // alternatively, this could also be drawn with Zapf Dingbats "a21"
     }
 
     private void drawHelp(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
