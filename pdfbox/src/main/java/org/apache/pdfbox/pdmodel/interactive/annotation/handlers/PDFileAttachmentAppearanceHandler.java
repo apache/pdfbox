@@ -26,6 +26,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationFileAttachment;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  *
@@ -68,8 +69,17 @@ public class PDFileAttachmentAppearanceHandler extends PDAbstractAppearanceHandl
             annotation.setRectangle(rect);
             annotation.getNormalAppearanceStream().setBBox(new PDRectangle(size, size));
 
-            //TODO support Graph, PushPin, Paperclip, Tag
-            drawPaperclip(contentStream);
+            //TODO support Graph, Tag
+            // test case: pdf_commenting_new.pdf page 7
+            String attachmentName = annotation.getAttachmentName();
+            if ("PushPin".equals(attachmentName))
+            {
+                drawPushPin(contentStream);
+            }
+            else
+            {
+                drawPaperclip(contentStream);
+            }
         }
         catch (IOException e)
         {
@@ -120,7 +130,60 @@ public class PDFileAttachmentAppearanceHandler extends PDAbstractAppearanceHandl
         contentStream.closePath();
         contentStream.fill();
     }
-    
+
+    private void drawPushPin(final PDAppearanceContentStream contentStream) throws IOException
+    {
+        // ty 18 is from the caller, scale 0.022 is by trial and error
+        contentStream.transform(new Matrix(0.022f, 0, 0, -0.022f, 0f, 18f));
+
+        // Source: https://www.svgrepo.com/svg/269187/push-pin
+        // License: CC0
+        contentStream.transform(Matrix.getTranslateInstance(586.47f, 178.97f));
+        contentStream.moveTo(0, 0);
+        contentStream.curveTo(13f, 0f, 23.43f, -10.58f, 23.43f, -23.57f);
+        contentStream.lineTo(23.43f, -70.53f);
+        contentStream.curveTo(23.43f, -109.32f, -8.19f, -141.06f, -47.03f, -141.06f);
+        contentStream.lineTo(-329.17f, -141.06f);
+        contentStream.curveTo(-368.17f, -141.06f, -399.79f, -109.32f, -399.79f, -70.53f);
+        contentStream.lineTo(-399.79f, -23.57f);
+        contentStream.curveTo(-399.79f, -10.58f, -389.19f, 0.0f, -376.19f, 0f);
+        contentStream.lineTo(-305.74f, 0f);
+        contentStream.lineTo(-305.74f, 129.52f);
+        contentStream.curveTo(-364.0f, 168.47f, -399.79f, 234.67f, -399.79f, 305.36f);
+        contentStream.curveTo(-399.79f, 318.34f, -389.19f, 328.76f, -376.19f, 328.76f);
+        contentStream.lineTo(-211.69f, 328.76f);
+        contentStream.lineTo(-211.69f, 555.9f);
+        contentStream.curveTo(-211.69f, 568.88f, -201.1f, 579.3f, -188.1f, 579.3f);
+        contentStream.curveTo(-175.1f, 579.3f, -164.67f, 568.88f, -164.67f, 555.9f);
+        contentStream.lineTo(-164.67f, 328.76f);
+        contentStream.lineTo(0f, 328.76f);
+        contentStream.curveTo(13.0f, 328.76f, 23.43f, 318.34f, 23.43f, 305.36f);
+        contentStream.curveTo(23.43f, 234.67f, -12.2f, 168.47f, -70.62f, 129.52f);
+        contentStream.lineTo(-70.62f, 0f);
+        contentStream.lineTo(0f, 0f);
+        contentStream.closePath();
+        contentStream.moveTo(-25.2f, 281.79f);
+        contentStream.lineTo(-351.0f, 281.79f);
+        contentStream.curveTo(-343.77f, 232.42f, -314.24f, 188.18f, -270.43f, 162.86f);
+        contentStream.curveTo(-263.21f, 158.69f, -258.71f, 150.99f, -258.71f, 142.5f);
+        contentStream.lineTo(-258.71f, 0f);
+        contentStream.lineTo(-117.64f, 0f);
+        contentStream.lineTo(-117.64f, 142.5f);
+        contentStream.curveTo(-117.64f, 150.99f, -113.15f, 158.69f, -105.77f, 162.86f);
+        contentStream.curveTo(-61.95f, 188.18f, -32.42f, 232.42f, -25.2f, 281.79f);
+        contentStream.closePath();
+        contentStream.moveTo(-352.76f, -46.97f);
+        contentStream.lineTo(-352.76f, -70.53f);
+        contentStream.curveTo(-352.76f, -83.52f, -342.17f, -93.93f, -329.17f, -93.93f);
+        contentStream.lineTo(-47.03f, -93.93f);
+        contentStream.curveTo(-34.03f, -93.93f, -23.59f, -83.52f, -23.59f, -70.53f);
+        contentStream.lineTo(-23.59f, -46.97f);
+        contentStream.lineTo(-352.76f, -46.97f);
+        contentStream.lineTo(-352.76f, -46.97f);
+        contentStream.closePath();
+        contentStream.fill();
+    }
+
     @Override
     public void generateRolloverAppearance()
     {
