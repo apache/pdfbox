@@ -164,7 +164,7 @@ public final class PrintPDF implements Callable<Integer>
                 boolean printerFound = false;
                 for (PrintService printService : printServices)
                 {
-                    if (printService.getName().equals(printerName))
+                    if (printService.getName().equalsIgnoreCase(printerName))
                     {
                         printJob.setPrintService(printService);
                         printerFound = true;
