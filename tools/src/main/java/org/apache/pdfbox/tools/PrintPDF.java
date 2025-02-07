@@ -224,7 +224,7 @@ public final class PrintPDF
                 boolean printerFound = false;
                 for (PrintService printService : printServices)
                 {
-                    if (printService.getName().equals(printerName))
+                    if (printService.getName().equalsIgnoreCase(printerName))
                     {
                         printJob.setPrintService(printService);
                         printerFound = true;
