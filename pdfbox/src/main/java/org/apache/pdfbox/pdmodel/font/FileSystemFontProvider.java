@@ -793,7 +793,7 @@ final class FileSystemFontProvider extends FontProvider
     /**
      * Adds a Type 1 font to the file cache. To reduce memory, the parsed font is not cached.
      */
-    private void addType1Font(File pfbFile) 
+    private void addType1Font(File pfbFile)
     {
         try (InputStream input = new FileInputStream(pfbFile))
         {
@@ -819,6 +819,7 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
+            fontInfoList.add(createFSIgnored(pfbFile, FontFormat.PFB, "*skipexception*"));
             LOG.warn(() -> "Could not load font file: " + pfbFile, e);
         }
     }
