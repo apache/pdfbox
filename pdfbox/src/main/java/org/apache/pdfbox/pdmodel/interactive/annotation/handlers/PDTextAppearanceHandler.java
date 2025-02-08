@@ -386,6 +386,10 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
     private void drawCrossHairs(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
+        List<Number> fontMatrix = new PDType1Font(FontName.SYMBOL).getFontBoxFont().getFontMatrix();
+        float xScale = (float) fontMatrix.get(0);
+        float yScale = (float) fontMatrix.get(3);
+
         PDRectangle bbox = adjustRectAndBBox(annotation, 20, 20);
 
         float min = Math.min(bbox.getWidth(), bbox.getHeight());
@@ -395,7 +399,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.setLineCapStyle(0);
         contentStream.setLineWidth(0.61f); // value from Adobe
 
-        contentStream.transform(Matrix.getScaleInstance(0.001f * min / 1.5f, 0.001f * min / 1.5f));
+        contentStream.transform(Matrix.getScaleInstance(xScale * min * 1.3333f, yScale * min * 1.3333f));
         contentStream.transform(Matrix.getTranslateInstance(0, 50));
 
         // we get the shape of a Symbol crosshair (0x2295) and use that one.
