@@ -870,6 +870,7 @@ final class FileSystemFontProvider extends FontProvider
 
             if (LOG.isTraceEnabled())
             {
+                fontInfoList.add(createFSIgnored(pfbFile, FontFormat.PFB, "*skipexception*"));
                 LOG.trace("PFB: '" + type1.getName() + "' / '" + type1.getFamilyName() + "' / '" +
                         type1.getWeight() + "'");
             }
