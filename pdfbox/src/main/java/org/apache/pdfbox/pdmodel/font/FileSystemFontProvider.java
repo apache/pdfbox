@@ -841,6 +841,7 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
+            fontInfoList.add(createFSIgnored(pfbFile, FontFormat.PFB, "*skipexception*"));
             LOG.warn("Could not load font file: " + pfbFile, e);
         }
     }
