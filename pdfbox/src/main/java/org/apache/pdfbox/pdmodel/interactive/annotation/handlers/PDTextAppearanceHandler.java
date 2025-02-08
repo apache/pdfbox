@@ -409,8 +409,8 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
             throws IOException
     {
         List<Number> fontMatrix = PDType1Font.SYMBOL.getFontBoxFont().getFontMatrix();
-        float xScale = (float) fontMatrix.get(0);
-        float yScale = (float) fontMatrix.get(3);
+        float xScale = (Float) fontMatrix.get(0);
+        float yScale = (Float) fontMatrix.get(3);
 
         PDRectangle bbox = adjustRectAndBBox(annotation, 20, 20);
 
