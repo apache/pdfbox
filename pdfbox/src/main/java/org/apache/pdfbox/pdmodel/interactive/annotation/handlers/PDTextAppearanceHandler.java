@@ -232,6 +232,10 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         float smallR = 6.36f;
         float largeR = 9.756f;
 
+        // adjustments because the bottom of the circle is flat
+        contentStream.transform(Matrix.getScaleInstance(0.95f, 0.95f));
+        contentStream.transform(Matrix.getTranslateInstance(0, 0.5f));
+
         contentStream.setMiterLimit(4);
         contentStream.setLineJoinStyle(1);
         contentStream.setLineCapStyle(0);
