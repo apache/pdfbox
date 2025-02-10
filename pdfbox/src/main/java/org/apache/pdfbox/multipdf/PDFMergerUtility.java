@@ -570,6 +570,11 @@ public class PDFMergerUtility
                 if (page != null)
                 {
                     pageIndexOpenActionDest = srcCatalog.getPages().indexOf(page);
+                    if (pageIndexOpenActionDest == -1)
+                    {
+                        LOG.warn("OpenAction entry ignored because destination page doesn't exist");
+                        openAction = null;
+                    }
                 }
             }
 
