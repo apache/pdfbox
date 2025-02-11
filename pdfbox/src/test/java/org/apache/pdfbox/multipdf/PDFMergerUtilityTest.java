@@ -1319,7 +1319,6 @@ public class PDFMergerUtilityTest extends TestCase
         PDImageXObject imageXObject = (PDImageXObject) PDImageXObject.createXObject(imageDict, new PDResources());
         assertEquals(909, imageXObject.getWidth());
         assertEquals(233, imageXObject.getHeight());
-        System.out.println(imageXObject.getImage());
         mergedDoc.close();
     }
 }
