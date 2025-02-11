@@ -40,12 +40,14 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -1350,6 +1352,35 @@ class PDFMergerUtilityTest
                 .loadPDF(new File(TARGETTESTDIR, "PDFBOX-5939-google-docs-result.pdf")))
         {
             assertEquals(2, mergedDoc.getNumberOfPages());
+        }
+    }
+
+    /**
+     * PDFBOX-515 / PDFBOX-5950: test merging of two files where one file has a stream deep down in
+     * the info dictionary (Info/ImPDF/Images/Kids/[0]). This test will pass only if the source file
+     * isn't closed prematurely, or if deep cloning is applied.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox515() throws IOException
+    {
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+        pdfMergerUtility.addSource(new File(TARGETPDFDIR, "ComSquare1.pdf"));
+        pdfMergerUtility.addSource(new File(TARGETPDFDIR, "Ghostscript1.pdf"));
+        pdfMergerUtility.setDestinationFileName(TARGETTESTDIR + "PDFBOX-515-result.pdf");
+        pdfMergerUtility.mergeDocuments(IOUtils.createMemoryOnlyStreamCache());
+
+        try (PDDocument mergedDoc = Loader.loadPDF(new File(TARGETTESTDIR, "PDFBOX-515-result.pdf")))
+        {
+            assertEquals(2, mergedDoc.getNumberOfPages());
+            COSDictionary imageDict = (COSDictionary) mergedDoc.getDocumentInformation().getCOSObject().
+                    getCOSDictionary(COSName.getPDFName("ImPDF")).
+                    getCOSDictionary(COSName.getPDFName("Images")).
+                    getCOSArray(COSName.KIDS).getObject(0);
+            PDImageXObject imageXObject = (PDImageXObject) PDImageXObject.createXObject(imageDict, new PDResources());
+            assertEquals(909, imageXObject.getWidth());
+            assertEquals(233, imageXObject.getHeight());
         }
     }
 }
