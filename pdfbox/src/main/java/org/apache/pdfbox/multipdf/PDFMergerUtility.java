@@ -67,6 +67,8 @@ import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDParentTr
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
+import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
@@ -538,49 +540,7 @@ public class PDFMergerUtility
             destination.setVersion(srcVersion);
         }
 
-        int pageIndexOpenActionDest = -1;
         PDDocumentCatalog destCatalog = destination.getDocumentCatalog();
-        if (destCatalog.getOpenAction() == null)
-        {
-            // PDFBOX-3972: get local dest page index, it must be reassigned after the page cloning
-            PDDestinationOrAction openAction = null;
-            try
-            {
-                openAction = srcCatalog.getOpenAction();
-            }
-            catch (IOException ex)
-            {
-                // PDFBOX-4223
-                LOG.error("Invalid OpenAction ignored", ex);
-            }
-            PDDestination openActionDestination = null;
-            if (openAction instanceof PDActionGoTo)
-            {
-                openActionDestination = ((PDActionGoTo) openAction).getDestination();
-            }
-            else if (openAction instanceof PDDestination)
-            {
-                openActionDestination = (PDDestination) openAction;
-            }
-            // note that it can also be something else, e.g. PDActionJavaScript, then do nothing
-
-            if (openActionDestination instanceof PDPageDestination)
-            {
-                PDPage page = ((PDPageDestination) openActionDestination).getPage();
-                if (page != null)
-                {
-                    pageIndexOpenActionDest = srcCatalog.getPages().indexOf(page);
-                    if (pageIndexOpenActionDest == -1)
-                    {
-                        LOG.warn("OpenAction entry ignored because destination page doesn't exist");
-                        openAction = null;
-                    }
-                }
-            }
-
-            destCatalog.setOpenAction(openAction);
-        }
-
         PDFCloneUtility cloner = new PDFCloneUtility(destination);
 
         mergeAcroForm(cloner, destCatalog, srcCatalog);
@@ -852,25 +812,9 @@ public class PDFMergerUtility
                 // TODO update mapping for XObjects
             }
             destinationPageTree.add(newPage);
-            
-            if (pageIndex == pageIndexOpenActionDest)
-            {
-                // PDFBOX-3972: reassign the page.
-                // The openAction is either a PDActionGoTo or a PDPageDestination
-                PDDestinationOrAction openAction = destCatalog.getOpenAction();
-                PDPageDestination pageDestination;
-                if (openAction instanceof PDActionGoTo)
-                {
-                    pageDestination = (PDPageDestination) ((PDActionGoTo) openAction).getDestination();
-                }
-                else
-                {
-                    pageDestination = (PDPageDestination) openAction;
-                }
-                pageDestination.setPage(newPage);
-            }
             ++pageIndex;
         }
+        mergeOpenAction(srcCatalog, destCatalog, cloner);
         if (mergeStructTree)
         {
             updatePageReferences(cloner, srcNumberTreeAsMap, objMapping);
@@ -900,6 +844,51 @@ public class PDFMergerUtility
             mergeMarkInfo(destCatalog, srcCatalog);
             mergeLanguage(destCatalog, srcCatalog);
             mergeViewerPreferences(destCatalog, srcCatalog);
+        }
+    }
+
+    private void mergeOpenAction(PDDocumentCatalog srcCatalog, PDDocumentCatalog dstCatalog,
+            PDFCloneUtility cloner) throws IOException
+    {
+        PDDestinationOrAction srcOpenAction = null;
+        PDDestinationOrAction dstOpenAction = null;
+        try
+        {
+            dstOpenAction = dstCatalog.getOpenAction();
+            srcOpenAction = srcCatalog.getOpenAction();
+        }
+        catch (IOException ex)
+        {
+            // PDFBOX-4223
+            LOG.error("Invalid OpenAction ignored", ex);
+        }
+        if (dstOpenAction == null && srcOpenAction != null)
+        {
+            COSBase clonedOpenActionBase = cloner.cloneForNewDocument(srcOpenAction.getCOSObject());
+            PDDestination openActionDestination = null;
+            if (clonedOpenActionBase instanceof COSDictionary)
+            {
+                PDAction action = PDActionFactory.createAction((COSDictionary) clonedOpenActionBase);
+                if (action instanceof PDActionGoTo)
+                {
+                    openActionDestination = ((PDActionGoTo) action).getDestination();
+                }
+                dstCatalog.setOpenAction(action);
+            }
+            else if (clonedOpenActionBase instanceof COSArray)
+            {
+                openActionDestination = PDDestination.create(clonedOpenActionBase);
+                dstCatalog.setOpenAction(openActionDestination);
+            }
+            if (openActionDestination instanceof PDPageDestination)
+            {
+                PDPage page = ((PDPageDestination) openActionDestination).getPage();
+                if (page != null && dstCatalog.getPages().indexOf(page) == -1)
+                {
+                    LOG.warn("OpenAction entry ignored because destination page doesn't exist");
+                    dstCatalog.setOpenAction(null);
+                }
+            }
         }
     }
 
