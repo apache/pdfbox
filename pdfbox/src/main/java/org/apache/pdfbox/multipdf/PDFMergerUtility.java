@@ -451,15 +451,13 @@ public class PDFMergerUtility
             // - all PDDocuments are closed
             // - all FileInputStreams are closed
             // - there's a way to see which errors occurred
-
-            List<PDDocument> tobeclosed = new ArrayList<>(sources.size());
             StreamCacheCreateFunction strmCacheFunc = streamCacheCreateFunction != null ? streamCacheCreateFunction
                     : IOUtils.createMemoryOnlyStreamCache();
             try (PDDocument destination = new PDDocument(strmCacheFunc))
             {
                 for (Object sourceObject : sources)
                 {
-                    PDDocument sourceDoc = null;
+                    PDDocument sourceDoc;
                     if (sourceObject instanceof File)
                     {
                         sourceDoc = Loader.loadPDF((File) sourceObject);
@@ -468,8 +466,14 @@ public class PDFMergerUtility
                     {
                         sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject);
                     }
-                    tobeclosed.add(sourceDoc);
-                    appendDocument(destination, sourceDoc);
+                    try
+                    {
+                        appendDocument(destination, sourceDoc);
+                    }
+                    finally
+                    {
+                        IOUtils.closeAndLogException(sourceDoc, LOG, "PDDocument", null);
+                    }
                 }
                 
                 // optionally set meta data
@@ -489,13 +493,6 @@ public class PDFMergerUtility
                 else
                 {
                     destination.save(destinationStream, compressParameters);
-                }
-            }
-            finally
-            {
-                for (PDDocument doc : tobeclosed)
-                {
-                    IOUtils.closeAndLogException(doc, LOG, "PDDocument", null);
                 }
             }
         }
