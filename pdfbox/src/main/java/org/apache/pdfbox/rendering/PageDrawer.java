@@ -1547,32 +1547,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public void showAnnotation(PDAnnotation annotation) throws IOException
     {
         lastClips = null;
-        if (destination == RenderDestination.PRINT && !annotation.isPrinted())
+
+        if (shouldSkipAnnotation(annotation))
         {
             return;
         }
-        if ((destination == RenderDestination.VIEW || destination == RenderDestination.EXPORT) &&
-                annotation.isNoView())
-        {
-            return;
-        }
-        if (annotation.isHidden())
-        {
-            return;
-        }
-        if (annotation.isInvisible() && annotation instanceof PDAnnotationUnknown)
-        {
-            // "If set, do not display the annotation if it does not belong to one
-            // of the standard annotation types and no annotation handler is available."
-            return;
-        }
+
         //TODO support NoZoom, example can be found in p5 of PDFBOX-2348
-
-        if (isHiddenOCG(annotation.getOptionalContent()))
-        {
-            return;
-        }
-
         PDAppearanceDictionary appearance = annotation.getAppearance();
         if (appearance == null || appearance.getNormalAppearance() == null)
         {
@@ -1604,6 +1585,34 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             super.showAnnotation(annotation);
         }
+    }
+
+    private boolean shouldSkipAnnotation(PDAnnotation annotation)
+    {
+        if (destination == RenderDestination.PRINT && !annotation.isPrinted())
+        {
+            return true;
+        }
+        if ((destination == RenderDestination.VIEW || destination == RenderDestination.EXPORT) &&
+                annotation.isNoView())
+        {
+            return true;
+        }
+        if (annotation.isHidden())
+        {
+            return true;
+        }
+        if (annotation.isInvisible() && annotation instanceof PDAnnotationUnknown)
+        {
+            // "If set, do not display the annotation if it does not belong to one
+            // of the standard annotation types and no annotation handler is available."
+            return true;
+        }
+        if (isHiddenOCG(annotation.getOptionalContent()))
+        {
+            return true;
+        }
+        return false;
     }
 
     private boolean hasTransparency(PDFormXObject form) throws IOException
