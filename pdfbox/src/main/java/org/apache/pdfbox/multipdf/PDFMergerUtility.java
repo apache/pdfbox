@@ -431,7 +431,7 @@ public class PDFMergerUtility
     private void legacyMergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
     {
         PDDocument destination = null;
-        if (sources.size() > 0)
+        if (!sources.isEmpty())
         {
             // Make sure that:
             // - first Exception is kept
@@ -439,9 +439,6 @@ public class PDFMergerUtility
             // - all PDDocuments are closed
             // - all FileInputStreams are closed
             // - there's a way to see which errors occurred
-
-            List<PDDocument> tobeclosed = new ArrayList<PDDocument>(sources.size());
-
             try
             {
                 MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ? 
@@ -451,7 +448,7 @@ public class PDFMergerUtility
 
                 for (Object sourceObject : sources)
                 {
-                    PDDocument sourceDoc = null;
+                    PDDocument sourceDoc;
                     if (sourceObject instanceof File)
                     {
                         sourceDoc = PDDocument.load((File) sourceObject, partitionedMemSetting);
@@ -461,8 +458,14 @@ public class PDFMergerUtility
                         sourceDoc = PDDocument.load((InputStream) sourceObject,
                                 partitionedMemSetting);
                     }
-                    tobeclosed.add(sourceDoc);
-                    appendDocument(destination, sourceDoc);
+                    try
+                    {
+                        appendDocument(destination, sourceDoc);
+                    }
+                    finally
+                    {
+                        IOUtils.closeAndLogException(sourceDoc, LOG, "PDDocument", null);
+                    }
                 }
                 
                 // optionally set meta data
@@ -489,11 +492,6 @@ public class PDFMergerUtility
                 if (destination != null)
                 {
                     IOUtils.closeAndLogException(destination, LOG, "PDDocument", null);
-                }
-
-                for (PDDocument doc : tobeclosed)
-                {
-                    IOUtils.closeAndLogException(doc, LOG, "PDDocument", null);
                 }
             }
         }
