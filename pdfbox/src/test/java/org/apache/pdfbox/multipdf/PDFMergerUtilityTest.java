@@ -1317,8 +1317,9 @@ public class PDFMergerUtilityTest extends TestCase
                 getCOSDictionary(COSName.getPDFName("Images")).
                 getCOSArray(COSName.KIDS).getObject(0);
         PDImageXObject imageXObject = (PDImageXObject) PDImageXObject.createXObject(imageDict, new PDResources());
-        assertEquals(909, imageXObject.getWidth());
-        assertEquals(233, imageXObject.getHeight());
+        BufferedImage bim = imageXObject.getImage();
+        assertEquals(909, bim.getWidth());
+        assertEquals(233, bim.getHeight());
         mergedDoc.close();
     }
 }
