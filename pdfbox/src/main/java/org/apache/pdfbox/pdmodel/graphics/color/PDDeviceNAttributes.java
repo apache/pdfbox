@@ -98,16 +98,6 @@ public final class PDDeviceNAttributes
     }
 
     /**
-     * Returns a map of colorants and their associated Separation color space.
-     * @return map of colorants to color spaces, never null.
-     * @throws IOException If there is an error reading a color space
-     */
-    public Map<String, PDSeparation> getColorants() throws IOException
-    {
-        return getColorants(null);
-    }
-
-    /**
      * Returns the DeviceN Process Dictionary, or null if it is missing.
      * @return the DeviceN Process Dictionary, or null if it is missing.
      */
@@ -159,7 +149,7 @@ public final class PDDeviceNAttributes
         Map<String, PDSeparation> colorants;
         try
         {
-            colorants = getColorants();
+            colorants = getColorants(null);
             sb.append("Colorants{");
             for (Map.Entry<String, PDSeparation> col : colorants.entrySet())
             {

@@ -107,18 +107,6 @@ public class PDDeviceN extends PDSpecialColorSpace
         initialColor = new PDColor(initial, this);
     }
 
-    /**
-     * Creates a new DeviceN color space from the given COS array.
-     * 
-     * @param deviceN an array containing the color space information
-     * 
-     * @throws IOException if the colorspace could not be created
-     */
-    public PDDeviceN(COSArray deviceN) throws IOException
-    {
-        this(deviceN, null);
-    }
-
     // initializes the color conversion cache
     private void initColorConversionCache(PDResources resources) throws IOException
     {
