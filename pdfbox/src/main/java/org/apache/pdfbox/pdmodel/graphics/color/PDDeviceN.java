@@ -34,6 +34,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 
 /**
@@ -83,20 +84,21 @@ public class PDDeviceN extends PDSpecialColorSpace
      * Creates a new DeviceN color space from the given COS array.
      * 
      * @param deviceN an array containing the color space information
+     * @param resources resources, can be null.
      * 
      * @throws IOException if the colorspace could not be created
      */
-    public PDDeviceN(COSArray deviceN) throws IOException
+    public PDDeviceN(COSArray deviceN, PDResources resources) throws IOException
     {
         array = deviceN;
-        alternateColorSpace = PDColorSpace.create(array.getObject(ALTERNATE_CS));
+        alternateColorSpace = PDColorSpace.create(array.getObject(ALTERNATE_CS), resources);
         tintTransform = PDFunction.create(array.getObject(TINT_TRANSFORM));
 
         if (array.size() > DEVICEN_ATTRIBUTES)
         {
             attributes = new PDDeviceNAttributes((COSDictionary)array.getObject(DEVICEN_ATTRIBUTES));
         }
-        initColorConversionCache();
+        initColorConversionCache(resources);
 
         // set initial color space
         int n = getNumberOfComponents();
@@ -105,8 +107,20 @@ public class PDDeviceN extends PDSpecialColorSpace
         initialColor = new PDColor(initial, this);
     }
 
+    /**
+     * Creates a new DeviceN color space from the given COS array.
+     * 
+     * @param deviceN an array containing the color space information
+     * 
+     * @throws IOException if the colorspace could not be created
+     */
+    public PDDeviceN(COSArray deviceN) throws IOException
+    {
+        this(deviceN, null);
+    }
+
     // initializes the color conversion cache
-    private void initColorConversionCache() throws IOException
+    private void initColorConversionCache(PDResources resources) throws IOException
     {
         // there's nothing to cache for non-attribute spaces
         if (attributes == null)
@@ -124,7 +138,7 @@ public class PDDeviceN extends PDSpecialColorSpace
         {
             List<String> components = attributes.getProcess().getComponents();
 
-            // map each colorant to the corresponding process component (if any)
+            // map each colorant name to the corresponding process component name (if any)
             for (int c = 0; c < numColorants; c++)
             {
                 colorantToComponent[c] = components.indexOf(colorantNames.get(c));
@@ -145,7 +159,7 @@ public class PDDeviceN extends PDSpecialColorSpace
         spotColorSpaces = new PDSeparation[numColorants];
 
         // spot color spaces
-        Map<String, PDSeparation> spotColorants = attributes.getColorants();
+        Map<String, PDSeparation> spotColorants = attributes.getColorants(resources);
 
         // map each colorant to the corresponding spot color space
         for (int c = 0; c < numColorants; c++)

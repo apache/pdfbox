@@ -30,6 +30,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 
 /**
@@ -78,12 +79,13 @@ public class PDSeparation extends PDSpecialColorSpace
     /**
      * Creates a new Separation color space from a PDF color space array.
      * @param separation an array containing all separation information.
+     * @param resources resources, can be null.
      * @throws IOException if the color space or the function could not be created.
      */
-    public PDSeparation(COSArray separation) throws IOException
+    public PDSeparation(COSArray separation, PDResources resources) throws IOException
     {
         array = separation;
-        alternateColorSpace = PDColorSpace.create(array.getObject(ALTERNATE_CS));
+        alternateColorSpace = PDColorSpace.create(array.getObject(ALTERNATE_CS), resources);
         tintTransform = PDFunction.create(array.getObject(TINT_TRANSFORM));
         int numberOfOutputParameters = tintTransform.getNumberOfOutputParameters();
         if (numberOfOutputParameters > 0 &&
@@ -93,6 +95,16 @@ public class PDSeparation extends PDSpecialColorSpace
                     tintTransform.getNumberOfOutputParameters() + ") than the alternate colorspace " +
                     alternateColorSpace + " (" + alternateColorSpace.getNumberOfComponents() + ")");
         }
+    }
+
+    /**
+     * Creates a new Separation color space from a PDF color space array.
+     * @param separation an array containing all separation information.
+     * @throws IOException if the color space or the function could not be created.
+     */
+    public PDSeparation(COSArray separation) throws IOException
+    {
+        this(separation, null);
     }
 
     @Override
