@@ -63,7 +63,7 @@ public class CSSeparation implements ChangeListener, ActionListener
      */
     public CSSeparation(COSArray array) throws IOException
     {
-        separation = new PDSeparation(array);
+        separation = new PDSeparation(array, null);
         initUI();
         initValues();
     }

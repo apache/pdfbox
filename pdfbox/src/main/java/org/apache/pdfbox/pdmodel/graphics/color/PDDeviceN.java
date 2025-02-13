@@ -113,7 +113,10 @@ public class PDDeviceN extends PDSpecialColorSpace
      * @param deviceN an array containing the color space information
      * 
      * @throws IOException if the colorspace could not be created
+     * 
+     * @deprecated use {@link PDDeviceN#PDDeviceN(COSArray, PDResources)}
      */
+    @Deprecated
     public PDDeviceN(COSArray deviceN) throws IOException
     {
         this(deviceN, null);
