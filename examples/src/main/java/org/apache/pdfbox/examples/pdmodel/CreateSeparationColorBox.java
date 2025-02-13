@@ -82,7 +82,7 @@ public class CreateSeparationColorBox
         PDFunctionType2 func = new PDFunctionType2(fdict);
         separationArray.add(func);
 
-        PDColorSpace spotColorSpace = new PDSeparation(separationArray);
+        PDColorSpace spotColorSpace = new PDSeparation(separationArray, null);
 
         PDPageContentStream cs = new PDPageContentStream(doc, page);
         PDColor color = new PDColor(new float[]{0.5f}, spotColorSpace);

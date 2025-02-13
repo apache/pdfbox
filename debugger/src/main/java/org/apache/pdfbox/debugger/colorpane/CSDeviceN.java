@@ -49,7 +49,7 @@ public class CSDeviceN
      */
     public CSDeviceN(COSArray array) throws IOException
     {
-        deviceN = new PDDeviceN(array);
+        deviceN = new PDDeviceN(array, null);
         DeviceNColorant[] colorants = getColorantData();
         initUI(colorants);
     }
