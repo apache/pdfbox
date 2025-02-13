@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.pdmodel.PDResources;
 
 /**
  * Contains additional information about the components of colour space.
@@ -72,10 +73,11 @@ public final class PDDeviceNAttributes
 
     /**
      * Returns a map of colorants and their associated Separation color space.
+     * @param resources resources, can be null.
      * @return map of colorants to color spaces, never null.
      * @throws IOException If there is an error reading a color space
      */
-    public Map<String, PDSeparation> getColorants() throws IOException
+    public Map<String, PDSeparation> getColorants(PDResources resources) throws IOException
     {
         Map<String,PDSeparation> actuals = new HashMap<>();
         COSDictionary colorants = dictionary.getCOSDictionary(COSName.COLORANTS);
@@ -89,10 +91,20 @@ public final class PDDeviceNAttributes
             for (COSName name : colorants.keySet())
             {
                 COSBase value = colorants.getDictionaryObject(name);
-                actuals.put(name.getName(), (PDSeparation) PDColorSpace.create(value));
+                actuals.put(name.getName(), (PDSeparation) PDColorSpace.create(value, resources));
             }
         }
         return new COSDictionaryMap<>(actuals, colorants);
+    }
+
+    /**
+     * Returns a map of colorants and their associated Separation color space.
+     * @return map of colorants to color spaces, never null.
+     * @throws IOException If there is an error reading a color space
+     */
+    public Map<String, PDSeparation> getColorants() throws IOException
+    {
+        return getColorants(null);
     }
 
     /**
