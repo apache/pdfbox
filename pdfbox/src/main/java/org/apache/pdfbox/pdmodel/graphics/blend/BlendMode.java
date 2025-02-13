@@ -387,4 +387,9 @@ public class BlendMode
         result[2] = b / 255.0f;
     }
 
+    @Override
+    public String toString()
+    {
+        return "BlendMode{name=" + name.getName() + ", isSeparable=" + isSeparable + '}';
+    }
 }
