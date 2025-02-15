@@ -333,7 +333,10 @@ public class PDFStreamParser extends BaseParser
         boolean noBinData = true;
         int startOpIdx = -1;
         int endOpIdx = -1;
-        
+        String s = "";
+
+        LOG.debug("String after EI: '{}'", new String(binCharTestArr));
+
         if (readBytes > 0)
         {
             for (int bIdx = 0; bIdx < readBytes; bIdx++)
@@ -360,25 +363,28 @@ public class PDFStreamParser extends BaseParser
             // PDFBOX-3742: just assuming that 1-3 non blanks is a PDF operator isn't enough
             if (endOpIdx != -1 && startOpIdx != -1)
             {
-                // usually, the operator here is Q, sometimes EMC (PDFBOX-2376), S (PDFBOX-3784).
-                String s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx);
+                // usually, the operator here is Q, sometimes EMC (PDFBOX-2376), S (PDFBOX-3784)
+                s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx);
                 if (!"Q".equals(s) && !"EMC".equals(s) && !"S".equals(s))
                 {
+                    // operator is not Q, not EMC, not S -> assume binary data
                     noBinData = false;
                 }
             }
 
-            // only if not close to eof
-            if (readBytes == MAX_BIN_CHAR_TEST_LENGTH) 
+            // only if not close to EOF
+            if (startOpIdx != -1 && readBytes == MAX_BIN_CHAR_TEST_LENGTH) 
             {
-                // a PDF operator is 1-3 bytes long
-                if (startOpIdx != -1 && endOpIdx == -1)
+                if (endOpIdx == -1)
                 {
                     endOpIdx = MAX_BIN_CHAR_TEST_LENGTH;
+                    s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx);
                 }
-                if (endOpIdx != -1 && startOpIdx != -1 && endOpIdx - startOpIdx > 3)
+                LOG.debug("startOpIdx: {} endOpIdx: {} s = {}", startOpIdx, endOpIdx, s);
+                // a PDF operator is 1-3 bytes long
+                if (endOpIdx - startOpIdx > 3)
                 {
-                    noBinData = false;
+                    noBinData = false; // "operator" too long, assume binary data
                 }
             }
             source.rewind(readBytes);
@@ -386,8 +392,8 @@ public class PDFStreamParser extends BaseParser
         if (!noBinData)
         {
             LOG.warn(
-                    "ignoring 'EI' assumed to be in the middle of inline image at stream offset {}",
-                    source.getPosition());
+                    "ignoring 'EI' assumed to be in the middle of inline image at stream offset {}, s = '{}'",
+                    source.getPosition(), s);
         }
         return noBinData;
     }
