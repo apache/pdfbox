@@ -400,11 +400,13 @@ public class PDFStreamParser extends BaseParser
             // PDFBOX-3742: just assuming that 1-3 non blanks is a PDF operator isn't enough
             if (noBinData && endOpIdx != -1 && startOpIdx != -1)
             {
-                // usually, the operator here is Q, sometimes EMC (PDFBOX-2376), S (PDFBOX-3784)
+                // usually, the operator here is Q, sometimes EMC (PDFBOX-2376), S (PDFBOX-3784),
+                // or a number (PDFBOX-5957)
                 s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx);
-                if (!"Q".equals(s) && !"EMC".equals(s) && !"S".equals(s))
+                if (!"Q".equals(s) && !"EMC".equals(s) && !"S".equals(s) &&
+                    !s.matches("^\\d*\\.?\\d*$"))
                 {
-                    // operator is not Q, not EMC, not S -> assume binary data
+                    // operator is not Q, not EMC, not S, nur a number -> assume binary data
                     noBinData = false;
                 }
             }
@@ -417,8 +419,8 @@ public class PDFStreamParser extends BaseParser
                     endOpIdx = MAX_BIN_CHAR_TEST_LENGTH;
                     s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx);
                 }
-                // a PDF operator is 1-3 bytes long
-                if (endOpIdx - startOpIdx > 3)
+                // look for token of 3 chars max or a number
+                if (endOpIdx - startOpIdx > 3 && !s.matches("^\\d*\\.?\\d*$"))
                 {
                     noBinData = false; // "operator" too long, assume binary data
                 }
