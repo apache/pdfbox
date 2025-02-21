@@ -545,7 +545,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
         // a predefined map shall only be used if there isn't any ToUnicode CMap
         if (getToUnicodeCMap() != null)
         {
-            return Character.toString(code);
+            return Character.toString((char) code);
         }
 
         if ((isCMapPredefined || isDescendantCJK) && cMapUCS2 != null)
