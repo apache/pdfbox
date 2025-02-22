@@ -260,6 +260,7 @@ public final class PDAcroForm implements COSObjectable
         // preserve all non widget annotations
         for (PDPage page : pages)
         {
+            // get the widgets that are to be flattened for this page
             Set<COSDictionary> widgetsForPageMap = pagesWidgetsMap.get(page.getCOSObject());
 
             // indicates if the original content stream
@@ -760,7 +761,8 @@ public final class PDAcroForm implements COSObjectable
     }
 
     /**
-     * Build a map of pages => widgets
+     * Build a map of page => set of widgets to be flattened
+     *
      * @param fields a list of fields to be flattened
      * @param pages the page tree
      * @return
