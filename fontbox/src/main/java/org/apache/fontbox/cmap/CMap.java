@@ -197,8 +197,16 @@ public class CMap
      */
     void addCharMapping(byte[] codes, String unicode)
     {
-        unicodeToByteCodes.put(unicode, CMapStrings.getByteValue(codes));
-        charToUnicode.put(CMapStrings.getIndexValue(codes), unicode);
+        if (codes.length <= 2)
+        {
+            unicodeToByteCodes.put(unicode, CMapStrings.getByteValue(codes));
+            charToUnicode.put(CMapStrings.getIndexValue(codes), unicode);
+        }
+        else
+        {
+            unicodeToByteCodes.put(unicode, codes.clone());
+            charToUnicode.put(toInt(codes, codes.length), unicode);
+        }
         // fixme: ugly little hack
         if (SPACE.equals(unicode))
         {
