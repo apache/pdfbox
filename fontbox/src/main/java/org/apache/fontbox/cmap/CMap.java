@@ -349,24 +349,24 @@ public class CMap
      */
     void addCharMapping(byte[] codes, String unicode)
     {
-        if (codes.length == 1)
+        switch (codes.length)
         {
-            charToUnicodeOneByte.put(CMapStrings.getIndexValue(codes), unicode);
-            unicodeToByteCodes.put(unicode, CMapStrings.getByteValue(codes));
-        }
-        else if (codes.length == 2)
-        {
-            charToUnicodeTwoBytes.put(CMapStrings.getIndexValue(codes), unicode);
-            unicodeToByteCodes.put(unicode, CMapStrings.getByteValue(codes));
-        }
-        else if (codes.length == 3 || codes.length == 4)
-        {
-            charToUnicodeMoreBytes.put(toInt(codes), unicode);
-            unicodeToByteCodes.put(unicode, codes.clone());
-        }
-        else
-        {
-            LOG.warn("Mappings with more than 4 bytes (here: {}) aren't supported yet", codes.length);
+            case 1:
+                charToUnicodeOneByte.put(CMapStrings.getIndexValue(codes), unicode);
+                unicodeToByteCodes.put(unicode, CMapStrings.getByteValue(codes));
+                break;
+            case 2:
+                charToUnicodeTwoBytes.put(CMapStrings.getIndexValue(codes), unicode);
+                unicodeToByteCodes.put(unicode, CMapStrings.getByteValue(codes));
+                break;
+            case 3:
+            case 4:
+                charToUnicodeMoreBytes.put(toInt(codes), unicode);
+                unicodeToByteCodes.put(unicode, codes.clone());
+                break;
+            default:
+                LOG.warn("Mappings with more than 4 bytes (here: {}) aren't supported yet", codes.length);
+                break;
         }
         // fixme: ugly little hack
         if (SPACE.equals(unicode))
