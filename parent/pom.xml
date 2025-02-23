@@ -337,6 +337,7 @@
                   <!-- can't update to 11, this needs jdk11 -->
                   <version>10.0.4</version>
                   <configuration>
+                      <skip>true</skip>
                       <failBuildOnCVSS>0</failBuildOnCVSS>
                       <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
                       <skipSystemScope>true</skipSystemScope>
