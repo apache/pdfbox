@@ -58,6 +58,8 @@ public class CMap
     private final Map<Integer, String> charToUnicodeOneByte = new HashMap<>();
     // two byte input values
     private final Map<Integer, String> charToUnicodeTwoBytes = new HashMap<>();
+    // 3 / 4 byte input values
+    private final Map<Integer, String> charToUnicodeMoreBytes = new HashMap<>();
 
     // CID mappings
     // map with all code to cid mappings organized by the origin byte length of the input value
@@ -94,7 +96,7 @@ public class CMap
      */
     public boolean hasUnicodeMappings()
     {
-        return !charToUnicodeOneByte.isEmpty() || !charToUnicodeTwoBytes.isEmpty();
+        return !charToUnicodeOneByte.isEmpty() || !charToUnicodeTwoBytes.isEmpty() || !charToUnicodeMoreBytes.isEmpty();
     }
 
     /**
@@ -114,7 +116,15 @@ public class CMap
         String unicode = code < 256 ? toUnicode(code, 1) : null;
         if (unicode == null)
         {
-            unicode = toUnicode(code, 2);
+            if (code <= 0xFFFF)
+            {
+                return toUnicode(code, 2);
+            }
+            if (code <= 0xFFFFFF)
+            {
+                return toUnicode(code, 3);
+            }
+            return toUnicode(code, 4);
         }
         return unicode;
     }
@@ -136,8 +146,7 @@ public class CMap
         {
             return charToUnicodeTwoBytes.get(code);
         }
-        LOG.warn("Mappings with more than 2 bytes aren't supported");
-        return null;
+        return charToUnicodeMoreBytes.get(code);
     }
 
     /**
@@ -351,9 +360,14 @@ public class CMap
             charToUnicodeTwoBytes.put(CMapStrings.getIndexValue(codes), unicode);
             unicodeToByteCodes.put(unicode, CMapStrings.getByteValue(codes)); // clone needed, bytes is modified later
         }
+        else if (codes.length == 3 || codes.length == 4)
+        {
+            charToUnicodeMoreBytes.put(toInt(codes), unicode);
+            unicodeToByteCodes.put(unicode, codes.clone());
+        }
         else
         {
-            LOG.warn("Mappings with more than 2 bytes aren't supported yet");
+            LOG.warn("Mappings with more than 4 bytes aren't supported yet");
         }
         // fixme: ugly little hack
         if (SPACE.equals(unicode))
@@ -443,10 +457,28 @@ public class CMap
         cmap.codespaceRanges.forEach(this::addCodespaceRange);
         charToUnicodeOneByte.putAll(cmap.charToUnicodeOneByte);
         charToUnicodeTwoBytes.putAll(cmap.charToUnicodeTwoBytes);
+        charToUnicodeMoreBytes.putAll(cmap.charToUnicodeMoreBytes);
         cmap.charToUnicodeOneByte.forEach((k, v) -> unicodeToByteCodes.put(v, new byte[]{(byte) (k % 0xFF)}));
         cmap.charToUnicodeTwoBytes.forEach((k, v) -> unicodeToByteCodes.put(v,
                 new byte[]{(byte) ((k >>> 8) & 0xFF), (byte) (k & 0xFF)})
         );
+        cmap.charToUnicodeMoreBytes.forEach((k, v) -> 
+            {
+                byte[] bar;
+                if (k <= 0xFFFFFF)
+                {
+                    // 3 bytes
+                    bar = new byte[]{(byte) ((k >>> 16) & 0xFF), (byte) ((k >>> 8) & 0xFF), 
+                        (byte) (k & 0xFF)};
+                }
+                else
+                {
+                    // 4 bytes
+                    bar = new byte[]{(byte) ((k >>> 24) & 0xFF), (byte) ((k >>> 16) & 0xFF),
+                        (byte) ((k >>> 8) & 0xFF), (byte) (k & 0xFF)};
+                }
+                unicodeToByteCodes.put(v, bar);
+            });
         cmap.codeToCid.forEach((key, value) ->
         {
             Map<Integer, Integer> existingMapping = codeToCid.putIfAbsent(key, value);
