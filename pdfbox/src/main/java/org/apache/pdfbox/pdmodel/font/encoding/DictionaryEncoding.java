@@ -18,6 +18,8 @@ package org.apache.pdfbox.pdmodel.font.encoding;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -31,6 +33,8 @@ import org.apache.pdfbox.cos.COSNumber;
  */
 public class DictionaryEncoding extends Encoding
 {
+    private static final Log LOG = LogFactory.getLog(DictionaryEncoding.class);
+
     private final COSDictionary encoding;
     private final Encoding baseEncoding;
     private final Map<Integer, String> differences = new HashMap<>();
@@ -74,7 +78,24 @@ public class DictionaryEncoding extends Encoding
     public DictionaryEncoding(COSDictionary fontEncoding)
     {
         encoding = fontEncoding;
-        baseEncoding = null;
+        COSName name = encoding.getCOSName(COSName.BASE_ENCODING);
+        if (name != null)
+        {
+            baseEncoding = Encoding.getInstance(name); // null when the name is invalid
+            if (baseEncoding != null)
+            {
+                // PDFBOX-5963
+                // PDF Specification: "Differences array shall specify the complete character
+                // encoding for this font" but other viewers read it, thus we do too.
+                LOG.warn("/BaseEncoding in type 3 font");
+                codeToName.putAll(baseEncoding.codeToName);
+                inverted.putAll(baseEncoding.inverted);
+            }
+        }
+        else
+        {
+            baseEncoding = null;
+        }
         applyDifferences();
     }
     
