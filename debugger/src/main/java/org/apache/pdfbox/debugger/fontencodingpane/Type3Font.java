@@ -63,7 +63,12 @@ class Type3Font extends FontPane
         Object[][] tableData = getGlyphs(font);
 
         Map<String, String> attributes = new LinkedHashMap<String, String>();
-        attributes.put("Font", font.getName());
+        String name = font.getName();
+        if (name == null && font.getFontDescriptor() != null)
+        {
+            name = font.getFontDescriptor().getFontName();
+        }
+        attributes.put("Font", name);
         attributes.put("Encoding", getEncodingName(font));
         attributes.put("Glyphs", Integer.toString(totalAvailableGlyph));
 
