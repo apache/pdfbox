@@ -74,7 +74,20 @@ public class DictionaryEncoding extends Encoding
     public DictionaryEncoding(COSDictionary fontEncoding)
     {
         encoding = fontEncoding;
-        baseEncoding = null;
+        COSName name = encoding.getCOSName(COSName.BASE_ENCODING);
+        if (name != null)
+        {
+            baseEncoding = Encoding.getInstance(name); // null when the name is invalid
+            if (baseEncoding != null)
+            {
+                codeToName.putAll(baseEncoding.codeToName);
+                inverted.putAll(baseEncoding.inverted);
+            }
+        }
+        else
+        {
+            baseEncoding = null;
+        }
         applyDifferences();
     }
     
