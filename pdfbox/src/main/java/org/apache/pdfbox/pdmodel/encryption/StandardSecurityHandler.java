@@ -258,15 +258,20 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
                         ownerKey, dicRevision, dicLength );
             }
             
-            setEncryptionKey(
-                computeEncryptedKey(
+            byte[] encryptedKey = computeEncryptedKey(
                     computedPassword,
                     ownerKey, userKey, oe, ue,
                     dicPermissions,
                     documentIDBytes,
                     dicRevision,
                     dicLength,
-                    encryptMetadata, true));
+                    encryptMetadata, true);
+            if (dicRevision == REVISION_4 && encryptedKey.length < 16)
+            {
+                LOG.info("PDFBOX-5955: padding RC4 key to length 16");
+                encryptedKey = Arrays.copyOf(encryptedKey, 16);
+            }
+            setEncryptionKey(encryptedKey);
         }
         else if( isUserPassword(password.getBytes(passwordCharset), userKey, ownerKey,
                            dicPermissions, documentIDBytes, dicRevision,
@@ -276,15 +281,20 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             currentAccessPermission.setReadOnly();
             setCurrentAccessPermission(currentAccessPermission);
             
-            setEncryptionKey(
-                computeEncryptedKey(
+            byte[] encryptedKey = computeEncryptedKey(
                     password.getBytes(passwordCharset),
                     ownerKey, userKey, oe, ue,
                     dicPermissions,
                     documentIDBytes,
                     dicRevision,
                     dicLength,
-                    encryptMetadata, false));
+                    encryptMetadata, false);
+            if (dicRevision == REVISION_4 && encryptedKey.length < 16)
+            {
+                LOG.info("PDFBOX-5955: padding RC4 key to length 16");
+                encryptedKey = Arrays.copyOf(encryptedKey, 16);
+            }
+            setEncryptionKey(encryptedKey);
         }
         else
         {
