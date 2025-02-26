@@ -852,6 +852,32 @@
                             <sha512>cb8033ed21d8e43b4a62ffbcff4fc8c829c2c29e21fa9e9ea302959e036869d0470fa7e2dd2dc206bbaf02d08bf8b5631ab397cd5f19896d3a12e207d3da165a</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-5955-40bit</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13074727/R%3D4%2C%20V%3D4%2C%2040-bit%20RC4.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5955-40bit.pdf</outputFileName>
+                            <sha512>1a46131f8276f139e81453a427c17fb70bfd05bfb1de4f3f74b976a0a6b6b7b2d74013edcd5367ba6353249b7b1b303cc7a08d561194447b422900d7d5767ec4</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-5955-48bit</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13074728/R%3D4%2C%20V%3D4%2C%2048-bit%20RC4.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5955-48bit.pdf</outputFileName>
+                            <sha512>5a9c237b8e1b93eb492c7a387180d937f8fb82d1fa2ffcf73698489b3ec4cdefc2ceb4e9204867c834a2139069c5667811aaf522d6e1f6ff8fd1591528a65007</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
