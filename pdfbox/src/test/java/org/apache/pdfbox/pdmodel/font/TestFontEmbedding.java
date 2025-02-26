@@ -65,7 +65,6 @@ class TestFontEmbedding
 {
     private static final File OUT_DIR = new File("target/test-output");
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/ttf");
- 
 
     @BeforeAll
     static void setUp()
@@ -656,7 +655,7 @@ class TestFontEmbedding
             }
             catch (IllegalStateException e)
             {
-                assertEquals("could not find the glyphId for the character: あ, codePoint: 12354 (0x3042)", e.getMessage());
+                assertEquals("No glyph for U+3042 in font LiberationSans", e.getMessage());
                 return;
             }
 
@@ -685,7 +684,7 @@ class TestFontEmbedding
             }
             catch (IllegalStateException e)
             {
-                assertEquals("could not find the glyphId for the character: 𩸽, codePoint: 171581 (0x29E3D)", e.getMessage());
+                assertEquals("No glyph for U+29E3D in font LiberationSans", e.getMessage());
                 return;
             }
 

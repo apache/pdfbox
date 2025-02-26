@@ -199,13 +199,12 @@ abstract class PDAbstractContentStream implements Closeable
         // complex text layout
         if (font instanceof PDType0Font)
         {
-            PDType0Font pdType0Font = (PDType0Font) font;
-            GsubData gsubData = pdType0Font.getGsubData();
+            PDType0Font type0Font = (PDType0Font) font;
+            GsubData gsubData = type0Font.getGsubData();
             if (gsubData != GsubData.NO_DATA_FOUND)
             {
-                GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(pdType0Font.getCmapLookup(),
-                        gsubData);
-                gsubWorkers.put((PDType0Font) font, gsubWorker);
+                GsubWorker worker = gsubWorkerFactory.getGsubWorker(type0Font.getCmapLookup(), gsubData);
+                gsubWorkers.put(type0Font, worker);
             }
             else
             {
@@ -292,16 +291,15 @@ abstract class PDAbstractContentStream implements Closeable
         byte[] encodedText = null;
         if (font instanceof PDType0Font)
         {
-
-            GsubWorker gsubWorker = gsubWorkers.get(font);
-            if (gsubWorker != null)
+            GsubWorker worker = gsubWorkers.get(font);
+            if (worker != null)
             {
-                PDType0Font pdType0Font = (PDType0Font) font;
+                PDType0Font type0Font = (PDType0Font) font;
                 Set<Integer> glyphIds = new HashSet<>();
-                encodedText = encodeForGsub(gsubWorker, glyphIds, pdType0Font, text);
-                if (pdType0Font.willBeSubset())
+                encodedText = encodeForGsub(worker, glyphIds, type0Font, text);
+                if (type0Font.willBeSubset())
                 {
-                    pdType0Font.addGlyphsToSubset(glyphIds);
+                    type0Font.addGlyphsToSubset(glyphIds);
                 }
             }
         }
@@ -706,7 +704,7 @@ abstract class PDAbstractContentStream implements Closeable
     /**
      * Set the stroking color in the DeviceRGB color space. Range is 0..1.
      *
-     * @param r The red value
+     * @param r The red value.
      * @param g The green value.
      * @param b The blue value.
      * @throws IOException If an IO error occurs while writing to the stream.
@@ -1641,73 +1639,65 @@ abstract class PDAbstractContentStream implements Closeable
         writeOperator(OperatorName.SET_TEXT_RISE);
     }
 
-    private byte[] encodeForGsub(GsubWorker gsubWorker,
-                                 Set<Integer> glyphIds, PDType0Font font, String text) throws IOException
+    /**
+     * Retrieve the encoded glyph IDs for the characters in the specified text, after applying any relevant GSUB rules.
+     * The glyph IDs used are also added to the specified glyph ID set.
+     *
+     * @param worker The GSUB worker which defines the GSUB transformations to apply.
+     * @param glyphIds The set of glyph IDs which is to be populated with the glyph IDs found in the text.
+     * @param font The font whose cmap table will be used to map characters to glyph IDs.
+     * @param text The text which is being converted from characters to glyph IDs.
+     * @return The encoded glyph IDs for the characters in the specified text, after applying any relevant GSUB rules.
+     * @throws IllegalStateException If we cannot find a glyph ID for any characters in the specified text.
+     */
+    private byte[] encodeForGsub(GsubWorker worker, Set<Integer> glyphIds, PDType0Font font, String text)
     {
-        // break the entire chunk of text into words by splitting it with space
+        ByteArrayOutputStream out = new ByteArrayOutputStream(2 * text.length());
         String[] words = StringUtil.tokenizeOnSpace(text);
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
         for (String word : words)
         {
-            if (word == null)
-            {
-                continue;
-            }
-            if (word.length() == 1 && word.isBlank())
-            {
-                out.write(font.encode(word));
-            }
-            else
-            {
-                glyphIds.addAll(applyGSUBRules(gsubWorker, out, font, word));
-            }
+            List<Integer> wordGlyphIds = applyGSUBRules(worker, out, font, word);
+            glyphIds.addAll(wordGlyphIds);
         }
-
         return out.toByteArray();
     }
 
-    private List<Integer> applyGSUBRules(GsubWorker gsubWorker, ByteArrayOutputStream out, PDType0Font font, String word) throws IOException
+    /**
+     * Retrieve the glyph IDs for the characters in the specified word, after applying any relevant GSUB rules.
+     * The encoded glyph IDs are also written to the specified output stream.
+     *
+     * @param worker The GSUB worker which defines the GSUB transformations to apply.
+     * @param out The output stream to write the glyph IDs to.
+     * @param font The font whose cmap table will be used to map characters to glyph IDs.
+     * @param word The word which is being converted from characters to glyph IDs.
+     * @return The glyph IDs for the characters in the specified word, after applying any relevant GSUB rules.
+     * @throws IllegalStateException If we cannot find a glyph ID for any characters in the specified word.
+     */
+    private List<Integer> applyGSUBRules(GsubWorker worker, ByteArrayOutputStream out, PDType0Font font, String word)
     {
-        int[] codePointArray = word.codePoints().toArray();
-        List<Integer> originalGlyphIds = new ArrayList<>(word.codePointCount(0, word.length()));
+        int[] codePoints = word.codePoints().toArray();
+        List<Integer> originalGlyphIds = new ArrayList<>(codePoints.length);
         CmapLookup cmapLookup = font.getCmapLookup();
 
-        // convert characters into glyphIds
-        for (int codePoint : codePointArray)
+        // convert characters into glyph IDs
+        for (int codePoint : codePoints)
         {
             int glyphId = cmapLookup.getGlyphId(codePoint);
             if (glyphId <= 0)
             {
-                String source;
-                if (Character.isBmpCodePoint(codePoint))
-                {
-                    source = String.valueOf((char) codePoint);
-                }
-                else if (Character.isValidCodePoint(codePoint))
-                {
-                    source = new String(new int[] {codePoint},0,1);
-                }
-                else
-                {
-                    source = "?";
-                }
-                throw new IllegalStateException("could not find the glyphId for the character: " +
-                        source + ", codePoint: " + codePoint +
-                        " (0x" + Integer.toHexString(codePoint).toUpperCase() + ")");
+                String msg = String.format("No glyph for U+%04X in font %s", codePoint, font.getName());
+                throw new IllegalStateException(msg);
             }
             originalGlyphIds.add(glyphId);
         }
 
-        List<Integer> glyphIdsAfterGsub = gsubWorker.applyTransforms(originalGlyphIds);
-
+        // transform glyph IDs, write them to the output stream
+        List<Integer> glyphIdsAfterGsub = worker.applyTransforms(originalGlyphIds);
         for (Integer glyphId : glyphIdsAfterGsub)
         {
-            out.write(font.encodeGlyphId(glyphId));
+            out.writeBytes(font.encodeGlyphId(glyphId));
         }
 
         return glyphIdsAfterGsub;
-
     }
 }
