@@ -240,6 +240,9 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
 
         AccessPermission currentAccessPermission;
 
+        byte[] encryptedKey;
+        byte[] passwordBytes;
+        boolean isOwnerPassword;
         if( isOwnerPassword(password.getBytes(passwordCharset), userKey, ownerKey,
                                  dicPermissions, documentIDBytes, dicRevision,
                                  dicLength, encryptMetadata) )
@@ -247,31 +250,16 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             currentAccessPermission = AccessPermission.getOwnerAccessPermission();
             setCurrentAccessPermission(currentAccessPermission);
             
-            byte[] computedPassword;
             if (dicRevision == REVISION_5 || dicRevision == REVISION_6)
             {
-                computedPassword = password.getBytes(passwordCharset);
+                passwordBytes = password.getBytes(passwordCharset);
             }
             else
             {
-                computedPassword = getUserPassword234(password.getBytes(passwordCharset),
+                passwordBytes = getUserPassword234(password.getBytes(passwordCharset),
                         ownerKey, dicRevision, dicLength );
             }
-            
-            byte[] encryptedKey = computeEncryptedKey(
-                    computedPassword,
-                    ownerKey, userKey, oe, ue,
-                    dicPermissions,
-                    documentIDBytes,
-                    dicRevision,
-                    dicLength,
-                    encryptMetadata, true);
-            if (dicRevision == REVISION_4 && encryptedKey.length < 16)
-            {
-                LOG.info("PDFBOX-5955: padding RC4 key to length 16");
-                encryptedKey = Arrays.copyOf(encryptedKey, 16);
-            }
-            setEncryptionKey(encryptedKey);
+            isOwnerPassword = true;
         }
         else if( isUserPassword(password.getBytes(passwordCharset), userKey, ownerKey,
                            dicPermissions, documentIDBytes, dicRevision,
@@ -280,26 +268,27 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             currentAccessPermission = new AccessPermission(dicPermissions);
             currentAccessPermission.setReadOnly();
             setCurrentAccessPermission(currentAccessPermission);
-            
-            byte[] encryptedKey = computeEncryptedKey(
-                    password.getBytes(passwordCharset),
-                    ownerKey, userKey, oe, ue,
-                    dicPermissions,
-                    documentIDBytes,
-                    dicRevision,
-                    dicLength,
-                    encryptMetadata, false);
-            if (dicRevision == REVISION_4 && encryptedKey.length < 16)
-            {
-                LOG.info("PDFBOX-5955: padding RC4 key to length 16");
-                encryptedKey = Arrays.copyOf(encryptedKey, 16);
-            }
-            setEncryptionKey(encryptedKey);
+            passwordBytes = password.getBytes(passwordCharset);
+            isOwnerPassword = false;
         }
         else
         {
             throw new InvalidPasswordException("Cannot decrypt PDF, the password is incorrect");
         }
+        encryptedKey = computeEncryptedKey(
+            passwordBytes,
+            ownerKey, userKey, oe, ue,
+            dicPermissions,
+            documentIDBytes,
+            dicRevision,
+            dicLength,
+            encryptMetadata, isOwnerPassword);
+        if (dicRevision == REVISION_4 && encryptedKey.length < 16)
+        {
+            LOG.info("PDFBOX-5955: padding RC4 key to length 16");
+            encryptedKey = Arrays.copyOf(encryptedKey, 16);
+        }
+        setEncryptionKey(encryptedKey);
 
         if (dicRevision == REVISION_5 || dicRevision == REVISION_6)
         {
