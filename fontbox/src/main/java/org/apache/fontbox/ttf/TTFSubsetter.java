@@ -26,6 +26,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,7 +53,7 @@ public final class TTFSubsetter
 {
     private static final Logger LOG = LogManager.getLogger(TTFSubsetter.class);
     
-    private static final byte[] PAD_BUF = { 0, 0, 0 };
+    private static final byte[] PAD_BUF = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
     private static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC"); // clone before using
 
@@ -62,6 +63,7 @@ public final class TTFSubsetter
 
     private final List<String> keepTables;
     private final SortedSet<Integer> glyphIds; // new glyph ids
+    private final Set<Integer> invisibleGlyphIds;
     private String prefix;
     private boolean hasAddedCompoundReferences;
 
@@ -92,6 +94,7 @@ public final class TTFSubsetter
 
         uniToGID = new TreeMap<>();
         glyphIds = new TreeSet<>();
+        invisibleGlyphIds = new HashSet<>();
 
         // find the best Unicode cmap
         this.unicodeCmap = ttf.getUnicodeCmapLookup();
@@ -133,6 +136,21 @@ public final class TTFSubsetter
     public void addAll(Set<Integer> unicodeSet)
     {
         unicodeSet.forEach(this::add);
+    }
+
+    /**
+     * Forces the glyph for the specified character code to be zero-width and contour-free,
+     * regardless of what the glyph looks like in the original font. Note that the specified
+     * character code is not added to the subset unless it is also {@link #add(int) added}
+     * separately.
+     */
+    public void forceInvisible(int unicode)
+    {
+        int gid = unicodeCmap.getGlyphId(unicode);
+        if (gid != 0)
+        {
+            invisibleGlyphIds.add(gid);
+        }
     }
 
     /**
@@ -619,10 +637,15 @@ public final class TTFSubsetter
                     LOG.debug("Tried reading {} bytes but only {} bytes read", length, isResult);
                 }
 
-                // detect glyph type
-                if (buf.length >= 2 && buf[0] == -1 && buf[1] == -1)
+                if (invisibleGlyphIds.contains(gid)) {
+                    // force no contours, regardless of what the source font contains
+                    // 10 bytes total, 2 bytes each for: contour count = 0, x min = 0, y min = 0, x max = 0, y max = 0
+                    bos.write(PAD_BUF, 0, 10);
+                    newOffset += 10;
+                }
+                else if (buf.length >= 2 && buf[0] == -1 && buf[1] == -1)
                 {
-                    // compound glyph
+                    // this is a compound glyph
                     int off = 2*5;
                     int flags;
                     do
@@ -921,9 +944,15 @@ public final class TTFSubsetter
                 long offset;
                 if (glyphId <= lastgid)
                 {
-                    // copy width and lsb
-                    offset = glyphId * 4l;
-                    lastOffset = copyBytes(is, bos, offset, lastOffset, 4);
+                    if (invisibleGlyphIds.contains(glyphId)) {
+                        // force zero width (no change to last offset)
+                        // 4 bytes total, 2 bytes each for: advance width = 0, left side bearing = 0
+                        bos.write(PAD_BUF, 0, 4);
+                    } else {
+                        // copy width and lsb
+                        offset = glyphId * 4l;
+                        lastOffset = copyBytes(is, bos, offset, lastOffset, 4);
+                    }
                 }
                 else 
                 {
