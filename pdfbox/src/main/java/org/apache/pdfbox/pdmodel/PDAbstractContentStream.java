@@ -198,11 +198,11 @@ abstract class PDAbstractContentStream implements Closeable
         // complex text layout
         if (font instanceof PDType0Font)
         {
-            PDType0Font pdType0Font = (PDType0Font) font;
-            GsubData gsubData = pdType0Font.getGsubData();
+            PDType0Font type0Font = (PDType0Font) font;
+            GsubData gsubData = type0Font.getGsubData();
             if (gsubData != GsubData.NO_DATA_FOUND)
             {
-                GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(pdType0Font.getCmapLookup(),
+                GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(type0Font.getCmapLookup(),
                         gsubData);
                 gsubWorkers.put((PDType0Font) font, gsubWorker);
             }
@@ -298,12 +298,12 @@ abstract class PDAbstractContentStream implements Closeable
             GsubWorker gsubWorker = gsubWorkers.get(font);
             if (gsubWorker != null)
             {
-                PDType0Font pdType0Font = (PDType0Font) font;
+                PDType0Font type0Font = (PDType0Font) font;
                 Set<Integer> glyphIds = new HashSet<>();
-                encodedText = encodeForGsub(gsubWorker, glyphIds, pdType0Font, text);
-                if (pdType0Font.willBeSubset())
+                encodedText = encodeForGsub(gsubWorker, glyphIds, type0Font, text);
+                if (type0Font.willBeSubset())
                 {
-                    pdType0Font.addGlyphsToSubset(glyphIds);
+                    type0Font.addGlyphsToSubset(glyphIds);
                 }
             }
         }
@@ -708,7 +708,7 @@ abstract class PDAbstractContentStream implements Closeable
     /**
      * Set the stroking color in the DeviceRGB color space. Range is 0..1.
      *
-     * @param r The red value
+     * @param r The red value.
      * @param g The green value.
      * @param b The blue value.
      * @throws IOException If an IO error occurs while writing to the stream.
@@ -1643,14 +1643,27 @@ abstract class PDAbstractContentStream implements Closeable
         writeOperator(OperatorName.SET_TEXT_RISE);
     }
 
+    /**
+     * Retrieve the encoded glyph IDs for the characters in the specified text, after applying any
+     * relevant GSUB rules. The glyph IDs used are also added to the specified glyph ID set.
+     *
+     * @param gsubWorker The GSUB worker which defines the GSUB transformations to apply.
+     * @param glyphIds The set of glyph IDs which is to be populated with the glyph IDs found in the
+     * text.
+     * @param font The font whose cmap table will be used to map characters to glyph IDs.
+     * @param text The text which is being converted from characters to glyph IDs.
+     * @return The encoded glyph IDs for the characters in the specified text, after applying any
+     * relevant GSUB rules.
+     * @throws IOException If there is an error during encoding.
+     * @throws IllegalStateException If we cannot find a glyph ID for any characters in the
+     * specified text.
+     */
     private byte[] encodeForGsub(GsubWorker gsubWorker,
                                  Set<Integer> glyphIds, PDType0Font font, String text) throws IOException
     {
         // break the entire chunk of text into words by splitting it with space
         String[] words = StringUtil.tokenizeOnSpace(text);
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
+        ByteArrayOutputStream out = new ByteArrayOutputStream(2 * text.length());
         for (String word : words)
         {
             if (word == null)
@@ -1670,6 +1683,19 @@ abstract class PDAbstractContentStream implements Closeable
         return out.toByteArray();
     }
 
+    /**
+     * Retrieve the glyph IDs for the characters in the specified word, after applying any relevant
+     * GSUB rules. The encoded glyph IDs are also written to the specified output stream.
+     *
+     * @param gsubWorker The GSUB worker which defines the GSUB transformations to apply.
+     * @param out The output stream to write the glyph IDs to.
+     * @param font The font whose cmap table will be used to map characters to glyph IDs.
+     * @param word The word which is being converted from characters to glyph IDs.
+     * @return The glyph IDs for the characters in the specified word, after applying any relevant
+     * GSUB rules.
+     * @throws IllegalStateException If we cannot find a glyph ID for any characters in the
+     * specified word.
+     */
     private List<Integer> applyGSUBRules(GsubWorker gsubWorker, ByteArrayOutputStream out, PDType0Font font, String word) throws IOException
     {
         int[] codePointArray = word.codePoints().toArray();
