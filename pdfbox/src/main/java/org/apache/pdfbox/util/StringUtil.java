@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.util;
 
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 public final class StringUtil
@@ -36,7 +35,6 @@ public final class StringUtil
      */
     public static String[] tokenizeOnSpace(String s)
     {
-        return Arrays.stream(s.split("(?<=" + StringUtil.PATTERN_SPACE + ")|(?=" + StringUtil.PATTERN_SPACE + ")"))
-                .toArray(String[]::new);
+        return s.split("(?<=" + StringUtil.PATTERN_SPACE + ")|(?=" + StringUtil.PATTERN_SPACE + ")");
     }
 }
