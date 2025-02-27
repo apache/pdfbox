@@ -336,7 +336,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
 
             // multi-byte encoding with 1 to 4 bytes
             byte[] bytes = encode(codePoint);
-            out.write(bytes);
+            out.writeBytes(bytes);
 
             offset += Character.charCount(codePoint);
         }
