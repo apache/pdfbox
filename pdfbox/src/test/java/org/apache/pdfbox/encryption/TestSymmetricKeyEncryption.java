@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.awt.image.BufferedImage;
@@ -58,6 +57,8 @@ import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.StandardSecurityHandler;
 import org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.text.PDFTextStripper;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -246,6 +247,42 @@ class TestSymmetricKeyEncryption
 
         testSymmEncrForKeySize(filename, 40, false, sizePriorToEncryption, inputFileAsByteArray,
                 USERPASSWORD, OWNERPASSWORD, permission);
+    }
+
+    /**
+     * PDFBOX-5955: test unusual RC4 encryption that has 40 or 48 bits instead of 128.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testPDFBox5955() throws IOException
+    {        
+        File file40bit = new File("target/pdfs", "PDFBOX-5955-40bit.pdf");
+        File file48bit = new File("target/pdfs", "PDFBOX-5955-48bit.pdf");
+        try (PDDocument doc = Loader.loadPDF(file40bit))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            String text = stripper.getText(doc);
+            assertTrue(text.contains("0x0446615747"));
+        }
+        try (PDDocument doc = Loader.loadPDF(file40bit, "ownerpass"))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            String text = stripper.getText(doc);
+            assertTrue(text.contains("0x0446615747"));
+        }
+        try (PDDocument doc = Loader.loadPDF(file48bit))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            String text = stripper.getText(doc);
+            assertTrue(text.contains("0x02988E82AFF8"));
+        }
+        try (PDDocument doc = Loader.loadPDF(file48bit, "ownerpass"))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            String text = stripper.getText(doc);
+            assertTrue(text.contains("0x02988E82AFF8"));
+        }
     }
 
     /**
