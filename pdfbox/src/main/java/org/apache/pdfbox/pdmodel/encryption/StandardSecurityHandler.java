@@ -233,6 +233,9 @@ public final class StandardSecurityHandler extends SecurityHandler
 
         AccessPermission currentAccessPermission;
 
+        byte[] encryptedKey;
+        byte[] passwordBytes;
+        boolean isOwnerPassword;
         if( isOwnerPassword(password.getBytes(passwordCharset), userKey, ownerKey,
                                  dicPermissions, documentIDBytes, dicRevision,
                                  dicLength, encryptMetadata) )
@@ -240,26 +243,16 @@ public final class StandardSecurityHandler extends SecurityHandler
             currentAccessPermission = AccessPermission.getOwnerAccessPermission();
             setCurrentAccessPermission(currentAccessPermission);
             
-            byte[] computedPassword;
             if (dicRevision == 6 || dicRevision == 5)
             {
-                computedPassword = password.getBytes(passwordCharset);
+                passwordBytes = password.getBytes(passwordCharset);
             }
             else
             {
-                computedPassword = getUserPassword(password.getBytes(passwordCharset),
+                passwordBytes = getUserPassword(password.getBytes(passwordCharset),
                         ownerKey, dicRevision, dicLength );
             }
-            
-            setEncryptionKey(
-                computeEncryptedKey(
-                    computedPassword,
-                    ownerKey, userKey, oe, ue,
-                    dicPermissions,
-                    documentIDBytes,
-                    dicRevision,
-                    dicLength,
-                    encryptMetadata, true));
+            isOwnerPassword = true;
         }
         else if( isUserPassword(password.getBytes(passwordCharset), userKey, ownerKey,
                            dicPermissions, documentIDBytes, dicRevision,
@@ -268,21 +261,27 @@ public final class StandardSecurityHandler extends SecurityHandler
             currentAccessPermission = new AccessPermission(dicPermissions);
             currentAccessPermission.setReadOnly();
             setCurrentAccessPermission(currentAccessPermission);
-            
-            setEncryptionKey(
-                computeEncryptedKey(
-                    password.getBytes(passwordCharset),
-                    ownerKey, userKey, oe, ue,
-                    dicPermissions,
-                    documentIDBytes,
-                    dicRevision,
-                    dicLength,
-                    encryptMetadata, false));
+            passwordBytes = password.getBytes(passwordCharset);
+            isOwnerPassword = false;
         }
         else
         {
             throw new InvalidPasswordException("Cannot decrypt PDF, the password is incorrect");
         }
+        encryptedKey = computeEncryptedKey(
+            passwordBytes,
+            ownerKey, userKey, oe, ue,
+            dicPermissions,
+            documentIDBytes,
+            dicRevision,
+            dicLength,
+            encryptMetadata, isOwnerPassword);
+        if (dicRevision == 4 && encryptedKey.length < 16)
+        {
+            LOG.info("PDFBOX-5955: padding RC4 key to length 16");
+            encryptedKey = Arrays.copyOf(encryptedKey, 16);
+        }
+        setEncryptionKey(encryptedKey);
 
         if (dicRevision == 6 || dicRevision == 5)
         {
