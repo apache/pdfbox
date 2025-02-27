@@ -143,6 +143,8 @@ public final class TTFSubsetter
      * regardless of what the glyph looks like in the original font. Note that the specified
      * character code is not added to the subset unless it is also {@link #add(int) added}
      * separately.
+     *
+     * @param unicode the character code whose glyph should be invisible
      */
     public void forceInvisible(int unicode)
     {
