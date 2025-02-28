@@ -1661,7 +1661,7 @@ abstract class PDAbstractContentStream implements Closeable
         String[] words = StringUtil.tokenizeOnSpace(text);
         for (String word : words)
         {
-            if (word.length() == 1 && word.isBlank()) // PDFBOX-5823: optimization
+            if (word.length() == 1 && word.isBlank())
             {
                 out.writeBytes(font.encode(word));
             }
