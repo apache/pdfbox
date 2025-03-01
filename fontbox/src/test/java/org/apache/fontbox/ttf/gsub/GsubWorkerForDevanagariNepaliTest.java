@@ -820,7 +820,7 @@ class GsubWorkerForDevanagariNepaliTest {
         System.out.printf("Feature: %s | Total Tests: %d | Passed: %d | Pass %%: %.2f%%%n",
                 featureName, totalTests, passedTests, passPercentage);
 
-        assertTrue(passPercentage > 80, "Pass percentage is below 80% for " + featureName);
+        assertTrue(passPercentage > 90, "Pass percentage is below 80% for " + featureName);
     }
 
 

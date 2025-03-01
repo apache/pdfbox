@@ -12,7 +12,6 @@ import java.util.*;
 
 /*
  * @author Amar Dura
- *
  */
 public class NepaliDevanagariPdfGeneration {
 
@@ -93,10 +92,10 @@ public class NepaliDevanagariPdfGeneration {
         Map<String, String> fontMap = new LinkedHashMap<>();
 //        fontMap.put("मङ्गल", mangal);
 //        fontMap.put("नोटो सान्स देवनागरी", noto);
-//        fontMap.put("लोहित",lohit);
-//        fontMap.put("कालिमाटी", kalimati);
-        fontMap.put("निर्मला पुरानो", nirmala);
-        fontMap.put("निर्मला नयाँ", nirmala_the_group);
+        fontMap.put("लोहित",lohit);
+        fontMap.put("कालिमाटी", kalimati);
+//        fontMap.put("निर्मला पुरानो", nirmala);
+//        fontMap.put("निर्मला नयाँ", nirmala_the_group);
 
         return fontMap;
     }
@@ -139,7 +138,7 @@ public class NepaliDevanagariPdfGeneration {
         String pstsText ="की खी गी झी";
         String halnText = "द् ट् ढ् ड्";
 
-        String textOnPdf = "वर्त्स्य  टर्कि  गर्छन् ";
+        String textOnPdf = "वर्त्स्य  टर्कि  गर्छन् सङ्क्षिप्त निर् ";
 
         return textOnPdf ;
     }

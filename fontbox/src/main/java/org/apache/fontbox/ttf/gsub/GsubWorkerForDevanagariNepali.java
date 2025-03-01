@@ -80,12 +80,13 @@ public class GsubWorkerForDevanagariNepali implements GsubWorker {
 
 
     private static final List<Character> NO_HALF_CONSONANTS = Arrays.asList(
-            'ङ',
-            'ट',
-            'ठ',
-            'ड',
-            'ढ',
-            'द');
+//            'ङ',
+//            'ट',
+//            'ठ',
+//            'ड',
+//            'ढ',
+//            'द'
+    );
 
     GsubWorkerForDevanagariNepali(CmapLookup cmapLookup, GsubData gsubData) {
         this.cmapLookup = cmapLookup;
@@ -300,13 +301,18 @@ public class GsubWorkerForDevanagariNepali implements GsubWorker {
             List<Integer> chunk = tokens.get(chunkIndex);
 
             boolean isHalfFeature = Objects.equals(scriptFeature.getName(), "half");
-            if (isHalfFeature) {
+            boolean isHalnFeature = Objects.equals(scriptFeature.getName(), "haln");
+            if (isHalfFeature || isHalnFeature) {
 //                 *** check for last chunk: like छन् ---> [छ] [न‌ ्]
                 boolean isLastChunk = (chunkIndex == tokens.size() - 1);
                 if (!isLastChunk && scriptFeature.canReplaceGlyphs(chunk)) {
                     List<Integer> replacementForGlyphs = scriptFeature.getReplacementForGlyphs(chunk);
                     gsubProcessedGlyphs.addAll(replacementForGlyphs);
-                } else {
+                }
+            else if(scriptFeature.canReplaceGlyphs(chunk)){
+                gsubProcessedGlyphs.addAll(chunk);
+                }
+                else {
                     gsubProcessedGlyphs.addAll(chunk);
                 }
             } else {
