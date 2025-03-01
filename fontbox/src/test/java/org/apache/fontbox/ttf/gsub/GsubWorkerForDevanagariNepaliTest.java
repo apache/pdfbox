@@ -10,12 +10,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -280,4 +287,216 @@ class GsubWorkerForDevanagariNepaliTest {
 
         return originalGlyphIds;
     }
+
+    // *** Testing final
+
+    // Feature: akhn
+    @Test
+    void testApplyTransforms_akhn_1()
+    {
+        // given
+        List<Integer> glyphsAfterGsub = Arrays.asList(345, 369, 368, 341, 521);
+        // when
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("नीतिज्ञ"));
+        // then
+        assertEquals(glyphsAfterGsub, result);
+    }
+    @Test
+    void testApplyTransforms_akhn_2()
+    {
+        // given
+        List<Integer> glyphsAfterGsub = Arrays.asList(368, 520, 642);
+        // when
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("क्षिप्त"));
+        // then
+        assertEquals(glyphsAfterGsub, result);
+    }
+
+    @Test
+    void testApplyTransforms_akhn_3()
+    {
+        // given
+        List<Integer> glyphsAfterGsub = Arrays.asList(368, 658, 352, 547, 351, 541, 352);
+        // when
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("स्त्रियम्मन्य"));
+        // then
+        assertEquals(glyphsAfterGsub, result);
+    }
+    @Test
+    void testApplyTransforms_akhn_4()
+    {
+        // given
+        List<Integer> glyphsAfterGsub = Arrays.asList(361, 358, 513, 593);
+        // when
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("सर्वत्र"));
+        // then
+        assertEquals(glyphsAfterGsub, result);
+    }
+    @Test
+    void testApplyTransforms_akhn_5()
+    {
+        // given
+        List<Integer> glyphsAfterGsub = Arrays.asList(521, 368, 347, 341);
+        // when
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("ज्ञपित"));
+        // then
+        assertEquals(glyphsAfterGsub, result);
+    }
+    @Test
+    void testApplyTransforms_akhn_6()
+    {
+        // given
+        List<Integer> glyphsAfterGsub = Arrays.asList(345, 376, 593, 359, 370, 556, 326, 341, 367);
+        // when
+        List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds("नेत्रशुष्कता"));
+        // then
+        assertEquals(glyphsAfterGsub, result);
+    }
+
+    // *** filename: akhn.txt
+    // *** feature_name: akhn
+    @Test
+    void testApplyTransformsForAkhn() throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("gsub.lohit_devanagari.dev2.nepali/akhn.txt");
+        assertNotNull(inputStream, "Test data file not found!");
+
+        int totalTests = 0;
+        int passedTests = 0;
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            List<String> lines = reader.lines().collect(Collectors.toList());
+
+            for (String line : lines) {
+                if (line.trim().isEmpty()) continue; // Skip empty lines
+
+                String[] parts = line.split("=");
+                if (parts.length != 2) continue; // Skip malformed lines
+
+                totalTests++;
+
+                String inputText = parts[0].trim();
+                List<Integer> expectedGlyphs = Arrays.stream(parts[1].trim().split(","))
+                        .map(String::trim)
+                        .map(Integer::parseInt)
+                        .collect(Collectors.toList());
+
+                List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds(inputText));
+
+                try {
+                    assertEquals(expectedGlyphs, result, "Failed for input: " + inputText);
+                    passedTests++;
+                } catch (AssertionError e) {
+                    System.err.println("Test failed for input: " + inputText);
+                    System.err.println("Expected: " + expectedGlyphs);
+                    System.err.println("Got: " + result);
+                }
+            }
+        }
+
+        double passPercentage = (totalTests == 0) ? 0 : ((double) passedTests / totalTests) * 100;
+        System.out.println("Total Tests: " + totalTests);
+        System.out.println("Passed Tests: " + passedTests);
+        System.out.println("Pass Percentage: " + String.format("%.2f", passPercentage) + "%");
+
+        assertTrue(passPercentage > 80, "Pass percentage is below 80%");
+    }
+
+    // *** filename: rphf.txt
+    // *** feature_name: rphf
+    @Test
+    void testApplyTransformsForRphf() throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("gsub.lohit_devanagari.dev2.nepali/rphf.txt");
+        assertNotNull(inputStream, "Test data file not found!");
+
+        int totalTests = 0;
+        int passedTests = 0;
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            List<String> lines = reader.lines().collect(Collectors.toList());
+
+            for (String line : lines) {
+                if (line.trim().isEmpty()) continue; // Skip empty lines
+
+                String[] parts = line.split("=");
+                if (parts.length != 2) continue; // Skip malformed lines
+
+                totalTests++;
+
+                String inputText = parts[0].trim();
+                List<Integer> expectedGlyphs = Arrays.stream(parts[1].trim().split(","))
+                        .map(String::trim)
+                        .map(Integer::parseInt)
+                        .collect(Collectors.toList());
+
+                List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds(inputText));
+
+                try {
+                    assertEquals(expectedGlyphs, result, "Failed for input: " + inputText);
+                    passedTests++;
+                } catch (AssertionError e) {
+                    System.err.println("Test failed for input: " + inputText);
+                    System.err.println("Expected: " + expectedGlyphs);
+                    System.err.println("Got: " + result);
+                }
+            }
+        }
+
+        double passPercentage = (totalTests == 0) ? 0 : ((double) passedTests / totalTests) * 100;
+        System.out.println("Total Tests: " + totalTests);
+        System.out.println("Passed Tests: " + passedTests);
+        System.out.println("Pass Percentage: " + String.format("%.2f", passPercentage) + "%");
+
+        assertTrue(passPercentage > 80, "Pass percentage is below 80%");
+    }
+
+    // *** filename: rkrf.txt
+    // *** feature_name: rkrf
+    @Test
+    void testApplyTransformsForRkrf() throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("gsub.lohit_devanagari.dev2.nepali/rkrf.txt");
+        assertNotNull(inputStream, "Test data file not found!");
+
+        int totalTests = 0;
+        int passedTests = 0;
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            List<String> lines = reader.lines().collect(Collectors.toList());
+
+            for (String line : lines) {
+                if (line.trim().isEmpty()) continue; // Skip empty lines
+
+                String[] parts = line.split("=");
+                if (parts.length != 2) continue; // Skip malformed lines
+
+                totalTests++;
+
+                String inputText = parts[0].trim();
+                List<Integer> expectedGlyphs = Arrays.stream(parts[1].trim().split(","))
+                        .map(String::trim)
+                        .map(Integer::parseInt)
+                        .collect(Collectors.toList());
+
+                List<Integer> result = gsubWorkerForDevanagariNepali.applyTransforms(getGlyphIds(inputText));
+
+                try {
+                    assertEquals(expectedGlyphs, result, "Failed for input: " + inputText);
+                    passedTests++;
+                } catch (AssertionError e) {
+                    System.err.println("Test failed for input: " + inputText);
+                    System.err.println("Expected: " + expectedGlyphs);
+                    System.err.println("Got: " + result);
+                }
+            }
+        }
+
+        double passPercentage = (totalTests == 0) ? 0 : ((double) passedTests / totalTests) * 100;
+        System.out.println("Total Tests: " + totalTests);
+        System.out.println("Passed Tests: " + passedTests);
+        System.out.println("Pass Percentage: " + String.format("%.2f", passPercentage) + "%");
+
+        assertTrue(passPercentage > 80, "Pass percentage is below 80%");
+    }
+
+
 }
+
