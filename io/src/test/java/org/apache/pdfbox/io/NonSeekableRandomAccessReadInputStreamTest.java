@@ -152,6 +152,25 @@ class NonSeekableRandomAccessReadInputStreamTest
             assertEquals(7, randomAccessSource.getPosition());
             randomAccessSource.rewind(4);
             assertEquals(3, randomAccessSource.getPosition());
+
+            // PDFBOX-5965: check that it also works near EOF
+            assertEquals(3, randomAccessSource.read());
+            assertEquals(4, randomAccessSource.read());
+            assertEquals(5, randomAccessSource.read());
+            assertEquals(6, randomAccessSource.read());
+            assertEquals(7, randomAccessSource.read());
+            assertEquals(8, randomAccessSource.read());
+            assertEquals(9, randomAccessSource.read());
+            assertEquals(10, randomAccessSource.read());
+            assertEquals(-1, randomAccessSource.read());
+            assertTrue(randomAccessSource.isEOF());
+            randomAccessSource.rewind(4);
+            assertFalse(randomAccessSource.isEOF());
+            assertEquals(7, randomAccessSource.read());
+            assertEquals(8, randomAccessSource.read());
+            assertEquals(9, randomAccessSource.read());
+            assertEquals(10, randomAccessSource.read());
+            assertEquals(-1, randomAccessSource.read());
         }
     }
 
