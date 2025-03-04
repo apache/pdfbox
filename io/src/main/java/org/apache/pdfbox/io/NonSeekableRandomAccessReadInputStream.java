@@ -240,6 +240,7 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
             bufferBytes[LAST] = -1;
             currentBufferPointer = bufferBytes[CURRENT] - remainingBytesToRewind;
             position -= bytes;
+            isEOF = false;
         }
         else
         {
