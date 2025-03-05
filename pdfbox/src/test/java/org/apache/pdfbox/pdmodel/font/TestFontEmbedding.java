@@ -725,8 +725,10 @@ class TestFontEmbedding
         {
             // verify that the text still contains zero-width characters
             PDFTextStripper stripper = new PDFTextStripper();
-            String extractedText = stripper.getText(document);
-            assertEquals(text, extractedText.trim());
+            String extractedText = stripper.getText(document).trim();
+            assertEquals(text, extractedText);
+            assertEquals(7, extractedText.length());
+            assertEquals('\u200C', extractedText.charAt(3));
 
             // verify that the zero-width characters are invisible
             PDPage page = document.getPage(0);
@@ -734,9 +736,12 @@ class TestFontEmbedding
             Iterable< COSName > fontNames = resources.getFontNames();
             COSName fontName = fontNames.iterator().next();
             PDType0Font font = (PDType0Font) resources.getFont(fontName);
-            assertEquals(0, font.getWidth('\u200C'));
-            assertEquals(0, font.getWidthFromFont('\u200C'));
-            assertTrue(font.getPath('\u200C').getBounds2D().isEmpty());
+            byte[] encoded = font.encode('\u200C');
+            int code = ((encoded[0] & 0xFF) << 8) | (encoded[1] & 0xFF);
+            assertEquals(0, font.getWidth(code));
+            assertEquals(0, font.getWidthFromFont(code));
+            assertTrue(font.getPath(code).getBounds2D().isEmpty());
+            assertFalse(font.isDamaged());
         }
     }
 }

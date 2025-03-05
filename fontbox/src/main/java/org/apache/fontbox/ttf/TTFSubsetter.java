@@ -53,7 +53,7 @@ public final class TTFSubsetter
 {
     private static final Logger LOG = LogManager.getLogger(TTFSubsetter.class);
     
-    private static final byte[] PAD_BUF = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    private static final byte[] PAD_BUF = { 0, 0, 0, 0 };
 
     private static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC"); // clone before using
 
@@ -631,6 +631,13 @@ public final class TTFSubsetter
                             isResult);
                 }
 
+                // glyphs with no outlines have an empty entry in the 'glyf' table, with a
+                // corresponding 'loca' table entry with length = 0
+                if (invisibleGlyphIds.contains(gid))
+                {
+                    continue;
+                }
+
                 byte[] buf = new byte[(int)length];
                 isResult = is.read(buf);
 
@@ -639,15 +646,10 @@ public final class TTFSubsetter
                     LOG.debug("Tried reading {} bytes but only {} bytes read", length, isResult);
                 }
 
-                if (invisibleGlyphIds.contains(gid)) {
-                    // force no contours, regardless of what the source font contains
-                    // 10 bytes total, 2 bytes each for: contour count = 0, x min = 0, y min = 0, x max = 0, y max = 0
-                    bos.write(PAD_BUF, 0, 10);
-                    newOffset += 10;
-                }
-                else if (buf.length >= 2 && buf[0] == -1 && buf[1] == -1)
+                // detect glyph type
+                if (buf.length >= 2 && buf[0] == -1 && buf[1] == -1)
                 {
-                    // this is a compound glyph
+                    // compound glyph
                     int off = 2*5;
                     int flags;
                     do
