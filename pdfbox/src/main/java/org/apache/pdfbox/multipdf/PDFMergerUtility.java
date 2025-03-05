@@ -817,8 +817,12 @@ public class PDFMergerUtility
             {
                 int srcKey = entry.getKey();
                 maxSrcKey = Math.max(srcKey, maxSrcKey);
-                destNumberTreeAsMap.put(destParentTreeNextKey + srcKey,
-                        cloner.cloneForNewDocument(entry.getValue().getCOSObject()));
+                COSObjectable value = entry.getValue();
+                if (value != null)
+                {
+                    value = cloner.cloneForNewDocument(value.getCOSObject());
+                    destNumberTreeAsMap.put(destParentTreeNextKey + srcKey, value);
+                }
             }
             destParentTreeNextKey += maxSrcKey + 1;
             PDNumberTreeNode newParentTreeNode = new PDNumberTreeNode(PDParentTreeValue.class);
@@ -1104,8 +1108,12 @@ public class PDFMergerUtility
             }
             else
             {
-                destNames.put(entry.getKey(),
-                              new PDStructureElement(cloner.cloneForNewDocument(entry.getValue().getCOSObject())));
+                if (entry.getValue() != null)
+                {
+                    PDStructureElement structureElement = new PDStructureElement(
+                            cloner.cloneForNewDocument(entry.getValue().getCOSObject()));
+                    destNames.put(entry.getKey(), structureElement);
+                }
             }
         }
         destIDTree = new PDStructureElementNameTreeNode();
