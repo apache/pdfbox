@@ -60,7 +60,7 @@ public class GlyfSimpleDescript extends GlyfDescript
         super(numberOfContours);
 
         /*
-         * https://developer.apple.com/fonts/TTRefMan/RM06/Chap6glyf.html
+         * https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6glyf.html
          * "If a glyph has zero contours, it need not have any glyph data." set the pointCount to zero to initialize
          * attributes and avoid nullpointer but maybe there shouldn't have GlyphDescript in the GlyphData?
          */
