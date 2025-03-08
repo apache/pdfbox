@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -273,5 +274,77 @@ public class TTFSubsetterTest
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         subsetter.writeToStream(output);
         ttf.close();
+    }
+
+    /**
+     * Test of PDFBOX-5230: check that subsetting can be forced to use invisible glyphs.
+     *
+     * @throws java.io.IOException
+     */
+    @Test
+    public void testPDFBox5230() throws IOException
+    {
+        final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        TrueTypeFont ttf = new TTFParser().parse(testFile);
+        TTFSubsetter ttfSubsetter = new TTFSubsetter(ttf);
+        ttfSubsetter.add('A');
+        ttfSubsetter.add('B');
+        ttfSubsetter.add('\u200C');
+
+        // verify results without forcing
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ttfSubsetter.writeToStream(baos);
+        TrueTypeFont subset = new TTFParser(true)
+                .parse(new ByteArrayInputStream(baos.toByteArray()));
+        assertEquals(4, subset.getNumberOfGlyphs());
+        assertEquals(0, subset.nameToGID(".notdef"));
+        assertEquals(1, subset.nameToGID("A"));
+        assertEquals(2, subset.nameToGID("B"));
+        assertEquals(3, subset.nameToGID("uni200C"));
+
+        PostScriptTable pst = subset.getPostScript();
+        assertEquals(".notdef", pst.getName(0));
+        assertEquals("A", pst.getName(1));
+        assertEquals("B", pst.getName(2));
+        assertEquals("uni200C", pst.getName(3));
+
+        assertFalse("A path should not be empty", subset.getPath("A").getBounds2D().isEmpty());
+        assertFalse("B path should not be empty", subset.getPath("B").getBounds2D().isEmpty());
+        assertFalse("ZWNJ path should not be empty", subset.getPath("uni200C").getBounds2D().isEmpty());
+        assertNotEquals("A width should not be zero.", 0, subset.getWidth("A"));
+        assertNotEquals("B width should not be zero.", 0, subset.getWidth("B"));
+        assertEquals("ZWNJ width should be zero", 0, subset.getWidth("uni200C"), 0);
+
+        subset.close();
+
+        // verify results while forcing B and ZWNJ to use invisible glyphs
+
+        ttfSubsetter.forceInvisible('B');
+        ttfSubsetter.forceInvisible('\u200C');
+        ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+        ttfSubsetter.writeToStream(baos2);
+        subset = new TTFParser(true)
+                .parse(new ByteArrayInputStream(baos2.toByteArray()));
+        assertEquals(4, subset.getNumberOfGlyphs());
+        assertEquals(0, subset.nameToGID(".notdef"));
+        assertEquals(1, subset.nameToGID("A"));
+        assertEquals(2, subset.nameToGID("B"));
+        assertEquals(3, subset.nameToGID("uni200C"));
+
+        pst = subset.getPostScript();
+        assertEquals(".notdef", pst.getName(0));
+        assertEquals("A", pst.getName(1));
+        assertEquals("B", pst.getName(2));
+        assertEquals("uni200C", pst.getName(3));
+
+        assertFalse("A path should not be empty", subset.getPath("A").getBounds2D().isEmpty());
+        assertTrue("B path should be empty", subset.getPath("B").getBounds2D().isEmpty());
+        assertTrue("ZWNJ path should be empty", subset.getPath("uni200C").getBounds2D().isEmpty());
+        assertNotEquals("A width should not be zero.", 0, subset.getWidth("A"));
+        assertEquals("B width should be zero.", 0, subset.getWidth("B"), 0);
+        assertEquals("ZWNJ width should be zero", 0d, subset.getWidth("uni200C"), 0);
+
+        subset.close();
     }
 }

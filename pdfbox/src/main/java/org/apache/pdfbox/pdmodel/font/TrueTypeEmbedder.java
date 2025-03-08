@@ -347,6 +347,10 @@ abstract class TrueTypeEmbedder implements Subsetter
         // set the GIDs to subset
         TTFSubsetter subsetter = new TTFSubsetter(ttf, tables);
         subsetter.addAll(subsetCodePoints);
+        subsetter.forceInvisible('\u200B'); // ZWSP
+        subsetter.forceInvisible('\u200C'); // ZWNJ
+        subsetter.forceInvisible('\u2060'); // WJ
+        subsetter.forceInvisible('\uFEFF'); // ZWNBSP
 
         // calculate deterministic tag based on the chosen subset
         Map<Integer, Integer> gidToCid = subsetter.getGIDMap();

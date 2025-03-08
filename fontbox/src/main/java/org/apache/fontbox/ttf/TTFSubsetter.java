@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,7 +52,7 @@ public final class TTFSubsetter
 {
     private static final Log LOG = LogFactory.getLog(TTFSubsetter.class);
     
-    private static final byte[] PAD_BUF = new byte[] { 0, 0, 0 };
+    private static final byte[] PAD_BUF = new byte[] { 0, 0, 0, 0 };
 
     private static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC"); // clone before using
 
@@ -61,6 +62,7 @@ public final class TTFSubsetter
 
     private final List<String> keepTables;
     private final SortedSet<Integer> glyphIds; // new glyph ids
+    private final Set<Integer> invisibleGlyphIds;
     private String prefix;
     private boolean hasAddedCompoundReferences;
 
@@ -87,6 +89,7 @@ public final class TTFSubsetter
 
         uniToGID = new TreeMap<Integer, Integer>();
         glyphIds = new TreeSet<Integer>();
+        invisibleGlyphIds = new HashSet<Integer>();
 
         // find the best Unicode cmap
         this.unicodeCmap = ttf.getUnicodeCmapLookup();
@@ -128,6 +131,23 @@ public final class TTFSubsetter
         for (int unicode : unicodeSet)
         {
             add(unicode);
+        }
+    }
+
+    /**
+     * Forces the glyph for the specified character code to be zero-width and contour-free,
+     * regardless of what the glyph looks like in the original font. Note that the specified
+     * character code is not added to the subset unless it is also {@link #add(int) added}
+     * separately.
+     *
+     * @param unicode the character code whose glyph should be invisible
+     */
+    public void forceInvisible(int unicode)
+    {
+        int gid = unicodeCmap.getGlyphId(unicode);
+        if (gid != 0)
+        {
+            invisibleGlyphIds.add(gid);
         }
     }
 
@@ -587,6 +607,13 @@ public final class TTFSubsetter
                 newOffsets[newGid++] = newOffset;
                 is.skip(offset - prevEnd);
 
+                // glyphs with no outlines have an empty entry in the 'glyf' table, with a
+                // corresponding 'loca' table entry with length = 0
+                if (invisibleGlyphIds.contains(gid))
+                {
+                    continue;
+                }
+
                 byte[] buf = new byte[(int)length];
                 is.read(buf);
 
@@ -893,9 +920,18 @@ public final class TTFSubsetter
                 long offset;
                 if (glyphId <= lastgid)
                 {
-                    // copy width and lsb
-                    offset = glyphId * 4l;
-                    lastOffset = copyBytes(is, bos, offset, lastOffset, 4);
+                    if (invisibleGlyphIds.contains(glyphId))
+                    {
+                        // force zero width (no change to last offset)
+                        // 4 bytes total, 2 bytes each for: advance width = 0, left side bearing = 0
+                        bos.write(PAD_BUF, 0, 4);
+                    }
+                    else
+                    {
+                        // copy width and lsb
+                        offset = glyphId * 4l;
+                        lastOffset = copyBytes(is, bos, offset, lastOffset, 4);
+                    }
                 }
                 else 
                 {
