@@ -214,6 +214,7 @@ public final class PDFPrintable implements Printable
             if (rasterDpi == RASTERIZE_DPI_AUTO)
             {
                 rasterDpi = (float) graphics2D.getTransform().getScaleX() * 72.0f;
+                LOG.debug("auto raster dpi: {}", rasterDpi);
             }
 
             PDPage page = pageTree.get(pageIndex);
