@@ -2001,13 +2001,23 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         Rectangle2D getBounds()
         {
-            // apply the underlying Graphics2D device's DPI transform and y-axis flip
-            Rectangle2D r = 
-                    new Rectangle2D.Double(
-                            minX - pageSize.getLowerLeftX() * xformScalingFactorX,
-                            (pageSize.getLowerLeftY() + pageSize.getHeight()) * xformScalingFactorY - minY - height,
-                            width,
-                            height);
+            Rectangle2D r;
+            if (flipTG)
+            {
+                // Fixes PDFBOX-5966 and PDFBOX-5251, but not pdfium 1317, which has similar PDF code.
+                // https://bugs.chromium.org/p/pdfium/issues/detail?id=1317
+                r = new Rectangle2D.Double(minX, minY, width, height);
+            }
+            else
+            {
+                // y-axis flip
+                r = new Rectangle2D.Double(
+                        minX - pageSize.getLowerLeftX() * xformScalingFactorX,
+                        (pageSize.getLowerLeftY() + pageSize.getHeight()) * xformScalingFactorY - minY - height,
+                        width,
+                        height);
+            }
+            // apply the underlying Graphics2D device's DPI transform
             // this adjusts the rectangle to the rotated image to put the soft mask at the correct position
             //TODO
             // 1. change transparencyGroup.getBounds() to getOrigin(), because size isn't used in SoftMask,
