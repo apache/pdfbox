@@ -652,7 +652,10 @@ public class CMapParser
             buffer.append((char) nextByte);
             nextByte = randomAcccessRead.read();
         }
-        randomAcccessRead.rewind(1);
+        if (nextByte != -1)
+        {
+            randomAcccessRead.rewind(1);
+        }
         String value = buffer.toString();
         try
         {
