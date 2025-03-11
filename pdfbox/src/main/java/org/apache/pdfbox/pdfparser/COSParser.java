@@ -887,10 +887,15 @@ public class COSParser extends BaseParser implements ICOSParser
     private boolean validateStreamLength(long streamLength) throws IOException
     {
         long originOffset = source.getPosition();
-        if (streamLength <= 0)
+        if (streamLength == 0)
         {
-            LOG.warn("Invalid stream length: " + streamLength + ", stream start position: "
-                    + originOffset);
+            // This may be valid (PDFBOX-5954), or not (PDFBOX-5880)
+            LOG.debug("Suspicious stream length 0, start position: {}", originOffset);
+            return false;
+        }
+        else if (streamLength <= 0)
+        {
+            LOG.warn("Invalid stream length: {}, start position: {}", streamLength, originOffset);
             return false;
         }
         long expectedEndOfStream = originOffset + streamLength;
