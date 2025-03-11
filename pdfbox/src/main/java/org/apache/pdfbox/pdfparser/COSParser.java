@@ -1083,7 +1083,7 @@ public class COSParser extends BaseParser implements ICOSParser
             LOG.debug("Suspicious stream length 0, stream position: " + originOffset);
             return false;
         }
-        else if (streamLength <= 0)
+        else if (streamLength < 0)
         {
             LOG.warn("Invalid stream length: " + streamLength + ", start position: " + originOffset);
             return false;
