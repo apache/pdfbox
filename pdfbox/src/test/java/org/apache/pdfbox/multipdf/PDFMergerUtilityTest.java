@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import junit.framework.TestCase;
 import static junit.framework.TestCase.assertEquals;
@@ -47,9 +48,12 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkedContentReference;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDParentTreeValue;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
+import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
@@ -65,6 +69,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.text.PDFMarkedContentExtractor;
 import org.junit.Assert;
 import static org.junit.Assert.assertThrows;
 import org.junit.function.ThrowingRunnable;
@@ -625,6 +630,9 @@ public class PDFMergerUtilityTest extends TestCase
     /**
      * PDFBOX-4408: Check that /StructParents values from pages and /StructParent values from
      * annotations are found in the /ParentTree.
+     * <p>
+     * Expanded in 2025 to check that all MCIDs of a page content stream have an entry in the
+     * ParentTree.
      *
      * @param document
      */
@@ -650,11 +658,72 @@ public class PDFMergerUtilityTest extends TestCase
                 }
             }
         }
-        for (PDPage page : document.getPages())
+        PDPageTree pageTree = document.getPages();
+        for (PDPage page : pageTree)
         {
+            int pageNum = pageTree.indexOf(page) + 1;
             if (page.getStructParents() >= 0)
             {
-                assertTrue(keySet.contains(page.getStructParents()));
+                assertTrue("/StructParents " + page.getStructParents() + " from page " + pageNum + " not found in /ParentTree",
+                        keySet.contains(page.getStructParents()));
+                PDParentTreeValue obj = (PDParentTreeValue) numberTreeAsMap.get(page.getStructParents());
+                assertTrue("Expected array in page " + pageNum + ", got " + obj.getClass(),
+                        obj.getCOSObject() instanceof COSArray);
+                COSArray array = (COSArray) obj.getCOSObject();
+
+                PDFMarkedContentExtractor markedContentExtractor = new PDFMarkedContentExtractor();
+                markedContentExtractor.processPage(page);
+                List<PDMarkedContent> markedContents = markedContentExtractor.getMarkedContents();
+                TreeSet<Integer> set = new TreeSet<Integer>();
+                for (PDMarkedContent pdMarkedContent : markedContents)
+                {
+                    COSDictionary pdmcProperties = pdMarkedContent.getProperties();
+                    if (pdmcProperties == null)
+                    {
+                        continue;
+                    }
+                    int mcid = pdMarkedContent.getMCID();
+                    if (mcid >= 0)
+                    {
+                        // "For a page object (...), the value shall be an array of references
+                        // to the parent elements of those marked-content sequences."
+                        // this means that the /Pg entry doesn't have to match the page
+                        COSDictionary dict = (COSDictionary) array.getObject(mcid);
+                        assertNotNull(dict);
+                        set.add(mcid);
+                        PDStructureElement structureElemen = (PDStructureElement) PDStructureNode.create(dict);
+                        List<Object> kids = structureElemen.getKids();
+                        boolean found = false;
+                        for (Object kid : kids)
+                        {
+                            if (kid instanceof Integer && ((Integer) kid) == mcid)
+                            {
+                                found = true;
+                                break;
+                            }
+                            if (kid instanceof PDMarkedContentReference)
+                            {
+                                PDMarkedContentReference mcr = (PDMarkedContentReference) kid;
+                                if (mcid == mcr.getMCID())
+                                {
+                                    found = true;
+                                    if (mcr.getPage() != null)
+                                    {
+                                        assertEquals(page, mcr.getPage());
+                                    }
+                                    else
+                                    {
+                                        assertEquals(page, structureElemen.getPage());
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                        assertTrue("page: " + pageNum + ", mcid: " + mcid + " not found", found);
+                    }
+                }
+                // actual count may be larger if last element is null, e.g. PDFBOX-4408
+                assertTrue(set.last() <= array.size() - 1);
             }
             for (PDAnnotation ann : page.getAnnotations())
             {
