@@ -70,12 +70,12 @@ public final class COSInteger extends COSNumber
     /**
      * Constant for an out of range value which is bigger than Log.MAX_VALUE.
      */
-    protected static final COSInteger OUT_OF_RANGE_MAX = getInvalid(true);
+    static final COSInteger OUT_OF_RANGE_MAX = getInvalid(true);
 
     /**
      * Constant for an out of range value which is smaller than Log.MIN_VALUE.
      */
-    protected static final COSInteger OUT_OF_RANGE_MIN = getInvalid(false);
+    static final COSInteger OUT_OF_RANGE_MIN = getInvalid(false);
 
     /**
      * Returns a COSInteger instance with the given value.
