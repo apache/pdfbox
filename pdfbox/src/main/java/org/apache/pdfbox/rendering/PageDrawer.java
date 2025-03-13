@@ -1687,11 +1687,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // of the standard annotation types and no annotation handler is available."
             return true;
         }
-        if (isHiddenOCG(annotation.getOptionalContent()))
-        {
-            return true;
-        }
-        return false;
+        return isHiddenOCG(annotation.getOptionalContent());
     }
 
     private boolean hasTransparency(PDFormXObject form) throws IOException
