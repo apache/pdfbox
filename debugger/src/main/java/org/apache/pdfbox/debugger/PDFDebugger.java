@@ -1493,30 +1493,32 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         statusPane.updateTreeStatus(treeStatus);
         
         String treeViewMode = TreeViewMenu.getInstance().getTreeViewSelection();
-        if (TreeViewMenu.VIEW_PAGES.equals(treeViewMode))
+        switch (treeViewMode)
         {
-            File file = new File(currentFilePath);
-            DocumentEntry documentEntry = new DocumentEntry(document, file.getName());
-            ZoomMenu.getInstance().resetZoom();
-            RotationMenu.getInstance().setRotationSelection(RotationMenu.ROTATE_0_DEGREES);
-            ImageTypeMenu.getInstance().setImageTypeSelection(ImageTypeMenu.IMAGETYPE_RGB);
-            RenderDestinationMenu.getInstance()
-                    .setRenderDestinationSelection(RenderDestinationMenu.RENDER_DESTINATION_EXPORT);
-            tree.setModel(new PDFTreeModel(documentEntry));
-            // Root/Pages/Kids/[0] is not always the first page, so use the first row instead:
-            tree.setSelectionPath(tree.getPathForRow(1));
-        }
-        else if (TreeViewMenu.VIEW_STRUCTURE.equals(treeViewMode))
-        {
-            tree.setModel(new PDFTreeModel(document));
-            tree.setSelectionPath(treeStatus.getPathForString("Root"));
-            tree.setSelectionPath(tree.getPathForRow(1));
-        }
-        else if (TreeViewMenu.VIEW_CROSS_REF_TABLE.equals(treeViewMode))
-        {
-            tree.setModel(new PDFTreeModel(new XrefEntries(document)));
-            tree.setSelectionPath(treeStatus.getPathForString("CRT"));
-            tree.setSelectionPath(tree.getPathForRow(1));
+            case TreeViewMenu.VIEW_PAGES:
+                File file = new File(currentFilePath);
+                DocumentEntry documentEntry = new DocumentEntry(document, file.getName());
+                ZoomMenu.getInstance().resetZoom();
+                RotationMenu.getInstance().setRotationSelection(RotationMenu.ROTATE_0_DEGREES);
+                ImageTypeMenu.getInstance().setImageTypeSelection(ImageTypeMenu.IMAGETYPE_RGB);
+                RenderDestinationMenu.getInstance()
+                        .setRenderDestinationSelection(RenderDestinationMenu.RENDER_DESTINATION_EXPORT);
+                tree.setModel(new PDFTreeModel(documentEntry));
+                // Root/Pages/Kids/[0] is not always the first page, so use the first row instead:
+                tree.setSelectionPath(tree.getPathForRow(1));
+                break;
+            case TreeViewMenu.VIEW_STRUCTURE:
+                tree.setModel(new PDFTreeModel(document));
+                tree.setSelectionPath(treeStatus.getPathForString("Root"));
+                tree.setSelectionPath(tree.getPathForRow(1));
+                break;
+            case TreeViewMenu.VIEW_CROSS_REF_TABLE:
+                tree.setModel(new PDFTreeModel(new XrefEntries(document)));
+                tree.setSelectionPath(treeStatus.getPathForString("CRT"));
+                tree.setSelectionPath(tree.getPathForRow(1));
+                break;
+            default:
+                break;
         }
     }
 
