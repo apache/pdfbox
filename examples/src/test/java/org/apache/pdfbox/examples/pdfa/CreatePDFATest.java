@@ -92,34 +92,35 @@ class CreatePDFATest
         }
 
         File signedFile = new File(signedPdfaFilename);
-        BufferedReader br = new BufferedReader(
-                new InputStreamReader(new FileInputStream(signedFile)));
-        String line;
-        boolean isIncrementalArea = false;
-        Set<String> set = new HashSet<>();
-        int linePos = 0;
-        while ((line = br.readLine()) != null)
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(new FileInputStream(signedFile))))
         {
-            ++linePos;
-            if (line.equals("%%EOF"))
+            String line;
+            boolean isIncrementalArea = false;
+            Set<String> set = new HashSet<>();
+            int linePos = 0;
+            while ((line = br.readLine()) != null)
             {
-                isIncrementalArea = true;
-                set.clear(); // for cases with several revisions
-            }
-            if (!isIncrementalArea)
-            {
-                continue;
-            }
-            if (line.matches("\\d+ 0 obj"))
-            {
-                int pos = line.indexOf(" 0 obj");
-                line = line.substring(0, pos);
-                assertFalse(set.contains(line), "object '" + line
-                        + " 0 obj' twice in incremental part of PDF at line " + linePos);
-                set.add(line);
+                ++linePos;
+                if (line.equals("%%EOF"))
+                {
+                    isIncrementalArea = true;
+                    set.clear(); // for cases with several revisions
+                }
+                if (!isIncrementalArea)
+                {
+                    continue;
+                }
+                if (line.matches("\\d+ 0 obj"))
+                {
+                    int pos = line.indexOf(" 0 obj");
+                    line = line.substring(0, pos);
+                    assertFalse(set.contains(line), "object '" + line
+                            + " 0 obj' twice in incremental part of PDF at line " + linePos);
+                    set.add(line);
+                }
             }
         }
-        br.close();
 
         // https://docs.verapdf.org/develop/
         VeraGreenfieldFoundryProvider.initialise();
