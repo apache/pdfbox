@@ -96,7 +96,7 @@ public class OpaquePDFRenderer extends PDFRenderer
     private static class OpaquePageDrawer extends PageDrawer
     {
 
-        public OpaquePageDrawer(PageDrawerParameters parameters) throws IOException
+        OpaquePageDrawer(PageDrawerParameters parameters) throws IOException
         {
             super(parameters);
             addOperator(new OpaqueDrawObject());
