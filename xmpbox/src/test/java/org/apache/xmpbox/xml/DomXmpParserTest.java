@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  */
 class DomXmpParserTest
 {
-    public DomXmpParserTest()
+    DomXmpParserTest()
     {
     }
 

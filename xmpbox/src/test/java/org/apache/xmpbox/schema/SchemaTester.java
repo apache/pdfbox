@@ -61,7 +61,7 @@ class SchemaTester extends AbstractTypeTester {
         }    
     }
 
-    public SchemaTester(XMPMetadata metadata, Class<?> schemaClass, String fieldName, Types type, Cardinality card)
+    SchemaTester(XMPMetadata metadata, Class<?> schemaClass, String fieldName, Types type, Cardinality card)
     {
         this.metadata = metadata;
         this.schemaClass = schemaClass;

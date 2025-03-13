@@ -55,7 +55,7 @@ class XMPSchemaTester
     private final PropertyType type;
     private final Object value;
 
-    public XMPSchemaTester(XMPMetadata metadata, XMPSchema schema, Class<?> schemaClass, String property, PropertyType type, Object value)
+    XMPSchemaTester(XMPMetadata metadata, XMPSchema schema, Class<?> schemaClass, String property, PropertyType type, Object value)
     {
         this.metadata = metadata;
         this.schema = schema;
