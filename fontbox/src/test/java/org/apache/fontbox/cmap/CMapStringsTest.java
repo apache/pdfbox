@@ -18,6 +18,7 @@ package org.apache.fontbox.cmap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -44,8 +45,8 @@ class CMapStringsTest
         assertEquals(CMapStrings.getMapping(minValueOneByte),
                 CMapStrings.getMapping(minValueOneByte));
         // the given values are the same objects
-        assertTrue(
-                CMapStrings.getMapping(minValueOneByte) == CMapStrings.getMapping(minValueOneByte));
+        assertSame(
+                CMapStrings.getMapping(minValueOneByte), CMapStrings.getMapping(minValueOneByte));
         // check the mapped string value
         assertEquals(minValueMapping, CMapStrings.getMapping(minValueOneByte));
 
@@ -53,16 +54,16 @@ class CMapStringsTest
         String maxValueMapping = new String(maxValueOneByte, StandardCharsets.ISO_8859_1);
         assertEquals(CMapStrings.getMapping(maxValueOneByte),
                 CMapStrings.getMapping(maxValueOneByte));
-        assertTrue(
-                CMapStrings.getMapping(maxValueOneByte) == CMapStrings.getMapping(maxValueOneByte));
+        assertSame(
+                CMapStrings.getMapping(maxValueOneByte), CMapStrings.getMapping(maxValueOneByte));
         assertEquals(maxValueMapping, CMapStrings.getMapping(maxValueOneByte));
 
         byte[] anyValueOneByte = new byte[] { 98 };
         String anyValueMapping = new String(anyValueOneByte, StandardCharsets.ISO_8859_1);
         assertEquals(CMapStrings.getMapping(anyValueOneByte),
                 CMapStrings.getMapping(anyValueOneByte));
-        assertTrue(
-                CMapStrings.getMapping(anyValueOneByte) == CMapStrings.getMapping(anyValueOneByte));
+        assertSame(
+                CMapStrings.getMapping(anyValueOneByte), CMapStrings.getMapping(anyValueOneByte));
         assertEquals(anyValueMapping, CMapStrings.getMapping(anyValueOneByte));
     }
 
@@ -75,8 +76,8 @@ class CMapStringsTest
         assertEquals(CMapStrings.getMapping(minValueTwoByte),
                 CMapStrings.getMapping(minValueTwoByte));
         // the given values are the same objects
-        assertTrue(
-                CMapStrings.getMapping(minValueTwoByte) == CMapStrings.getMapping(minValueTwoByte));
+        assertSame(
+                CMapStrings.getMapping(minValueTwoByte), CMapStrings.getMapping(minValueTwoByte));
         // check the mapped string value
         assertEquals(minValueMapping, CMapStrings.getMapping(minValueTwoByte));
 
@@ -84,15 +85,15 @@ class CMapStringsTest
         String maxValueMapping = new String(maxValueTwoByte, StandardCharsets.UTF_16BE);
         assertEquals(CMapStrings.getMapping(maxValueTwoByte),
                 CMapStrings.getMapping(maxValueTwoByte));
-        assertTrue(
-                CMapStrings.getMapping(maxValueTwoByte) == CMapStrings.getMapping(maxValueTwoByte));
+        assertSame(
+                CMapStrings.getMapping(maxValueTwoByte), CMapStrings.getMapping(maxValueTwoByte));
         assertEquals(maxValueMapping, CMapStrings.getMapping(maxValueTwoByte));
 
         byte[] anyValueTwoByte1 = new byte[] { 0x62, 0x43 };
         String anyValueMapping1 = new String(anyValueTwoByte1, StandardCharsets.UTF_16BE);
         assertEquals(CMapStrings.getMapping(anyValueTwoByte1),
                 CMapStrings.getMapping(anyValueTwoByte1));
-        assertTrue(CMapStrings.getMapping(anyValueTwoByte1) == CMapStrings
+        assertSame(CMapStrings.getMapping(anyValueTwoByte1), CMapStrings
                 .getMapping(anyValueTwoByte1));
         assertEquals(anyValueMapping1, CMapStrings.getMapping(anyValueTwoByte1));
 
@@ -100,7 +101,7 @@ class CMapStringsTest
         String anyValueMapping2 = new String(anyValueTwoByte2, StandardCharsets.UTF_16BE);
         assertEquals(CMapStrings.getMapping(anyValueTwoByte2),
                 CMapStrings.getMapping(anyValueTwoByte2));
-        assertTrue(CMapStrings.getMapping(anyValueTwoByte2) == CMapStrings
+        assertSame(CMapStrings.getMapping(anyValueTwoByte2), CMapStrings
                 .getMapping(anyValueTwoByte2));
         assertEquals(anyValueMapping2, CMapStrings.getMapping(anyValueTwoByte2));
 
@@ -108,7 +109,7 @@ class CMapStringsTest
         String anyValueMapping3 = new String(anyValueTwoByte3, StandardCharsets.UTF_16BE);
         assertEquals(CMapStrings.getMapping(anyValueTwoByte3),
                 CMapStrings.getMapping(anyValueTwoByte3));
-        assertTrue(CMapStrings.getMapping(anyValueTwoByte3) == CMapStrings
+        assertSame(CMapStrings.getMapping(anyValueTwoByte3), CMapStrings
                 .getMapping(anyValueTwoByte3));
         assertEquals(anyValueMapping3, CMapStrings.getMapping(anyValueTwoByte3));
     }
@@ -121,7 +122,7 @@ class CMapStringsTest
         assertEquals(CMapStrings.getByteValue(minValueOneByte),
                 CMapStrings.getByteValue(minValueOneByte));
         // the given values are the same objects
-        assertTrue(CMapStrings.getByteValue(minValueOneByte) == CMapStrings
+        assertSame(CMapStrings.getByteValue(minValueOneByte), CMapStrings
                 .getByteValue(minValueOneByte));
         // the cached value isn't the same object than the given one
         assertTrue(minValueOneByte != CMapStrings.getByteValue(minValueOneByte));
@@ -130,14 +131,14 @@ class CMapStringsTest
         byte[] maxValueOneByte = new byte[] { (byte) 0xff };
         assertEquals(CMapStrings.getByteValue(maxValueOneByte),
                 CMapStrings.getByteValue(maxValueOneByte));
-        assertTrue(CMapStrings.getByteValue(maxValueOneByte) == CMapStrings
+        assertSame(CMapStrings.getByteValue(maxValueOneByte), CMapStrings
                 .getByteValue(maxValueOneByte));
         assertTrue(maxValueOneByte != CMapStrings.getByteValue(maxValueOneByte));
 
         byte[] anyValueOneByte = new byte[] { 98 };
         assertEquals(CMapStrings.getByteValue(anyValueOneByte),
                 CMapStrings.getByteValue(anyValueOneByte));
-        assertTrue(CMapStrings.getByteValue(anyValueOneByte) == CMapStrings
+        assertSame(CMapStrings.getByteValue(anyValueOneByte), CMapStrings
                 .getByteValue(anyValueOneByte));
         assertTrue(anyValueOneByte != CMapStrings.getByteValue(anyValueOneByte));
     }
@@ -150,7 +151,7 @@ class CMapStringsTest
         assertEquals(CMapStrings.getByteValue(minValueTwoByte),
                 CMapStrings.getByteValue(minValueTwoByte));
         // the given values are the same objects
-        assertTrue(CMapStrings.getByteValue(minValueTwoByte) == CMapStrings
+        assertSame(CMapStrings.getByteValue(minValueTwoByte), CMapStrings
                 .getByteValue(minValueTwoByte));
         // the cached value isn't the same object than the given one
         assertTrue(minValueTwoByte != CMapStrings.getByteValue(minValueTwoByte));
@@ -158,28 +159,28 @@ class CMapStringsTest
         byte[] maxValueTwoByte = new byte[] { (byte) 0xff, (byte) 0xff };
         assertEquals(CMapStrings.getByteValue(maxValueTwoByte),
                 CMapStrings.getByteValue(maxValueTwoByte));
-        assertTrue(CMapStrings.getByteValue(maxValueTwoByte) == CMapStrings
+        assertSame(CMapStrings.getByteValue(maxValueTwoByte), CMapStrings
                 .getByteValue(maxValueTwoByte));
         assertTrue(maxValueTwoByte != CMapStrings.getByteValue(maxValueTwoByte));
 
         byte[] anyValueTwoByte1 = new byte[] { 0x62, 0x43 };
         assertEquals(CMapStrings.getByteValue(anyValueTwoByte1),
                 CMapStrings.getByteValue(anyValueTwoByte1));
-        assertTrue(CMapStrings.getByteValue(anyValueTwoByte1) == CMapStrings
+        assertSame(CMapStrings.getByteValue(anyValueTwoByte1), CMapStrings
                 .getByteValue(anyValueTwoByte1));
         assertTrue(anyValueTwoByte1 != CMapStrings.getByteValue(anyValueTwoByte1));
 
         byte[] anyValueTwoByte2 = new byte[] { (byte) 0xff, 0x43 };
         assertEquals(CMapStrings.getByteValue(anyValueTwoByte2),
                 CMapStrings.getByteValue(anyValueTwoByte2));
-        assertTrue(CMapStrings.getByteValue(anyValueTwoByte2) == CMapStrings
+        assertSame(CMapStrings.getByteValue(anyValueTwoByte2), CMapStrings
                 .getByteValue(anyValueTwoByte2));
         assertTrue(anyValueTwoByte2 != CMapStrings.getByteValue(anyValueTwoByte2));
 
         byte[] anyValueTwoByte3 = new byte[] { 0x38, (byte) 0xff };
         assertEquals(CMapStrings.getByteValue(anyValueTwoByte3),
                 CMapStrings.getByteValue(anyValueTwoByte3));
-        assertTrue(CMapStrings.getByteValue(anyValueTwoByte3) == CMapStrings
+        assertSame(CMapStrings.getByteValue(anyValueTwoByte3), CMapStrings
                 .getByteValue(anyValueTwoByte3));
         assertTrue(anyValueTwoByte3 != CMapStrings.getByteValue(anyValueTwoByte3));
     }
@@ -200,7 +201,7 @@ class CMapStringsTest
         assertEquals(CMapStrings.getIndexValue(minValueOneByte),
                 CMapStrings.getIndexValue(minValueOneByte));
         // the given values are the same objects
-        assertTrue(CMapStrings.getIndexValue(minValueOneByte) == CMapStrings
+        assertSame(CMapStrings.getIndexValue(minValueOneByte), CMapStrings
                 .getIndexValue(minValueOneByte));
         // check the int value
         assertEquals(0, CMapStrings.getIndexValue(minValueOneByte));
@@ -208,14 +209,14 @@ class CMapStringsTest
         byte[] maxValueOneByte = new byte[] { (byte) 0xff };
         assertEquals(CMapStrings.getIndexValue(maxValueOneByte),
                 CMapStrings.getIndexValue(maxValueOneByte));
-        assertTrue(CMapStrings.getIndexValue(maxValueOneByte) == CMapStrings
+        assertSame(CMapStrings.getIndexValue(maxValueOneByte), CMapStrings
                 .getIndexValue(maxValueOneByte));
         assertEquals(0xff, CMapStrings.getIndexValue(maxValueOneByte));
 
         byte[] anyValueOneByte = new byte[] { 98 };
         assertEquals(CMapStrings.getIndexValue(anyValueOneByte),
                 CMapStrings.getIndexValue(anyValueOneByte));
-        assertTrue(CMapStrings.getIndexValue(anyValueOneByte) == CMapStrings
+        assertSame(CMapStrings.getIndexValue(anyValueOneByte), CMapStrings
                 .getIndexValue(anyValueOneByte));
         assertEquals(98, CMapStrings.getIndexValue(anyValueOneByte));
     }
@@ -228,7 +229,7 @@ class CMapStringsTest
         assertEquals(CMapStrings.getIndexValue(minValueTwoByte),
                 CMapStrings.getIndexValue(minValueTwoByte));
         // the given values are the same objects
-        assertTrue(CMapStrings.getIndexValue(minValueTwoByte) == CMapStrings
+        assertSame(CMapStrings.getIndexValue(minValueTwoByte), CMapStrings
                 .getIndexValue(minValueTwoByte));
         // check the int value
         assertEquals(0, CMapStrings.getIndexValue(minValueTwoByte));
@@ -236,28 +237,28 @@ class CMapStringsTest
         byte[] maxValueTwoByte = new byte[] { (byte) 0xff, (byte) 0xff };
         assertEquals(CMapStrings.getIndexValue(maxValueTwoByte),
                 CMapStrings.getIndexValue(maxValueTwoByte));
-        assertTrue(CMapStrings.getIndexValue(maxValueTwoByte) == CMapStrings
+        assertSame(CMapStrings.getIndexValue(maxValueTwoByte), CMapStrings
                 .getIndexValue(maxValueTwoByte));
         assertEquals(0xffff, CMapStrings.getIndexValue(maxValueTwoByte));
 
         byte[] anyValueTwoByte1 = new byte[] { 0x62, 0x43 };
         assertEquals(CMapStrings.getIndexValue(anyValueTwoByte1),
                 CMapStrings.getIndexValue(anyValueTwoByte1));
-        assertTrue(CMapStrings.getIndexValue(anyValueTwoByte1) == CMapStrings
+        assertSame(CMapStrings.getIndexValue(anyValueTwoByte1), CMapStrings
                 .getIndexValue(anyValueTwoByte1));
         assertEquals(0x6243, CMapStrings.getIndexValue(anyValueTwoByte1));
 
         byte[] anyValueTwoByte2 = new byte[] { (byte) 0xff, 0x43 };
         assertEquals(CMapStrings.getIndexValue(anyValueTwoByte2),
                 CMapStrings.getIndexValue(anyValueTwoByte2));
-        assertTrue(CMapStrings.getIndexValue(anyValueTwoByte2) == CMapStrings
+        assertSame(CMapStrings.getIndexValue(anyValueTwoByte2), CMapStrings
                 .getIndexValue(anyValueTwoByte2));
         assertEquals(0xff43, CMapStrings.getIndexValue(anyValueTwoByte2));
 
         byte[] anyValueTwoByte3 = new byte[] { 0x38, (byte) 0xff };
         assertEquals(CMapStrings.getIndexValue(anyValueTwoByte3),
                 CMapStrings.getIndexValue(anyValueTwoByte3));
-        assertTrue(CMapStrings.getIndexValue(anyValueTwoByte3) == CMapStrings
+        assertSame(CMapStrings.getIndexValue(anyValueTwoByte3), CMapStrings
                 .getIndexValue(anyValueTwoByte3));
         assertEquals(0x38ff, CMapStrings.getIndexValue(anyValueTwoByte3));
     }
