@@ -235,7 +235,7 @@ class CFFParserTest
     {
         private final CountDownLatch latch;
 
-        public PathRunner(CountDownLatch latch)
+        PathRunner(CountDownLatch latch)
         {
             this.latch = latch;
         }
