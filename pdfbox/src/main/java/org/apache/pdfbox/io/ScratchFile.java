@@ -18,6 +18,7 @@ package org.apache.pdfbox.io;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -223,7 +224,7 @@ public class ScratchFile implements Closeable
                     {
                         raf = new java.io.RandomAccessFile(file, "rw");
                     }
-                    catch (IOException e)
+                    catch (FileNotFoundException e)
                     {
                         if (!file.delete())
                         {
