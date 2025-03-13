@@ -149,7 +149,7 @@ class RandomAccessReadUnbufferedDataStream extends TTFDataStream
 
         private final RandomAccessReadView randomAccessRead;
 
-        public RandomAccessReadNonClosingInputStream(RandomAccessReadView randomAccessRead)
+        RandomAccessReadNonClosingInputStream(RandomAccessReadView randomAccessRead)
         {
             this.randomAccessRead = randomAccessRead;
         }
