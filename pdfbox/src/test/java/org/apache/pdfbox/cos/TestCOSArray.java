@@ -112,7 +112,7 @@ class TestCOSArray
     @Test
     void testConvertFloat2COSStringAndBack()
     {
-        float[] floatArrayStart = new float[] { 1.0f, 0.1f, 0.02f };
+        float[] floatArrayStart = new float[] { 1f, 0.1f, 0.02f };
         COSArray cosArray = new COSArray();
         cosArray.setFloatArray(floatArrayStart);
 
@@ -123,14 +123,14 @@ class TestCOSArray
 
         List<Float> cosNumberFloatList = cosArray.toCOSNumberFloatList();
         assertEquals(3, cosNumberFloatList.size());
-        assertEquals(1.0f, (float) cosNumberFloatList.get(0), 0);
-        assertEquals(0.1f, (float) cosNumberFloatList.get(1), 0);
-        assertEquals(0.02f, (float) cosNumberFloatList.get(2), 0);
+        assertEquals(1f, cosNumberFloatList.get(0), 0);
+        assertEquals(0.1f, cosNumberFloatList.get(1), 0);
+        assertEquals(0.02f, cosNumberFloatList.get(2), 0);
 
         float[] floatArrayEnd = cosArray.toFloatArray();
-        assertEquals(1.0f, (float) cosNumberFloatList.get(0), 0);
-        assertEquals(0.1f, (float) cosNumberFloatList.get(1), 0);
-        assertEquals(0.02f, (float) cosNumberFloatList.get(2), 0);
+        assertEquals(1f, cosNumberFloatList.get(0), 0);
+        assertEquals(0.1f, cosNumberFloatList.get(1), 0);
+        assertEquals(0.02f, cosNumberFloatList.get(2), 0);
         assertArrayEquals(floatArrayStart, floatArrayEnd, 0);
 
         // check arrays with null values
@@ -142,13 +142,13 @@ class TestCOSArray
 
         cosNumberFloatList = cosArray.toCOSNumberFloatList();
         assertEquals(3, cosNumberFloatList.size());
-        assertEquals(1.0f, (float) cosNumberFloatList.get(0), 0);
+        assertEquals(1f, cosNumberFloatList.get(0), 0);
         assertNull(cosNumberFloatList.get(1));
-        assertEquals(0.02f, (float) cosNumberFloatList.get(2), 0);
+        assertEquals(0.02f, cosNumberFloatList.get(2), 0);
 
         floatArrayEnd = cosArray.toFloatArray();
         // due to the null value the second value of the array is set to 0
-        assertArrayEquals(new float[] { 1.0f, 0f, 0.02f }, floatArrayEnd, 0);
+        assertArrayEquals(new float[] { 1f, 0, 0.02f }, floatArrayEnd, 0);
 
     }
 
