@@ -482,10 +482,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // PDFBOX-4150: this is much faster than using textClippingArea.add(new Area(glyph))
             // https://stackoverflow.com/questions/21519007/fast-union-of-shapes-in-java
             GeneralPath path = new GeneralPath(Path2D.WIND_NON_ZERO, textClippings.size());
-            for (Shape shape : textClippings)
-            {
-                path.append(shape, false);
-            }
+            textClippings.forEach(shape -> path.append(shape, false));
             state.intersectClippingPath(path);
             textClippings = new ArrayList<>();
 
@@ -1609,11 +1606,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // of the standard annotation types and no annotation handler is available."
             return true;
         }
-        if (isHiddenOCG(annotation.getOptionalContent()))
-        {
-            return true;
-        }
-        return false;
+        return isHiddenOCG(annotation.getOptionalContent());
     }
 
     private boolean hasTransparency(PDFormXObject form) throws IOException
