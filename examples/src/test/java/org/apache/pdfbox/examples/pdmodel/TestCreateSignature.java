@@ -600,7 +600,7 @@ class TestCreateSignature
                 // verify that all getContents() methods returns the same content
                 try (FileInputStream fis = new FileInputStream(signedFile))
                 {
-                    byte[] contents2 = sig.getContents(((InputStream) fis).readAllBytes());
+                    byte[] contents2 = sig.getContents(fis.readAllBytes());
                     assertArrayEquals(contents, contents2);
                 }
                 byte[] contents3 = sig.getContents(new FileInputStream(signedFile));
