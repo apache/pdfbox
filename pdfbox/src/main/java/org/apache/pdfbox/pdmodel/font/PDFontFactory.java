@@ -70,7 +70,7 @@ public final class PDFontFactory
         private final COSName type;
         private final COSName subtype;
 
-        public FontType(COSName type, String subtypeString)
+        FontType(COSName type, String subtypeString)
         {
             this.type = type;
             if (cidType0Types.contains(subtypeString))
@@ -87,13 +87,13 @@ public final class PDFontFactory
             }
         }
 
-        public FontType(COSName type, COSName subtype)
+        FontType(COSName type, COSName subtype)
         {
             this.type = type;
             this.subtype = subtype;
         }
 
-        public FontType(COSName type)
+        FontType(COSName type)
         {
             this(type, (COSName) null);
         }

@@ -86,7 +86,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
      * @param options CCITT T.4 or T.6 options.
      * @param byteAligned enable byte alignment used in PDF files (EncodedByteAlign).
      */
-    public CCITTFaxDecoderStream(final InputStream stream, final int columns, final int type,
+    CCITTFaxDecoderStream(final InputStream stream, final int columns, final int type,
                                  final long options, final boolean byteAligned) {
         super(stream);
 

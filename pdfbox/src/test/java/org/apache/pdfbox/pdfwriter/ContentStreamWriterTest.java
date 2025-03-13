@@ -51,7 +51,7 @@ class ContentStreamWriterTest
     private final File testDirIn = new File("target/test-output/contentstream/in");
     private final File testDirOut = new File("target/test-output/contentstream/out");
     
-    public ContentStreamWriterTest()
+    ContentStreamWriterTest()
     {
         testDirIn.mkdirs();
         testDirOut.mkdirs();
