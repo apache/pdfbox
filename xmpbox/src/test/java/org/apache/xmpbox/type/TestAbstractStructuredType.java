@@ -39,7 +39,7 @@ public class TestAbstractStructuredType
         @PropertyType(type = Types.Date, card = Cardinality.Simple)
         public static final String MYDATE = "my-date";
 
-        public MyStructuredType(XMPMetadata metadata, String namespaceURI, String fieldPrefix)
+        MyStructuredType(XMPMetadata metadata, String namespaceURI, String fieldPrefix)
         {
             super(metadata, namespaceURI, fieldPrefix, "structuredPN");
         }
