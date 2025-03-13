@@ -347,7 +347,7 @@ public class Splitter
     {
         PDPageTree dstPageTree;
 
-        public KCloner(PDPageTree dstPageTree)
+        KCloner(PDPageTree dstPageTree)
         {
             this.dstPageTree = dstPageTree;
         }
