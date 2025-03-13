@@ -17,9 +17,9 @@
 package org.apache.fontbox.cmap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 
@@ -125,7 +125,7 @@ class CMapStringsTest
         assertSame(CMapStrings.getByteValue(minValueOneByte), CMapStrings
                 .getByteValue(minValueOneByte));
         // the cached value isn't the same object than the given one
-        assertTrue(minValueOneByte != CMapStrings.getByteValue(minValueOneByte));
+        assertNotSame(minValueOneByte, CMapStrings.getByteValue(minValueOneByte));
 
 
         byte[] maxValueOneByte = new byte[] { (byte) 0xff };
@@ -133,14 +133,14 @@ class CMapStringsTest
                 CMapStrings.getByteValue(maxValueOneByte));
         assertSame(CMapStrings.getByteValue(maxValueOneByte), CMapStrings
                 .getByteValue(maxValueOneByte));
-        assertTrue(maxValueOneByte != CMapStrings.getByteValue(maxValueOneByte));
+        assertNotSame(maxValueOneByte, CMapStrings.getByteValue(maxValueOneByte));
 
         byte[] anyValueOneByte = new byte[] { 98 };
         assertEquals(CMapStrings.getByteValue(anyValueOneByte),
                 CMapStrings.getByteValue(anyValueOneByte));
         assertSame(CMapStrings.getByteValue(anyValueOneByte), CMapStrings
                 .getByteValue(anyValueOneByte));
-        assertTrue(anyValueOneByte != CMapStrings.getByteValue(anyValueOneByte));
+        assertNotSame(anyValueOneByte, CMapStrings.getByteValue(anyValueOneByte));
     }
 
     @Test
@@ -154,35 +154,35 @@ class CMapStringsTest
         assertSame(CMapStrings.getByteValue(minValueTwoByte), CMapStrings
                 .getByteValue(minValueTwoByte));
         // the cached value isn't the same object than the given one
-        assertTrue(minValueTwoByte != CMapStrings.getByteValue(minValueTwoByte));
+        assertNotSame(minValueTwoByte, CMapStrings.getByteValue(minValueTwoByte));
 
         byte[] maxValueTwoByte = new byte[] { (byte) 0xff, (byte) 0xff };
         assertEquals(CMapStrings.getByteValue(maxValueTwoByte),
                 CMapStrings.getByteValue(maxValueTwoByte));
         assertSame(CMapStrings.getByteValue(maxValueTwoByte), CMapStrings
                 .getByteValue(maxValueTwoByte));
-        assertTrue(maxValueTwoByte != CMapStrings.getByteValue(maxValueTwoByte));
+        assertNotSame(maxValueTwoByte, CMapStrings.getByteValue(maxValueTwoByte));
 
         byte[] anyValueTwoByte1 = new byte[] { 0x62, 0x43 };
         assertEquals(CMapStrings.getByteValue(anyValueTwoByte1),
                 CMapStrings.getByteValue(anyValueTwoByte1));
         assertSame(CMapStrings.getByteValue(anyValueTwoByte1), CMapStrings
                 .getByteValue(anyValueTwoByte1));
-        assertTrue(anyValueTwoByte1 != CMapStrings.getByteValue(anyValueTwoByte1));
+        assertNotSame(anyValueTwoByte1, CMapStrings.getByteValue(anyValueTwoByte1));
 
         byte[] anyValueTwoByte2 = new byte[] { (byte) 0xff, 0x43 };
         assertEquals(CMapStrings.getByteValue(anyValueTwoByte2),
                 CMapStrings.getByteValue(anyValueTwoByte2));
         assertSame(CMapStrings.getByteValue(anyValueTwoByte2), CMapStrings
                 .getByteValue(anyValueTwoByte2));
-        assertTrue(anyValueTwoByte2 != CMapStrings.getByteValue(anyValueTwoByte2));
+        assertNotSame(anyValueTwoByte2, CMapStrings.getByteValue(anyValueTwoByte2));
 
         byte[] anyValueTwoByte3 = new byte[] { 0x38, (byte) 0xff };
         assertEquals(CMapStrings.getByteValue(anyValueTwoByte3),
                 CMapStrings.getByteValue(anyValueTwoByte3));
         assertSame(CMapStrings.getByteValue(anyValueTwoByte3), CMapStrings
                 .getByteValue(anyValueTwoByte3));
-        assertTrue(anyValueTwoByte3 != CMapStrings.getByteValue(anyValueTwoByte3));
+        assertNotSame(anyValueTwoByte3, CMapStrings.getByteValue(anyValueTwoByte3));
     }
 
     @Test
