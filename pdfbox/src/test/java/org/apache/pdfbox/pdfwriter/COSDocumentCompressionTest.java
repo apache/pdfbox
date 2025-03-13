@@ -55,7 +55,7 @@ class COSDocumentCompressionTest
     static final File inDir = new File("src/test/resources/input/compression/");
     static final File outDir = new File("target/test-output/compression/");
 
-    public COSDocumentCompressionTest()
+    COSDocumentCompressionTest()
     {
         outDir.mkdirs();
     }

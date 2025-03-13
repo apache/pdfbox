@@ -50,7 +50,7 @@ class OverlayTest
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/multipdf");
     private static final File OUT_DIR = new File("target/test-output/overlay");
     
-    public OverlayTest()
+    OverlayTest()
     {
     }
 
