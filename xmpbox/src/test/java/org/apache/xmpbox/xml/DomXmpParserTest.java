@@ -22,7 +22,6 @@ package org.apache.xmpbox.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 import org.apache.xmpbox.XMPMetadata;
 import static org.junit.Assert.assertEquals;
@@ -65,7 +64,7 @@ public class DomXmpParserTest
                    "</rdf:RDF>\n" +
                    "<?xpacket end=\"r\"?>";
         DomXmpParser xmpParser = new DomXmpParser();
-        XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
+        XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
         assertEquals("B", xmp.getPDFIdentificationSchema().getConformance());
         assertEquals((Integer) 3, xmp.getPDFIdentificationSchema().getPart());
     }
