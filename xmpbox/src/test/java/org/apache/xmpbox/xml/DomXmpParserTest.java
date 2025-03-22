@@ -24,6 +24,7 @@ package org.apache.xmpbox.xml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.xmpbox.XMPMetadata;
 
@@ -79,7 +80,7 @@ class DomXmpParserTest
                    "</rdf:RDF>\n" +
                    "<?xpacket end=\"r\"?>";
         DomXmpParser xmpParser = new DomXmpParser();
-        XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
+        XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
         Assertions.assertEquals("B", xmp.getPDFAIdentificationSchema().getConformance());
         Assertions.assertEquals((Integer) 3, xmp.getPDFAIdentificationSchema().getPart());
     }
