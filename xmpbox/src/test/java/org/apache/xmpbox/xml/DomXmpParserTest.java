@@ -22,6 +22,7 @@ package org.apache.xmpbox.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.xmpbox.XMPMetadata;
 import static org.junit.Assert.assertEquals;
@@ -48,5 +49,24 @@ public class DomXmpParserTest
         assertEquals("A", xmp.getPDFIdentificationSchema().getConformance());
         assertEquals((Integer) 3, xmp.getPDFIdentificationSchema().getPart());
         fis.close();
+    }
+
+    @Test
+    void testPDFBox5976() throws XmpParsingException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                   "<?xpacket begin=\"\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
+                   "<rdf:RDF\n" +
+                   "	xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n" +
+                   "	xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\"\n" +
+                   "	xmlns:pdfaid=\"http://www.aiim.org/pdfa/ns/id/\">\n" +
+                   "	    <rdf:Description pdfaid:conformance=\"B\" pdfaid:part=\"3\" rdf:about=\"\"/>\n" +
+                   "	    <rdf:Description pdf:Producer=\"WeasyPrint 64.1\" rdf:about=\"\"/>\n" +
+                   "</rdf:RDF>\n" +
+                   "<?xpacket end=\"r\"?>";
+        DomXmpParser xmpParser = new DomXmpParser();
+        XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
+        assertEquals("B", xmp.getPDFIdentificationSchema().getConformance());
+        assertEquals((Integer) 3, xmp.getPDFIdentificationSchema().getPart());
     }
 }
