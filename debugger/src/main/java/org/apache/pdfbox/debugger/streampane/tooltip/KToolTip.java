@@ -76,7 +76,7 @@ final class KToolTip extends ColorToolTip
     ICC_Profile getICCProfile() throws IOException
     {
         // Use profile from PDDeviceCMYK.getICCProfile()
-        String name = "/org/apache/pdfbox/resources/icc/CGATS001Compat-v2-micro.icc";
+        String name = "/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc";
 
         URL url = PDDeviceCMYK.class.getResource(name);
         if (url == null)
