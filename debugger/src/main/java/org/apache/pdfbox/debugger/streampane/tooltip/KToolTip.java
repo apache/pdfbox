@@ -75,12 +75,8 @@ final class KToolTip extends ColorToolTip
 
     ICC_Profile getICCProfile() throws IOException
     {
-        // Adobe Acrobat uses "U.S. Web Coated (SWOP) v2" as the default
-        // CMYK profile, however it is not available under an open license.
-        // Instead, the "ISO Coated v2 300% (basICColor)" is used, which
-        // is an open alternative to the "ISO Coated v2 300% (ECI)" profile.
-
-        String name = "/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc";
+        // Use profile from PDDeviceCMYK.getICCProfile()
+        String name = "/org/apache/pdfbox/resources/icc/CGATS001Compat-v2-micro.icc";
 
         URL url = PDDeviceCMYK.class.getResource(name);
         if (url == null)
