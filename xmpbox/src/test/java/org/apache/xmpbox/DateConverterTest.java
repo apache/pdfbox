@@ -21,7 +21,10 @@
 
 package org.apache.xmpbox;
 
+import java.io.IOException;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -52,6 +55,18 @@ public class DateConverterTest
         // Test partial dates
         Calendar convDate = DateConverter.toCalendar("2015-02-02");
         assertEquals(2015, convDate.get(Calendar.YEAR));
+
+        convDate = DateConverter.toCalendar("D:2015-02-02");
+        assertEquals(2015, convDate.get(Calendar.YEAR));
+        
+        try
+        {
+            DateConverter.toCalendar("123");
+            fail("IOException expected");
+        }
+        catch (IOException ex)
+        {
+        }
 
         //Test missing seconds
         assertEquals(DateConverter.toCalendar("2015-12-08T12:07:00-05:00"),
