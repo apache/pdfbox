@@ -21,7 +21,10 @@
 
 package org.apache.xmpbox;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
@@ -51,6 +54,11 @@ class DateConverterTest
         // Test partial dates
         Calendar convDate = DateConverter.toCalendar("2015-02-02");
         assertEquals(2015, convDate.get(Calendar.YEAR));
+
+        convDate = DateConverter.toCalendar("D:2015-02-02");
+        assertEquals(2015, convDate.get(Calendar.YEAR));
+
+        assertThrows(IOException.class, () -> DateConverter.toCalendar("123"));
 
         //Test missing seconds
         assertEquals(DateConverter.toCalendar("2015-12-08T12:07:00-05:00"),
