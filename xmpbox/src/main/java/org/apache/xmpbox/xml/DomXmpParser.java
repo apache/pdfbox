@@ -868,7 +868,7 @@ public class DomXmpParser
             }
             else if (node instanceof Text)
             {
-                if (node.getTextContent().trim().isEmpty())
+                if (node.getTextContent().isBlank())
                 {
                     // TODO: verify why this is necessary
                     // empty text nodes to be deleted

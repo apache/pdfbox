@@ -718,7 +718,7 @@ public final class DateConverter
      */
     public static Calendar toCalendar(String text)
     {
-        if (text == null || text.trim().isEmpty())
+        if (text == null || text.isBlank())
         {
             return null;
         }

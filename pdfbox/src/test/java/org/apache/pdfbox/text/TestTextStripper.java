@@ -202,8 +202,8 @@ class TestTextStripper
         }
         else
         {
-            equals = (expected == null && actual != null && actual.trim().isEmpty())
-                    || (actual == null && expected != null && expected.trim().isEmpty());
+            equals = (expected == null && actual != null && actual.isBlank())
+                    || (actual == null && expected != null && expected.isBlank());
         }
         return equals;
     }
