@@ -93,7 +93,7 @@ class TestPDNumberTreeNode
     }
 
     @BeforeEach
-    protected void setUp()
+    void setUp()
     {
         this.node5 = new PDNumberTreeNode(PDTest.class);
         Map<Integer,PDTest> Numbers = new TreeMap<>();
