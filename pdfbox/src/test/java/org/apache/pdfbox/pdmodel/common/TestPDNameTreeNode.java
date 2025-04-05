@@ -40,7 +40,7 @@ class TestPDNameTreeNode
     private PDNameTreeNode<COSInteger> node24;
 
     @BeforeEach
-    protected void setUp() throws Exception
+    void setUp() throws Exception
     {
         this.node5 = new PDIntegerNameTreeNode();
         Map<String, COSInteger> names = new TreeMap<>();
