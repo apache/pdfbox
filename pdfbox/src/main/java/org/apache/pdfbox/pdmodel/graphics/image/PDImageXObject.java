@@ -773,9 +773,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * Returns the Mask Image XObject associated with this image, or null if there is none.
      * 
      * @return Mask Image XObject
-     * @throws java.io.IOException if the mask data could not be read
      */
-    public PDImageXObject getMask() throws IOException
+    public PDImageXObject getMask()
     {
         COSArray mask = getCOSObject().getCOSArray(COSName.MASK);
         if (mask != null)
