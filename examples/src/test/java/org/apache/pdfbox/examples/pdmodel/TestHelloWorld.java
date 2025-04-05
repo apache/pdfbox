@@ -38,7 +38,7 @@ class TestHelloWorld
     private static final String OUTPUT_DIR = "target/test-output";
 
     @BeforeAll
-    public static void init() throws Exception
+    void setUp()
     {
         new File(OUTPUT_DIR).mkdirs();
     }
