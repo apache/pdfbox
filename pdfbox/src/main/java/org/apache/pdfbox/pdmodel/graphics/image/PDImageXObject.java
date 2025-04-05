@@ -809,7 +809,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * @return the SMask Image XObject, or null.
      * @throws java.io.IOException if the soft mask data could not be read
      */
-    public PDImageXObject getSoftMask() throws IOException
+    public PDImageXObject getSoftMask()
     {
         COSStream cosStream = getCOSObject().getCOSStream(COSName.SMASK);
         if (cosStream != null)
