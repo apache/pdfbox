@@ -66,7 +66,8 @@ class COSArrayListTest
      * well as PDFBox List/Array implementations.
      */
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp()
+    {
         annotationsList = new ArrayList<>();
         PDAnnotationHighlight txtMark = new PDAnnotationHighlight();
         PDAnnotationLink txtLink = new PDAnnotationLink();
@@ -111,7 +112,7 @@ class COSArrayListTest
      * Test getting a PDModel element is in sync with underlying COSArray
      */
     @Test
-    void getFromList() throws Exception
+    void getFromList()
     {
         COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
@@ -133,7 +134,8 @@ class COSArrayListTest
      * Test adding a PDModel element is in sync with underlying COSArray
      */
     // @Test
-    public void addToList() throws Exception {
+    public void addToList()
+    {
         COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         // add new annotation
@@ -154,7 +156,7 @@ class COSArrayListTest
      * Test removing a PDModel element by index is in sync with underlying COSArray
      */
     @Test
-    void removeFromListByIndex() throws Exception
+    void removeFromListByIndex()
     {
         COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
@@ -177,7 +179,7 @@ class COSArrayListTest
      * COSArray
      */
     @Test
-    void removeUniqueFromListByObject() throws Exception
+    void removeUniqueFromListByObject()
     {
         COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
@@ -210,7 +212,7 @@ class COSArrayListTest
      * COSArray
      */
     @Test
-    void removeAllUniqueFromListByObject() throws Exception
+    void removeAllUniqueFromListByObject()
     {
         COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
@@ -233,7 +235,7 @@ class COSArrayListTest
      * underlying COSArray
      */
     @Test
-    void removeMultipleFromListByObject() throws Exception
+    void removeMultipleFromListByObject()
     {
         COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
@@ -254,7 +256,7 @@ class COSArrayListTest
      * COSArray
      */
     @Test
-    void removeAllMultipleFromListByObject() throws Exception
+    void removeAllMultipleFromListByObject()
     {
         COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
@@ -273,7 +275,7 @@ class COSArrayListTest
     }
 
     @Test
-    void removeFromFilteredListByIndex() throws Exception
+    void removeFromFilteredListByIndex() throws IOException
     {
         // retrieve all annotations from page but the link annotation
         // which is 2nd in list - see above setup
@@ -286,7 +288,7 @@ class COSArrayListTest
     }
 
     @Test
-    void removeFromFilteredListByObject() throws Exception
+    void removeFromFilteredListByObject() throws IOException
     {
         // retrieve all annotations from page but the link annotation
         // which is 2nd in list - see above setup
