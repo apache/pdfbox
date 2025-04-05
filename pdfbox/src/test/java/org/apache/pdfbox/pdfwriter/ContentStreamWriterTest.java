@@ -33,10 +33,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.TestPDFToImage;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -48,38 +45,20 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 @Execution(ExecutionMode.SAME_THREAD)
 class ContentStreamWriterTest
 {
-    private final File testDirIn = new File("target/test-output/contentstream/in");
-    private final File testDirOut = new File("target/test-output/contentstream/out");
-    
-    ContentStreamWriterTest()
-    {
-        testDirIn.mkdirs();
-        testDirOut.mkdirs();
-    }
+    private static final File TESTDIRIN = new File("target/test-output/contentstream/in");
+    private static final File TESTDIROUT = new File("target/test-output/contentstream/out");
     
     @BeforeAll
-    public static void setUpClass()
+    static void setUp()
     {
+        TESTDIRIN.mkdirs();
+        TESTDIROUT.mkdirs();
+
         // PDFBOX-5425: try to avoid "java.awt.color.CMMException: Unknown profile ID"
         ColorSpace csRGB = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         csRGB.toRGB(new float[] { 0, 0, 0 });
         ColorSpace csXYZ = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
         csXYZ.toRGB(new float[] { 0, 0, 0 });
-    }
-    
-    @AfterAll
-    public static void tearDownClass()
-    {
-    }
-    
-    @BeforeEach
-    public void setUp()
-    {
-    }
-    
-    @AfterEach
-    public void tearDown()
-    {
     }
 
     /**
@@ -98,7 +77,7 @@ class ContentStreamWriterTest
             for (int i = 0; i < doc.getNumberOfPages(); ++i)
             {
                 BufferedImage bim1 = r.renderImageWithDPI(i, 96);
-                ImageIO.write(bim1, "png", new File(testDirIn, filename + "-" + (i + 1) + ".png"));
+                ImageIO.write(bim1, "png", new File(TESTDIRIN, filename + "-" + (i + 1) + ".png"));
                 PDPage page = doc.getPage(i);
                 PDStream newContent = new PDStream(doc);
                 try (OutputStream os = newContent.createOutputStream(COSName.FLATE_DECODE))
@@ -109,12 +88,12 @@ class ContentStreamWriterTest
                 }
                 page.setContents(newContent);
             }
-            doc.save(new File(testDirIn, filename));
+            doc.save(new File(TESTDIRIN, filename));
         }
-        if (!TestPDFToImage.doTestFile(new File(testDirIn, filename), testDirIn.getAbsolutePath(),
-                testDirOut.getAbsolutePath()))
+        if (!TestPDFToImage.doTestFile(new File(TESTDIRIN, filename), TESTDIRIN.getAbsolutePath(),
+                TESTDIROUT.getAbsolutePath()))
         {
-            fail("Rendering failed or is not identical, see in " + testDirOut);
+            fail("Rendering failed or is not identical, see in " + TESTDIROUT);
         }
     }
 }

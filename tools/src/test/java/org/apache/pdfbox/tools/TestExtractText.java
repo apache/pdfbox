@@ -54,7 +54,7 @@ class TestExtractText
     static String filename2 = null;
 
     @BeforeAll
-    public static void setupFilenames()
+    static void setupFilenames()
     {
         // the filename representation is platform dependent
         filename1 = Paths.get(TESTFILE1).toString();
@@ -62,7 +62,7 @@ class TestExtractText
     }
 
     @BeforeEach
-    public void setUpStreams()
+    void setUpStreams()
     {
         out.reset();
         try
