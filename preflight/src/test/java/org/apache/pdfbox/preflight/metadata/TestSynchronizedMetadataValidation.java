@@ -64,13 +64,13 @@ class TestSynchronizedMetadataValidation
     protected List<ValidationError> ve;
 
     @BeforeAll
-    public static void initSynchronizedMetadataValidation()
+    static void initSynchronizedMetadataValidation()
     {
         sync = new SynchronizedMetaDataValidation();
     }
 
     @BeforeEach
-    public void initNewDocumentInformation() throws Exception
+    void initNewDocumentInformation() throws Exception
     {
         doc = new PDDocument();
         dico = doc.getDocumentInformation();

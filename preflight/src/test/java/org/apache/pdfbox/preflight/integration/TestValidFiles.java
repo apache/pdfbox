@@ -90,7 +90,7 @@ class TestValidFiles
     }
 
     @BeforeAll
-    public static void beforeClass() throws Exception
+    static void beforeClass() throws Exception
     {
         String irp = System.getProperty(RESULTS_FILE);
         if (irp == null)
@@ -106,13 +106,13 @@ class TestValidFiles
     }
 
     @AfterAll
-    public static void afterClass() throws Exception
+    static void afterClass() throws Exception
     {
         IOUtils.closeQuietly(isartorResultFile);
     }
 
     @ParameterizedTest
-	@MethodSource("initializeParameters")
+    @MethodSource("initializeParameters")
     void validate(File path) throws Exception
     {
         logger = LogFactory.getLog(path != null ? path.getName() : "dummy");
