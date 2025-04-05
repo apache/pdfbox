@@ -279,7 +279,7 @@ class TestPublicKeyEncryption
      * @throws Exception if 
      */
     private PDDocument reload(File file, String decryptionPassword, InputStream keyStore)
-            throws IOException, NoSuchAlgorithmException
+            throws IOException
     {
         PDDocument doc2 = Loader.loadPDF(file, decryptionPassword,
                 keyStore, null, IOUtils.createMemoryOnlyStreamCache());
