@@ -70,7 +70,7 @@ class PDAcroFormTest
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
     
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         document = new PDDocument();
         acroForm = new PDAcroForm(document);
@@ -437,7 +437,7 @@ class PDAcroFormTest
     }
 
     @AfterEach
-    public void tearDown() throws IOException
+    void tearDown() throws IOException
     {
         document.close();
     }

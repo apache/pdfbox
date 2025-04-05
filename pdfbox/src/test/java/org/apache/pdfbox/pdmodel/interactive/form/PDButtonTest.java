@@ -54,7 +54,7 @@ class PDButtonTest
     
     
     @BeforeEach
-    public void setUp() throws IOException
+    void setUp() throws IOException
     {
         document = new PDDocument();
         acroForm = new PDAcroForm(document);
@@ -390,7 +390,7 @@ class PDButtonTest
     }
     
     @AfterEach
-    public void tearDown() throws IOException
+    void tearDown() throws IOException
     {
         document.close();
         acrobatDocument.close();
