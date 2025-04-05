@@ -124,7 +124,7 @@ class ControlCharacterTest
     }
 
     @AfterEach
-    public void tearDown() throws IOException
+    void tearDown() throws IOException
     {
         document.close();
     }

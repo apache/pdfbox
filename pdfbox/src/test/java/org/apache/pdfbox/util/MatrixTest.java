@@ -330,7 +330,7 @@ class MatrixTest
 
     //Uncomment annotation to run the test
     // @Test
-    public void testMultiplicationPerformance() {
+    void testMultiplicationPerformance() {
         long start = System.currentTimeMillis();
         Matrix c;
         Matrix d;

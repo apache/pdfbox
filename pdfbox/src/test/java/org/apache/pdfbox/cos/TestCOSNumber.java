@@ -92,7 +92,8 @@ abstract class TestCOSNumber extends TestCOSBase
      * 
      * @throws IOException
      */
-    public void testLargeNumber() throws IOException
+    @Test
+    void testLargeNumber() throws IOException
     {
         // max value
         COSNumber cosNumber = COSNumber.get(Long.toString(Long.MAX_VALUE));

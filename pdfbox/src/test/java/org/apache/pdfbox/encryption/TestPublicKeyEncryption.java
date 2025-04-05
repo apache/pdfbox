@@ -148,7 +148,7 @@ class TestPublicKeyEncryption
      * {@inheritDoc}
      */
     @AfterEach
-    public void tearDown() throws Exception 
+    void tearDown() throws Exception 
     {
         document.close();
     }
@@ -160,7 +160,7 @@ class TestPublicKeyEncryption
      * @throws Exception If there is an unexpected error during the test.
      */
     @ParameterizedTest
-	@MethodSource("keyLengths")
+    @MethodSource("keyLengths")
     void testProtectionError(int keyLength) throws Exception
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
