@@ -49,7 +49,7 @@ class GsubWorkerForBengaliTest
     private GsubWorker gsubWorkerForBengali;
 
     @BeforeEach
-    public void init() throws IOException
+    void init() throws IOException
     {
         try (TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(LOHIT_BENGALI_TTF)))
         {

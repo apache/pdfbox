@@ -31,7 +31,7 @@ class PropMappingTest
     protected String nsURI = "http://www.test.org/PropMap#";
 
     @BeforeEach
-    public void init()
+    void init()
     {
         propMap = new PropertiesDescription();
     }
