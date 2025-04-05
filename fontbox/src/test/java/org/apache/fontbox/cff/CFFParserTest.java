@@ -167,7 +167,7 @@ class CFFParserTest
      * @throws IOException 
      */
     @Test
-    void testDeltaLists() throws IOException
+    void testDeltaLists()
     {
         @SuppressWarnings("unchecked")
         List<Number> blues = (List<Number>) testCFFType1Font.getPrivateDict().get("BlueValues");
