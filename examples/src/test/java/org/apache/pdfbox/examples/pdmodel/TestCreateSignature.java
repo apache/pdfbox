@@ -48,7 +48,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.Security;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -454,9 +453,6 @@ class TestCreateSignature
      * been signed before.
      * 
      * @throws IOException
-     * @throws NoSuchAlgorithmException
-     * @throws CertificateException
-     * @throws UnrecoverableKeyException
      * @throws CMSException
      * @throws OperatorCreationException
      * @throws GeneralSecurityException
@@ -464,8 +460,7 @@ class TestCreateSignature
      * @throws CertificateVerificationException
      */
     @Test
-    void testPDFBox3978() throws IOException, NoSuchAlgorithmException, 
-                                        CertificateException, UnrecoverableKeyException, 
+    void testPDFBox3978() throws IOException, 
                                         CMSException, OperatorCreationException, GeneralSecurityException,
                                         TSPException, CertificateVerificationException
     {
