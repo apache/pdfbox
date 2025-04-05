@@ -73,7 +73,7 @@ class ContentStreamWriterTest
     }
     
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
     }
     

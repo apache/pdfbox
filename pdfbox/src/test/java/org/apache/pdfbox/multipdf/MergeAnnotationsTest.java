@@ -42,7 +42,7 @@ class MergeAnnotationsTest
     private static final File TARGET_PDF_DIR = new File("target/pdfs");
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         OUT_DIR.mkdirs();
     }

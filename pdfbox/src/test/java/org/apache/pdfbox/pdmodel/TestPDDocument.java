@@ -46,7 +46,7 @@ class TestPDDocument
     static private final File TESTRESULTSDIR = new File("target/test-output");
 
     @BeforeAll
-    static public void setUp() throws Exception
+    static void setUp() throws Exception
     {
         TESTRESULTSDIR.mkdirs();
     }

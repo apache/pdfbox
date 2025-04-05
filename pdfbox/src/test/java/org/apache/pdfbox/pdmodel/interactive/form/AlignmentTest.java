@@ -37,7 +37,7 @@ class AlignmentTest
     private PDAcroForm acroForm;
 
     @BeforeEach
-    public void setUp() throws IOException
+    void setUp() throws IOException
     {
         document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
         acroForm = document.getDocumentCatalog().getAcroForm();

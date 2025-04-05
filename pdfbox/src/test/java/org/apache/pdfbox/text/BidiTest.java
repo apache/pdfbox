@@ -59,7 +59,7 @@ class BidiTest
     private PDFTextStripper stripper;
 
     @BeforeEach
-    public void setUp() throws IOException
+    void setUp() throws IOException
     {
         Files.createDirectories(OUT_DIR.toPath());
         document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));

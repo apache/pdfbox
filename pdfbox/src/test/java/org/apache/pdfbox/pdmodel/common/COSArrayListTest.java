@@ -66,7 +66,7 @@ class COSArrayListTest
      * well as PDFBox List/Array implementations.
      */
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         annotationsList = new ArrayList<>();
         PDAnnotationHighlight txtMark = new PDAnnotationHighlight();
         PDAnnotationLink txtLink = new PDAnnotationLink();

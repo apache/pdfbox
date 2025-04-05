@@ -54,7 +54,7 @@ class PDButtonTest
     
     
     @BeforeEach
-    public void setUp() throws IOException
+    void setUp() throws IOException
     {
         document = new PDDocument();
         acroForm = new PDAcroForm(document);

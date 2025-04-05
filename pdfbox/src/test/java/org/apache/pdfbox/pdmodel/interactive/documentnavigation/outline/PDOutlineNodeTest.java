@@ -35,7 +35,7 @@ class PDOutlineNodeTest
     private PDOutlineItem root;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         root = new PDOutlineItem();
     }

@@ -55,7 +55,7 @@ class OverlayTest
     }
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         OUT_DIR.mkdirs();
     }
