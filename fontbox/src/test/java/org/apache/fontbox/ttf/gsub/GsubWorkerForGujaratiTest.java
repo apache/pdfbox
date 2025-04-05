@@ -50,7 +50,7 @@ class GsubWorkerForGujaratiTest
     private GsubWorker gsubWorkerForGujarati;
 
     @BeforeEach
-    public void init() throws IOException
+    void init() throws IOException
     {
         try (TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(LOHIT_GUJARATI_TTF)))
         {

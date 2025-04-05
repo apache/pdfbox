@@ -50,7 +50,7 @@ class DeserializationTest {
     protected XmpSerializer serializer;
 
     @BeforeEach
-    public void init() throws Exception
+    void init() throws Exception
     {
         bos = new ByteArrayOutputStream();
         serializer = new XmpSerializer();
