@@ -1182,4 +1182,15 @@ public abstract class PDFStreamEngine
     {
         return shouldProcessColorOperators;
     }
+
+    /**
+     * Handles MP and DP operators.
+     *
+     * @param tag indicates the role or significance of the sequence
+     * @param properties optional properties
+     */
+    public void markedContentPoint(COSName tag, COSDictionary properties)
+    {
+        // overridden in subclasses
+    }
 }

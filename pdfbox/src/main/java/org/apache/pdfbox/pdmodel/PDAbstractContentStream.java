@@ -1373,6 +1373,32 @@ abstract class PDAbstractContentStream implements Closeable
     }
 
     /**
+     * set a marked content point.
+     *
+     * @param tag the tag to be added to the content stream
+     * @throws IOException If the content stream could not be written
+     */
+    public void setMarkedContentPoint(COSName tag) throws IOException
+    {
+        writeOperand(tag);
+        writeOperator(OperatorName.MARKED_CONTENT_POINT);
+    }
+
+    /**
+     * Set a marked content point with a reference to an entry in the page resources' Properties dictionary.
+     *
+     * @param tag the tag to be added to the content stream
+     * @param propertyList property list to be added to the content stream
+     * @throws IOException If the content stream could not be written
+     */
+    public void setMarkedContentPointWithProperties(COSName tag, PDPropertyList propertyList) throws IOException
+    {
+        writeOperand(tag);
+        writeOperand(resources.add(propertyList));
+        writeOperator(OperatorName.MARKED_CONTENT_POINT_WITH_PROPS);
+    }
+
+    /**
      * Set an extended graphics state.
      * 
      * @param state The extended graphics state to be added to the content stream
