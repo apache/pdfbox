@@ -162,7 +162,7 @@ class TestCreateSignature
     }
 
     @BeforeAll
-    static void init() throws Exception
+    static void init() throws IOException, GeneralSecurityException
     {
         Security.addProvider(SecurityProvider.getProvider());
         certificateFactory = CertificateFactory.getInstance("X.509");
