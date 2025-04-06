@@ -38,7 +38,7 @@ import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -49,13 +49,9 @@ class OverlayTest
 {
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/multipdf");
     private static final File OUT_DIR = new File("target/test-output/overlay");
-    
-    OverlayTest()
-    {
-    }
 
-    @BeforeEach
-    void setUp()
+    @BeforeAll
+    static void setUp()
     {
         OUT_DIR.mkdirs();
     }

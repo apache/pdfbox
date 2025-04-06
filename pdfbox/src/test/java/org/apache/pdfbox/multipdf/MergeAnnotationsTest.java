@@ -30,7 +30,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDestinationDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -41,12 +41,12 @@ class MergeAnnotationsTest
     private static final File OUT_DIR = new File("target/test-output/merge/");
     private static final File TARGET_PDF_DIR = new File("target/pdfs");
 
-    @BeforeEach
-    void setUp()
+    @BeforeAll
+    static void setUp()
     {
         OUT_DIR.mkdirs();
     }
-    
+
     /*
      * PDFBOX-1065 Ensure that after merging the PDFs there are all link
      * annotations and they point to the correct page.

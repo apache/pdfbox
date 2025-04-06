@@ -30,7 +30,6 @@ import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.verapdf.core.VeraPDFException;
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
@@ -45,20 +44,20 @@ import org.verapdf.pdfa.flavours.PDFAFlavour;
  */
 class MergePDFATest
 {
-    private final String outDir = "target/test-output";
+    private static final String OUTDIR = "target/test-output";
 
-    @BeforeEach
-    void setUp()
+    @BeforeAll
+    static void setUp()
     {
-        new File(outDir).mkdirs();
+        new File(OUTDIR).mkdirs();
     }
 
     @Test
     void testMergePDFA() throws IOException, TransformerException, VeraPDFException
     {
         System.out.println("testMergePDFA");
-        String pdfaFilename = outDir + "/Source_PDFA.pdf";
-        String pdfaMergedFilename = outDir + "/Merged_PDFA.pdf";
+        String pdfaFilename = OUTDIR + "/Source_PDFA.pdf";
+        String pdfaMergedFilename = OUTDIR + "/Merged_PDFA.pdf";
         String message = "The quick brown fox jumps over the lazy dog äöüÄÖÜß @°^²³ {[]}";
         String dir = "../pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/";
         String fontfile = dir + "LiberationSans-Regular.ttf";
