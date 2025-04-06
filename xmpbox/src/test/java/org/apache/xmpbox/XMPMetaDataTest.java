@@ -90,7 +90,7 @@ class XMPMetaDataTest
      */
 
     @Test
-    void testTransformerExceptionMessage() throws XmpSerializationException
+    void testTransformerExceptionMessage()
     {
         assertThrows(org.apache.xmpbox.xml.XmpSerializationException.class, () -> {
             throw new XmpSerializationException("TEST");
@@ -98,7 +98,7 @@ class XMPMetaDataTest
     }
 
     @Test
-    void testTransformerExceptionWithCause() throws XmpSerializationException
+    void testTransformerExceptionWithCause()
     {
         assertThrows(org.apache.xmpbox.xml.XmpSerializationException.class, () -> {
             throw new XmpSerializationException("TEST", new Throwable());
@@ -106,7 +106,7 @@ class XMPMetaDataTest
     }
 
     @Test
-    void testInitMetaDataWithInfo() throws Exception
+    void testInitMetaDataWithInfo()
     {
         String xpacketBegin = "TESTBEG", xpacketId = "TESTID", xpacketBytes = "TESTBYTES", xpacketEncoding = "TESTENCOD";
         XMPMetadata metadata = XMPMetadata.createXMPMetadata(xpacketBegin, xpacketId, xpacketBytes, xpacketEncoding);
@@ -125,7 +125,7 @@ class XMPMetaDataTest
      * @throws XmpParsingException 
      */
     @Test
-    void testPDFBOX3257() throws IOException, XmpParsingException
+    void testPDFBOX3257() throws XmpParsingException
     {
         // taken from file test-landscape2.pdf
         String xmpmeta = "<?xpacket id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n"

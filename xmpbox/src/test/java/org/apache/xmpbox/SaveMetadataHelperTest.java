@@ -29,7 +29,7 @@ class SaveMetadataHelperTest
 {
 
     @Test
-    void testSchemaParsing() throws Exception
+    void testSchemaParsing()
     {
         DublinCoreSchema dc = new DublinCoreSchema(XMPMetadata.createXMPMetadata());
         dc.setCoverage("coverage");
@@ -39,7 +39,7 @@ class SaveMetadataHelperTest
     }
 
     @Test
-    void testMetadataParsing() throws Exception
+    void testMetadataParsing()
     {
         XMPMetadata meta = XMPMetadata.createXMPMetadata();
 
