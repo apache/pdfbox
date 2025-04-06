@@ -194,7 +194,7 @@ class SequenceRandomAccessReadTest
         // closing a SequenceRandomAccessRead twice shouldn't be a problem
         sequenceRandomAccessRead.close();
 
-        assertThrows(IOException.class, () -> sequenceRandomAccessRead.read(),
+        assertThrows(IOException.class, sequenceRandomAccessRead::read,
                 "checkClosed should have thrown an IOException");
     }
 
