@@ -68,12 +68,12 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      */
     protected static final Set<String> ANGLED_STYLES = createAngledStyles();
 
-    public PDAbstractAppearanceHandler(PDAnnotation annotation)
+    protected PDAbstractAppearanceHandler(PDAnnotation annotation)
     {
         this(annotation, null);
     }
 
-    public PDAbstractAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    protected PDAbstractAppearanceHandler(PDAnnotation annotation, PDDocument document)
     {
         this.annotation = annotation;
         this.document = document;

@@ -36,12 +36,12 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty
 
     private String prefix;
 
-    public AbstractStructuredType(XMPMetadata metadata)
+    protected AbstractStructuredType(XMPMetadata metadata)
     {
         this(metadata, null, null, null);
     }
 
-    public AbstractStructuredType(XMPMetadata metadata, String namespaceURI)
+    protected AbstractStructuredType(XMPMetadata metadata, String namespaceURI)
     {
         this(metadata, namespaceURI, null, null);
         StructuredType st = this.getClass().getAnnotation(StructuredType.class);
@@ -58,7 +58,7 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty
         this.prefix = this.preferedPrefix;
     }
 
-    public AbstractStructuredType(XMPMetadata metadata, String namespaceURI, String fieldPrefix, String propertyName)
+    protected AbstractStructuredType(XMPMetadata metadata, String namespaceURI, String fieldPrefix, String propertyName)
     {
         super(metadata, propertyName);
         StructuredType st = this.getClass().getAnnotation(StructuredType.class);
@@ -87,6 +87,7 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty
      * 
      * @return the namespace URI
      */
+    @Override
     public final String getNamespace()
     {
         return namespace;
@@ -102,6 +103,7 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty
      * 
      * @return the prefix specified
      */
+    @Override
     public final String getPrefix()
     {
         return prefix;
