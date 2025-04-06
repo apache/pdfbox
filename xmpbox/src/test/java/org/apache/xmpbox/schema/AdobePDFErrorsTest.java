@@ -35,7 +35,7 @@ class AdobePDFErrorsTest
     private final XMPMetadata metadata = XMPMetadata.createXMPMetadata();
 
     @Test
-    void testPDFAIdentification() throws Exception
+    void testPDFAIdentification()
     {
         AdobePDFSchema schem = metadata.createAndAddAdobePDFSchema();
 
@@ -63,11 +63,11 @@ class AdobePDFErrorsTest
         // check retrieve this schema in metadata
         assertEquals(schem, metadata.getAdobePDFSchema());
 
-        // SaveMetadataHelper.serialize(metadata, true, System.out);
+        // SaveMetadataHelper.serialize(metadata, true, System.out)
     }
 
     @Test
-    void testBadPDFAConformanceId() throws Exception
+    void testBadPDFAConformanceId()
     {
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();
         String conformance = "kiohiohiohiohio";
@@ -77,7 +77,7 @@ class AdobePDFErrorsTest
     }
 
     @Test
-    void testBadVersionIdValueType() throws Exception
+    void testBadVersionIdValueType()
     {
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();
         pdfaid.setPartValueWithString("1");
