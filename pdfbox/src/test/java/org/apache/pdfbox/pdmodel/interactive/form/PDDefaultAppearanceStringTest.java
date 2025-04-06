@@ -38,7 +38,7 @@ class PDDefaultAppearanceStringTest
     private PDType1Font helvetica; 
     
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         resources = new PDResources();
         helvetica = new PDType1Font(FontName.HELVETICA);

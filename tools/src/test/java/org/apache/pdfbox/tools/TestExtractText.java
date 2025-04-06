@@ -78,7 +78,7 @@ class TestExtractText
     }
 
     @AfterEach
-    public void restoreStreams()
+    void restoreStreams()
     {
         System.setOut(originalOut);
         if (printStream != null)

@@ -43,7 +43,7 @@ class PDSignatureFieldTest
     private PDAcroForm acroForm;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         document = new PDDocument();
         acroForm = new PDAcroForm(document);
