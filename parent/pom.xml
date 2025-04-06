@@ -304,7 +304,7 @@
               <plugin>
                   <groupId>org.owasp</groupId>
                   <artifactId>dependency-check-maven</artifactId>
-                  <version>12.1.0</version>
+                  <version>12.1.1</version>
                   <configuration>
                       <failBuildOnCVSS>0</failBuildOnCVSS>
                       <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
