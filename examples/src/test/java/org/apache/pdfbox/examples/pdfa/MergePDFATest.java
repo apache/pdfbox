@@ -30,6 +30,7 @@ import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.verapdf.core.VeraPDFException;
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
