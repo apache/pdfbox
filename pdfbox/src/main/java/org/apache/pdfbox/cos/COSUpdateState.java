@@ -152,10 +152,13 @@ public class COSUpdateState
         else if(updateInfo instanceof COSObject)
         {
             COSObject object = (COSObject) updateInfo;
-            COSBase reference;
-            if(object.isDereferenced() && (reference = object.getObject()) instanceof COSUpdateInfo)
+            if (object.isDereferenced())
             {
-                ((COSUpdateInfo) reference).getUpdateState().setOriginDocumentState(originDocumentState, dereferencing);
+                COSBase reference = object.getObject();
+                if (reference instanceof COSUpdateInfo)
+                {
+                    ((COSUpdateInfo) reference).getUpdateState().setOriginDocumentState(originDocumentState, dereferencing);
+                }
             }
         }
     }
