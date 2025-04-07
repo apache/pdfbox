@@ -148,14 +148,14 @@ public class FDFAnnotationStamp extends FDFAnnotation
         NodeList nodeList = appearanceXML.getChildNodes();
         String parentAttrKey = appearanceXML.getAttribute("KEY");
         LOG.debug("Appearance Root - tag: {}, name: {}, key: {}, children: {}",
-                appearanceXML.getTagName(), appearanceXML.getNodeName(), parentAttrKey,
-                nodeList.getLength());
+                appearanceXML::getTagName, appearanceXML::getNodeName, () -> parentAttrKey,
+                nodeList::getLength);
 
         // Currently only handles Appearance dictionary (AP key on the root)
         if (!"AP".equals(appearanceXML.getAttribute("KEY")))
         {
-            LOG.warn("{} => Not handling element: {} with key: {}", parentAttrKey,
-                    appearanceXML.getTagName(), appearanceXML.getAttribute("KEY"));
+            LOG.warn("{} => Not handling element: {} with key: {}", () -> parentAttrKey,
+                    appearanceXML::getTagName, () -> appearanceXML.getAttribute("KEY"));
             return dictionary;
         }
         for (int i = 0; i < nodeList.getLength(); i++)
@@ -168,9 +168,9 @@ public class FDFAnnotationStamp extends FDFAnnotation
                 if ("STREAM".equalsIgnoreCase(childTagName))
                 {
                     LOG.debug("{} => Process {} item in the dictionary after processing the {}",
-                            parentAttrKey, child.getAttribute("KEY"), childTagName);
+                            () -> parentAttrKey, () -> child.getAttribute("KEY"), () -> childTagName);
                     dictionary.setItem(child.getAttribute("KEY"), parseStreamElement(child));
-                    LOG.debug("{} => Set {}", parentAttrKey, child.getAttribute("KEY"));
+                    LOG.debug("{} => Set {}", () -> parentAttrKey, () -> child.getAttribute("KEY"));
                 }
                 else
                 {
