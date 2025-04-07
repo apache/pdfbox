@@ -113,7 +113,7 @@ public class PDFHighlighter extends PDFTextStripper
         // Traitement des listes à puces (caractères spéciaux)
         if (page.indexOf('a') != -1)
         {
-            page = page.replaceAll("a[0-9]{1,3}", ".");
+            page = page.replaceAll("a\\d{1,3}", ".");
         }
         for (String searchedWord : searchedWords)
         {
