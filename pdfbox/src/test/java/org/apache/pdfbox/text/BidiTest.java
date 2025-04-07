@@ -153,12 +153,12 @@ class BidiTest
             while (true)
             {
                 String expectedLine = expectedReader.readLine();
-                while( expectedLine != null && expectedLine.trim().length() == 0 )
+                while( expectedLine != null && expectedLine.trim().isEmpty())
                 {
                     expectedLine = expectedReader.readLine();
                 }
                 String actualLine = actualReader.readLine();
-                while( actualLine != null && actualLine.trim().length() == 0 )
+                while( actualLine != null && actualLine.trim().isEmpty())
                 {
                     actualLine = actualReader.readLine();
                 }

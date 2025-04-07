@@ -101,7 +101,7 @@ class GlyphSubstitutionTableTest
                     break;
                 }
 
-                if (line.trim().length() == 0)
+                if (line.trim().isEmpty())
                 {
                     continue;
                 }
