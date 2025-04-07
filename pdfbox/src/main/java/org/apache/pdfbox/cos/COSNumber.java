@@ -114,7 +114,7 @@ public abstract class COSNumber extends COSBase
             // check if the given string could be a number at all
             String numberString = number.startsWith("+") || number.startsWith("-")
                     ? number.substring(1) : number;
-            if (!numberString.matches("[0-9]*"))
+            if (!numberString.matches("\\d*"))
             {
                 throw new IOException("Not a number: " + number);
             }
