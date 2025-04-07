@@ -169,8 +169,8 @@ public class PDPage implements COSObjectable, PDContentStream
             return Collections.emptyList();
         }
         return resourcesDictionary.getValues().stream() //
-                .filter(f -> f instanceof COSObject) //
-                .map(f -> (COSObject) f) //
+                .filter(COSObject.class::isInstance) //
+                .map(COSObject.class::cast) //
                 .filter(COSObject::isDereferenced) //
                 .collect(Collectors.toList());
     }

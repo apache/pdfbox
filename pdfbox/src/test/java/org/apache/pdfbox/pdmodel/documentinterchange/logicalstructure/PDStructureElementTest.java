@@ -61,7 +61,7 @@ class PDStructureElementTest
 
         // collect attributes and check their count.
         assertEquals(117, attributeSet.size());
-        int cnt = attributeSet.stream().map(attributes -> attributes.size()).reduce(0, Integer::sum);
+        int cnt = attributeSet.stream().map(Revisions::size).reduce(0, Integer::sum);
         assertEquals(111, cnt); // this one was 105 before PDFBOX-4197 was fixed
         assertEquals(0, classSet.size());
     }
@@ -86,7 +86,7 @@ class PDStructureElementTest
 
         // collect attributes and check their count.
         assertEquals(72, attributeSet.size());
-        int cnt = attributeSet.stream().map(attributes -> attributes.size()).reduce(0, Integer::sum);
+        int cnt = attributeSet.stream().map(Revisions::size).reduce(0, Integer::sum);
         assertEquals(45, cnt);
         assertEquals(10, classSet.size());
     }

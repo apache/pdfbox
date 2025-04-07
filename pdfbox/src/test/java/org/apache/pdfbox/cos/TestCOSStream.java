@@ -168,7 +168,7 @@ class TestCOSStream
         try (COSStream stream = new COSStream())
         {
             assertFalse(stream.hasData());
-            Assertions.assertThrows(IOException.class, () -> stream.createInputStream(),
+            Assertions.assertThrows(IOException.class, stream::createInputStream,
                 "createInputStream should have thrown an IOException");
 
             byte[] testString = "This is a test string to be used as input for TestCOSStream"
@@ -201,17 +201,21 @@ class TestCOSStream
 
     private void validateEncoded(COSStream stream, byte[] expected) throws IOException
     {
-        InputStream in = stream.createRawInputStream();
-        byte[] decoded = in.readAllBytes();
-        stream.close();
-        assertTrue(Arrays.equals(expected, decoded), "Encoded data doesn't match input");
+        try (stream)
+        {
+            InputStream in = stream.createRawInputStream();
+            byte[] decoded = in.readAllBytes();
+            assertTrue(Arrays.equals(expected, decoded), "Encoded data doesn't match input");
+        }
     }
 
     private void validateDecoded(COSStream stream, byte[] expected) throws IOException
     {
-        InputStream in = stream.createInputStream();
-        byte[] encoded = in.readAllBytes();
-        stream.close();
-        assertTrue(Arrays.equals(expected, encoded), "Decoded data doesn't match input");
+        try (stream)
+        {
+            InputStream in = stream.createInputStream();
+            byte[] encoded = in.readAllBytes();
+            assertTrue(Arrays.equals(expected, encoded), "Decoded data doesn't match input");
+        }
     }
 }

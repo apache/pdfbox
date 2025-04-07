@@ -1343,7 +1343,7 @@ class PDFMergerUtilityTest
             annotations = doc.getPage(1).getAnnotations();
             assertEquals(1, annotations.size());
             PDAnnotationLink link = (PDAnnotationLink) annotations.get(0);
-            assertThrows(IOException.class, () -> link.getDestination());
+            assertThrows(IOException.class, link::getDestination);
         }
     }
 
@@ -1389,9 +1389,10 @@ class PDFMergerUtilityTest
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 dstDoc.save(baos);
-                PDDocument reloadedDoc = Loader.loadPDF(baos.toByteArray());
-                assertNotNull(reloadedDoc.getDocumentCatalog().getMetadata());
-                reloadedDoc.close();
+                try (PDDocument reloadedDoc = Loader.loadPDF(baos.toByteArray()))
+                {
+                    assertNotNull(reloadedDoc.getDocumentCatalog().getMetadata());
+                }
             }
             // Check that source document is unchanged
             annotations = doc.getPage(0).getAnnotations();
