@@ -1344,7 +1344,7 @@ class PDFMergerUtilityTest
             annotations = doc.getPage(1).getAnnotations();
             assertEquals(1, annotations.size());
             PDAnnotationLink link = (PDAnnotationLink) annotations.get(0);
-            assertThrows(IOException.class, () -> link.getDestination());
+            assertThrows(IOException.class, link::getDestination);
         }
     }
 

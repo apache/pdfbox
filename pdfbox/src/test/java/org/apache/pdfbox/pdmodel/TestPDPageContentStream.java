@@ -252,31 +252,18 @@ class TestPDPageContentStream
             Assertions.assertThrows(IllegalStateException.class,
                     () -> contentStream.lineTo(1, 1));
             Assertions.assertThrows(IllegalStateException.class,
-                    () -> contentStream.stroke());
-            Assertions.assertThrows(IllegalStateException.class,
-                    () -> contentStream.closeAndStroke());
-            Assertions.assertThrows(IllegalStateException.class,
-                    () -> contentStream.closeAndFillAndStroke());
-            Assertions.assertThrows(IllegalStateException.class,
-                    () -> contentStream.closeAndFillAndStrokeEvenOdd());
-            Assertions.assertThrows(IllegalStateException.class,
-                    () -> contentStream.fill());
-            Assertions.assertThrows(IllegalStateException.class,
-                    () -> contentStream.fillAndStroke());
-            Assertions.assertThrows(IllegalStateException.class,
-                    () -> contentStream.fillAndStrokeEvenOdd());
-            Assertions.assertThrows(IllegalStateException.class,
-                    () -> contentStream.fillEvenOdd());
-            Assertions.assertThrows(IllegalStateException.class,
-                    () -> contentStream.fill());
-            Assertions.assertThrows(IllegalStateException.class,
                     () -> contentStream.shadingFill(new PDShadingType1(new COSDictionary())));
-            Assertions.assertThrows(IllegalStateException.class,
-                    () -> contentStream.closePath());
-            Assertions.assertThrows(IllegalStateException.class, 
-                    () -> contentStream.clip());
-            Assertions.assertThrows(IllegalStateException.class,
-                    () -> contentStream.clipEvenOdd());
+            Assertions.assertThrows(IllegalStateException.class, contentStream::stroke);
+            Assertions.assertThrows(IllegalStateException.class, contentStream::closeAndStroke);
+            Assertions.assertThrows(IllegalStateException.class, contentStream::closeAndFillAndStroke);
+            Assertions.assertThrows(IllegalStateException.class, contentStream::closeAndFillAndStrokeEvenOdd);
+            Assertions.assertThrows(IllegalStateException.class, contentStream::fill);
+            Assertions.assertThrows(IllegalStateException.class, contentStream::fillAndStroke);
+            Assertions.assertThrows(IllegalStateException.class, contentStream::fillAndStrokeEvenOdd);
+            Assertions.assertThrows(IllegalStateException.class, contentStream::fillEvenOdd);
+            Assertions.assertThrows(IllegalStateException.class, contentStream::closePath);
+            Assertions.assertThrows(IllegalStateException.class, contentStream::clip);
+            Assertions.assertThrows(IllegalStateException.class, contentStream::clipEvenOdd);
             
             // J
             contentStream.setLineCapStyle(0);
