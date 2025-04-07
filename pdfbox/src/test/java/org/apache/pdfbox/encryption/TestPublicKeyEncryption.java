@@ -164,9 +164,9 @@ public class TestPublicKeyEncryption
         document.protect(policy);
 
         PDDocument encryptedDoc = null;
+        File file = save("testProtectionError");
         try 
         {
-            File file = save("testProtectionError");
             encryptedDoc = reload(file, password2, getKeyStore(keyStore2));
             Assert.assertTrue(encryptedDoc.isEncrypted());
             fail("No exception when using an incorrect decryption key");
