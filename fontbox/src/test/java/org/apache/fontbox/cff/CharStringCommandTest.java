@@ -30,11 +30,11 @@ class CharStringCommandTest
     @Test
     void testValue()
     {
-        assertEquals(CharStringCommand.HSTEM.getValue(), 1);
-        assertEquals(CharStringCommand.ESCAPE.getValue(), 12);
-        assertEquals(CharStringCommand.DOTSECTION.getValue(), (12 << 4) + 0);
-        assertEquals(CharStringCommand.AND.getValue(), (12 << 4) + 3);
-        assertEquals(CharStringCommand.HSBW.getValue(), 13);
+        assertEquals(1, CharStringCommand.HSTEM.getValue());
+        assertEquals(12, CharStringCommand.ESCAPE.getValue());
+        assertEquals((12 << 4) + 0, CharStringCommand.DOTSECTION.getValue());
+        assertEquals((12 << 4) + 3, CharStringCommand.AND.getValue());
+        assertEquals(13, CharStringCommand.HSBW.getValue());
     }
 
     @Test
