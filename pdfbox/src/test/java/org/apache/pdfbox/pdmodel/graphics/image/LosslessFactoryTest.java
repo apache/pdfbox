@@ -462,14 +462,14 @@ public class LosslessFactoryTest extends TestCase
                 int alpha;
                 if ((x >= startX && x <= endX) || y >= startY && y <= endY)
                 {
-                    alpha = 128 + (int) (random.nextFloat() * 127);
+                    alpha = 128 + random.nextInt(128);
                     assertTrue(alpha >= 128);
                     argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | (alpha << 24));
                     assertEquals(255, argbImage.getRGB(x, y) >>> 24);
                 }
                 else
                 {
-                    alpha = (int) (random.nextFloat() * 127);
+                    alpha = random.nextInt(128);
                     assertTrue(alpha < 128);
                     argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | (alpha << 24));
                     assertEquals(0, argbImage.getRGB(x, y) >>> 24);
