@@ -115,7 +115,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
         }
         if (base64EncodedAppearance != null && !base64EncodedAppearance.isEmpty())
         {
-            LOG.debug("Decoded XML: {}", new String(decodedAppearanceXML));
+            LOG.debug("Decoded XML: {}", () -> new String(decodedAppearanceXML));
 
             Document stampAppearance = XMLUtil
                     .parse(new ByteArrayInputStream(decodedAppearanceXML));
@@ -275,7 +275,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
 
     private COSArray parseArrayElement(Element arrayEl) throws IOException
     {
-        LOG.debug("Parse {} Array", arrayEl.getAttribute("KEY"));
+        LOG.debug("Parse {} Array", () -> arrayEl.getAttribute("KEY"));
         COSArray array = new COSArray();
 
         NodeList nodeList = arrayEl.getChildNodes();
