@@ -54,7 +54,7 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationTextMarkup(Element element) throws IOException
+    protected FDFAnnotationTextMarkup(Element element) throws IOException
     {
         super(element);
 
