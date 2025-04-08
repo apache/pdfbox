@@ -104,7 +104,7 @@ public abstract class FDFAnnotation implements COSObjectable
     /**
      * Default constructor.
      */
-    public FDFAnnotation()
+    protected FDFAnnotation()
     {
         annot = new COSDictionary();
         annot.setItem(COSName.TYPE, COSName.ANNOT);
@@ -115,7 +115,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param a The FDF annotation.
      */
-    public FDFAnnotation(COSDictionary a)
+    protected FDFAnnotation(COSDictionary a)
     {
         annot = a;
     }
@@ -127,7 +127,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @throws IOException If there is an error extracting data from the element.
      */
-    public FDFAnnotation(Element element) throws IOException
+    protected FDFAnnotation(Element element) throws IOException
     {
         this();
 

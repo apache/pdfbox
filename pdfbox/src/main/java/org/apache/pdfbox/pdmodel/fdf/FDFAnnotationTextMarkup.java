@@ -33,9 +33,8 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
     /**
      * Default constructor.
      */
-    public FDFAnnotationTextMarkup()
+    protected FDFAnnotationTextMarkup()
     {
-        super();
     }
 
     /**
@@ -43,7 +42,7 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationTextMarkup(COSDictionary a)
+    protected FDFAnnotationTextMarkup(COSDictionary a)
     {
         super(a);
     }

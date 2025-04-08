@@ -35,14 +35,14 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
     /**
      * Default Constructor.
      */
-    public PDOutlineNode()
+    protected PDOutlineNode()
     {
     }
 
     /**
      * @param dict The dictionary storage.
      */
-    public PDOutlineNode(COSDictionary dict)
+    protected PDOutlineNode(COSDictionary dict)
     {
         super(dict);
     }

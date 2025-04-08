@@ -29,7 +29,7 @@ public abstract class CoverageTable
 {
     private final int coverageFormat;
 
-    public CoverageTable(int coverageFormat)
+    protected CoverageTable(int coverageFormat)
     {
         this.coverageFormat = coverageFormat;
     }

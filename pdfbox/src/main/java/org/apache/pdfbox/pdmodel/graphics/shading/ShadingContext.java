@@ -51,7 +51,7 @@ public abstract class ShadingContext implements PaintContext
      * @throws java.io.IOException if there is an error getting the color space
      * or doing background color conversion.
      */
-    public ShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
+    protected ShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
                           Matrix matrix) throws IOException
     {
         this.shading = shading;

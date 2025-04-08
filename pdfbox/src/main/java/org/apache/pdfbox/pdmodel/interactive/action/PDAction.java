@@ -47,7 +47,7 @@ public abstract class PDAction implements PDDestinationOrAction
     /**
      * Default constructor.
      */
-    public PDAction()
+    protected PDAction()
     {
         action = new COSDictionary();
         setType( TYPE );
@@ -58,7 +58,7 @@ public abstract class PDAction implements PDDestinationOrAction
      *
      * @param a The action dictionary.
      */
-    public PDAction( COSDictionary a )
+    protected PDAction(COSDictionary a)
     {
         action = a;
     }

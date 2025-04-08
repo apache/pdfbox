@@ -49,7 +49,7 @@ public abstract class PDChoice extends PDVariableText
      *
      * @param acroForm The acroform.
      */
-    public PDChoice(PDAcroForm acroForm)
+    protected PDChoice(PDAcroForm acroForm)
     {
         super(acroForm);
         getCOSObject().setItem(COSName.FT, COSName.CH);

@@ -61,7 +61,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
      * @throws CertificateException if the certificate is not valid as signing time
      * @throws IOException if no certificate could be found
      */
-    public CreateSignatureBase(KeyStore keystore, char[] pin)
+    protected CreateSignatureBase(KeyStore keystore, char[] pin)
             throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, CertificateException
     {
         // grabs the first alias from the keystore and get the private key. An
