@@ -1551,11 +1551,10 @@ public class COSWriter implements ICOSVisitor
         }
         if( missingID || incrementalUpdate)
         {
-            @SuppressWarnings({"squid:S5542","lgtm [java/weak-cryptographic-algorithm]"})
-            MessageDigest md5;
+            MessageDigest sha256;
             try
             {
-                md5 = MessageDigest.getInstance("MD5");
+                sha256 = MessageDigest.getInstance("SHA256");
             }
             catch (NoSuchAlgorithmException e)
             {
@@ -1565,20 +1564,20 @@ public class COSWriter implements ICOSVisitor
 
             // algorithm says to use time/path/size/values in doc to generate the id.
             // we don't have path or size, so do the best we can
-            md5.update( Long.toString(idTime).getBytes(StandardCharsets.ISO_8859_1) );
+            sha256.update( Long.toString(idTime).getBytes(StandardCharsets.ISO_8859_1) );
 
             COSDictionary info = trailer.getCOSDictionary(COSName.INFO);
             if( info != null )
             {
                 for (COSBase cosBase : info.getValues())
                 {
-                    md5.update(cosBase.toString().getBytes(StandardCharsets.ISO_8859_1));
+                    sha256.update(cosBase.toString().getBytes(StandardCharsets.ISO_8859_1));
                 }
             }
             // reuse origin documentID if available as first value
-            COSString firstID = missingID ? new COSString( md5.digest() ) : (COSString)idArray.get(0);
+            COSString firstID = missingID ? new COSString(sha256.digest()) : (COSString) idArray.get(0);
             // it's ok to use the same ID for the second part if the ID is created for the first time
-            COSString secondID = missingID ? firstID : new COSString( md5.digest() );
+            COSString secondID = missingID ? firstID : new COSString(sha256.digest());
             idArray = new COSArray();
             idArray.add( firstID );
             idArray.add( secondID );
