@@ -160,15 +160,20 @@ public class XMLUtil
      * @param parent The parent element that holds the values.
      * @param nodeName The name of the node that holds the integer value.
      * 
-     * @return The integer value of the node.
+     * @return The integer value of the node or null.
      */
     public static Integer getIntValue( Element parent, String nodeName )
     {
-        String intVal = XMLUtil.getStringValue( XMLUtil.getElement( parent, nodeName ) );
+        Element element = XMLUtil.getElement( parent, nodeName );
+        if (element == null)
+        {
+            return null;
+        }
+        String intVal = XMLUtil.getStringValue( element );
         Integer retval = null;
         if( intVal != null )
         {
-            retval = new Integer( intVal );
+            retval = Integer.valueOf(intVal);
         }
         return retval;
     }
@@ -211,11 +216,16 @@ public class XMLUtil
      * @param parent The parent element that holds the values.
      * @param nodeName The name of the node that holds the value.
      * 
-     * @return The value of the sub node.
+     * @return The value of the sub node or null.
      */
     public static String getStringValue( Element parent, String nodeName )
     {
-        return XMLUtil.getStringValue( XMLUtil.getElement( parent, nodeName ) );
+        Element element = XMLUtil.getElement(parent, nodeName);
+        if (element == null)
+        {
+            return null;
+        }
+        return XMLUtil.getStringValue(element);
     }
     
     /**
