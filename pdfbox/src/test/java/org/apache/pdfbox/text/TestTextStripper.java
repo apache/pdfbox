@@ -234,10 +234,10 @@ class TestTextStripper
      * @param outDir The directory to store the output in
      * @param bLogResult Whether to log the extracted text
      * @param bSort Whether or not the extracted text is sorted
-     * @throws Exception when there is an exception
+     * @throws IOException when there is an exception
      */
     private void doTestFile(File inFile, File outDir, boolean bLogResult, boolean bSort)
-    throws Exception
+    throws IOException
     {
         if(bSort)
         {
@@ -541,7 +541,7 @@ class TestTextStripper
      * @param inDir Input directory search for PDF files in.
      * @param outDir Output directory where the temp files will be created.
      */
-    private void doTestDir(File inDir, File outDir) throws Exception 
+    private void doTestDir(File inDir, File outDir) throws IOException 
     {
         File[] testFiles = inDir.listFiles((File dir, String name) -> name.endsWith(".pdf"));
         for (File testFile : testFiles) 
@@ -556,10 +556,10 @@ class TestTextStripper
     /**
      * Test to validate text extraction of file set.
      *
-     * @throws Exception when there is an exception
+     * @throws IOException when there is an exception
      */
     @Test
-    void testExtract() throws Exception
+    void testExtract() throws IOException
     {
         String filename = System.getProperty("org.apache.pdfbox.util.TextStripper.file");
         File inDir = new File("src/test/resources/input");
@@ -696,10 +696,10 @@ class TestTextStripper
     /**
      * PDFBOX-3774: test the IgnoreContentStreamSpaceGlyphs option.
      *
-     * @throws Exception 
+     * @throws IOException 
      */
     @Test
-    void testIgnoreContentStreamSpaceGlyphs() throws Exception
+    void testIgnoreContentStreamSpaceGlyphs() throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {

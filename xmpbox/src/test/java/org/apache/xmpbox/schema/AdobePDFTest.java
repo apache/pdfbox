@@ -54,7 +54,7 @@ class AdobePDFTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testElementValue(String property, PropertyType type, String value) throws Exception
+    void testElementValue(String property, PropertyType type, String value) throws ReflectiveOperationException
     {
         XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetValue();
@@ -62,7 +62,7 @@ class AdobePDFTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testElementProperty(String property, PropertyType type, String value) throws Exception
+    void testElementProperty(String property, PropertyType type, String value) throws ReflectiveOperationException
     {
         XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetProperty();

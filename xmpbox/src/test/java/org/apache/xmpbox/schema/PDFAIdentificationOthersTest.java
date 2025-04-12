@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 class PDFAIdentificationOthersTest
 {
     @Test
-    void testPDFAIdentification() throws Exception
+    void testPDFAIdentification() throws BadFieldValueException
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();
@@ -70,7 +70,7 @@ class PDFAIdentificationOthersTest
     }
 
     @Test
-    void testBadVersionIdValueType() throws Exception
+    void testBadVersionIdValueType()
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();

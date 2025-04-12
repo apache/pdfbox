@@ -71,7 +71,7 @@ class SchemaTester extends AbstractTypeTester {
         this.cardinality = card;
     }
 
-    public void testInitializedToNull() throws Exception
+    public void testInitializedToNull() throws ReflectiveOperationException
     {
         XMPSchema schema = getSchema();
         // default method

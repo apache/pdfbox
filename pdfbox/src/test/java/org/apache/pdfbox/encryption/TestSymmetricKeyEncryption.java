@@ -205,10 +205,10 @@ class TestSymmetricKeyEncryption
     /**
      * Protect a document with a key and try to reopen it with that key and compare.
      *
-     * @throws Exception If there is an unexpected error during the test.
+     * @throws IOException If there is an unexpected error during the test.
      */
     @Test
-    void testProtection() throws Exception
+    void testProtection() throws IOException
     {
         String filename = "Acroform-PDFBOX-2333.pdf";
         byte[] inputFileAsByteArray = getFileResourceAsByteArray(filename);

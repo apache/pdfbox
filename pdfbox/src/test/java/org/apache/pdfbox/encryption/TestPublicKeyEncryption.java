@@ -148,7 +148,7 @@ class TestPublicKeyEncryption
      * {@inheritDoc}
      */
     @AfterEach
-    void tearDown() throws Exception 
+    void tearDown() throws IOException
     {
         document.close();
     }

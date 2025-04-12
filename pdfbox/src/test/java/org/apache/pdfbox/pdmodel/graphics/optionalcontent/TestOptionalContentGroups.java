@@ -73,10 +73,10 @@ class TestOptionalContentGroups
 
     /**
      * Tests OCG generation.
-     * @throws Exception if an error occurs
+     * @throws IOException if an error occurs
      */
     @Test
-    void testOCGGeneration() throws Exception
+    void testOCGGeneration() throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
@@ -162,10 +162,10 @@ class TestOptionalContentGroups
 
     /**
      * Tests OCG functions on a loaded PDF.
-     * @throws Exception if an error occurs
+     * @throws IOException if an error occurs
      */
     @Test
-    void testOCGConsumption() throws Exception
+    void testOCGConsumption() throws IOException
     {
         File pdfFile = new File(testResultsDir, "ocg-generation.pdf");
         if (!pdfFile.exists())
@@ -256,7 +256,7 @@ class TestOptionalContentGroups
     }
 
     @Test
-    void testOCGsWithSameNameCanHaveDifferentVisibility() throws Exception
+    void testOCGsWithSameNameCanHaveDifferentVisibility() throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {

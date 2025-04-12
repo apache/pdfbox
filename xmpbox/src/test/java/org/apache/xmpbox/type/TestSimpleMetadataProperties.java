@@ -88,7 +88,7 @@ class TestSimpleMetadataProperties
      * @throws IllegalArgumentException
      */
     @Test
-    void testRealBadTypeDetection() throws Exception
+    void testRealBadTypeDetection()
     {
         assertThrows(IllegalArgumentException.class, () -> {
             new RealType(parent, null, "test", "real", "Not a real");
@@ -101,7 +101,7 @@ class TestSimpleMetadataProperties
      * @throws IllegalArgumentException
      */
     @Test
-    void testTextBadTypeDetection() throws Exception
+    void testTextBadTypeDetection()
     {
         Calendar calendar = Calendar.getInstance();
         assertThrows(IllegalArgumentException.class, () -> {
@@ -111,11 +111,9 @@ class TestSimpleMetadataProperties
 
     /**
      * Check if information between objects and the element generated are equals
-     * 
-     * @throws Exception
      */
     @Test
-    void testElementAndObjectSynchronization() throws Exception
+    void testElementAndObjectSynchronization()
     {
         boolean boolv = true;
         Calendar datev = Calendar.getInstance();
@@ -133,16 +131,13 @@ class TestSimpleMetadataProperties
         assertEquals(Integer.valueOf(integerv), integer.getValue());
         assertEquals(realv, real.getValue(), 0);
         assertEquals(textv, text.getStringValue());
-
     }
 
     /**
      * Check the creation from string attributes
-     * 
-     * @throws Exception
      */
     @Test
-    void testCreationFromString() throws Exception
+    void testCreationFromString()
     {
         String boolv = "False";
         String datev = "2010-03-22T14:33:11+01:00";
@@ -165,11 +160,9 @@ class TestSimpleMetadataProperties
 
     /**
      * Check creation when a namespace is specified
-     * 
-     * @throws Exception
      */
     @Test
-    void testObjectCreationWithNamespace() throws Exception
+    void testObjectCreationWithNamespace()
     {
         String ns = "http://www.test.org/pdfa/";
         BooleanType bool = parent.getTypeMapping().createBoolean(ns, "test", "boolean", true);
@@ -183,7 +176,6 @@ class TestSimpleMetadataProperties
         assertEquals(ns, integer.getNamespace());
         assertEquals(ns, real.getNamespace());
         assertEquals(ns, text.getNamespace());
-
     }
 
     /**
@@ -192,7 +184,7 @@ class TestSimpleMetadataProperties
      * @throws IllegalArgumentException
      */
     @Test
-    void testExceptionWithCause() throws Exception
+    void testExceptionWithCause()
     {
         Throwable throwable = new Throwable();
         assertThrows(IllegalArgumentException.class, () -> {
@@ -202,11 +194,9 @@ class TestSimpleMetadataProperties
 
     /**
      * Check if attributes management works
-     * 
-     * @throws Exception
      */
     @Test
-    void testAttribute() throws Exception
+    void testAttribute()
     {
 
         IntegerType integer = new IntegerType(parent, null, "test", "integer", 1);

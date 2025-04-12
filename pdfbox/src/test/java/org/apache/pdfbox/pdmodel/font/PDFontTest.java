@@ -70,7 +70,7 @@ class PDFontTest
     private static final File OUT_DIR = new File("target/test-output");
 
     @BeforeAll
-    static void setUp() throws Exception
+    static void setUp()
     {
         OUT_DIR.mkdirs();
     }
@@ -79,13 +79,12 @@ class PDFontTest
      * Test of the error reported in PDFBOX-988
      *
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox988() throws IOException, URISyntaxException
+    void testPDFBox988() throws IOException
     {
         try (PDDocument doc = 
-                Loader.loadPDF(new File(PDFontTest.class.getResource("F001u_3_7j.pdf").toURI())))
+                Loader.loadPDF(new RandomAccessReadBuffer(PDFontTest.class.getResourceAsStream("F001u_3_7j.pdf"))))
         {
             PDFRenderer renderer = new PDFRenderer(doc);
             renderer.renderImage(0);

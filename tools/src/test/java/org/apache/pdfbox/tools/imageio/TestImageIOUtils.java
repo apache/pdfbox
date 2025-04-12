@@ -292,10 +292,10 @@ class TestImageIOUtils
     /**
      * Test to validate image rendering of file set.
      *
-     * @throws Exception when there is an exception
+     * @throws IOException when there is an exception
      */
     @Test
-    void testRenderImage() throws Exception
+    void testRenderImage() throws IOException
     {
         String inDir = "src/test/resources/input/ImageIOUtil";
         String outDir = "target/test-output/ImageIOUtil/";

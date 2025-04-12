@@ -51,7 +51,7 @@ class TestDerivedType
     protected Constructor<? extends TextType> constructor = null;
 
     @BeforeEach
-    void before() throws Exception
+    void before()
     {
         xmp = XMPMetadata.createXMPMetadata();
     }

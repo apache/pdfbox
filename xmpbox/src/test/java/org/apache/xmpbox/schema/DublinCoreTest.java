@@ -46,7 +46,7 @@ class DublinCoreTest
     
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testInitializedToNull(String fieldName, Types type, Cardinality card) throws Exception
+    void testInitializedToNull(String fieldName, Types type, Cardinality card) throws ReflectiveOperationException
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testInitializedToNull();

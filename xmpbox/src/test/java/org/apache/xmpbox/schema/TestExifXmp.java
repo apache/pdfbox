@@ -34,11 +34,13 @@ import org.apache.xmpbox.xml.XmpSerializer;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
+import javax.xml.transform.TransformerException;
+import org.apache.xmpbox.xml.XmpParsingException;
 
 class TestExifXmp
 {
     @Test
-    void testNonStrict() throws Exception
+    void testNonStrict() throws XmpParsingException
     {
         InputStream is = this.getClass().getResourceAsStream("/validxmp/exif.xmp");
 
@@ -52,7 +54,7 @@ class TestExifXmp
     }
 
     @Test
-    void testGenerate() throws Exception
+    void testGenerate() throws TransformerException
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         TypeMapping tmapping = metadata.getTypeMapping();

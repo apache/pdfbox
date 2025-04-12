@@ -22,10 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.util.HashSet;
 import java.util.Set;
+import javax.xml.transform.TransformerException;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.examples.pdmodel.CreatePDFA;
@@ -35,9 +38,12 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpParsingException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.verapdf.core.VeraPDFException;
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
 import org.verapdf.pdfa.Foundries;
 import org.verapdf.pdfa.PDFAParser;
@@ -63,7 +69,8 @@ class CreatePDFATest
      * Test of doIt method of class CreatePDFA.
      */
     @Test
-    void testCreatePDFA() throws Exception
+    void testCreatePDFA() throws IOException, TransformerException, GeneralSecurityException,
+            XmpParsingException, BadFieldValueException, VeraPDFException
     {
         String pdfaFilename = OUTDIR + "/PDFA.pdf";
         String signedPdfaFilename = OUTDIR + "/PDFA_signed.pdf";

@@ -61,7 +61,7 @@ class TestLayerUtility
 
     /**
      * Tests layer import.
-     * @throws Exception if an error occurs
+     * @throws IOException if an error occurs
      */
     @Test
     void testLayerImport() throws IOException

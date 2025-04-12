@@ -56,7 +56,7 @@ class TestAbstractStructuredType
     protected final MyStructuredType st = new MyStructuredType(xmp, MY_NS, MY_PREFIX);
 
     @Test
-    void validate() throws Exception
+    void validate()
     {
         assertEquals(MY_NS, st.getNamespace());
         assertEquals(MY_PREFIX, st.getPrefix());
@@ -64,19 +64,19 @@ class TestAbstractStructuredType
     }
 
     @Test
-    void testNonExistingProperty() throws Exception
+    void testNonExistingProperty()
     {
         assertNull(st.getProperty("NOT_EXISTING"));
     }
 
     @Test
-    void testNotValuatedPropertyProperty() throws Exception
+    void testNotValuatedPropertyProperty()
     {
         assertNull(st.getProperty(MyStructuredType.MYTEXT));
     }
 
     @Test
-    void testValuatedTextProperty() throws Exception
+    void testValuatedTextProperty()
     {
         String s = "my value";
         st.addSimpleProperty(MyStructuredType.MYTEXT, s);
@@ -86,7 +86,7 @@ class TestAbstractStructuredType
     }
 
     @Test
-    void testValuatedDateProperty() throws Exception
+    void testValuatedDateProperty()
     {
         Calendar c = Calendar.getInstance();
         st.addSimpleProperty(MyStructuredType.MYDATE, c);

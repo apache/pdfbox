@@ -22,7 +22,7 @@
 package org.apache.xmpbox;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -37,7 +37,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class TestXMPWithUndefinedSchemas
 {
-    static Stream<Arguments> initializeParameters() throws Exception
+    static Stream<Arguments> initializeParameters()
     {
         return Stream.of(
             Arguments.of("/undefinedxmp/prism.xmp", "http://prismstandard.org/namespaces/basic/2.0/", "aggregationType", "journal")
@@ -54,7 +54,7 @@ class TestXMPWithUndefinedSchemas
         builder.setStrictParsing(false);
         XMPMetadata rxmp = builder.parse(is);
         // ensure basic parsing was OK
-        assertTrue(rxmp.getAllSchemas().size()>0, "There should be a least one schema");
+        assertFalse(rxmp.getAllSchemas().isEmpty(), "There should be a least one schema");
         assertNotNull(rxmp.getSchema(namespace), "The schema for {" + namespace + "} should be available");
         assertNotNull(rxmp.getSchema(namespace).getProperty(propertyName), "The schema for {" + namespace + "} should have a property {" + propertyName + "} ");
         assertEquals(rxmp.getSchema(namespace).getProperty(propertyName).getPropertyName(), propertyName,  "The schema for {" + namespace + "} should have a property {" + propertyName + "} ");

@@ -91,9 +91,10 @@ class TestPDPageTree
     }
 
     @Test
-    void testInsertBeforeBlankPage() throws Exception
+    void testInsertBeforeBlankPage() throws IOException
     {
-        try (PDDocument document = new PDDocument()) {
+        try (PDDocument document = new PDDocument())
+        {
             PDPage pageOne = new PDPage();
             PDPage pageTwo = new PDPage();
             PDPage pageThree = new PDPage();
@@ -110,9 +111,10 @@ class TestPDPageTree
     }
 
     @Test
-    void testInsertAfterBlankPage() throws Exception
+    void testInsertAfterBlankPage() throws IOException
     {
-        try (PDDocument document = new PDDocument()) {
+        try (PDDocument document = new PDDocument())
+        {
             PDPage pageOne = new PDPage();
             PDPage pageTwo = new PDPage();
             PDPage pageThree = new PDPage();

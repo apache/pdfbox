@@ -22,8 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -65,16 +66,8 @@ class TestExtractText
     void setUpStreams()
     {
         out.reset();
-        try
-        {
-            printStream = new PrintStream(out, true, "utf-8");
-            System.setOut(printStream);
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            // shouldn't happen at all
-            e.printStackTrace();
-        }
+        printStream = new PrintStream(out, true, StandardCharsets.UTF_8);
+        System.setOut(printStream);
     }
 
     @AfterEach
@@ -89,18 +82,16 @@ class TestExtractText
     
     /**
      * Run the text extraction test using a pdf with embedded pdfs.
-     * 
-     * @throws Exception if something went wrong
      */
     @Test
-    void testEmbeddedPDFs() throws Exception 
+    void testEmbeddedPDFs()
     {
         ExtractText app = new ExtractText();
         CommandLine cmd = new CommandLine(app);
         int exitCode = cmd.execute("-i", TESTFILE1, "-console");
         assertEquals(0, exitCode);
 
-        String result = out.toString("UTF-8");
+        String result = out.toString(StandardCharsets.UTF_8);
         assertTrue(result.contains("PDF1"));
         assertTrue(result.contains("PDF2"));
         assertFalse(result.contains("PDF file: " + filename1));
@@ -111,18 +102,16 @@ class TestExtractText
 
     /**
      * Run the text extraction with -addFileName
-     * 
-     * @throws Exception if something went wrong
-     */
+      */
     @Test
-    void testAddFileName() throws Exception
+    void testAddFileName()
     {
         ExtractText app = new ExtractText();
         CommandLine cmd = new CommandLine(app);
         int exitCode = cmd.execute("-i", TESTFILE1, "-console", "-addFileName");
         assertEquals(0, exitCode);
 
-        String result = out.toString("UTF-8");
+        String result = out.toString(StandardCharsets.UTF_8);
         assertTrue(result.contains("PDF1"));
         assertTrue(result.contains("PDF2"));
         assertTrue(result.contains("PDF file: " + filename1));
@@ -133,16 +122,14 @@ class TestExtractText
 
     /**
      * Run the text extraction as a PDFBox repeatable subcommand
-     * 
-     * @throws Exception if something went wrong
      */
     @Test
-    void testPDFBoxRepeatableSubcommand() throws Exception
+    void testPDFBoxRepeatableSubcommand()
     {
         PDFBox.main(new String[] { "export:text", "-i", TESTFILE1, "-console", //
                 "export:text", "-i", TESTFILE2, "-console" });
 
-        String result = out.toString("UTF-8");
+        String result = out.toString(StandardCharsets.UTF_8);
         assertTrue(result.contains("PDF1"));
         assertTrue(result.contains("PDF2"));
         assertFalse(result.contains("PDF file: " + filename1));
@@ -153,16 +140,14 @@ class TestExtractText
 
     /**
      * Run the text extraction as a PDFBox repeatable subcommand with -addFileName
-     * 
-     * @throws Exception if something went wrong
      */
     @Test
-    void testPDFBoxRepeatableSubcommandAddFileName() throws Exception
+    void testPDFBoxRepeatableSubcommandAddFileName()
     {
         PDFBox.main(new String[] { "export:text", "-i", TESTFILE1, "-console", "-addFileName",
                 "export:text", "-i", TESTFILE2, "-console", "-addFileName" });
 
-        String result = out.toString("UTF-8");
+        String result = out.toString(StandardCharsets.UTF_8);
         assertTrue(result.contains("PDF1"));
         assertTrue(result.contains("PDF2"));
         assertTrue(result.contains("PDF file: " + filename1));
@@ -175,10 +160,10 @@ class TestExtractText
      * Run the text extraction as a PDFBox repeatable subcommand with -addFileName, with -o <outfile> and without
      * -append
      * 
-     * @throws Exception if something went wrong
+     * @throws IOException
      */
     @Test
-    void testPDFBoxRepeatableSubcommandAddFileNameOutfile(@TempDir Path tempDir) throws Exception
+    void testPDFBoxRepeatableSubcommandAddFileNameOutfile(@TempDir Path tempDir) throws IOException
     {
         Path path = null;
         try
@@ -193,12 +178,12 @@ class TestExtractText
         }
         assertNotNull(path);
 
-        PDFBox.main(new String[] { "export:text", "-i", TESTFILE1, "-encoding", "UTF-8",
+        PDFBox.main(new String[] { "export:text", "-i", TESTFILE1, "-encoding", StandardCharsets.UTF_8.name(),
                 "-addFileName", "-o", path.toString(), //
-                "export:text", "-i", TESTFILE2, "-encoding", "UTF-8", //
+                "export:text", "-i", TESTFILE2, "-encoding", StandardCharsets.UTF_8.name(), //
                 "-addFileName", "-o", path.toString() });
 
-        String result = new String(Files.readAllBytes(path), "UTF-8");
+        String result = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
         assertFalse(result.contains("PDF1"));
         assertFalse(result.contains("PDF2"));
         assertFalse(result.contains("PDF file: " + filename1));
@@ -210,11 +195,11 @@ class TestExtractText
     /**
      * Run the text extraction as a PDFBox repeatable subcommand with -addFileName, -o <outfile> and -append
      * 
-     * @throws Exception if something went wrong
+     * @throws IOException
      */
     @Test
     void testPDFBoxRepeatableSubcommandAddFileNameOutfileAppend(@TempDir Path tempDir)
-            throws Exception
+            throws IOException
     {
         Path path = null;
 
@@ -248,10 +233,10 @@ class TestExtractText
      * Simple test to check that the rotationMagic feature works.
      *
      * @param tempDir
-     * @throws Exception 
+     * @throws IOException 
      */
     @Test
-    void testRotationMagic(@TempDir Path tempDir) throws Exception
+    void testRotationMagic(@TempDir Path tempDir) throws IOException
     {
         Path path = null;
 

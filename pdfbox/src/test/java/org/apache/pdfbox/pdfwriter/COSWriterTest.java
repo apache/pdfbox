@@ -70,7 +70,7 @@ class COSWriterTest
     }
 
     @Test
-    void testPDFBox5485() throws Exception
+    void testPDFBox5485() throws IOException
     {
         File pdfFile = Paths.get("src", "test", "resources", "input", "PDFBOX-3110-poems-beads.pdf")
                 .toFile();
@@ -85,7 +85,7 @@ class COSWriterTest
     }
 
     @Test
-    void testPDFBox5945() throws Exception
+    void testPDFBox5945() throws IOException
     {
         byte[] input = create();
         checkTrailerSize(input);

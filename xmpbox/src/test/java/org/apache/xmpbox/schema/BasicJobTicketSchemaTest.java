@@ -24,17 +24,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.ByteArrayOutputStream;
+import javax.xml.transform.TransformerException;
 
 import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.type.JobType;
 import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpParsingException;
 import org.apache.xmpbox.xml.XmpSerializer;
 import org.junit.jupiter.api.Test;
 
 class BasicJobTicketSchemaTest
 {
     @Test
-    void testAddTwoJobs() throws Exception
+    void testAddTwoJobs() throws XmpParsingException, TransformerException, BadFieldValueException
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         XmpSerializer serializer = new XmpSerializer();
@@ -57,7 +60,7 @@ class BasicJobTicketSchemaTest
     }
 
     @Test
-    void testAddWithDefaultPrefix() throws Exception
+    void testAddWithDefaultPrefix() throws XmpParsingException, TransformerException, BadFieldValueException
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         XmpSerializer serializer = new XmpSerializer();
@@ -85,7 +88,7 @@ class BasicJobTicketSchemaTest
     }
 
     @Test
-    void testAddWithDefinedPrefix() throws Exception
+    void testAddWithDefinedPrefix() throws TransformerException, XmpParsingException, BadFieldValueException
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         XmpSerializer serializer = new XmpSerializer();

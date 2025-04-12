@@ -94,7 +94,7 @@ class BidiTest
      * @param outDir The directory to store the output in
      * @param bLogResult Whether to log the extracted text
      * @param bSort Whether or not the extracted text is sorted
-     * @throws Exception when there is an exception
+     * @throws IOException when there is an exception
      */
     private void doTestFile(File inFile, File outDir, boolean bLogResult, boolean bSort)
     throws IOException

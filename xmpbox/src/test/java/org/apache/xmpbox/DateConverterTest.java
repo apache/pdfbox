@@ -46,10 +46,10 @@ class DateConverterTest
      * Test with additional time zone
      * information normally not supported by ISO8601
      *
-     * @throws Exception when there is an exception
+     * @throws IOException when there is an exception
      */
     @Test
-    void testDateConversion() throws Exception
+    void testDateConversion() throws IOException
     {
         // Test partial dates
         Calendar convDate = DateConverter.toCalendar("2015-02-02");

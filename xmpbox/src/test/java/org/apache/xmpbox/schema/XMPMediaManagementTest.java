@@ -48,7 +48,7 @@ class XMPMediaManagementTest
     
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testElementValue(String property, PropertyType type, Object value) throws Exception
+    void testElementValue(String property, PropertyType type, Object value) throws ReflectiveOperationException
     {
         XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetValue();
@@ -56,13 +56,13 @@ class XMPMediaManagementTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testElementProperty(String property, PropertyType type, Object value) throws Exception
+    void testElementProperty(String property, PropertyType type, Object value) throws ReflectiveOperationException, ReflectiveOperationException
     {
         XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetProperty();
     }
 
-    static Stream<Arguments> initializeParameters() throws Exception
+    static Stream<Arguments> initializeParameters()
     {
         return Stream.of(
             Arguments.of("DocumentID", XMPSchemaTester.createPropertyType(Types.URI), "uuid:FB031973-5E75-11B2-8F06-E7F5C101C07A"),
