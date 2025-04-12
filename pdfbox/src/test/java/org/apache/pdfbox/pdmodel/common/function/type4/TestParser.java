@@ -33,6 +33,7 @@ class TestParser
     /**
      * Test the very basics.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testParserBasics()
     {
@@ -43,6 +44,7 @@ class TestParser
      * Test nested blocks.
      * @throws Exception if an error occurs
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testNested()
     {
@@ -71,6 +73,7 @@ class TestParser
     /**
      * Tests problematic functions from PDFBOX-804.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testJira804()
     {
