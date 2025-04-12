@@ -37,9 +37,10 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
@@ -296,11 +297,10 @@ public class Tree extends JTree
             {
                 File temp = File.createTempFile("pdfbox", "." + extension);
                 temp.deleteOnExit();
-                
-                try (InputStream is = cosStream.createInputStream();
-                        FileOutputStream os = new FileOutputStream(temp))
+
+                try (InputStream is = cosStream.createInputStream())
                 {
-                    is.transferTo(os);
+                    Files.copy(is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 }
                 Desktop.getDesktop().open(temp);
             }
