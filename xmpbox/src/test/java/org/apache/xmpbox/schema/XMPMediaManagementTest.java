@@ -56,7 +56,7 @@ class XMPMediaManagementTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testElementProperty(String property, PropertyType type, Object value) throws ReflectiveOperationException, ReflectiveOperationException
+    void testElementProperty(String property, PropertyType type, Object value) throws ReflectiveOperationException
     {
         XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetProperty();
