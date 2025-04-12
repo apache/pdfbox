@@ -28,9 +28,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.InputStream;
 import java.util.stream.Stream;
+import org.apache.xmpbox.type.BadFieldValueException;
 
 
 import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpParsingException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -46,7 +48,8 @@ class TestXMPWithUndefinedSchemas
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void main(String path, String namespace, String propertyName, String propertyValue) throws Exception
+    void main(String path, String namespace, String propertyName, String propertyValue)
+            throws XmpParsingException, BadFieldValueException
     {
         InputStream is = this.getClass().getResourceAsStream(path);
 

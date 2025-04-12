@@ -123,10 +123,10 @@ class DateConverterTest
      * Test with additional time zone
      * information normally not supported by ISO8601
      *
-     * @throws Exception when there is an exception
+     * @throws IOException when there is an exception
      */
     @Test
-    void testDateFormatting() throws Exception
+    void testDateFormatting() throws IOException
     {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         Calendar cal = DateConverter.toCalendar("2015-02-02T16:37:19.192Z");

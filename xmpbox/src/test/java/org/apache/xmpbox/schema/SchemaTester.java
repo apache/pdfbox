@@ -95,12 +95,12 @@ class SchemaTester extends AbstractTypeTester {
 
     }
 
-    public void testSettingValue() throws Exception
+    public void testSettingValue() throws IllegalArgumentException, IllegalAccessException
     {
         internalTestSettingValue();
     }
 
-    public void testRandomSettingValue() throws Exception
+    public void testRandomSettingValue() throws IllegalArgumentException, IllegalAccessException
     {
         initializeSeed(new Random());
         for (int i=0; i < RAND_LOOP_COUNT;i++)
@@ -109,7 +109,7 @@ class SchemaTester extends AbstractTypeTester {
         }
     }
 
-    private void internalTestSettingValue() throws Exception
+    private void internalTestSettingValue() throws IllegalArgumentException, IllegalAccessException
     {
         if (cardinality != Cardinality.Simple)
         {
@@ -135,12 +135,12 @@ class SchemaTester extends AbstractTypeTester {
         }
     }
 
-    public void testSettingValueInArray() throws Exception
+    public void testSettingValueInArray() throws IllegalArgumentException, IllegalAccessException
     {
         internalTestSettingValueInArray();
     }
 
-    public void testRandomSettingValueInArray() throws Exception
+    public void testRandomSettingValueInArray() throws IllegalArgumentException, IllegalAccessException
     {
         initializeSeed(new Random());
         for (int i=0; i < RAND_LOOP_COUNT;i++)
@@ -149,7 +149,7 @@ class SchemaTester extends AbstractTypeTester {
         }
     }
 
-    private void internalTestSettingValueInArray() throws Exception
+    private void internalTestSettingValueInArray() throws IllegalArgumentException, IllegalAccessException
     {
         if (cardinality == Cardinality.Simple)
         {
@@ -170,7 +170,7 @@ class SchemaTester extends AbstractTypeTester {
                 schema.addBagValue(property.getPropertyName(), property);
                 break;
             default:
-                throw new Exception("Unexpected case in test : " + cardinality.name());
+                throw new IllegalArgumentException("Unexpected case in test : " + cardinality.name());
         }
         String qn = getPropertyQualifiedName(fieldName);
         assertNotNull(schema.getProperty(fieldName));
@@ -187,12 +187,12 @@ class SchemaTester extends AbstractTypeTester {
         }
     }
 
-    public void testPropertySetterSimple() throws Exception
+    public void testPropertySetterSimple() throws ReflectiveOperationException
     {
         internalTestPropertySetterSimple();
     }
 
-    public void testRandomPropertySetterSimple() throws Exception
+    public void testRandomPropertySetterSimple() throws ReflectiveOperationException
     {
         initializeSeed(new Random());
         for (int i=0; i < RAND_LOOP_COUNT;i++)
@@ -201,7 +201,7 @@ class SchemaTester extends AbstractTypeTester {
         }
     }
 
-    private void internalTestPropertySetterSimple() throws Exception
+    private void internalTestPropertySetterSimple() throws IllegalAccessException, ReflectiveOperationException
     {
         if (cardinality != Cardinality.Simple)
         {
@@ -227,12 +227,12 @@ class SchemaTester extends AbstractTypeTester {
         assertEquals(asp, result);
     }
 
-    public void testPropertySetterInArray() throws Exception
+    public void testPropertySetterInArray() throws ReflectiveOperationException
     {
         internalTestPropertySetterInArray();
     }
 
-    public void testRandomPropertySetterInArray() throws Exception
+    public void testRandomPropertySetterInArray() throws IllegalAccessException, ReflectiveOperationException
     {
         initializeSeed(new Random());
         for (int i=0; i < RAND_LOOP_COUNT;i++)
@@ -241,7 +241,7 @@ class SchemaTester extends AbstractTypeTester {
         }
     }
 
-    private void internalTestPropertySetterInArray() throws Exception
+    private void internalTestPropertySetterInArray() throws IllegalAccessException, ReflectiveOperationException
     {
         if (cardinality == Cardinality.Simple)
         {

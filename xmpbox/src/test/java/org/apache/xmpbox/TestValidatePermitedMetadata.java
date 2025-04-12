@@ -41,6 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.apache.xmpbox.schema.XmpSchemaException;
 
 class TestValidatePermitedMetadata
 {
@@ -71,7 +72,8 @@ class TestValidatePermitedMetadata
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void checkExistence(String namespace, String preferred, String fieldname) throws Exception
+    void checkExistence(String namespace, String preferred, String fieldname)
+            throws XmpSchemaException, IllegalArgumentException, IllegalAccessException
     {
         // ensure schema exists
         XMPMetadata xmpmd = new XMPMetadata();

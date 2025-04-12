@@ -707,11 +707,13 @@ class TestCreateSignature
      * This should not break the signature, and the value and its display must have changed as
      * expected. Do this both for the old and new incremental save methods.
      *
-     * @throws Exception
+     * @throws IOException
      */
     @ParameterizedTest
     @MethodSource("signingTypes")
-    void testSaveIncrementalAfterSign(boolean externallySign) throws Exception
+    void testSaveIncrementalAfterSign(boolean externallySign)
+            throws IOException, GeneralSecurityException, CMSException, OperatorCreationException,
+            TSPException, CertificateVerificationException
     {
         BufferedImage oldImage, expectedImage1, actualImage1, expectedImage2, actualImage2;
 
@@ -816,7 +818,7 @@ class TestCreateSignature
     }
 
     @Test
-    void testPDFBox4784() throws Exception
+    void testPDFBox4784() throws IOException, GeneralSecurityException
     {
         Date signingTime = new Date();
 
@@ -1085,7 +1087,7 @@ class TestCreateSignature
         }
     }
 
-    private byte[] signEncrypted(SecureRandom secureRandom, Date signingTime) throws Exception
+    private byte[] signEncrypted(SecureRandom secureRandom, Date signingTime) throws IOException, GeneralSecurityException
     {
         KeyStore keystore = KeyStore.getInstance("PKCS12");
         keystore.load(new FileInputStream(KEYSTORE_PATH), PASSWORD.toCharArray());

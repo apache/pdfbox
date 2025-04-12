@@ -289,10 +289,10 @@ class TestSymmetricKeyEncryption
      * Protect a document with an embedded PDF with a key and try to reopen it
      * with that key and compare.
      *
-     * @throws Exception If there is an unexpected error during the test.
+     * @throws IOException If there is an unexpected error during the test.
      */
     @Test
-    void testProtectionInnerAttachment() throws Exception
+    void testProtectionInnerAttachment() throws IOException
     {
         String testFileName = "preEnc_20141025_105451.pdf";
         byte[] inputFileWithEmbeddedFileAsByteArray = getFileResourceAsByteArray(testFileName);

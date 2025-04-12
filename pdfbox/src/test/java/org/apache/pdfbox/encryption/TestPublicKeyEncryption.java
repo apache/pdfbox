@@ -157,11 +157,11 @@ class TestPublicKeyEncryption
      * Protect a document with certificate 1 and try to open it with
      * certificate 2 and catch the exception.
      *
-     * @throws Exception If there is an unexpected error during the test.
+     * @throws IOException If there is an unexpected error during the test.
      */
     @ParameterizedTest
     @MethodSource("keyLengths")
-    void testProtectionError(int keyLength) throws Exception
+    void testProtectionError(int keyLength) throws IOException
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
@@ -186,11 +186,11 @@ class TestPublicKeyEncryption
      * Protect a document with a public certificate and try to open it
      * with the corresponding private certificate.
      *
-     * @throws Exception If there is an unexpected error during the test.
+     * @throws IOException If there is an unexpected error during the test.
      */
     @ParameterizedTest
     @MethodSource("keyLengths")
-    void testProtection(int keyLength) throws Exception
+    void testProtection(int keyLength) throws IOException
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
@@ -218,11 +218,11 @@ class TestPublicKeyEncryption
     /**
      * Protect the document for 2 recipients and try to open it.
      *
-     * @throws Exception If there is an error during the test.
+     * @throws IOException If there is an error during the test.
      */
     @ParameterizedTest
     @MethodSource("keyLengths")
-    void testMultipleRecipients(int keyLength) throws Exception
+    void testMultipleRecipients(int keyLength) throws IOException
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
