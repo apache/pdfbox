@@ -75,7 +75,7 @@ class XMPSchemaTester
         return TypeMapping.createPropertyType(type, card);
     }
 
-    public void testGetSetValue() throws Exception
+    public void testGetSetValue() throws ReflectiveOperationException
     {
         if (type.type() == Types.Text && type.card() == Cardinality.Simple)
         {
@@ -119,11 +119,11 @@ class XMPSchemaTester
         }
         else
         {
-            throw new Exception("Unknown type : " + type);
+            throw new IllegalArgumentException("Unknown type : " + type);
         }
     }
 
-    public void testGetSetProperty() throws Exception
+    public void testGetSetProperty() throws ReflectiveOperationException
     {
         if (type.type() == Types.Text && type.card() == Cardinality.Simple)
         {
@@ -187,7 +187,7 @@ class XMPSchemaTester
         }
         else
         {
-            throw new Exception("Unknown type : " + type);
+            throw new IllegalArgumentException("Unknown type : " + type);
         }
         Field[] fields = schemaClass.getFields();
         for (Field field : fields)
@@ -323,7 +323,7 @@ class XMPSchemaTester
 
     }
 
-    protected void testGetSetBooleanProperty() throws Exception
+    protected void testGetSetBooleanProperty() throws ReflectiveOperationException
     {
         String setName = setMethod(property);
         String getName = getMethod(property);
@@ -338,7 +338,7 @@ class XMPSchemaTester
 
     }
 
-    protected void testGetSetDateProperty() throws Exception
+    protected void testGetSetDateProperty() throws ReflectiveOperationException
     {
         String setName = setMethod(property);
         String getName = getMethod(property);
@@ -352,7 +352,7 @@ class XMPSchemaTester
         assertEquals(value, found);
     }
 
-    protected void testGetSetIntegerProperty() throws Exception
+    protected void testGetSetIntegerProperty() throws ReflectiveOperationException
     {
         String setName = setMethod(property);
         String getName = getMethod(property);
@@ -366,7 +366,7 @@ class XMPSchemaTester
         assertEquals(value, found);
     }
 
-    protected void testGetSetTextProperty() throws Exception
+    protected void testGetSetTextProperty() throws ReflectiveOperationException
     {
         String setName = setMethod(property);
         String getName = getMethod(property);
@@ -381,7 +381,7 @@ class XMPSchemaTester
 
     }
 
-    protected void testGetSetURIProperty() throws Exception
+    protected void testGetSetURIProperty() throws ReflectiveOperationException
     {
         String setName = setMethod(property);
         String getName = getMethod(property);
@@ -396,7 +396,7 @@ class XMPSchemaTester
 
     }
 
-    protected void testGetSetURLProperty() throws Exception
+    protected void testGetSetURLProperty() throws ReflectiveOperationException
     {
         String setName = setMethod(property);
         String getName = getMethod(property);
@@ -411,7 +411,7 @@ class XMPSchemaTester
 
     }
 
-    protected void testGetSetAgentNameProperty() throws Exception
+    protected void testGetSetAgentNameProperty() throws ReflectiveOperationException
     {
         String setName = setMethod(property);
         String getName = getMethod(property);
@@ -427,7 +427,7 @@ class XMPSchemaTester
 
     }
 
-    protected void testGetSetTextListValue(String tp) throws Exception
+    protected void testGetSetTextListValue(String tp) throws ReflectiveOperationException
     {
         String setName = addToValueMethod(property);
         String getName = getValueMethod(property);
@@ -448,7 +448,7 @@ class XMPSchemaTester
         }
     }
 
-    protected void testGetSetDateListValue(String tp) throws Exception
+    protected void testGetSetDateListValue(String tp) throws ReflectiveOperationException
     {
         String setName = addToValueMethod(property);
         String getName = getValueMethod(property);
@@ -469,7 +469,7 @@ class XMPSchemaTester
         }
     }
 
-    protected void testGetSetThumbnail() throws Exception
+    protected void testGetSetThumbnail() throws ReflectiveOperationException
     {
         String addName = addMethod(property);
         String getName = getMethod(property);
@@ -489,7 +489,7 @@ class XMPSchemaTester
         assertEquals(img, t1.getImage());
     }
 
-    protected void testGetSetLangAltValue() throws Exception
+    protected void testGetSetLangAltValue() throws ReflectiveOperationException
     {
         String setName = addToValueMethod(property);
         String getName = getValueMethod(property);
@@ -513,7 +513,7 @@ class XMPSchemaTester
         }
     }
 
-    protected void testGetSetURLValue() throws Exception
+    protected void testGetSetURLValue() throws ReflectiveOperationException
     {
         String setName = addToValueMethod(property);
         String getName = getValueMethod(property);
@@ -534,7 +534,7 @@ class XMPSchemaTester
         }
     }
 
-    protected void testGetSetTextValue() throws Exception
+    protected void testGetSetTextValue() throws ReflectiveOperationException
     {
         String setName = setValueMethod(property);
         String getName = getValueMethod(property);
@@ -548,7 +548,7 @@ class XMPSchemaTester
         assertEquals(value, found);
     }
 
-    protected void testGetSetBooleanValue() throws Exception
+    protected void testGetSetBooleanValue() throws ReflectiveOperationException
     {
         String setName = setValueMethod(property);
         String getName = getValueMethod(property);
@@ -562,7 +562,7 @@ class XMPSchemaTester
         assertEquals(value, found);
     }
 
-    protected void testGetSetDateValue() throws Exception
+    protected void testGetSetDateValue() throws ReflectiveOperationException
     {
         String setName = setValueMethod(property);
         String getName = getValueMethod(property);
@@ -576,7 +576,7 @@ class XMPSchemaTester
         assertEquals(value, found);
     }
 
-    protected void testGetSetIntegerValue() throws Exception
+    protected void testGetSetIntegerValue() throws ReflectiveOperationException
     {
         String setName = setValueMethod(property);
         String getName = getValueMethod(property);
