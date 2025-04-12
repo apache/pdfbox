@@ -90,7 +90,7 @@ class TestStructuredType extends AbstractTypeTester
     @MethodSource("initializeParameters")
     void testPropertyType(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
     {
-        internalTestPropertyType(structured, clz, fieldName, type);
+        internalTestPropertyType(structured, fieldName, type);
     }
 
     @ParameterizedTest
@@ -100,12 +100,12 @@ class TestStructuredType extends AbstractTypeTester
         initializeSeed(new Random());
         for (int i=0; i < RAND_LOOP_COUNT;i++)
         {
-            internalTestPropertyType(structured, clz, fieldName, type);
+            internalTestPropertyType(structured, fieldName, type);
         }
     }
 
 
-    private void internalTestPropertyType(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    private void internalTestPropertyType(AbstractStructuredType structured, String fieldName, Types type) throws Exception
     {
         Object value = getJavaValue(type);
         structured.addSimpleProperty(fieldName, value);
