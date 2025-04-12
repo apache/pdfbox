@@ -38,8 +38,8 @@ import org.apache.xmpbox.type.TypeMapping;
 import org.apache.xmpbox.type.AbstractTypeTester;
 import org.apache.xmpbox.type.Types;
 
-class SchemaTester extends AbstractTypeTester {
-
+class SchemaTester extends AbstractTypeTester
+{
     private final XMPMetadata metadata;
     private final Class<?> schemaClass;
     private final String fieldName;
@@ -201,7 +201,7 @@ class SchemaTester extends AbstractTypeTester {
         }
     }
 
-    private void internalTestPropertySetterSimple() throws IllegalAccessException, ReflectiveOperationException
+    private void internalTestPropertySetterSimple() throws ReflectiveOperationException
     {
         if (cardinality != Cardinality.Simple)
         {
@@ -232,7 +232,7 @@ class SchemaTester extends AbstractTypeTester {
         internalTestPropertySetterInArray();
     }
 
-    public void testRandomPropertySetterInArray() throws IllegalAccessException, ReflectiveOperationException
+    public void testRandomPropertySetterInArray() throws ReflectiveOperationException
     {
         initializeSeed(new Random());
         for (int i=0; i < RAND_LOOP_COUNT;i++)
@@ -241,7 +241,7 @@ class SchemaTester extends AbstractTypeTester {
         }
     }
 
-    private void internalTestPropertySetterInArray() throws IllegalAccessException, ReflectiveOperationException
+    private void internalTestPropertySetterInArray() throws ReflectiveOperationException
     {
         if (cardinality == Cardinality.Simple)
         {
