@@ -75,8 +75,15 @@ public class Type2CharString extends Type1CharString
     private void convertType1ToType2(List<Object> sequence)
     {
         pathCount = 0;
-        List<Number> numbers = new ArrayList<>();
 
+        // PDFBOX-5987: the sequence contains several "num denom DIV" sequences whose results are used
+        // for further operations. However the converter only handles direct arguments properly,
+        // not arguments that are created at runtime on the stack. It's not possible to fix this
+        // by just copying the command codes because addAlternatingCurve / addCurve require
+        // switching the sequence of arguments.
+        // The solution below just replaces all "num denom DIV" sequences with its result.
+        // If more files with even more complex sequences appear we will have to get rid of the
+        // converter and implement a complete renderer like with type1 charstrings.
         List<Object> newSequence = new ArrayList<>(sequence.size());
         for (int i = 0; i < sequence.size(); ++i)
         {
@@ -86,6 +93,7 @@ public class Type2CharString extends Type1CharString
                 Object den = sequence.get(i - 1);
                 if (num instanceof Number && den instanceof Number)
                 {
+                    @SuppressWarnings("java:S5413")
                     float f = ((Number) num).floatValue() / ((Number) den).floatValue();
                     newSequence.remove(newSequence.size() - 1);
                     newSequence.remove(newSequence.size() - 1);
@@ -102,6 +110,7 @@ public class Type2CharString extends Type1CharString
             }
         }
 
+        List<Number> numbers = new ArrayList<>();
         newSequence.forEach(obj -> {
             if (obj instanceof CharStringCommand)
             {
