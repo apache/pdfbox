@@ -82,6 +82,43 @@ public class Type2CharString extends Type1CharString
     {
         type1Sequence = new ArrayList<Object>();
         pathCount = 0;
+
+        // PDFBOX-5987: the sequence contains several "num denom DIV" sequences whose results are used
+        // for further operations. However the converter only handles direct arguments properly,
+        // not arguments that are created at runtime on the stack. It's not possible to fix this
+        // by just copying the command codes because addAlternatingCurve / addCurve require
+        // switching the sequence of arguments.
+        // The solution below just replaces all "num denom DIV" sequences with its result.
+        // If more files with even more complex sequences appear we will have to get rid of the
+        // converter and implement a complete renderer like with type1 charstrings.
+        List<Object> newSequence = new ArrayList<Object>(sequence.size());
+        for (int i = 0; i < sequence.size(); ++i)
+        {
+            Object obj = sequence.get(i);
+            if (obj instanceof CharStringCommand &&
+                "div".equals(CharStringCommand.TYPE2_VOCABULARY.get(((CharStringCommand) obj).getKey())) &&
+                 i >= 2)
+            {
+                Object num = sequence.get(i - 2);
+                Object den = sequence.get(i - 1);
+                if (num instanceof Number && den instanceof Number)
+                {
+                    float f = ((Number) num).floatValue() / ((Number) den).floatValue();
+                    newSequence.remove(newSequence.size() - 1);
+                    newSequence.remove(newSequence.size() - 1);
+                    newSequence.add(f);
+                }
+                else
+                {
+                    newSequence.add(sequence.get(i)); // GIGO
+                }
+            }
+            else
+            {
+                newSequence.add(sequence.get(i));
+            }
+        }
+
         CharStringHandler handler = new CharStringHandler() {
             @Override
             public List<Number> handleCommand(List<Number> numbers, CharStringCommand command)
@@ -89,7 +126,7 @@ public class Type2CharString extends Type1CharString
                 return Type2CharString.this.handleCommand(numbers, command);
             }
         };
-        handler.handleSequence(sequence);
+        handler.handleSequence(newSequence);
     }
 
     @SuppressWarnings(value = { "unchecked" })
