@@ -76,7 +76,33 @@ public class Type2CharString extends Type1CharString
     {
         pathCount = 0;
         List<Number> numbers = new ArrayList<>();
-        sequence.forEach(obj -> {
+
+        List<Object> newSequence = new ArrayList<>(sequence.size());
+        for (int i = 0; i < sequence.size(); ++i)
+        {
+            if (sequence.get(i) == CharStringCommand.DIV && i >= 2)
+            {
+                Object num = sequence.get(i - 2);
+                Object den = sequence.get(i - 1);
+                if (num instanceof Number && den instanceof Number)
+                {
+                    float f = ((Number) num).floatValue() / ((Number) den).floatValue();
+                    newSequence.remove(newSequence.size() - 1);
+                    newSequence.remove(newSequence.size() - 1);
+                    newSequence.add(f);
+                }
+                else
+                {
+                    newSequence.add(sequence.get(i)); // GIGO
+                }
+            }
+            else
+            {
+                newSequence.add(sequence.get(i));
+            }
+        }
+
+        newSequence.forEach(obj -> {
             if (obj instanceof CharStringCommand)
             {
                 List<Number> results = convertType2Command(numbers, (CharStringCommand) obj);
