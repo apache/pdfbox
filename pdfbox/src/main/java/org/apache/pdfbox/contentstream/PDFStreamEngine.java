@@ -66,6 +66,7 @@ import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 
 /**
  * Processes a PDF content stream and executes certain operations.
@@ -201,6 +202,10 @@ public abstract class PDFStreamEngine
         getGraphicsState().setCurrentTransformationMatrix(softMaskCTM);
         getGraphicsState().setTextMatrix(new Matrix());
         getGraphicsState().setTextLineMatrix(new Matrix());
+        getGraphicsState().setNonStrokingColorSpace(PDDeviceGray.INSTANCE);
+        getGraphicsState().setNonStrokingColor(PDDeviceGray.INSTANCE.getInitialColor());
+        getGraphicsState().setStrokingColorSpace(PDDeviceGray.INSTANCE);
+        getGraphicsState().setStrokingColor(PDDeviceGray.INSTANCE.getInitialColor());
         try
         {
             processTransparencyGroup(group);
