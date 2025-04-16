@@ -147,7 +147,7 @@ public class PDDocument implements Closeable
     private SigningSupport signingSupport;
 
     // document-wide cached resources
-    private ResourceCache resourceCache = new DefaultResourceCache();
+    private ResourceCache resourceCache = ResourceCacheFactory.createResourceCache();
 
     // to make sure only one signature is added
     private boolean signatureAdded = false;
