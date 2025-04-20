@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,6 +47,8 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.interactive.action.PDPageAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.AnnotationFilter;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -112,6 +115,64 @@ public class PDPage implements COSObjectable, PDContentStream
     {
         page = pageDictionary;
         this.resourceCache = resourceCache;
+    }
+
+    /**
+     * Remove all page resources from the cache to avoid relying on the implementation of the Cache. Does make sense
+     * after processing a page.
+     */
+    public void removePageResourceFromCache()
+    {
+        if (resourceCache == null)
+        {
+            return;
+        }
+        // limit purge operation to page resources, don't remove inherited resources
+        removeResources(page.getCOSDictionary(COSName.RESOURCES));
+    }
+
+    private void removeResources(COSDictionary resources)
+    {
+        if (resources == null)
+        {
+            return;
+        }
+        getIndirectResourceObjects(resources, COSName.COLORSPACE)
+                .forEach(resourceCache::removeColorSpace);
+        getIndirectResourceObjects(resources, COSName.EXT_G_STATE)
+                .forEach(resourceCache::removeExtState);
+        getIndirectResourceObjects(resources, COSName.FONT)
+                .forEach(resourceCache::removeFont);
+        getIndirectResourceObjects(resources, COSName.PATTERN)
+                .forEach(resourceCache::removePattern);
+        getIndirectResourceObjects(resources, COSName.PROPERTIES)
+                .forEach(resourceCache::removeProperties);
+        getIndirectResourceObjects(resources, COSName.SHADING)
+                .forEach(resourceCache::removeShading);
+        for (COSObject cosObject : getIndirectResourceObjects(resources, COSName.XOBJECT))
+        {
+            PDXObject removedXObject = resourceCache.removeXObject(cosObject);
+            // clean up the resources of the XFormObject
+            if (removedXObject instanceof PDFormXObject)
+            {
+                COSStream cosStream = removedXObject.getCOSObject();
+                removeResources(cosStream.getCOSDictionary(COSName.RESOURCES));
+            }
+        }
+    }
+
+    private List<COSObject> getIndirectResourceObjects(COSDictionary pageResources, COSName kind)
+    {
+        COSDictionary resourcesDictionary = pageResources.getCOSDictionary(kind);
+        if (resourcesDictionary == null)
+        {
+            return Collections.emptyList();
+        }
+        return resourcesDictionary.getValues().stream() //
+                .filter(COSObject.class::isInstance) //
+                .map(COSObject.class::cast) //
+                .filter(COSObject::isDereferenced) //
+                .collect(Collectors.toList());
     }
 
     /**
