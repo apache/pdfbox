@@ -1559,7 +1559,7 @@ public class COSWriter implements ICOSVisitor
             MessageDigest sha256;
             try
             {
-                sha256 = MessageDigest.getInstance("SHA256");
+                sha256 = MessageDigest.getInstance("SHA-256");
             }
             catch (NoSuchAlgorithmException e)
             {
