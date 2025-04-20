@@ -29,10 +29,7 @@ public class ResourceCacheFactory
 {
     private static ResourceCacheCreateFunction resourceCacheCreateFunction = null;
 
-    /**
-     * Constructor.
-     */
-    private ResourceCacheFactory()
+    static
     {
         setResourceCacheCreateFunction(new DefaultResourceCacheCreateImpl());
     }
