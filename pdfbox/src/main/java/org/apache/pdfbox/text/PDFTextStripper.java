@@ -562,13 +562,18 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
                 // Resets the average character width when we see a change in font
                 // or a change in the font size
-                if (lastPosition != null &&
-                    (position.getFont() != lastPosition.getTextPosition().getFont() || 
-                     Float.compare(position.getFontSize(),lastPosition.getTextPosition().getFontSize()) != 0))
+                if (lastPosition != null)
                 {
-                    previousAveCharWidth = -1;
+                    TextPosition lastTextPosition = lastPosition.getTextPosition();
+                    boolean fontHasChanged = !position.getFont().getName()
+                            .equals(lastTextPosition.getFont().getName());
+                    boolean fontSizeChanged = Float.compare(position.getFontSize(),
+                            lastTextPosition.getFontSize()) != 0;
+                    if (fontHasChanged || fontSizeChanged)
+                    {
+                        previousAveCharWidth = -1;
+                    }
                 }
-
                 float positionX;
                 float positionY;
                 float positionWidth;
