@@ -563,17 +563,10 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
                 // Resets the average character width when we see a change in font
                 // or a change in the font size
-                if (lastPosition != null)
+                if (lastPosition != null
+                        && hasFontOrSizeChanged(position, lastPosition.getTextPosition()))
                 {
-                    TextPosition lastTextPosition = lastPosition.getTextPosition();
-                    boolean fontHasChanged = !position.getFont().getName()
-                            .equals(lastTextPosition.getFont().getName());
-                    boolean fontSizeChanged = Float.compare(position.getFontSize(),
-                            lastTextPosition.getFontSize()) != 0;  
-                    if (fontHasChanged || fontSizeChanged)
-                    {
-                        previousAveCharWidth = -1;
-                    }
+                    previousAveCharWidth = -1;
                 }
                 float positionX;
                 float positionY;
@@ -732,6 +725,38 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
             endArticle();
         }
         writePageEnd();
+    }
+
+    private boolean hasFontOrSizeChanged(TextPosition current, TextPosition last)
+    {
+        if (last == null)
+        {
+            return false;
+        }
+        // compare font sizes
+        if (Float.compare(current.getFontSize(), last.getFontSize()) != 0)
+        {
+            return true;
+        }
+        // compare font instances, may not work if the resource cache is disabled
+        if (current.getFont() == last.getFont())
+        {
+            return false;
+        }
+        String currentFontName = current.getFont().getName();
+        String lastFontName = last.getFont().getName();
+        if (currentFontName != null)
+        {
+            // compare font names
+            return !currentFontName.equals(lastFontName);
+        }
+        if (lastFontName != null)
+        {
+            // currentFontName is null but lastFontName isn't -> font changes
+            return true;
+        }
+        // both fonts don't have a name -> compare hashes
+        return current.getFont().hashCode() != last.getFont().hashCode();
     }
 
     private boolean overlap(float y1, float height1, float y2, float height2)
