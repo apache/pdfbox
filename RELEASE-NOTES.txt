@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.33
+Release Notes -- Apache PDFBox -- Version 2.0.34
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.32 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.33 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -17,73 +17,46 @@ Release Contents
 ----------------
 
 Bug
-[PDFBOX-3690] - Character positions shifted
-[PDFBOX-3774] - Incorrectly extracted text (broken words)
-[PDFBOX-4627] - Wrong color of uncolored tiling pattern
-[PDFBOX-4718] - OutOfMemoryError - during renderImageWithDPI
-[PDFBOX-5025] - BaseParser fails when a number is followed by a string starting with 'e'
-[PDFBOX-5054] - Type3 font is not rendered
-[PDFBOX-5225] - Flattening removes all annotations when widget annotation has no page
-[PDFBOX-5307] - Image lost on page render
-[PDFBOX-5487] - extra whitespaces when extracting Arabic text
-[PDFBOX-5657] - SMaskInData not supported for JPX images
-[PDFBOX-5797] - Kid Widget /DA is ignored in setDefaultAppearance() call
-[PDFBOX-5831] - Radio button can't be set
-[PDFBOX-5853] - the PDDocument.documentId does not seem to be written into the flat byteStream
-[PDFBOX-5854] - PDFBox is unable to remove ID
-[PDFBOX-5855] - Fix last step of the build process
-[PDFBOX-5859] - StringIndexOutOfBoundsException in AppearanceGeneratorHelper
-[PDFBOX-5861] - ClassCastException in SetLineJoinStyle.process()
-[PDFBOX-5866] - Unable to load password protected pdf
-[PDFBOX-5868] - PDFBox not extracting text of non-latin languages(tamil, bengali) properly but adobe reader's save as text does
-[PDFBOX-5869] - Checkstyle
-[PDFBOX-5870] - [PATCH] Detect CMYK image without relying on metadata
-[PDFBOX-5879] - Regression from PDFBOX-5841: Text extraction with rotation magic fails for PDF with multiple content streams in a page
-[PDFBOX-5880] - PDF render blank page: The end of the stream doesn't point to the correct offset, using workaround to read the stream, stream start position: 196, length: 0, expected end position: 196
-[PDFBOX-5881] - CVE for Lucene libraries
-[PDFBOX-5882] - The pattern created with PDFBox shows inconsistent colors between Safari and Adobe.
-[PDFBOX-5890] - BDC sequence with resource reference instead of with MCID
-[PDFBOX-5896] - StackOverflowError in PDFieldFactory.findFieldType
-[PDFBOX-5900] - ClassCastException in AnnotationValidator
-[PDFBOX-5902] - The CPU usage of a PDF file with a size of 85.6 MB is abnormal
-[PDFBOX-5905] - Many ZapfDingbats symbols do not appear when page is rendered.
-[PDFBOX-5906] - IOException when reading isolated "+"
-[PDFBOX-5908] - IllegalArgumentException: capacity < 0: (-75475220 < 0) in RandomAccessReadBuffer constructor
-[PDFBOX-5913] - FontBox spawns a `cmd` subprocess to read an environment variable (on Windows)
-[PDFBOX-5914] - Implement PDF 2.0 dash phase clarification (2)
-[PDFBOX-5917] - Particular PDF fails on renderImageWithDPI call
-[PDFBOX-5920] - PDType0Font return invalid space width
-[PDFBOX-5924] - Icons of text annotations sometimes too large
-[PDFBOX-5928] - Orphan page check doesn't check annotation destinations
-[PDFBOX-5931] - NPE in COSArray.indexOfObject
-[PDFBOX-5932] - NPE in PagePane.mouseMoved()
-[PDFBOX-5933] - ArrayIndexOutOfBoundsException in CMap.toInt()
-
-New Feature
-[PDFBOX-5865] - Show ASN.1 decoded Contents for Signature-Dictionary
+[PDFBOX-4744] - PageDrawer is not rendering unrotatable Annotations on rotated pages
+[PDFBOX-5230] - Zero-width non-joiner characters visible in generated PDF
+[PDFBOX-5747] - Surrogate pairs with combining diacritics are incorrectly ordered on text extraction
+[PDFBOX-5936] - TestCreateSignature.testCreateSignedTimeStamp checkLTV build test fail (2) / Support several issuers
+[PDFBOX-5937] - IllegalArgumentException: Width (0) and height (0) must be non-zero
+[PDFBOX-5939] - Merge docs with specific characteristics causes stack overflow
+[PDFBOX-5940] - InvalidKeyException: Supplied key (sun.security.ec.ECPrivateKeyImpl) is not a RSAPrivateKey
+[PDFBOX-5942] - Can't read the embedded Type1 font: Found Token[kind=NAME, text=def] but expected begin
+[PDFBOX-5945] - Wrong size entry in trailer after incremental save
+[PDFBOX-5948] - FileSystemFontProvider doesn't register failed type1 fonts
+[PDFBOX-5949] - Text annotation crosshair symbol too small when using Adobe symbol font
+[PDFBOX-5951] - Orphan /OpenAction destination page kept in merge
+[PDFBOX-5952] - PDFRenderer causes endless loop
+[PDFBOX-5954] - Invalid stream length: 0, stream start position: <xxx>
+[PDFBOX-5957] - Inline image incorrectly parsed (2)
+[PDFBOX-5961] - IllegalArgumentException: Not a valid Unicode code point: 0xE28496
+[PDFBOX-5963] - Type 3 font glyphs not displayed
+[PDFBOX-5966] - Rendered PDF is missing shading pattern graphics
+[PDFBOX-5968] - NPE during merge
+[PDFBOX-5975] - Class cast exception in building PDDestinationNameTreeNode
+[PDFBOX-5976] - DomXmpParser incorrectly expects namespaces on attribute level
+[PDFBOX-5980] - BDC processor mishandles property name
+[PDFBOX-5987] - Can't render some Type1C fonts.
+[PDFBOX-5989] - PDF to Image conversion results in a blank white page
 
 Improvement
-[PDFBOX-1529] - Exchange hard-coded values for variables and provide command-line options in TextToPDF component
-[PDFBOX-4743] - Long rendering time of fonts in a specific PDF
-[PDFBOX-5872] - Support imageio-jnr / imageio-openjpeg library for JPEG2000 decoding
-[PDFBOX-5873] - Improve ExtractTTFFonts
-[PDFBOX-5874] - Change Loglevel from Warn to info when rebuilding font cache
-[PDFBOX-5884] - Support OCG visibility expressions
-[PDFBOX-5887] - Add page getter/setter to PDObjectReference
-[PDFBOX-5889] - Support long values for COSInteger objects
-[PDFBOX-5891] - Empty constructor for PDViewerPreferences
-[PDFBOX-5892] - Add check of /P to PDFMergerUtilityTest
-[PDFBOX-5895] - support Markdown extraction from the command line
-[PDFBOX-5911] - Calculate dpi dynamically when printing with raster
-[PDFBOX-5929] - Remove orphan annotations in structure tree
-[PDFBOX-5930] - Add font name to PrintTextLocations
+[PDFBOX-5938] - Implement PDFormXObject.setGroup()
+[PDFBOX-5941] - CertificateVerifier.isSelfSigned() should not throw an exception
+[PDFBOX-5946] - Use Zapf Dingbats code for cross text annotation
+[PDFBOX-5947] - Support PushPin, Tag and Graph file attachment annotation icons
+[PDFBOX-5950] - Improve PDFMergerUtility memory footprint
+[PDFBOX-5955] - Support rare RC4 encryption where R=4, key length < 128 bits
+[PDFBOX-5974] - Improve checkWithNumberTree() test
+[PDFBOX-5985] - Use SHA256 instead of MD5 for document id
 
 Wish
-[PDFBOX-3345] - Improve detection whether printing or viewing
-[PDFBOX-5852] - Hi CPU and memory usage when converting a PDF with type 4 shading
+[PDFBOX-974] - PrintPDF should not be case sensitive against printer name on Windows
 
 Task
-[PDFBOX-5912] - 2.0 builds fail on jenkins because jdk11 no longer supported
+[PDFBOX-5986] - Run regression tests for 2.0.34
 
 This release consists of a single source archive packaged as a zip file.
 The archive can be unpacked with the jar tool from your JDK installation.
