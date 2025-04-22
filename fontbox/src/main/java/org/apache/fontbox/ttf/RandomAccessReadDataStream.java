@@ -49,6 +49,11 @@ class RandomAccessReadDataStream extends TTFDataStream
     RandomAccessReadDataStream(RandomAccessRead randomAccessRead) throws IOException
     {
         length = randomAccessRead.length();
+        if (length > Integer.MAX_VALUE - 8) // https://www.baeldung.com/java-arrays-max-size
+        {
+            // PDFBOX-5991
+            throw new IOException("Stream is too long, size: " + length);
+        }
         data = new byte[(int) length];
         int remainingBytes = data.length;
         int amountRead;
