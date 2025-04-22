@@ -42,7 +42,13 @@ class MemoryTTFDataStream extends TTFDataStream
     {
         try
         {
-            ByteArrayOutputStream output = new ByteArrayOutputStream( is.available() );
+            int available = is.available();
+            if (available > Integer.MAX_VALUE - 8) // https://www.baeldung.com/java-arrays-max-size
+            {
+                // PDFBOX-5991
+                throw new IOException("Stream is too long, size: " + available);
+            }
+            ByteArrayOutputStream output = new ByteArrayOutputStream(available);
             byte[] buffer = new byte[1024];
             int amountRead;
             while( (amountRead = is.read( buffer ) ) != -1 )
