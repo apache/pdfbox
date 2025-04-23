@@ -48,8 +48,8 @@ class ExtractEmbeddedFilesTest
         byte[] ba2 = Files.readAllBytes(new File(attachment2Filename).toPath());
         String s1 = new String(ba1, StandardCharsets.US_ASCII);
         String s2 = new String(ba2, StandardCharsets.US_ASCII);
-        assertEquals(s1, "This is the contents of the first embedded file");
-        assertEquals(s2, "This is the contents of the second embedded file");
+        assertEquals("This is the contents of the first embedded file", s1);
+        assertEquals("This is the contents of the second embedded file", s2);
         Files.delete(Paths.get(collectionFilename));
         Files.delete(Paths.get(attachment1Filename));
         Files.delete(Paths.get(attachment2Filename));
