@@ -53,8 +53,8 @@ public class ExtractEmbeddedFilesTest
         is2.close();
         String s1 = new String(ba1, Charsets.US_ASCII);
         String s2 = new String(ba2, Charsets.US_ASCII);
-        assertEquals(s1, "This is the contents of the first embedded file");
-        assertEquals(s2, "This is the contents of the second embedded file");
+        assertEquals("This is the contents of the first embedded file", s1);
+        assertEquals("This is the contents of the second embedded file", s2);
         new File(collectionFilename).delete();
         new File(attachment1Filename).delete();
         new File(attachment2Filename).delete();
