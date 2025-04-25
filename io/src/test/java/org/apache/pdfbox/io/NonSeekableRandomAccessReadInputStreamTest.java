@@ -221,6 +221,29 @@ class NonSeekableRandomAccessReadInputStreamTest
         }
     }
 
+    @Test
+    void testRewindAcrossBuffers() throws IOException
+    {
+        byte[] ba = new byte[4096 + 5];
+        int rewSize = 7;
+        byte testVal = 123;
+        ba[ba.length - rewSize] = testVal;
+        ByteArrayInputStream bais = new ByteArrayInputStream(ba);
+        try (RandomAccessRead rar = new NonSeekableRandomAccessReadInputStream(bais))
+        {
+            int len = rar.read(new byte[ba.length - rewSize]);
+            assertEquals(ba.length - rewSize, len);
+            len = rar.read(new byte[rewSize]);
+            assertEquals(rewSize, len);
+            int by = rar.read();
+            assertEquals(-1, by);
+            assertTrue(rar.isEOF());
+            rar.rewind(len);
+            by = rar.read(); // went ArrayIndexOutOfBoundsException here
+            assertEquals(testVal, by);
+        }
+    }
+
     private byte[] createRandomData()
     {
         final long seed = new Random().nextLong();
