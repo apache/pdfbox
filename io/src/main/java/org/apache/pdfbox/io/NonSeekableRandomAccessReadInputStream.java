@@ -193,12 +193,9 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
             if (bufferBytes[LAST] == BUFFER_SIZE && bufferBytes[CURRENT] > 0 && bufferBytes[CURRENT] < BUFFER_SIZE)
             {
                 // Likely EOF, we're risking losing the previous (full) buffer and get an AIOOB
-                // Create a new LAST buffer that combines as much as possible of CURRENT and LAST into a new LAST.
-                byte[] newBuffer = new byte[BUFFER_SIZE];
-                System.arraycopy(buffers[LAST], bufferBytes[CURRENT], newBuffer, 0, BUFFER_SIZE - bufferBytes[CURRENT]);
-                System.arraycopy(buffers[CURRENT], 0, newBuffer, BUFFER_SIZE - bufferBytes[CURRENT], bufferBytes[CURRENT]);
-                switchBuffers(CURRENT, LAST);
-                buffers[LAST] = newBuffer;
+                // Fill LAST with as much as possible data of LAST and CURRENT
+                System.arraycopy(buffers[LAST], bufferBytes[CURRENT], buffers[LAST], 0, BUFFER_SIZE - bufferBytes[CURRENT]);
+                System.arraycopy(buffers[CURRENT], 0, buffers[LAST], BUFFER_SIZE - bufferBytes[CURRENT], bufferBytes[CURRENT]);
                 bufferBytes[LAST] = BUFFER_SIZE;
             }
             else
