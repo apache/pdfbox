@@ -192,7 +192,21 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
         {
             // move the current data to last to support rewind operations
             // right after refilling the current buffer
-            switchBuffers(CURRENT, LAST);
+            if (bufferBytes[LAST] == BUFFER_SIZE && bufferBytes[CURRENT] > 0 && bufferBytes[CURRENT] < BUFFER_SIZE)
+            {
+                // Likely EOF, we're risking losing the previous (full) buffer and get an AIOOB
+                // Create a new LAST buffer that combines as much as possible of CURRENT and LAST into a new LAST.
+                byte[] newBuffer = new byte[BUFFER_SIZE];
+                System.arraycopy(buffers[LAST], bufferBytes[CURRENT], newBuffer, 0, BUFFER_SIZE - bufferBytes[CURRENT]);
+                System.arraycopy(buffers[CURRENT], 0, newBuffer, BUFFER_SIZE - bufferBytes[CURRENT], bufferBytes[CURRENT]);
+                switchBuffers(CURRENT, LAST);
+                buffers[LAST] = newBuffer;
+                bufferBytes[LAST] = BUFFER_SIZE;
+            }
+            else
+            {
+                switchBuffers(CURRENT, LAST);
+            }
             bufferBytes[CURRENT] = is.read(buffers[CURRENT]);
             if (bufferBytes[CURRENT] <= 0)
             {
