@@ -174,7 +174,6 @@ class XMPMetaDataTest
                 + "<?xpacket end=\"w\"?>";
         DomXmpParser xmpParser = new DomXmpParser();
         xmpParser.setStrictParsing(false);
-        //IOUtils.copy(meta.createInputStream(),System.out);
         XMPMetadata xmp = xmpParser.parse(xmpmeta.getBytes());
         XMPBasicSchema basicSchema = xmp.getXMPBasicSchema();
         Calendar createDate1 = basicSchema.getCreateDate();
