@@ -67,12 +67,6 @@ final class SampledImageReader
         // compose to ARGB
         BufferedImage masked = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = masked.createGraphics();
-
-        // draw the mask
-        //g.drawImage(mask, 0, 0, null);
-
-        // fill with paint using src-in
-        //g.setComposite(AlphaComposite.SrcIn);
         g.setPaint(paint);
         g.fillRect(0, 0, width, height);
         g.dispose();
