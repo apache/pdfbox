@@ -284,7 +284,7 @@ class NonSeekableRandomAccessReadInputStreamTest
         assertEquals(1, rar.read());
         assertEquals(-1, rar.read());
         rar.close();
-        Assertions.assertThrows(IOException.class, () -> rar.read(),
+        Assertions.assertThrows(IOException.class, rar::read,
                     "read() should have thrown an IOException");
     }
 
