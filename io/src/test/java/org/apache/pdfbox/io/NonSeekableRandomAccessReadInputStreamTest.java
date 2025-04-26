@@ -244,6 +244,50 @@ class NonSeekableRandomAccessReadInputStreamTest
         }
     }
 
+    @Test
+    void testRewindAcrossBuffers2() throws IOException
+    {
+        byte[] ba = new byte[4096 * 2];
+        ba[4095] = 1;
+        ba[4096] = 2;
+        ba[4097] = 3;
+        ba[4096 * 2 - 1] = 4;
+        ByteArrayInputStream bais = new ByteArrayInputStream(ba);
+        try (RandomAccessRead rar = new NonSeekableRandomAccessReadInputStream(bais))
+        {
+            assertEquals(0, rar.length()); // not really what I'd expect...
+            int len = rar.read(new byte[4096 + 1]);
+            assertEquals(4096 * 2, rar.length());
+            assertEquals(4096 + 1, len);
+            rar.rewind(2);
+            assertEquals(1, rar.read());
+            assertEquals(2, rar.read());
+            assertEquals(3, rar.read());
+            assertEquals(4096 * 2, rar.length());
+
+            byte[] buf = new byte[4096];
+            len = rar.read(buf);
+            assertEquals(4096 - 2, len);
+            assertEquals(4, buf[len-1]);
+            assertEquals(-1, rar.read());
+            assertEquals(-1, rar.read(new byte[1]));
+        }
+    }
+
+    @Test
+    void testAccessClosed() throws IOException
+    {
+        byte[] ba = new byte[1];
+        ba[0] = 1;
+        ByteArrayInputStream bais = new ByteArrayInputStream(ba);
+        RandomAccessRead rar = new NonSeekableRandomAccessReadInputStream(bais);
+        assertEquals(1, rar.read());
+        assertEquals(-1, rar.read());
+        rar.close();
+        Assertions.assertThrows(IOException.class, () -> rar.read(),
+                    "read() should have thrown an IOException");
+    }
+
     private byte[] createRandomData()
     {
         final long seed = new Random().nextLong();
