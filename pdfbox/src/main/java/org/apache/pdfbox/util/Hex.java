@@ -218,7 +218,7 @@ public final class Hex
      */
     public static byte[] decodeHex(String s)
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream((s.length() + 1) / 2);
         int i = 0;
         while (i < s.length() - 1)
         {
