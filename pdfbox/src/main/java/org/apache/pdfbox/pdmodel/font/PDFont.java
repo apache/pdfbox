@@ -328,7 +328,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      */
     public final byte[] encode(String text) throws IOException
     {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream(Math.max(32, text.length()));
         int offset = 0;
         while (offset < text.length())
         {

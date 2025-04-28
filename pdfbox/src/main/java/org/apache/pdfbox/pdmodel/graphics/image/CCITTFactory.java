@@ -68,7 +68,7 @@ public final class CCITTFactory
         int height = image.getHeight();
         int width = image.getWidth();
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(Math.max(32, (width + 1) * height));
         MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos);
 
         for (int y = 0; y < height; ++y)

@@ -108,7 +108,6 @@ public final class COSString extends COSBase
      */
     public static COSString parseHex(String hex) throws IOException
     {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         StringBuilder hexBuffer = new StringBuilder(hex.trim());
 
         // if odd number then the last hex digit is assumed to be 0
@@ -118,6 +117,7 @@ public final class COSString extends COSBase
         }
 
         int length = hexBuffer.length();
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream((length + 1) / 2);
         for (int i = 0; i < length; i += 2)
         {
             try
