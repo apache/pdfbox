@@ -235,7 +235,7 @@ public final class TTFSubsetter
 
     private byte[] buildHeadTable() throws IOException
     {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(54);
         DataOutputStream out = new DataOutputStream(bos);
 
         HeaderTable h = ttf.getHeader();
@@ -264,7 +264,7 @@ public final class TTFSubsetter
 
     private byte[] buildHheaTable() throws IOException
     {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(36);
         DataOutputStream out = new DataOutputStream(bos);
 
         HorizontalHeaderTable h = ttf.getHorizontalHeader();
@@ -308,7 +308,7 @@ public final class TTFSubsetter
 
     private byte[] buildNameTable() throws IOException
     {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(512);
         DataOutputStream out = new DataOutputStream(bos);
 
         NamingTable name = ttf.getNaming();
@@ -393,7 +393,7 @@ public final class TTFSubsetter
 
     private byte[] buildMaxpTable() throws IOException
     {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(32);
         DataOutputStream out = new DataOutputStream(bos);
 
         MaximumProfileTable p = ttf.getMaximumProfile();
@@ -428,7 +428,7 @@ public final class TTFSubsetter
             return null;
         }
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(78);
         DataOutputStream out = new DataOutputStream(bos);
 
         writeUint16(out, os2.getVersion());
@@ -476,7 +476,7 @@ public final class TTFSubsetter
     // never returns null
     private byte[] buildLocaTable(long[] newOffsets) throws IOException
     {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(newOffsets.length * 4);
         DataOutputStream out = new DataOutputStream(bos);
 
         for (long offset : newOffsets)
@@ -598,7 +598,7 @@ public final class TTFSubsetter
     // never returns null
     private byte[] buildGlyfTable(long[] newOffsets) throws IOException
     {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(512);
 
         GlyphTable g = ttf.getGlyph();
         long[] offsets = ttf.getIndexToLocation().getOffsets();
@@ -749,7 +749,7 @@ public final class TTFSubsetter
             return null;
         }
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(64);
         DataOutputStream out = new DataOutputStream(bos);
 
         // cmap header
@@ -869,7 +869,7 @@ public final class TTFSubsetter
             return null;
         }
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(64);
         DataOutputStream out = new DataOutputStream(bos);
 
         writeFixed(out, 2.0); // version
