@@ -136,12 +136,6 @@ public final class GlyphList
                     String name = parts[0];
                     String[] unicodeList = parts[1].split(" ");
 
-                    if (nameToUnicode.containsKey(name))
-                    {
-                        LOG.warn("duplicate value for " + name + " -> " + parts[1] + " " +
-                                 nameToUnicode.get(name));
-                    }
-
                     int[] codePoints = new int[unicodeList.length];
                     int index = 0;
                     for (String hex : unicodeList)
@@ -151,8 +145,12 @@ public final class GlyphList
                     String string = new String(codePoints, 0 , codePoints.length);
 
                     // forward mapping
-                    nameToUnicode.put(name, string);
-
+                    String oldMapping = nameToUnicode.put(name, string);
+                    if (oldMapping != null)
+                    {
+                        LOG.warn("duplicate value for " + name + " -> " + parts[1] + " "
+                                + nameToUnicode.get(name));
+                    }
                     // reverse mapping
                     // PDFBOX-3884: take the various standard encodings as canonical, 
                     // e.g. tilde over ilde
@@ -162,9 +160,13 @@ public final class GlyphList
                           MacExpertEncoding.INSTANCE.contains(name) ||
                           SymbolEncoding.INSTANCE.contains(name) ||
                           ZapfDingbatsEncoding.INSTANCE.contains(name);
-                    if (!unicodeToName.containsKey(string) || forceOverride)
+                    if (forceOverride)
                     {
                         unicodeToName.put(string, name);
+                    }
+                    else
+                    {
+                        unicodeToName.putIfAbsent(string, name);
                     }
                 }
             }

@@ -604,14 +604,10 @@ public class PDStructureElement extends PDStructureNode
     public String getStandardStructureType()
     {
         String type = this.getStructureType();
-        Map<String,Object> roleMap = getRoleMap();
-        if (roleMap.containsKey(type))
+        Object mappedValue = getRoleMap().get(type);
+        if (mappedValue instanceof String)
         {
-            Object mappedValue = getRoleMap().get(type);
-            if (mappedValue instanceof String)
-            {
-                type = (String)mappedValue;
-            }
+            type = (String) mappedValue;
         }
         return type;
     }

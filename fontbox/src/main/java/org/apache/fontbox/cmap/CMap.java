@@ -243,15 +243,12 @@ public class CMap
             return 0;
         }
         Integer cid = null;
-        if (codeToCid.containsKey(code.length))
+        Map<Integer, Integer> codeToCidMap = codeToCid.get(code.length);
+        if (codeToCidMap != null)
         {
-            cid = codeToCid.get(code.length).get(toInt(code));
+            cid = codeToCidMap.get(toInt(code));
         }
-        if (cid == null)
-        {
-            cid = toCIDFromRanges(code);
-        }
-        return cid;
+        return cid != null ? cid : toCIDFromRanges(code);
     }
 
     /**
@@ -295,9 +292,10 @@ public class CMap
             return 0;
         }
         Integer cid = null;
-        if (codeToCid.containsKey(length))
+        Map<Integer, Integer> codeToCidMap = codeToCid.get(length);
+        if (codeToCidMap != null)
         {
-            cid = codeToCid.get(length).get(code);
+            cid = codeToCidMap.get(code);
         }
         return cid != null ? cid : toCIDFromRanges(code, length);
     }
