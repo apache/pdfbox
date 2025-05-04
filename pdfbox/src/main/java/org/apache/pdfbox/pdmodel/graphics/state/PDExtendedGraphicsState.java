@@ -586,11 +586,8 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public PDSoftMask getSoftMask()
     {
-        if (!dict.containsKey(COSName.SMASK))
-        {
-            return null;
-        }
-        return PDSoftMask.create(dict.getDictionaryObject(COSName.SMASK));
+        COSBase smask = dict.getDictionaryObject(COSName.SMASK);
+        return smask == null ? null : PDSoftMask.create(smask);
     }
 
     /**
