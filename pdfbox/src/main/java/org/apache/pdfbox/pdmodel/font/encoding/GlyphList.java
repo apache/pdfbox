@@ -180,13 +180,9 @@ public final class GlyphList
                           MacExpertEncoding.INSTANCE.contains(name) ||
                           SymbolEncoding.INSTANCE.contains(name) ||
                           ZapfDingbatsEncoding.INSTANCE.contains(name);
-                    if (forceOverride)
+                    if (forceOverride || !unicodeToName.containsKey(string))
                     {
                         unicodeToName.put(string, name);
-                    }
-                    else
-                    {
-                        unicodeToName.putIfAbsent(string, name);
                     }
                 }
             }

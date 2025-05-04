@@ -69,7 +69,10 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
         Map<Integer, String> codeToName = MacOSRomanEncoding.INSTANCE.getCodeToNameMap();
         for (Map.Entry<Integer, String> entry : codeToName.entrySet())
         {
-            INVERTED_MACOS_ROMAN.putIfAbsent(entry.getValue(), entry.getKey());
+            if (!INVERTED_MACOS_ROMAN.containsKey(entry.getValue()))
+            {
+                INVERTED_MACOS_ROMAN.put(entry.getValue(), entry.getKey());
+            }
         }
     }
 
@@ -448,7 +451,10 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
         for (int code = 0; code <= 255; code++)
         {
             int gid = codeToGID(code);
-            gidToCode.putIfAbsent(gid, code);
+            if (!gidToCode.containsKey(gid))
+            {
+                gidToCode.put(gid, code);
+            }
         }
         return gidToCode;
     }
