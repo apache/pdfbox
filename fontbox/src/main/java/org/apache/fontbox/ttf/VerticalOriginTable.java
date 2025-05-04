@@ -91,13 +91,7 @@ public class VerticalOriginTable extends TTFTable
      */
     public int getOriginY(int gid)
     {
-        if (origins.containsKey(gid))
-        {
-            return origins.get(gid);
-        }
-        else
-        {
-            return defaultVertOriginY;
-        }
+        Integer originY = origins.get(gid);
+        return originY != null ? originY : defaultVertOriginY;
     }
 }

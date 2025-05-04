@@ -69,10 +69,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
         Map<Integer, String> codeToName = MacOSRomanEncoding.INSTANCE.getCodeToNameMap();
         for (Map.Entry<Integer, String> entry : codeToName.entrySet())
         {
-            if (!INVERTED_MACOS_ROMAN.containsKey(entry.getValue()))
-            {
-                INVERTED_MACOS_ROMAN.put(entry.getValue(), entry.getKey());
-            }
+            INVERTED_MACOS_ROMAN.putIfAbsent(entry.getValue(), entry.getKey());
         }
     }
 
@@ -169,7 +166,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     private CmapSubtable cmapWinSymbol = null;
     private CmapSubtable cmapMacRoman = null;
     private boolean cmapInitialized = false;
-    private Map<Integer, Integer> gidToCode; // for embedding
+    private final Map<Integer, Integer> gidToCode = new HashMap<Integer, Integer>(); // for embedding
 
     private final TrueTypeFont ttf;
     private final boolean isEmbedded;
@@ -444,19 +441,14 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
      */
     protected Map<Integer, Integer> getGIDToCode() throws IOException
     {
-        if (gidToCode != null)
+        if (!gidToCode.isEmpty())
         {
             return gidToCode;
         }
-
-        gidToCode = new HashMap<Integer, Integer>();
         for (int code = 0; code <= 255; code++)
         {
             int gid = codeToGID(code);
-            if (!gidToCode.containsKey(gid))
-            {
-                gidToCode.put(gid, code);
-            }
+            gidToCode.putIfAbsent(gid, code);
         }
         return gidToCode;
     }
