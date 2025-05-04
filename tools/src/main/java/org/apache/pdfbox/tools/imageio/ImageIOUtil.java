@@ -350,7 +350,7 @@ public final class ImageIOUtil
     {
         byte[] data = profile.getData();
 
-        ByteArrayOutputStream deflated = new ByteArrayOutputStream(Math.max(32, 2 * data.length));
+        ByteArrayOutputStream deflated = new ByteArrayOutputStream(Math.max(32, data.length / 2));
         try (DeflaterOutputStream deflater = new DeflaterOutputStream(deflated))
         {
             deflater.write(data);
