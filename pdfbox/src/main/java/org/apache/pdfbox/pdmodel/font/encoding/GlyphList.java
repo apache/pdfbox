@@ -231,38 +231,14 @@ public final class GlyphList
             {
                 unicode = toUnicode(name.substring(0, name.indexOf('.')));
             }
-            else if (name.startsWith("uni") && name.length() == 7)
+            else if ((name.length() == 7 && name.startsWith("uni"))
+                    || (name.length() == 5 && name.startsWith("u")))
             {
-                // test for Unicode name in the format uniXXXX where X is hex
-                int nameLength = name.length();
-                StringBuilder uniStr = new StringBuilder();
+                // test for Unicode name in the format uniXXXX/uXXXX where X is hex
+                int start = name.startsWith("uni") ? 3 : 1;
                 try
                 {
-                    for (int chPos = 3; chPos + 4 <= nameLength; chPos += 4)
-                    {
-                        int codePoint = Integer.parseInt(name.substring(chPos, chPos + 4), 16);
-                        if (codePoint > 0xD7FF && codePoint < 0xE000)
-                        {
-                            LOG.warn("Unicode character name with disallowed code area: {}", name);
-                        }
-                        else
-                        {
-                            uniStr.append((char) codePoint);
-                        }
-                    }
-                    unicode = uniStr.toString();
-                }
-                catch (NumberFormatException nfe)
-                {
-                    LOG.warn("Not a number in Unicode character name: {}", name);
-                }
-            }
-            else if (name.startsWith("u") && name.length() == 5)
-            {
-                // test for an alternate Unicode name representation uXXXX
-                try
-                {
-                    int codePoint = Integer.parseInt(name.substring(1), 16);
+                    int codePoint = Integer.parseInt(name, start, start + 4, 16);
                     if (codePoint > 0xD7FF && codePoint < 0xE000)
                     {
                         LOG.warn("Unicode character name with disallowed code area: {}", name);
