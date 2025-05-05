@@ -39,6 +39,7 @@ public class ExtractEmbeddedFilesTest
     public void testExtractEmbeddedFiles() throws IOException
     {
         String dir = "target/test-output";
+        new File(dir).mkdirs();
         String collectionFilename = dir + "/PortableCollection.pdf";
         String attachment1Filename = dir + "/Test1.txt";
         String attachment2Filename = dir + "/Test2.txt";
