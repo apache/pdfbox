@@ -132,7 +132,7 @@
     <dependency>
         <groupId>org.verapdf</groupId>
         <artifactId>validation-model</artifactId>
-        <version>1.26.5</version>
+        <version>1.28.1</version>
         <scope>test</scope>
     </dependency>
   </dependencies>
