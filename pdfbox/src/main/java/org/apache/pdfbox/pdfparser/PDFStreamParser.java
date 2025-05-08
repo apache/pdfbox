@@ -273,9 +273,10 @@ public class PDFStreamParser extends BaseParser
                             "' at stream offset " + currentPosition);
                 }
                 ByteArrayOutputStream imageData = new ByteArrayOutputStream();
-                if( isWhitespace() )
+                // skip one line break (CR, LF or CRLF) or any one-byte whitespace
+                if (!skipLinebreak() && isWhitespace())
                 {
-                    //pull off the whitespace character
+                    // pull off the whitespace character
                     source.read();
                 }
                 int lastByte = source.read();
