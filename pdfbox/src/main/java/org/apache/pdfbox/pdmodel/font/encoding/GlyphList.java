@@ -236,7 +236,7 @@ public final class GlyphList
                     || (name.length() == 5 && name.startsWith("u")))
             {
                 // test for Unicode name in the format uniXXXX/uXXXX where X is hex
-                int start = name.startsWith("uni") ? 3 : 1;
+                int start = name.length() == 7 ? 3 : 1;
                 try
                 {
                     int codePoint = Integer.parseInt(name, start, start + 4, 16);
