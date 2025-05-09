@@ -390,6 +390,11 @@ public abstract class BaseParser
         return true;
     }
 
+    /**
+     * Skip the upcoming CRLF or LF which are supposed to follow a stream. Trailing spaces are removed as well.
+     * 
+     * @throws IOException if something went wrong
+     */
     protected void skipWhiteSpaces() throws IOException
     {
         //PDF Ref 3.2.7 A stream must be followed by either
@@ -404,24 +409,55 @@ public abstract class BaseParser
         {
             whitespace = source.read();
         }
-
-        if (ASCII_CR == whitespace)
+        if (!skipLinebreak(whitespace))
         {
-            whitespace = source.read();
-            if (ASCII_LF != whitespace)
-            {
-                source.rewind(1);
-                //The spec says this is invalid but it happens in the real
-                //world so we must support it.
-            }
-        }
-        else if (ASCII_LF != whitespace)
-        {
-            //we are in an error.
-            //but again we will do a lenient parsing and just assume that everything
-            //is fine
             source.rewind(1);
         }
+    }
+
+    /**
+     * Skip one line break, such as CR, LF or CRLF.
+     * 
+     * @return true if a line break was found and removed.
+     * 
+     * @throws IOException if something went wrong
+     */
+    protected boolean skipLinebreak() throws IOException
+    {
+        // a line break is a CR, or LF or CRLF
+        if (!skipLinebreak(source.read()))
+        {
+            source.rewind(1);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Skip one line break, such as CR, LF or CRLF.
+     * 
+     * @param linebreak the first character to be checked.
+     * 
+     * @return true if a line break was found and removed.
+     * 
+     * @throws IOException if something went wrong
+     */
+    private boolean skipLinebreak(int linebreak) throws IOException
+    {
+        // a line break is a CR, or LF or CRLF
+        if (isCR(linebreak))
+        {
+            int next = source.read();
+            if (!isLF(next))
+            {
+                source.rewind(1);
+            }
+        }
+        else if (!isLF(linebreak))
+        {
+            return false;
+        }
+        return true;
     }
 
     /**
