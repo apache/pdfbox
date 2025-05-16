@@ -219,6 +219,9 @@ public final class PDFPageable extends Book
             case LANDSCAPE:
                 format.setOrientation(PageFormat.LANDSCAPE);
                 break;
+            case REVERSE_LANDSCAPE:
+                format.setOrientation(PageFormat.REVERSE_LANDSCAPE);
+                break;
             case PORTRAIT:
                 format.setOrientation(PageFormat.PORTRAIT);
                 break;
