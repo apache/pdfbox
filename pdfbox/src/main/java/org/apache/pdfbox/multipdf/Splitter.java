@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
@@ -408,23 +409,45 @@ public class Splitter
             {
                 return dstDict;
             }
+            COSDictionary srcPageDict = srcDict.getCOSDictionary(COSName.PG);
             COSDictionary dstPageDict = null;
-            if (srcDict.containsKey(COSName.PG))
+            COSBase kid = srcDict.getDictionaryObject(COSName.K);
+            if (srcPageDict != null)
             {
-                COSDictionary srcPageDict = srcDict.getCOSDictionary(COSName.PG);
-                if (srcPageDict == null)
-                {
-                    return null;
-                }
                 dstPageDict = pageDictMap.get(srcPageDict);
-                if (dstPageDict == null)
+                if (dstPageDict != null)
                 {
-                    return null;
+                    PDPage dstPage = new PDPage(dstPageDict);
+                    if (dstPageTree.indexOf(dstPage) == -1)
+                    {
+                        return null;
+                    }
                 }
-                PDPage dstPage = new PDPage(dstPageDict);
-                if (dstPageTree.indexOf(dstPage) == -1)
+                else
                 {
-                    return null;
+                    // PDFBOX-6009: quit if MCIDs because these need a /Pg entry
+                    boolean hasMCIDs = false;
+                    if (kid instanceof COSInteger)
+                    {
+                        hasMCIDs = true;
+                    }
+                    else if (kid instanceof COSArray)
+                    {
+                        COSArray ar = (COSArray) kid;
+                        for (int i = 0; i < ar.size(); ++i)
+                        {
+                            if (ar.getObject(i) instanceof COSInteger)
+                            {
+                                hasMCIDs = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (hasMCIDs)
+                    {
+                        return null;
+                    }
+                    // else keep this as an intermediate element for now
                 }
             }
 
@@ -466,7 +489,6 @@ public class Splitter
             }
 
             dstDict.setItem(COSName.PG, dstPageDict);
-            COSBase kid = srcDict.getDictionaryObject(COSName.K);
             
             // stack overflow here with 207658.pdf, too complex
             COSBase cloneKid = createClone(kid, dstDict, dstPageDict != null ? dstPageDict : currentPageDict);
