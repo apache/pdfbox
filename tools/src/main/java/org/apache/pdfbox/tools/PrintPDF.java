@@ -96,6 +96,7 @@ public final class PrintPDF
         Map <String,Orientation> orientationMap = new HashMap<String,Orientation>();
         orientationMap.put("auto", Orientation.AUTO);
         orientationMap.put("landscape", Orientation.LANDSCAPE);
+        orientationMap.put("reverse_landscape", Orientation.REVERSE_LANDSCAPE);
         orientationMap.put("portrait", Orientation.PORTRAIT);
         RenderingHints renderingHints = null;
         String duplex = null;
@@ -395,8 +396,8 @@ public final class PrintPDF
                 + "\nOptions:\n"
                 + "  -password  <password>                : Password to decrypt document\n"
                 + "  -printerName <name>                  : Print to specific printer\n"
-                + "  -orientation auto|portrait|landscape : Print using orientation\n"
-                + "                                           (default: auto)\n"
+                + "  -orientation auto|portrait|landscape|reverse_landscape: \n"
+                + "                                         Print using orientation (default: auto)\n"
                 + "  -border                              : Print with border\n"
                 + "  -dpi                                 : Render into intermediate image with\n"
                 + "                                           specific dpi and then print.\n"
