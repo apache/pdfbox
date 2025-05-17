@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
@@ -236,7 +237,13 @@ public class Splitter
         dstNumberTreeNode.setNumbers(dstNumberTreeAsMap);
         dstStructureTreeRoot.setParentTree(dstNumberTreeNode);
 
-        dstStructureTreeRoot.setParentTreeNextKey(srcStructureTreeRoot.getParentTreeNextKey());
+        // get highest key + 1
+        Optional<Integer> max = dstNumberTreeAsMap.keySet().stream().max(Integer::compareTo);
+        if (max.isPresent())
+        {
+            dstStructureTreeRoot.setParentTreeNextKey(max.get() + 1);
+        }
+
         dstStructureTreeRoot.setClassMap(srcStructureTreeRoot.getClassMap());
         cloneRoleMap(srcStructureTreeRoot, dstStructureTreeRoot);
         cloneIDTree(srcStructureTreeRoot, dstStructureTreeRoot);

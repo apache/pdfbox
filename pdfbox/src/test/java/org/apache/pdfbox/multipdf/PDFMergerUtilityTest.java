@@ -663,6 +663,7 @@ class PDFMergerUtilityTest
     {
         PDDocumentCatalog documentCatalog = document.getDocumentCatalog();
         PDNumberTreeNode parentTree = documentCatalog.getStructureTreeRoot().getParentTree();
+        assertNotEquals(-1, documentCatalog.getStructureTreeRoot().getParentTreeNextKey());
         Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
         Set<Integer> keySet = numberTreeAsMap.keySet();
         PDAcroForm acroForm = documentCatalog.getAcroForm();
