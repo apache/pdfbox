@@ -830,6 +830,7 @@ public class PDFMergerUtilityTest extends TestCase
         PDPageTree pageTree = doc.getPages();
         PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
         checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject());
+        assertNotNull(structureTreeRoot.getK());
         checkElement(pageTree, structureTreeRoot.getK());
         checkForIDTreeOrphans(pageTree, structureTreeRoot);
     }
