@@ -426,24 +426,7 @@ public class Splitter
                 else
                 {
                     // PDFBOX-6009: quit if MCIDs because these need a /Pg entry
-                    boolean hasMCIDs = false;
-                    if (kid instanceof COSInteger)
-                    {
-                        hasMCIDs = true;
-                    }
-                    else if (kid instanceof COSArray)
-                    {
-                        COSArray ar = (COSArray) kid;
-                        for (int i = 0; i < ar.size(); ++i)
-                        {
-                            if (ar.getObject(i) instanceof COSInteger)
-                            {
-                                hasMCIDs = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (hasMCIDs)
+                    if (hasMCIDs(kid))
                     {
                         return null;
                     }
@@ -517,6 +500,26 @@ public class Splitter
                 roleSet.add(s);
             }
             return dstDict;
+        }
+
+        private boolean hasMCIDs(COSBase kid)
+        {
+            if (kid instanceof COSInteger)
+            {
+                return true;
+            }
+            if (kid instanceof COSArray)
+            {
+                COSArray ar = (COSArray) kid;
+                for (int i = 0; i < ar.size(); ++i)
+                {
+                    if (ar.getObject(i) instanceof COSInteger)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private void removePossibleOrphanAnnotation(COSDictionary srcObj, COSDictionary srcDict,
