@@ -71,6 +71,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFMarkedContentExtractor;
 import org.junit.Assert;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 import org.junit.function.ThrowingRunnable;
 
@@ -640,6 +641,7 @@ public class PDFMergerUtilityTest extends TestCase
     {
         PDDocumentCatalog documentCatalog = document.getDocumentCatalog();
         PDNumberTreeNode parentTree = documentCatalog.getStructureTreeRoot().getParentTree();
+        assertNotEquals(-1, documentCatalog.getStructureTreeRoot().getParentTreeNextKey());
         Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
         Set<Integer> keySet = numberTreeAsMap.keySet();
         PDAcroForm acroForm = documentCatalog.getAcroForm();
