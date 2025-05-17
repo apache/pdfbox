@@ -878,6 +878,19 @@
                             <sha512>5a9c237b8e1b93eb492c7a387180d937f8fb82d1fa2ffcf73698489b3ec4cdefc2ceb4e9204867c834a2139069c5667811aaf522d6e1f6ff8fd1591528a65007</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-6009</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13076529/pdfbox-split-missing-tags_mail%2015.5.2025.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-6009.pdf</outputFileName>
+                            <sha512>60e7b46f11a655083a57f4a627edf75bee477cd1ebfb06fbaefeb8ba16a01be37039cfd51c7c181a3ea368b53d22e327d480a7b0699c0edb2e06b4faaae7790f</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
