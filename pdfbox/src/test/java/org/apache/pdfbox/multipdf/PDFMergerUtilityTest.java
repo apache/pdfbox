@@ -1404,6 +1404,32 @@ class PDFMergerUtilityTest
     }
 
     /**
+     * PDFBOX-6009: This test verifies that the destination PDF has a /K tree. Before the change,
+     * nodes with the "wrong" /Pg entries were deleted entirely and because this file has a /Pg
+     * entry with page 1 at the top, the entire /K tree would be missing.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testSplitWithPgEntryAtTheTop() throws IOException
+    {
+        try (PDDocument doc = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-6009.pdf")))
+        {
+            Splitter splitter = new Splitter();
+            splitter.setSplitAtPage(1);
+            List<PDDocument> splitResult = splitter.split(doc);
+            assertEquals(3, splitResult.size());
+            for (PDDocument dstDoc : splitResult)
+            {
+                assertEquals(1, dstDoc.getNumberOfPages());
+                checkWithNumberTree(dstDoc);
+                checkForPageOrphans(dstDoc);
+            }
+            splitResult.stream().forEach(IOUtils::closeQuietly);
+        }
+    }
+
+    /**
      * PDFBOX-5939: merge a file with an outline that has itself as a parent without producing a
      * stack overflow.
      *
