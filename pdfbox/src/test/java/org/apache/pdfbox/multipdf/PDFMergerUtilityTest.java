@@ -663,6 +663,7 @@ class PDFMergerUtilityTest
     void checkWithNumberTree(PDDocument document) throws IOException
     {
         PDDocumentCatalog documentCatalog = document.getDocumentCatalog();
+        assertNotEquals(-1, documentCatalog.getStructureTreeRoot().getParentTreeNextKey());
         PDNumberTreeNode parentTree = documentCatalog.getStructureTreeRoot().getParentTree();
         Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
         Set<Integer> keySet = numberTreeAsMap.keySet();
