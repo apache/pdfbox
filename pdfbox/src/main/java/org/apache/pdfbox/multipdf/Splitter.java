@@ -79,7 +79,8 @@ public class Splitter
     private int startPage = Integer.MIN_VALUE;
     private int endPage = Integer.MAX_VALUE;
     private List<PDDocument> destinationDocuments;
-    private Map<COSDictionary, COSDictionary> pageDictMap;
+    private Map<COSDictionary, COSDictionary> pageDictMap; // map old page => new page for the current destination document
+    private List<Map<COSDictionary, COSDictionary>> pageDictMaps; // list of these maps for all destination documents
     private Map<COSDictionary, COSDictionary> structDictMap;
     private Map<COSDictionary, COSDictionary> annotDictMap;
     private Map<PDPageDestination,PDPage> destToFixMap;
@@ -126,7 +127,7 @@ public class Splitter
         currentPageNumber = 0;
         destinationDocuments = new ArrayList<PDDocument>();
         sourceDocument = document;
-        pageDictMap = new HashMap<COSDictionary, COSDictionary>();
+        pageDictMaps = new ArrayList<Map<COSDictionary, COSDictionary>>();
         destToFixMap = new HashMap<PDPageDestination,PDPage>();
         annotDictMap = new HashMap<COSDictionary, COSDictionary>();
         idSet = new HashSet<String>();
@@ -134,8 +135,10 @@ public class Splitter
 
         processPages();
 
-        for (PDDocument destinationDocument : destinationDocuments)
+        for (int i = 0; i < destinationDocuments.size(); ++i)
         {
+            PDDocument destinationDocument = destinationDocuments.get(i);
+            pageDictMap = pageDictMaps.get(i);
             cloneStructureTree(destinationDocument);
             fixDestinations(destinationDocument);
         }
@@ -177,7 +180,8 @@ public class Splitter
     }
 
     /**
-     * Clone the structure tree from the source to the current destination document.
+     * Clone the structure tree from the source to the current destination document. This must be
+     * called after all pages are processed.
      *
      * @param destinationDocument
      * @throws IOException 
@@ -653,6 +657,8 @@ public class Splitter
         {
             currentDestinationDocument = createNewDocument();
             destinationDocuments.add(currentDestinationDocument);
+            pageDictMap = new HashMap<COSDictionary, COSDictionary>();
+            pageDictMaps.add(pageDictMap);
         }
     }
 
