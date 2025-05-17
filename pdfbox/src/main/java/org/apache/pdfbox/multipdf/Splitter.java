@@ -82,7 +82,8 @@ public class Splitter
     private int startPage = Integer.MIN_VALUE;
     private int endPage = Integer.MAX_VALUE;
     private List<PDDocument> destinationDocuments;
-    private Map<COSDictionary, COSDictionary> pageDictMap;
+    private Map<COSDictionary, COSDictionary> pageDictMap; // map old page => new page for the current destination document
+    private List<Map<COSDictionary, COSDictionary>> pageDictMaps; // list of these maps for all destination documents
     private Map<COSDictionary, COSDictionary> structDictMap;
     private Map<COSDictionary, COSDictionary> annotDictMap;
     private Map<PDPageDestination,PDPage> destToFixMap;
@@ -129,7 +130,7 @@ public class Splitter
         currentPageNumber = 0;
         destinationDocuments = new ArrayList<>();
         sourceDocument = document;
-        pageDictMap = new HashMap<>();
+        pageDictMaps = new ArrayList<>();
         destToFixMap = new HashMap<>();
         annotDictMap = new HashMap<>();
         idSet = new HashSet<>();
@@ -137,8 +138,10 @@ public class Splitter
 
         processPages();
 
-        for (PDDocument destinationDocument : destinationDocuments)
+        for (int i = 0; i < destinationDocuments.size(); ++i)
         {
+            PDDocument destinationDocument = destinationDocuments.get(i);
+            pageDictMap = pageDictMaps.get(i);
             cloneStructureTree(destinationDocument);
             fixDestinations(destinationDocument);
         }
@@ -180,7 +183,8 @@ public class Splitter
     }
 
     /**
-     * Clone the structure tree from the source to the current destination document.
+     * Clone the structure tree from the source to the current destination document. This must be
+     * called after all pages are processed.
      *
      * @param destinationDocument
      * @throws IOException 
@@ -677,6 +681,8 @@ public class Splitter
         {
             currentDestinationDocument = createNewDocument();
             destinationDocuments.add(currentDestinationDocument);
+            pageDictMap = new HashMap<>();
+            pageDictMaps.add(pageDictMap);
         }
     }
 
