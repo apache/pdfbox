@@ -170,12 +170,12 @@ public class LogDialog extends JDialog
 
         if (exceptionCount > 0)
         {
-            infos.add(exceptionCount + " exception" + (errorCount > 1 ? "s" : ""));
+            infos.add(exceptionCount + " exception" + (exceptionCount > 1 ? "s" : ""));
         }
 
         if (fatalCount > 0)
         {
-            infos.add(errorCount + " error" + (errorCount > 1 ? "s" : ""));
+            infos.add(fatalCount + " fatal error" + (fatalCount > 1 ? "s" : ""));
         }
 
         if (errorCount > 0)
