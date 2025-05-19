@@ -466,7 +466,7 @@ public class Splitter
                     // replace annotation with clone
                     dstDict.setItem(COSName.OBJ, dstObj);
                 }
-                else
+                else if (srcObj != null) // 079177.pdf
                 {
                     removePossibleOrphanAnnotation(srcObj, srcDict, currentPageDict, dstDict);
                 }
