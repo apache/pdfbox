@@ -276,7 +276,7 @@ public class PDNumberTreeNode implements COSObjectable
     /**
      * Get the highest value for a key in the number map.
      *
-     * @return The highest value for a key in the map.
+     * @return The highest value for a key in the map or null if missing.
      */
     public Integer getUpperLimit()
     {
@@ -317,7 +317,7 @@ public class PDNumberTreeNode implements COSObjectable
     /**
      * Get the lowest value for a key in the number map.
      *
-     * @return The lowest value for a key in the map.
+     * @return The lowest value for a key in the map or null if missing.
      */
     public Integer getLowerLimit()
     {
