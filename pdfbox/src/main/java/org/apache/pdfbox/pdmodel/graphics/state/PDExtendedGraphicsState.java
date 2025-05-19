@@ -24,6 +24,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.graphics.PDFontSetting;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
@@ -37,6 +38,7 @@ import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 public class PDExtendedGraphicsState implements COSObjectable
 {
     private final COSDictionary dict;
+    private final ResourceCache cache;
 
     /**
      * Default constructor, creates blank graphics state.
@@ -45,6 +47,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     {
         dict = new COSDictionary();
         dict.setItem(COSName.TYPE, COSName.EXT_G_STATE);
+        cache = null;
     }
 
     /**
@@ -54,7 +57,19 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public PDExtendedGraphicsState(COSDictionary dictionary)
     {
+        this(dictionary, null);
+    }
+
+    /**
+     * Create a graphics state from an existing dictionary.
+     *
+     * @param dictionary The existing graphics state.
+     * @param resourceCache Resource cache, may be null.
+     */
+    public PDExtendedGraphicsState(COSDictionary dictionary, ResourceCache resourceCache)
+    {
         dict = dictionary;
+        cache = resourceCache;
     }
 
     /**
@@ -587,7 +602,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     public PDSoftMask getSoftMask()
     {
         COSBase smask = dict.getDictionaryObject(COSName.SMASK);
-        return smask == null ? null : PDSoftMask.create(smask);
+        return smask == null ? null : PDSoftMask.create(smask, cache);
     }
 
     /**
