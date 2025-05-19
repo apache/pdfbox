@@ -235,7 +235,11 @@ public class Splitter
         PDNumberTreeNode dstNumberTreeNode = new PDNumberTreeNode(PDParentTreeValue.class);
         dstNumberTreeNode.setNumbers(dstNumberTreeAsMap);
         dstStructureTreeRoot.setParentTree(dstNumberTreeNode);
-        dstStructureTreeRoot.setParentTreeNextKey(dstNumberTreeNode.getUpperLimit() + 1);
+        Integer upperLimit = dstNumberTreeNode.getUpperLimit();
+        if (upperLimit != null)
+        {
+            dstStructureTreeRoot.setParentTreeNextKey(upperLimit + 1);
+        }
         dstStructureTreeRoot.setClassMap(srcStructureTreeRoot.getClassMap());
         cloneRoleMap(srcStructureTreeRoot, dstStructureTreeRoot);
         cloneIDTree(srcStructureTreeRoot, dstStructureTreeRoot);
