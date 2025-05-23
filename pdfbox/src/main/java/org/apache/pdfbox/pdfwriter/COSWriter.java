@@ -232,8 +232,7 @@ public class COSWriter implements ICOSVisitor
     /**
      * COSWriter constructor.
      *
-     * @param outputStream The output stream to write the PDF. It will be closed when this object is
-     * closed.
+     * @param outputStream The output stream to write the PDF.
      */
     public COSWriter(OutputStream outputStream)
     {
@@ -243,7 +242,7 @@ public class COSWriter implements ICOSVisitor
     /**
      * COSWriter constructor.
      *
-     * @param outputStream The output stream to write the PDF. It will be closed when this object is closed.
+     * @param outputStream The output stream to write the PDF.
      * @param compressParameters The configuration for the document's compression.
      */
     public COSWriter(OutputStream outputStream, CompressParameters compressParameters)
@@ -258,8 +257,7 @@ public class COSWriter implements ICOSVisitor
      * {@link COSUpdateInfo#isNeedToBeUpdated()} set, starting from the document catalog. For signatures this is taken
      * care by PDFBox itself.
      *
-     * @param outputStream output stream where the new PDF data will be written. It will be closed when this object is
-     * closed.
+     * @param outputStream output stream where the new PDF data will be written.
      * @param inputData random access read containing source PDF data
      *
      * @throws IOException if something went wrong
@@ -283,8 +281,7 @@ public class COSWriter implements ICOSVisitor
      * dictionaries are supported; if you need to update other objects classes, then add their
      * parent dictionary.
      *
-     * @param outputStream output stream where the new PDF data will be written. It will be closed
-     * when this object is closed.
+     * @param outputStream output stream where the new PDF data will be written.
      * @param inputData random access read containing source PDF data.
      * @param objectsToWrite objects that <b>must</b> be part of the incremental saving.
      * @throws IOException if something went wrong
