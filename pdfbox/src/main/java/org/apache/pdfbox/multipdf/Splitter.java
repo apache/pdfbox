@@ -472,6 +472,10 @@ public class Splitter
                 {
                     removePossibleOrphanAnnotation(srcObj, srcDict, currentPageDict, dstDict);
                 }
+                if (dstDict.size() == 1)
+                {
+                    return null;
+                }
             }
             else
             {
