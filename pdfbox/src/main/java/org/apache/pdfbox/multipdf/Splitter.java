@@ -442,6 +442,15 @@ public class Splitter
                 }
             }
 
+            // special handling for MCR items ("marked-content reference dictionary")
+            COSName type = srcDict.getCOSName(COSName.TYPE);
+            if (COSName.MCR.equals(type) && dstPageDict == null && 
+                dstParent instanceof COSDictionary && ((COSDictionary) dstParent).getCOSDictionary(COSName.PG) == null)
+            {
+                // PAC: Pg entry of marked-content reference and of parent structure is null
+                return null;
+            }
+
             // Create and fill clone
             dstDict = new COSDictionary();
             structDictMap.put(srcDict, dstDict);
@@ -458,7 +467,6 @@ public class Splitter
 
             // special handling for OBJR items ("object reference dictionary")
             // see e.g. file 488300.pdf and Root/StructTreeRoot/K/K/[2]/K/[1]/K/[0]/Obj
-            COSName type = srcDict.getCOSName(COSName.TYPE);
             if (COSName.OBJR.equals(type))
             {
                 COSDictionary srcObj = srcDict.getCOSDictionary(COSName.OBJ);
@@ -474,6 +482,12 @@ public class Splitter
                 }
                 if (dstDict.size() == 1)
                 {
+                    return null;
+                }
+                if (dstPageDict == null &&
+                    dstParent instanceof COSDictionary && ((COSDictionary) dstParent).getCOSDictionary(COSName.PG) == null)
+                {
+                    // Pg entry of object reference dictionary and of parent structure is null
                     return null;
                 }
             }
