@@ -858,9 +858,9 @@ class PDFMergerUtilityTest
         // StructTreeRoot/IDTree trees.
         PDPageTree pageTree = doc.getPages();
         PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
-        checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject());
+        checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject(), structureTreeRoot.getCOSObject());
         assertNotNull(structureTreeRoot.getK());
-        checkElement(pageTree, structureTreeRoot.getK());
+        checkElement(pageTree, structureTreeRoot.getK(), structureTreeRoot.getCOSObject());
         checkForIDTreeOrphans(pageTree, structureTreeRoot);
     }
 
@@ -881,7 +881,7 @@ class PDFMergerUtilityTest
             }
             if (!element.getKids().isEmpty())
             {
-                checkElement(pageTree, element.getCOSObject().getDictionaryObject(COSName.K));
+                checkElement(pageTree, element.getCOSObject().getDictionaryObject(COSName.K), element.getCOSObject());
             }
         }
     }
@@ -936,7 +936,7 @@ class PDFMergerUtilityTest
     // See PDF specification Table 325 – Entries in an object reference dictionary
     // example of file with /Kids: 000153.pdf 000208.pdf 000314.pdf 000359.pdf 000671.pdf
     // from digitalcorpora site
-    private void checkElement(PDPageTree pageTree, COSBase base) throws IOException
+    private void checkElement(PDPageTree pageTree, COSBase base, COSDictionary parentDict) throws IOException
     {
         if (base instanceof COSArray)
         {
@@ -946,7 +946,7 @@ class PDFMergerUtilityTest
                 {
                     base2 = ((COSObject) base2).getObject();
                 }
-                checkElement(pageTree, base2);
+                checkElement(pageTree, base2, parentDict);
             }
         }
         else if (base instanceof COSDictionary)
@@ -959,7 +959,7 @@ class PDFMergerUtilityTest
             }
             if (kdict.containsKey(COSName.K))
             {
-                checkElement(pageTree, kdict.getDictionaryObject(COSName.K));
+                checkElement(pageTree, kdict.getDictionaryObject(COSName.K), kdict);
                 
                 // Check that the /P entry points to the correct object
                 PDStructureNode node = PDStructureNode.create(kdict);
@@ -977,11 +977,11 @@ class PDFMergerUtilityTest
             // if we're in a number tree, check /Nums and /Kids
             if (kdict.containsKey(COSName.KIDS))
             {
-                checkElement(pageTree, kdict.getDictionaryObject(COSName.KIDS));
+                checkElement(pageTree, kdict.getDictionaryObject(COSName.KIDS), kdict);
             }
             else if (kdict.containsKey(COSName.NUMS))
             {
-                checkElement(pageTree, kdict.getDictionaryObject(COSName.NUMS));
+                checkElement(pageTree, kdict.getDictionaryObject(COSName.NUMS), kdict);
             }
 
             // if we're an object reference dictionary (/OBJR), check the obj
