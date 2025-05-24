@@ -489,9 +489,10 @@ public class Splitter
                     return null;
                 }
             }
-            else
+
+            if (!COSName.OBJR.equals(type) && !COSName.MCR.equals(type))
             {
-                // /P not needed for OBJR items
+                // /P not needed for OBJR or MCR items
                 dstDict.setItem(COSName.P, dstParent);
             }
 
