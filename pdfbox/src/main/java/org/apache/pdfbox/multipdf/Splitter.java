@@ -84,7 +84,8 @@ public class Splitter
     private Map<COSDictionary, COSDictionary> pageDictMap; // map old page => new page for the current destination document
     private List<Map<COSDictionary, COSDictionary>> pageDictMaps; // list of these maps for all destination documents
     private Map<COSDictionary, COSDictionary> structDictMap;
-    private Map<COSDictionary, COSDictionary> annotDictMap;
+    private List<Map<COSDictionary, COSDictionary>> annotDictMaps; // map old annotation => new annotation for the current destination document
+    private Map<COSDictionary, COSDictionary> annotDictMap; // list of these maps for all destination documents
     private Map<PDPageDestination,PDPage> destToFixMap;
     private Set<String> idSet;
     private Set<COSName> roleSet;
@@ -130,6 +131,7 @@ public class Splitter
         destinationDocuments = new ArrayList<>();
         sourceDocument = document;
         pageDictMaps = new ArrayList<>();
+        annotDictMaps = new ArrayList<>();
         destToFixMap = new HashMap<>();
         annotDictMap = new HashMap<>();
         idSet = new HashSet<>();
@@ -141,6 +143,7 @@ public class Splitter
         {
             PDDocument destinationDocument = destinationDocuments.get(i);
             pageDictMap = pageDictMaps.get(i);
+            annotDictMap = annotDictMaps.get(i);
             cloneStructureTree(destinationDocument);
             fixDestinations(destinationDocument);
         }
@@ -704,6 +707,8 @@ public class Splitter
             destinationDocuments.add(currentDestinationDocument);
             pageDictMap = new HashMap<>();
             pageDictMaps.add(pageDictMap);
+            annotDictMap = new HashMap<>();
+            annotDictMaps.add(annotDictMap);
         }
     }
 
