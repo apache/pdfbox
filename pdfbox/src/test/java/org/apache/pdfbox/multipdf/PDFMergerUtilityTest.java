@@ -69,6 +69,7 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFMarkedContentExtractor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -983,6 +984,12 @@ class PDFMergerUtilityTest
             else if (kdict.containsKey(COSName.NUMS))
             {
                 checkElement(pageTree, kdict.getDictionaryObject(COSName.NUMS), kdict);
+            }
+
+            if (COSName.OBJR.equals(kdict.getDictionaryObject(COSName.TYPE)) ||
+                COSName.MCR.equals(kdict.getDictionaryObject(COSName.TYPE)))
+            {
+                assertFalse(kdict.getCOSDictionary(COSName.PG) == null && parentDict.getCOSDictionary(COSName.PG) == null);
             }
 
             // if we're an object reference dictionary (/OBJR), check the obj
