@@ -32,6 +32,7 @@ import java.util.TreeSet;
 
 import junit.framework.TestCase;
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.fail;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -954,6 +955,12 @@ public class PDFMergerUtilityTest extends TestCase
             else if (kdict.containsKey(COSName.NUMS))
             {
                 checkElement(pageTree, kdict.getDictionaryObject(COSName.NUMS), kdict);
+            }
+
+            if (COSName.OBJR.equals(kdict.getDictionaryObject(COSName.TYPE)) ||
+                COSName.MCR.equals(kdict.getDictionaryObject(COSName.TYPE)))
+            {
+                assertFalse(kdict.getCOSDictionary(COSName.PG) == null && parentDict.getCOSDictionary(COSName.PG) == null);
             }
 
             // if we're an object reference dictionary (/OBJR), check the obj
