@@ -423,6 +423,7 @@ public class Splitter
             COSDictionary srcPageDict = srcDict.getCOSDictionary(COSName.PG);
             COSDictionary dstPageDict = null;
             COSBase kid = srcDict.getDictionaryObject(COSName.K);
+            COSName type = srcDict.getCOSName(COSName.TYPE);
             if (srcPageDict != null)
             {
                 dstPageDict = pageDictMap.get(srcPageDict);
@@ -436,8 +437,10 @@ public class Splitter
                 }
                 else
                 {
-                    // PDFBOX-6009: quit if MCIDs because these need a /Pg entry
-                    if (hasMCIDs(kid))
+                    // PDFBOX-6009: "wrong" /Pg entry
+                    // quit if MCIDs because these need a /Pg entry
+                    // or if MCR/OBJR dicts
+                    if (COSName.MCR.equals(type) || COSName.OBJR.equals(type) || hasMCIDs(kid))
                     {
                         return null;
                     }
@@ -446,7 +449,6 @@ public class Splitter
             }
 
             // special handling for MCR items ("marked-content reference dictionary")
-            COSName type = srcDict.getCOSName(COSName.TYPE);
             if (COSName.MCR.equals(type) && dstPageDict == null && 
                 dstParent instanceof COSDictionary && ((COSDictionary) dstParent).getCOSDictionary(COSName.PG) == null)
             {
