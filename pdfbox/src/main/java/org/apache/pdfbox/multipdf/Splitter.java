@@ -132,7 +132,6 @@ public class Splitter
         pageDictMaps = new ArrayList<Map<COSDictionary, COSDictionary>>();
         annotDictMaps = new ArrayList<Map<COSDictionary, COSDictionary>>();
         destToFixMap = new HashMap<PDPageDestination,PDPage>();
-        annotDictMap = new HashMap<COSDictionary, COSDictionary>();
         idSet = new HashSet<String>();
         roleSet = new HashSet<COSName>();
 
