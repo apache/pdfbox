@@ -133,7 +133,6 @@ public class Splitter
         pageDictMaps = new ArrayList<>();
         annotDictMaps = new ArrayList<>();
         destToFixMap = new HashMap<>();
-        annotDictMap = new HashMap<>();
         idSet = new HashSet<>();
         roleSet = new HashSet<>();
 
