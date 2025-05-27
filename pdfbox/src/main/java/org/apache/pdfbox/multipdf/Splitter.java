@@ -503,7 +503,7 @@ public class Splitter
 
             dstDict.setItem(COSName.PG, dstPageDict);
             
-            // stack overflow here with 207658.pdf, too complex
+            // stack overflow here with 207658.pdf and 113484.pdf, too complex; works with -Xss50m
             COSBase cloneKid = createClone(kid, dstDict, dstPageDict != null ? dstPageDict : currentPageDict);
             if (cloneKid == null && kid != null)
             {
