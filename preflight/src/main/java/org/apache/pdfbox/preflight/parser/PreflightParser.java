@@ -146,6 +146,7 @@ public class PreflightParser extends PDFParser
      * 
      * @param format
      *            format that the document should follow (default {@link Format#PDF_A1B})
+     * @return the parsed document.
      * @throws IOException
      */
     public PDDocument parse(Format format) throws IOException
@@ -161,6 +162,7 @@ public class PreflightParser extends PDFParser
      * @param config
      *            Configuration bean that will be used by the PreflightDocument. If null the format is used to determine
      *            the default configuration.
+     * @return the parsed document.
      * @throws IOException
      */
     public PDDocument parse(Format format, PreflightConfiguration config) throws IOException
@@ -193,7 +195,7 @@ public class PreflightParser extends PDFParser
     @Override
     protected PDDocument createDocument() throws IOException
     {
-        preflightDocument = new PreflightDocument(document, format, config);
+        preflightDocument = new PreflightDocument(document, format, config, source);
         return preflightDocument;
     }
 
