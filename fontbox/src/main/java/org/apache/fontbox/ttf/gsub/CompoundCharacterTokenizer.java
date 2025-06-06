@@ -56,7 +56,7 @@ public class CompoundCharacterTokenizer
      *
      * @param pattern
      * 
-     * @deprecated Use {@link #CompoundCharacterTokenizer(java.util.Set)
+     * @deprecated Use {@link #CompoundCharacterTokenizer(java.util.Set)}
      */
     @Deprecated
     public CompoundCharacterTokenizer(Pattern pattern)
