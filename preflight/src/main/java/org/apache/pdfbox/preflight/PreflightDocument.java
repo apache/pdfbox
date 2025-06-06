@@ -44,7 +44,7 @@ public class PreflightDocument extends PDDocument
     /**
      * Create an empty preflight document and load the default configuration for the given format.
      * 
-     * @param format
+     * @param format the format used for validation
      * @throws IOException
      */
     public PreflightDocument(Format format) throws IOException
@@ -55,8 +55,8 @@ public class PreflightDocument extends PDDocument
     /**
      * Create a preflight document based on the COSDocument and load the default configuration for the given format.
      * 
-     * @param doc
-     * @param format
+     * @param doc the underlying COSDocument
+     * @param format the format used for validation
      */
     public PreflightDocument(COSDocument doc, Format format)
     {
@@ -64,11 +64,11 @@ public class PreflightDocument extends PDDocument
     }
 
     /**
-     * Create an empty preflight document that will use the given configuration bean to process the validation. if the
-     * configuration is null, a default configuration will be load using the given format.
+     * Create an empty preflight document that will use the given configuration bean to process the validation. If the
+     * configuration is null, a default configuration will be loaded using the given format.
      * 
-     * @param format
-     * @param cfg
+     * @param format the format used for validation
+     * @param cfg the configuration used for validation
      * @throws IOException
      */
     public PreflightDocument(Format format, PreflightConfiguration cfg) throws IOException
@@ -78,11 +78,11 @@ public class PreflightDocument extends PDDocument
 
     /**
      * Create a preflight document based on the COSDocument that will use the given configuration bean to process the
-     * validation. if the configuration is null, a default configuration will be load using the given format.
+     * validation. If the configuration is null, a default configuration will be loaded using the given format.
      * 
-     * @param doc
-     * @param format
-     * @param config
+     * @param doc the underlying COSDocument
+     * @param format the format used for validation
+     * @param config the configuration used for validation
      */
     public PreflightDocument(COSDocument doc, Format format, PreflightConfiguration config)
     {
