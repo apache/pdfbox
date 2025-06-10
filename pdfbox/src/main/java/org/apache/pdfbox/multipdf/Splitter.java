@@ -965,24 +965,8 @@ public class Splitter
                     continue;
                 }
                 COSDictionary clonedMarkupDict = annotDictMap.get(annotationMarkup.getCOSObject());
-                if (clonedMarkupDict != null)
-                {
-                    annotation.getCOSObject().setItem(COSName.PARENT, clonedMarkupDict);
-                }
-                else
-                {
-                    // orphan markup (not in annotation list); clone it and fix references 
-                    clonedMarkupDict = new COSDictionary(annotationMarkup.getCOSObject());
-                    annotDictMap.put(annotationMarkup.getCOSObject(), clonedMarkupDict);
-                    PDAnnotationMarkup annotationMarkupClone =
-                            (PDAnnotationMarkup) PDAnnotation.createAnnotation(clonedMarkupDict);
-                    annotationMarkupClone.setPopup((PDAnnotationPopup) annotation);
-                    ((PDAnnotationPopup) annotation).setParent(annotationMarkupClone);
-                    if (annotationMarkupClone.getPage() != null)
-                    {
-                        annotationMarkupClone.setPage(imported);
-                    }
-                }
+                // clonedMarkupDict will be null if markup annotation is an orphan (not in annotation list)
+                annotation.getCOSObject().setItem(COSName.PARENT, clonedMarkupDict);
             }
         }
         imported.setAnnotations(clonedAnnotations);
