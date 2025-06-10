@@ -1381,6 +1381,34 @@ public class PDFMergerUtilityTest extends TestCase
     }
 
     /**
+     * PDFBOX-6018: Test split a PDF with popup annotations that are not in the annotations list.
+     * Verify that after splitting, they still link back to their markup annotation and these to the
+     * page.
+     *
+     * @throws IOException
+     */
+    public void testSplitWithOrphanPopupAnnotation() throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File(SRCDIR, "PDFBOX-6018-099267-p9-OrphanPopups.pdf"));
+        Splitter splitter = new Splitter();
+        List<PDDocument> splitResult = splitter.split(doc);
+        assertEquals(1, splitResult.size());
+        PDDocument dstDoc = splitResult.get(0);
+        assertEquals(1, dstDoc.getNumberOfPages());
+        PDPage page = dstDoc.getPage(0);
+        List<PDAnnotation> annotations = page.getAnnotations();
+        assertEquals(2, annotations.size());
+        PDAnnotationText ann0 = (PDAnnotationText) annotations.get(0);
+        PDAnnotationText ann1 = (PDAnnotationText) annotations.get(1);
+        assertEquals(page, ann0.getPage());
+        assertEquals(page, ann1.getPage());
+        assertEquals(ann0, ann0.getPopup().getParent());
+        assertEquals(ann1, ann1.getPopup().getParent());
+        dstDoc.close();
+        doc.close();
+    }
+
+    /**
      * PDFBOX-5939: merge a file with an outline that has itself as a parent without producing a
      * stack overflow.
      *
