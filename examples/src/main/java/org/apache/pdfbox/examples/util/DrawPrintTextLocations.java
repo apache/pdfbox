@@ -206,28 +206,27 @@ public class DrawPrintTextLocations extends PDFTextStripper
         // page may be rotated
         rotateAT = new AffineTransform();
         int rotation = pdPage.getRotation();
-        if (rotation != 0)
+        switch (rotation)
         {
-            PDRectangle mediaBox = pdPage.getMediaBox();
-            switch (rotation)
-            {
-                case 90:
-                    rotateAT.translate(mediaBox.getHeight(), 0);
-                    break;
-                case 270:
-                    rotateAT.translate(0, mediaBox.getWidth());
-                    break;
-                case 180:
-                    rotateAT.translate(mediaBox.getWidth(), mediaBox.getHeight());
-                    break;
-                default:
-                    break;
-            }
-            rotateAT.rotate(Math.toRadians(rotation));
+            case 0:
+                transAT = AffineTransform.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY());
+                break;
+            case 90:
+                rotateAT.translate(cropBox.getHeight(), 0);
+                transAT = AffineTransform.getTranslateInstance(-cropBox.getLowerLeftY(), -cropBox.getLowerLeftX());
+                break;
+            case 270:
+                rotateAT.translate(0, cropBox.getWidth());
+                transAT = AffineTransform.getTranslateInstance(cropBox.getLowerLeftY(), cropBox.getLowerLeftX());
+                break;
+            case 180:
+                rotateAT.translate(cropBox.getWidth(), cropBox.getHeight());
+                transAT = AffineTransform.getTranslateInstance(cropBox.getLowerLeftX(), -cropBox.getLowerLeftY());
+                break;
+            default:
+                break;
         }
-
-        // cropbox
-        transAT = AffineTransform.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY());
+        rotateAT.rotate(Math.toRadians(rotation));
 
         g2d = image.createGraphics();
         g2d.setStroke(new BasicStroke(0.1f));
@@ -272,8 +271,8 @@ public class DrawPrintTextLocations extends PDFTextStripper
     {
         for (TextPosition text : textPositions)
         {
-            System.out.println("String[" + text.getXDirAdj() + ","
-                    + text.getYDirAdj() + " fs=" + text.getFontSize() + " xscale="
+            System.out.println("String[" + text.getXDirAdj() + "," + text.getYDirAdj()
+                    + " font=" + text.getFont().getName() + ":" + text.getFontSize() + " xscale="
                     + text.getXScale() + " height=" + text.getHeightDir() + " space="
                     + text.getWidthOfSpace() + " width="
                     + text.getWidthDirAdj() + "]" + text.getUnicode());

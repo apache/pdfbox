@@ -51,6 +51,14 @@ public class CompoundCharacterTokenizer
         regexExpression = Pattern.compile(getRegexFromTokens(compoundWords));
     }
 
+    /**
+     * Constructor.
+     *
+     * @param pattern
+     * 
+     * @deprecated Use {@link #CompoundCharacterTokenizer(java.util.Set)}
+     */
+    @Deprecated
     public CompoundCharacterTokenizer(Pattern pattern)
     {
         regexExpression = pattern;

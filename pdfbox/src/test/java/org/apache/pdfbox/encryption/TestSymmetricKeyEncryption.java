@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.awt.image.BufferedImage;
@@ -31,6 +30,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +58,8 @@ import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.StandardSecurityHandler;
 import org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.text.PDFTextStripper;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -81,7 +83,7 @@ class TestSymmetricKeyEncryption
      */
     private static final Log LOG = LogFactory.getLog(TestSymmetricKeyEncryption.class);
 
-    private static final File testResultsDir = new File("target/test-output/crypto");
+    private static final File TESTRESULTSDIR = new File("target/test-output/crypto");
 
     private static AccessPermission permission;
 
@@ -89,9 +91,9 @@ class TestSymmetricKeyEncryption
     static final String OWNERPASSWORD = "abcdefghijk1234567890abcdefghijk1234567890";
 
     @BeforeAll
-    static void setUp() throws Exception
+    static void setUp() throws NoSuchAlgorithmException
     {
-        testResultsDir.mkdirs();
+        TESTRESULTSDIR.mkdirs();
 
         if (Cipher.getMaxAllowedKeyLength("AES") != Integer.MAX_VALUE)
         {
@@ -249,6 +251,42 @@ class TestSymmetricKeyEncryption
     }
 
     /**
+     * PDFBOX-5955: test unusual RC4 encryption that has 40 or 48 bits instead of 128.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testPDFBox5955() throws IOException
+    {        
+        File file40bit = new File("target/pdfs", "PDFBOX-5955-40bit.pdf");
+        File file48bit = new File("target/pdfs", "PDFBOX-5955-48bit.pdf");
+        try (PDDocument doc = Loader.loadPDF(file40bit))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            String text = stripper.getText(doc);
+            assertTrue(text.contains("0x0446615747"));
+        }
+        try (PDDocument doc = Loader.loadPDF(file40bit, "ownerpass"))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            String text = stripper.getText(doc);
+            assertTrue(text.contains("0x0446615747"));
+        }
+        try (PDDocument doc = Loader.loadPDF(file48bit))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            String text = stripper.getText(doc);
+            assertTrue(text.contains("0x02988E82AFF8"));
+        }
+        try (PDDocument doc = Loader.loadPDF(file48bit, "ownerpass"))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            String text = stripper.getText(doc);
+            assertTrue(text.contains("0x02988E82AFF8"));
+        }
+    }
+
+    /**
      * Protect a document with an embedded PDF with a key and try to reopen it
      * with that key and compare.
      *
@@ -289,7 +327,7 @@ class TestSymmetricKeyEncryption
     void testPDFBox4453() throws IOException
     {
         final int TESTCOUNT = 1000;
-        File file = new File(testResultsDir,"PDFBOX-4453.pdf");
+        File file = new File(TESTRESULTSDIR,"PDFBOX-4453.pdf");
         try (PDDocument doc = new PDDocument())
         {
             doc.addPage(new PDPage());
@@ -381,7 +419,7 @@ class TestSymmetricKeyEncryption
                 }
             }
             
-            File pdfFile = new File(testResultsDir, prefix + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + "-decrypted.pdf");
+            File pdfFile = new File(TESTRESULTSDIR, prefix + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + "-decrypted.pdf");
             encryptedDoc.setAllSecurityToBeRemoved(true);
             encryptedDoc.save(pdfFile);
         }
@@ -403,7 +441,7 @@ class TestSymmetricKeyEncryption
         
         doc.protect(spp);
 
-        File pdfFile = new File(testResultsDir, prefix + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + "-encrypted.pdf");
+        File pdfFile = new File(TESTRESULTSDIR, prefix + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + "-encrypted.pdf");
 
         doc.save(pdfFile);
         doc.close();
@@ -457,7 +495,7 @@ class TestSymmetricKeyEncryption
         PDComplexFileSpecification complexFileSpec = entry.getValue();
         PDEmbeddedFile embeddedFile = complexFileSpec.getEmbeddedFile();
 
-        File resultFile = new File(testResultsDir, name);
+        File resultFile = new File(TESTRESULTSDIR, name);
         try (FileOutputStream fos = new FileOutputStream(resultFile);
              InputStream is = embeddedFile.createInputStream())
         {
@@ -478,7 +516,7 @@ class TestSymmetricKeyEncryption
         PDDocument document = Loader.loadPDF(inputFileWithEmbeddedFileAsByteArray);
         try (PDDocument encryptedDoc = encrypt(keyLength, preferAES, sizePriorToEncr, document, "ContainsEmbedded-", permission, userpassword, ownerpassword))
         {
-            File decryptedFile = new File(testResultsDir, "DecryptedContainsEmbedded-" + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + ".pdf");
+            File decryptedFile = new File(TESTRESULTSDIR, "DecryptedContainsEmbedded-" + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + ".pdf");
             encryptedDoc.setAllSecurityToBeRemoved(true);
             encryptedDoc.save(decryptedFile);
             

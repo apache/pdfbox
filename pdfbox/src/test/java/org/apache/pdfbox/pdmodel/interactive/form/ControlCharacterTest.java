@@ -71,7 +71,7 @@ class ControlCharacterTest
     private PDAcroForm acroForm;
 
     @BeforeEach
-    public void setUp() throws IOException
+    void setUp() throws IOException
     {
         document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
         acroForm = document.getDocumentCatalog().getAcroForm();
@@ -124,7 +124,7 @@ class ControlCharacterTest
     }
 
     @AfterEach
-    public void tearDown() throws IOException
+    void tearDown() throws IOException
     {
         document.close();
     }
@@ -141,8 +141,10 @@ class ControlCharacterTest
         // trimming as Acrobat adds spaces to strings
         // where we don't
         return tokens.stream() //
-                .filter(t -> t instanceof COSString) //
-                .map(t -> ((COSString) t).getString().trim()) //
+                .filter(COSString.class::isInstance) //
+                .map(COSString.class::cast) //
+                .map(COSString::getString) //
+                .map(String::trim) //
                 .collect(Collectors.toList());
     }
 }

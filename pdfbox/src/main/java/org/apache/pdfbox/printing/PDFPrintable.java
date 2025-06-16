@@ -46,6 +46,8 @@ import org.apache.pdfbox.rendering.RenderDestination;
 public final class PDFPrintable implements Printable
 {
     private static final Log LOG = LogFactory.getLog(PDFPrintable.class);
+    public static final float RASTERIZE_OFF = 0f;
+    public static final float RASTERIZE_DPI_AUTO = -1f;
 
     private final PDPageTree pageTree;
     private final PDFRenderer renderer;
@@ -75,7 +77,7 @@ public final class PDFPrintable implements Printable
      */
     public PDFPrintable(PDDocument document, Scaling scaling)
     {
-       this(document, scaling, false, 0);
+       this(document, scaling, false);
     }
 
     /**
@@ -87,7 +89,7 @@ public final class PDFPrintable implements Printable
      */
     public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder)
     {
-        this(document, scaling, showPageBorder, 0);
+        this(document, scaling, showPageBorder, RASTERIZE_OFF);
     }
 
     /**
@@ -97,7 +99,8 @@ public final class PDFPrintable implements Printable
      * @param document the document to print
      * @param scaling page scaling policy
      * @param showPageBorder true if page borders are to be printed
-     * @param dpi if non-zero then the image will be rasterized at the given DPI
+     * @param dpi if positive non-zero then the image will be rasterized at the given DPI. If
+     * set to the special value RASTERIZE_DPI_AUTO, the dpi of the printer will be used.
      */
     public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dpi)
     {
@@ -111,7 +114,8 @@ public final class PDFPrintable implements Printable
      * @param document the document to print
      * @param scaling page scaling policy
      * @param showPageBorder true if page borders are to be printed
-     * @param dpi if non-zero then the image will be rasterized at the given DPI
+     * @param dpi if positive non-zero then the image will be rasterized at the given DPI. If
+     * set to the special value RASTERIZE_DPI_AUTO, the dpi of the printer will be used.
      * @param center true if the content is to be centered on the page (otherwise top-left).
      */
     public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dpi,
@@ -127,7 +131,8 @@ public final class PDFPrintable implements Printable
      * @param document the document to print
      * @param scaling page scaling policy
      * @param showPageBorder true if page borders are to be printed
-     * @param dpi if non-zero then the image will be rasterized at the given DPI
+     * @param dpi if positive non-zero then the image will be rasterized at the given DPI. If
+     * set to the special value RASTERIZE_DPI_AUTO, the dpi of the printer will be used.
      * @param center true if the content is to be centered on the page (otherwise top-left).
      * @param renderer the document renderer. Useful if {@link PDFRenderer} has been subclassed.
      */
@@ -203,6 +208,15 @@ public final class PDFPrintable implements Printable
         {
             Graphics2D graphics2D = (Graphics2D)graphics;
 
+            // capture the DPI that will be used for rasterizing the image
+            // if rasterizing is specified
+            float rasterDpi = dpi;
+            if (rasterDpi == RASTERIZE_DPI_AUTO)
+            {
+                rasterDpi = (float) graphics2D.getTransform().getScaleX() * 72.0f;
+                LOG.debug("auto raster dpi: " + rasterDpi);
+            }
+
             PDPage page = pageTree.get(pageIndex);
             PDRectangle cropBox = getRotatedCropBox(page);
 
@@ -254,9 +268,13 @@ public final class PDFPrintable implements Printable
             // rasterize to bitmap (optional)
             Graphics2D printerGraphics = null;
             BufferedImage image = null;
-            if (dpi > 0)
+            if (dpi > 0 || dpi == RASTERIZE_DPI_AUTO)
             {
-                float dpiScale = dpi / 72;
+                if (LOG.isDebugEnabled())
+                {
+                    LOG.debug("dpi set to " + rasterDpi);
+                }
+                float dpiScale = rasterDpi / 72;
                 image = new BufferedImage((int)(imageableWidth * dpiScale / scale),
                                           (int)(imageableHeight * dpiScale / scale),
                                           BufferedImage.TYPE_INT_ARGB);

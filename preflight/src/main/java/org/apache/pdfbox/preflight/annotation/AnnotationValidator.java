@@ -226,6 +226,13 @@ public abstract class AnnotationValidator
                             {
                                 val = ((COSObject) val).getObject();
                             }
+                            if (!(val instanceof COSStream))
+                            {
+                                // PDFBOX-5900
+                                ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_AP_CONTENT,
+                                "The N Appearance of a Btn widget must be a stream"));
+                                return false;
+                            }
                             ContextHelper.validateElement(ctx,
                                     new PDFormXObject((COSStream) val), GRAPHIC_PROCESS);
                         }

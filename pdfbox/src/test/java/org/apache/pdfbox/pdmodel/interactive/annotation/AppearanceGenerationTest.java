@@ -78,7 +78,7 @@ class AppearanceGenerationTest
     private static final String NAME_OF_PDF = "AnnotationTypes.pdf";
     
     @BeforeEach
-    public void setUp() throws IOException
+    void setUp() throws IOException
     {
         document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
         OUT_DIR.mkdirs();
@@ -193,7 +193,7 @@ class AppearanceGenerationTest
     }
 
     @AfterEach
-    public void tearDown() throws IOException
+    void tearDown() throws IOException
     {
         document.close();
     }

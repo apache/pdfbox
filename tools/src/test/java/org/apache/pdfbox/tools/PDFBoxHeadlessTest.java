@@ -41,13 +41,13 @@ class PDFBoxHeadlessTest
     final ByteArrayOutputStream err = new ByteArrayOutputStream();
 
     @BeforeAll
-    public static void setHeadless()
+    static void setHeadless()
     {
         System.setProperty("java.awt.headless", "true");
-    } 
+    }
 
     @BeforeEach
-    public void setUpStreams()
+    void setUpStreams()
     {
         out.reset();
         err.reset();
@@ -56,7 +56,7 @@ class PDFBoxHeadlessTest
     }
 
     @AfterEach
-    public void restoreStreams()
+    void restoreStreams()
     {
         System.setOut(originalOut);
         System.setErr(originalErr);

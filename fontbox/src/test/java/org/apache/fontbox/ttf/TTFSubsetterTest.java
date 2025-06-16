@@ -29,6 +29,7 @@ import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -292,6 +293,78 @@ class TTFSubsetterTest
             subsetter.add('a');
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             subsetter.writeToStream(output);
+        }
+    }
+
+    /**
+     * Test of PDFBOX-5230: check that subsetting can be forced to use invisible glyphs.
+     *
+     * @throws java.io.IOException
+     */
+    @Test
+    void testPDFBox5230() throws IOException
+    {
+        final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(testFile));
+        TTFSubsetter ttfSubsetter = new TTFSubsetter(ttf);
+        ttfSubsetter.add('A');
+        ttfSubsetter.add('B');
+        ttfSubsetter.add('\u200C');
+
+        // verify results without forcing
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ttfSubsetter.writeToStream(baos);
+        try (TrueTypeFont subset = new TTFParser(true)
+                .parse(new RandomAccessReadBuffer(baos.toByteArray())))
+        {
+            assertEquals(4, subset.getNumberOfGlyphs());
+            assertEquals(0, subset.nameToGID(".notdef"));
+            assertEquals(1, subset.nameToGID("A"));
+            assertEquals(2, subset.nameToGID("B"));
+            assertEquals(3, subset.nameToGID("uni200C"));
+
+            PostScriptTable pst = subset.getPostScript();
+            assertEquals(".notdef", pst.getName(0));
+            assertEquals("A", pst.getName(1));
+            assertEquals("B", pst.getName(2));
+            assertEquals("uni200C", pst.getName(3));
+
+            assertFalse(subset.getPath("A").getBounds2D().isEmpty(), "A path should not be empty");
+            assertFalse(subset.getPath("B").getBounds2D().isEmpty(), "B path should not be empty");
+            assertFalse(subset.getPath("uni200C").getBounds2D().isEmpty(), "ZWNJ path should not be empty");
+            assertNotEquals(0, subset.getWidth("A"), "A width should not be zero.");
+            assertNotEquals(0, subset.getWidth("B"), "B width should not be zero.");
+            assertEquals(0, subset.getWidth("uni200C"), "ZWNJ width should be zero");
+        }
+
+        // verify results while forcing B and ZWNJ to use invisible glyphs
+
+        ttfSubsetter.forceInvisible('B');
+        ttfSubsetter.forceInvisible('\u200C');
+        ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+        ttfSubsetter.writeToStream(baos2);
+        try (TrueTypeFont subset = new TTFParser(true)
+                .parse(new RandomAccessReadBuffer(baos2.toByteArray())))
+        {
+            assertEquals(4, subset.getNumberOfGlyphs());
+            assertEquals(0, subset.nameToGID(".notdef"));
+            assertEquals(1, subset.nameToGID("A"));
+            assertEquals(2, subset.nameToGID("B"));
+            assertEquals(3, subset.nameToGID("uni200C"));
+
+            PostScriptTable pst = subset.getPostScript();
+            assertEquals(".notdef", pst.getName(0));
+            assertEquals("A", pst.getName(1));
+            assertEquals("B", pst.getName(2));
+            assertEquals("uni200C", pst.getName(3));
+
+            assertFalse(subset.getPath("A").getBounds2D().isEmpty(), "A path should not be empty");
+            assertTrue(subset.getPath("B").getBounds2D().isEmpty(), "B path should be empty");
+            assertTrue(subset.getPath("uni200C").getBounds2D().isEmpty(), "ZWNJ path should be empty");
+            assertNotEquals(0, subset.getWidth("A"), "A width should not be zero.");
+            assertEquals(0, subset.getWidth("B"), "B width should be zero.");
+            assertEquals(0, subset.getWidth("uni200C"), "ZWNJ width should be zero");
         }
     }
 }

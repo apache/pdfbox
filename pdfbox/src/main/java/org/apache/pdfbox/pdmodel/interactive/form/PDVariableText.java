@@ -25,6 +25,7 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
 /**
  * Base class for fields which use "Variable Text".
@@ -127,6 +128,19 @@ public abstract class PDVariableText extends PDTerminalField
     public void setDefaultAppearance(String daValue)
     {
         getCOSObject().setString(COSName.DA, daValue);
+
+        // PDFBOX-5797: Sejda files have a /DA entry in kid widgets
+        if (getCOSObject().containsKey(COSName.KIDS))
+        {
+            for (PDAnnotationWidget widget : getWidgets())
+            {
+                COSDictionary widgetDict = widget.getCOSObject();
+                if (widgetDict.containsKey(COSName.DA))
+                {
+                    widgetDict.setString(COSName.DA, daValue);
+                }
+            }
+        }
     }
 
     /**

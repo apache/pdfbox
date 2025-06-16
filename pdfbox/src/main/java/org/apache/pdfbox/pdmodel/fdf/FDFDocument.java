@@ -26,10 +26,16 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfwriter.COSWriter;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -41,7 +47,11 @@ import org.w3c.dom.Element;
  */
 public class FDFDocument implements Closeable
 {
+    private static final Log LOG = LogFactory.getLog(FDFDocument.class);
+
     private final COSDocument document;
+
+    private final RandomAccessRead fdfSource;
 
     /**
      * Constructor, creates a new FDF document.
@@ -49,6 +59,7 @@ public class FDFDocument implements Closeable
      */
     public FDFDocument()
     {
+        fdfSource = null;
         document = new COSDocument();
         document.getDocumentState().setParsing(false);
         document.setVersion(1.2f);
@@ -65,11 +76,25 @@ public class FDFDocument implements Closeable
      * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
      *
      * @param doc The COSDocument that this document wraps.
+     * @deprecated Use {@link #FDFDocument(COSDocument, RandomAccessRead) }
      */
+    @Deprecated
     public FDFDocument(COSDocument doc)
+    {
+        this(doc, null);
+    }
+
+    /**
+     * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
+     *
+     * @param doc The COSDocument that this document wraps.
+     * @param source The source that will be closed when this document gets closed, can be null.
+     */
+    public FDFDocument(COSDocument doc, RandomAccessRead source)
     {
         document = doc;
         document.getDocumentState().setParsing(false);
+        fdfSource = source;
     }
 
     /**
@@ -249,6 +274,24 @@ public class FDFDocument implements Closeable
     @Override
     public void close() throws IOException
     {
-        document.close();
+        if (!document.isClosed())
+        {
+            IOException firstException = null;
+
+            // close all intermediate I/O streams
+            firstException = IOUtils.closeAndLogException(document, LOG, "COSDocument", firstException);
+
+            // close the source PDF stream, if we read from one
+            if (fdfSource != null)
+            {
+                firstException = IOUtils.closeAndLogException(fdfSource, LOG, "RandomAccessRead pdfSource", firstException);
+            }
+
+            // rethrow first exception to keep method contract
+            if (firstException != null)
+            {
+                throw firstException;
+            }
+        }
     }
 }

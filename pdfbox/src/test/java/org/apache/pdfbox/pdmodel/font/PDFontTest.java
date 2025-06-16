@@ -462,4 +462,42 @@ class PDFontTest
             assertTrue(new Area(path1).equals(new Area(path2))); // assertEquals does not test equals()
         }
     }
+
+    /**
+     * Check space width.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void PDFBOX5920Type0() throws IOException
+    {
+        try (InputStream is = 
+                PDFontTest.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
+                PDDocument document = new PDDocument())
+        {
+            PDFont font = PDType0Font.load(document, is, false);
+            assertEquals(20064.0f, 
+                    font.getStringWidth("The quick brown fox jumps over the lazy dog."));
+            assertEquals(278.0f, font.getSpaceWidth());
+        }
+    }
+
+    /**
+     * Check space width.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void PDFBOX5920TrueType() throws IOException
+    {
+        try (InputStream is = 
+                PDFontTest.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
+                PDDocument document = new PDDocument())
+        {
+            PDFont font = PDTrueTypeFont.load(document, is, WinAnsiEncoding.INSTANCE);
+            assertEquals(20064.0f, 
+                    font.getStringWidth("The quick brown fox jumps over the lazy dog."));
+            assertEquals(278.0f, font.getSpaceWidth());
+        }
+    }
 }

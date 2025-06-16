@@ -279,7 +279,7 @@ public class AddValidationInformation
         boolean isRevocationInfoFound = foundRevocationInformation.contains(certInfo.getCertificate());
         if (!isRevocationInfoFound)
         {
-            if (certInfo.getOcspUrl() != null && certInfo.getIssuerCertificate() != null)
+            if (certInfo.getOcspUrl() != null && !certInfo.getIssuerCertificates().isEmpty())
             {
                 isRevocationInfoFound = fetchOcspData(certInfo);
             }
@@ -369,19 +369,30 @@ public class AddValidationInformation
     private void addOcspData(CertSignatureInformation certInfo) throws IOException, OCSPException,
             CertificateProccessingException, RevokedCertificateException, URISyntaxException
     {
-        if (ocspChecked.contains(certInfo.getCertificate()))
+        X509Certificate certificate = certInfo.getCertificate();
+        if (ocspChecked.contains(certificate))
         {
             // This certificate has been OCSP-checked before
             return;
         }
+        for (X509Certificate issuerCertificate : certInfo.getIssuerCertificates())
+        {
+            addOcspData(certificate, issuerCertificate, certInfo.getOcspUrl());
+        }
+    }
+
+    private void addOcspData(X509Certificate certificate, X509Certificate issuerCertificate, String ocspURL)
+            throws IOException, OCSPException, CertificateProccessingException,
+            RevokedCertificateException, URISyntaxException
+    {
         OcspHelper ocspHelper = new OcspHelper(
-                certInfo.getCertificate(),
+                certificate,
                 signDate.getTime(),
-                certInfo.getIssuerCertificate(),
+                issuerCertificate,
                 new HashSet<>(certInformationHelper.getCertificateSet()),
-                certInfo.getOcspUrl());
+                ocspURL);
         OCSPResp ocspResp = ocspHelper.getResponseOcsp();
-        ocspChecked.add(certInfo.getCertificate());
+        ocspChecked.add(certificate);
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
         X509Certificate ocspResponderCertificate = ocspHelper.getOcspResponderCertificate();
         certInformationHelper.addAllCertsFromHolders(basicResponse.getCerts());
@@ -423,7 +434,7 @@ public class AddValidationInformation
         {
             correspondingOCSPs.add(ocspStream);
         }
-        foundRevocationInformation.add(certInfo.getCertificate());
+        foundRevocationInformation.add(certificate);
     }
 
     /**
@@ -441,9 +452,9 @@ public class AddValidationInformation
             CertificateVerificationException, URISyntaxException
     {
         X509CRL crl = CRLVerifier.downloadCRLFromWeb(certInfo.getCrlUrl());
-        X509Certificate issuerCertificate = certInfo.getIssuerCertificate();
 
         // find the issuer certificate (usually issuer of signature certificate)
+        X509Certificate issuerCertificate = null;
         for (X509Certificate certificate : certInformationHelper.getCertificateSet())
         {
             if (certificate.getSubjectX500Principal().equals(crl.getIssuerX500Principal()))
@@ -451,6 +462,10 @@ public class AddValidationInformation
                 issuerCertificate = certificate;
                 break;
             }
+        }
+        if (issuerCertificate == null)
+        {
+            throw new CertificateVerificationException("Can't find issuer of CRL for " + certInfo.getCrlUrl());
         }
         crl.verify(issuerCertificate.getPublicKey(), SecurityProvider.getProvider().getName());
         CRLVerifier.checkRevocation(crl, certInfo.getCertificate(), signDate.getTime(), certInfo.getCrlUrl());

@@ -174,7 +174,6 @@ public class ViewMenu extends MenuBase
         viewMenu.setMnemonic('V');
         
         TreeViewMenu treeViewMenu = TreeViewMenu.getInstance();
-        treeViewMenu.setEnableMenu(false);
         viewMenu.add(treeViewMenu.getMenu());
         treeViewMenu.addMenuListeners(actionEvent ->
         {
@@ -222,7 +221,6 @@ public class ViewMenu extends MenuBase
         viewMenu.addSeparator();
 
         allowSubsampling = new JCheckBoxMenuItem(ALLOW_SUBSAMPLING);
-        allowSubsampling.setEnabled(false);
         viewMenu.add(allowSubsampling);
 
         viewMenu.addSeparator();

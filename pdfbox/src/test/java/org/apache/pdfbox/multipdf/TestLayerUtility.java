@@ -54,7 +54,7 @@ class TestLayerUtility
     private static final File TESTRESULTSDIR = new File("target/test-output");
 
     @BeforeAll
-    static void setUp() throws Exception
+    static void setUp()
     {
         TESTRESULTSDIR.mkdirs();
     }
@@ -64,7 +64,7 @@ class TestLayerUtility
      * @throws Exception if an error occurs
      */
     @Test
-    void testLayerImport() throws Exception
+    void testLayerImport() throws IOException
     {
         File mainPDF = createMainPDF();
         File overlay1 = createOverlay1();

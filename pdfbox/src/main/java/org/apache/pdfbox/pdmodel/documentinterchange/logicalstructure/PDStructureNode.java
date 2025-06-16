@@ -143,7 +143,7 @@ public abstract class PDStructureNode implements COSObjectable
     }
 
     /**
-     * Appends a structure element kid.
+     * Appends a structure element kid and sets the parent property (/P) to this.
      * 
      * @param structureElement the structure element
      */
@@ -273,10 +273,10 @@ public abstract class PDStructureNode implements COSObjectable
     }
 
     /**
-     * Removes a structure element kid.
-     * 
+     * Removes a structure element kid and if successful also removes the parent property (/P).
+     *
      * @param structureElement the structure element
-     * @return <code>true</code> if the kid was removed, <code>false</code> otherwise
+     * @return <code>true</code> if the kid was removed, <code>false</code> otherwise.
      */
     public boolean removeKid(PDStructureElement structureElement)
     {

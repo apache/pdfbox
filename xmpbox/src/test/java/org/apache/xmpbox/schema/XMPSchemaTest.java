@@ -21,6 +21,7 @@
 
 package org.apache.xmpbox.schema;
 
+import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -55,7 +56,7 @@ class XMPSchemaTest
      * @throws IllegalArgumentException
      */
     @Test
-    void testBagManagement() throws Exception
+    void testBagManagement()
     {
         String bagName = "BAGTEST";
         String value1 = "valueOne";
@@ -71,11 +72,10 @@ class XMPSchemaTest
         List<String> values2 = schem.getUnqualifiedBagValueList(bagName);
         assertEquals(1, values2.size());
         assertEquals(value2, values2.get(0));
-
     }
 
     @Test
-    void testArrayList() throws Exception
+    void testArrayList() throws BadFieldValueException
     {
         XMPMetadata meta = XMPMetadata.createXMPMetadata();
         ArrayProperty newSeq = meta.getTypeMapping().createArrayProperty(null, "nsSchem", "seqType", Cardinality.Seq);
@@ -97,7 +97,7 @@ class XMPSchemaTest
      * @throws java.io.IOException
      */
     @Test
-    void testSeqManagement() throws Exception
+    void testSeqManagement()
     {
         Calendar date = Calendar.getInstance();
         BooleanType bool = parent.getTypeMapping().createBoolean(null, "rdf", "li", true);
@@ -141,15 +141,15 @@ class XMPSchemaTest
     }
 
     @Test
-    void testBadRdfAbout() throws Exception
+    void testBadRdfAbout()
     {
         assertThrows(BadFieldValueException.class, () -> {
-	        schem.setAbout(new Attribute(null, "about", ""));
-	    });
+            schem.setAbout(new Attribute(null, "about", ""));
+        });
     }
 
     @Test
-    void testSetSpecifiedSimpleTypeProperty() throws Exception
+    void testSetSpecifiedSimpleTypeProperty() throws BadFieldValueException
     {
         String prop = "testprop";
         String val = "value";
@@ -163,7 +163,7 @@ class XMPSchemaTest
     }
 
     @Test
-    void testSpecifiedSimplePropertyFormer() throws Exception
+    void testSpecifiedSimplePropertyFormer() throws BadFieldValueException
     {
         String prop = "testprop";
         String val = "value";
@@ -176,7 +176,7 @@ class XMPSchemaTest
     }
 
     @Test
-    void testAsSimpleMethods() throws Exception
+    void testAsSimpleMethods() throws BadFieldValueException
     {
         String bool = "bool";
         boolean boolVal = true;
@@ -235,7 +235,7 @@ class XMPSchemaTest
      * @throws BadFieldValueException
      */
     @Test
-    void testProperties() throws Exception
+    void testProperties() throws BadFieldValueException
     {
 
         assertEquals("nsURI", schem.getNamespace());
@@ -288,50 +288,13 @@ class XMPSchemaTest
         assertEquals(intType, schem.getIntegerProperty("intType"));
 
         // Check bad type verification
-        boolean ok = false;
-        try
-        {
-            schem.getIntegerProperty("boolType");
-        }
-        catch (BadFieldValueException e)
-        {
-            ok = true;
-        }
-        assertTrue(ok);
-        ok = false;
-        try
-        {
-            schem.getUnqualifiedTextProperty("intType");
-        }
-        catch (BadFieldValueException e)
-        {
-            ok = true;
-        }
-        assertTrue(ok);
-        ok = false;
-        try
-        {
-            schem.getDateProperty("textType");
-        }
-        catch (BadFieldValueException e)
-        {
-            ok = true;
-        }
-        assertTrue(ok);
-        ok = false;
-        try
-        {
-            schem.getBooleanProperty("dateType");
-        }
-        catch (BadFieldValueException e)
-        {
-            ok = true;
-        }
-
+        assertThrows(BadFieldValueException.class, () -> schem.getIntegerProperty("boolType"));
+        assertThrows(BadFieldValueException.class, () -> schem.getDateProperty("textType"));
+        assertThrows(BadFieldValueException.class, () -> schem.getBooleanProperty("dateType"));
     }
 
     @Test
-    void testAltProperties() throws Exception
+    void testAltProperties() throws BadFieldValueException
     {
         String altProp = "AltProp";
 
@@ -380,7 +343,7 @@ class XMPSchemaTest
      * @throws java.io.IOException
      */
     @Test
-    void testMergeSchema() throws Exception
+    void testMergeSchema() throws IOException, BadFieldValueException
     {
         String bagName = "bagName";
         String seqName = "seqName";
@@ -426,7 +389,7 @@ class XMPSchemaTest
     }
 
     @Test
-    void testListAndContainerAccessor() throws Exception
+    void testListAndContainerAccessor()
     {
         String boolname = "bool";
         boolean boolVal = true;
@@ -440,6 +403,5 @@ class XMPSchemaTest
         assertTrue(schem.getAllAttributes().contains(att));
 
         assertEquals(bool, schem.getProperty(boolname));
-
     }
 }

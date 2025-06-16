@@ -40,6 +40,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
@@ -105,6 +106,17 @@ public class PreflightParser extends PDFParser
     /**
      * Constructor.
      *
+     * @param rar input source
+     * @throws IOException if there is a reading error.
+     */
+    public PreflightParser(RandomAccessRead rar) throws IOException
+    {
+        super(rar);
+    }
+
+    /**
+     * Constructor.
+     *
      * @param filename
      * @throws IOException if there is a reading error.
      */
@@ -134,6 +146,7 @@ public class PreflightParser extends PDFParser
      * 
      * @param format
      *            format that the document should follow (default {@link Format#PDF_A1B})
+     * @return the parsed document.
      * @throws IOException
      */
     public PDDocument parse(Format format) throws IOException
@@ -149,6 +162,7 @@ public class PreflightParser extends PDFParser
      * @param config
      *            Configuration bean that will be used by the PreflightDocument. If null the format is used to determine
      *            the default configuration.
+     * @return the parsed document.
      * @throws IOException
      */
     public PDDocument parse(Format format, PreflightConfiguration config) throws IOException
@@ -181,7 +195,7 @@ public class PreflightParser extends PDFParser
     @Override
     protected PDDocument createDocument() throws IOException
     {
-        preflightDocument = new PreflightDocument(document, format, config);
+        preflightDocument = new PreflightDocument(document, format, config, source);
         return preflightDocument;
     }
 

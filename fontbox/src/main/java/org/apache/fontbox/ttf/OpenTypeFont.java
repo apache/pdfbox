@@ -25,7 +25,8 @@ import java.io.IOException;
  */
 public class OpenTypeFont extends TrueTypeFont
 {
-    private boolean isPostScript;
+    // indicates whether the version info identifies this font as PostScriptFont
+    private boolean hasPostScriptTag;
     
     /**
      * Constructor. Clients should use the OTFParser to create a new OpenTypeFont object.
@@ -40,7 +41,7 @@ public class OpenTypeFont extends TrueTypeFont
     @Override
     void setVersion(float versionValue)
     {
-        isPostScript = Float.floatToIntBits(versionValue) == 0x469EA8A9; // OTTO
+        hasPostScriptTag = Float.floatToIntBits(versionValue) == 0x469EA8A9; // OTTO
         super.setVersion(versionValue);
     }
     
@@ -54,7 +55,7 @@ public class OpenTypeFont extends TrueTypeFont
      */
     public CFFTable getCFF() throws IOException
     {
-        if (!isPostScript)
+        if (!hasPostScriptTag)
         {
             throw new UnsupportedOperationException("TTF fonts do not have a CFF table");
         }
@@ -64,7 +65,7 @@ public class OpenTypeFont extends TrueTypeFont
     @Override
     public GlyphTable getGlyph() throws IOException
     {
-        if (isPostScript)
+        if (hasPostScriptTag)
         {
             throw new UnsupportedOperationException("OTF fonts do not have a glyf table");
         }
@@ -74,7 +75,7 @@ public class OpenTypeFont extends TrueTypeFont
     @Override
     public GeneralPath getPath(String name) throws IOException
     {
-        if (isPostScript && isSupportedOTF())
+        if (hasPostScriptTag && isSupportedOTF())
         {
             int gid = nameToGID(name);
             return getCFF().getFont().getType2CharString(gid).getPath();
@@ -92,7 +93,7 @@ public class OpenTypeFont extends TrueTypeFont
      */
     public boolean isPostScript()
     {
-        return isPostScript || tables.containsKey(CFFTable.TAG) || tables.containsKey("CFF2");
+        return hasPostScriptTag || tables.containsKey(CFFTable.TAG) || tables.containsKey("CFF2");
     }
 
     /**
@@ -107,7 +108,7 @@ public class OpenTypeFont extends TrueTypeFont
     public boolean isSupportedOTF()
     {
         // OTF using CFF2 based outlines aren't yet supported
-        return !(isPostScript //
+        return !(hasPostScriptTag //
                 && !tables.containsKey(CFFTable.TAG) //
                 && tables.containsKey("CFF2") //
         );

@@ -75,7 +75,7 @@ public class FDFParser extends COSParser
             }
             initialParse();
             exceptionOccurred = false;
-            return new FDFDocument(document);
+            return new FDFDocument(document, source);
         }
         finally
         {

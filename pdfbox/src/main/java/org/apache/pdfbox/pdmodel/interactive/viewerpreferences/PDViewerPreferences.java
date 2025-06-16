@@ -131,6 +131,14 @@ public class PDViewerPreferences implements COSObjectable
     private final COSDictionary prefs;
 
     /**
+     * Constructor.
+     */
+    public PDViewerPreferences()
+    {
+        this.prefs = new COSDictionary();
+    }
+
+    /**
      * Constructor that is used for a preexisting dictionary.
      *
      * @param dic The underlying dictionary.

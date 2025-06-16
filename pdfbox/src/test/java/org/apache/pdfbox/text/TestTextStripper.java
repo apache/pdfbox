@@ -54,9 +54,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -313,12 +317,12 @@ class TestTextStripper
             while (true)
             {
                 String expectedLine = expectedReader.readLine();
-                while( expectedLine != null && expectedLine.trim().length() == 0 )
+                while (expectedLine != null && expectedLine.trim().isEmpty())
                 {
                     expectedLine = expectedReader.readLine();
                 }
                 String actualLine = actualReader.readLine();
-                while( actualLine != null && actualLine.trim().length() == 0 )
+                while (actualLine != null && actualLine.trim().isEmpty())
                 {
                     actualLine = actualReader.readLine();
                 }
@@ -566,7 +570,7 @@ class TestTextStripper
         File inDirExt = new File("target/test-input-ext");
         File outDirExt = new File("target/test-output-ext");
 
-            if ((filename == null) || (filename.length() == 0)) 
+            if (filename == null || filename.isEmpty())
             {
                 doTestDir(inDir, outDir);
                 if (inDirExt.exists())
@@ -689,6 +693,53 @@ class TestTextStripper
             assertTrue(text.startsWith("Pesticides"));
             assertTrue(text.endsWith("1 000 10 10"));
             assertEquals(1378, text.replaceAll("\r", "").length());
+        }
+    }
+
+    /**
+     * PDFBOX-3774: test the IgnoreContentStreamSpaceGlyphs option.
+     *
+     * @throws Exception 
+     */
+    @Test
+    void testIgnoreContentStreamSpaceGlyphs() throws Exception
+    {
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+            {
+                float fontHeight = 8;
+                float x = 50;
+                float y = page.getMediaBox().getHeight() - 50;
+                PDFont font = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+                cs.beginText();
+                cs.setFont(font, fontHeight);
+                cs.newLineAtOffset(x, y);
+                cs.showText("(                                      )");
+                cs.endText();
+
+                int indent = 6;
+                float overlapX = x + indent * font.getAverageFontWidth() / 1000f * fontHeight;
+                PDFont overlapFont = new PDType1Font(Standard14Fonts.FontName.TIMES_ROMAN);
+                cs.beginText();
+                cs.setFont(overlapFont, fontHeight * 2f);
+                cs.newLineAtOffset(overlapX, y);
+                cs.showText("overlap");
+                cs.endText();
+            }
+            doc.addPage(page);
+
+            PDFTextStripper localStripper = new PDFTextStripper();
+            localStripper.setLineSeparator("\n");
+            localStripper.setPageEnd("\n");
+            localStripper.setStartPage(1);
+            localStripper.setEndPage(1);
+            localStripper.setSortByPosition(true);
+
+            localStripper.setIgnoreContentStreamSpaceGlyphs(true);
+            String text = localStripper.getText(doc);
+            assertEquals("( overlap )\n", text);
         }
     }
 }

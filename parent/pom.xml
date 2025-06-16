@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>32</version>
+    <version>35</version>
     <relativePath />
   </parent>
 
@@ -43,7 +43,7 @@
   <groupId>org.apache.pdfbox</groupId>
   <artifactId>pdfbox-parent</artifactId>
   <packaging>pom</packaging>
-  <version>3.0.4-SNAPSHOT</version>
+  <version>3.0.6-SNAPSHOT</version>
 
   <name>Apache PDFBox parent</name>
   <inceptionYear>2002</inceptionYear>
@@ -68,14 +68,14 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <bouncycastle.version>1.78.1</bouncycastle.version>
-    <junit.version>5.10.3</junit.version>
+    <bouncycastle.version>1.81</bouncycastle.version>
+    <junit.version>5.13.1</junit.version>
     <jbig2.version>3.0.4</jbig2.version>
     <jai.version>1.4.0</jai.version>
-    <commons-io.version>2.16.1</commons-io.version>
-    <commons-logging.version>1.3.3</commons-logging.version>
-    <picocli.version>4.7.6</picocli.version>
-    <log4j2.version>2.22.0</log4j2.version>
+    <commons-io.version>2.19.0</commons-io.version>
+    <commons-logging.version>1.3.5</commons-logging.version>
+    <picocli.version>4.7.7</picocli.version>
+    <log4j2.version>2.24.3</log4j2.version>
     <!-- This is a default value to avoid problems when running single tests
           see also https://stackoverflow.com/a/28695766/535646
           https://maven.apache.org/surefire/maven-surefire-plugin/faq.html#late-property-evaluation
@@ -86,7 +86,39 @@
 
   <build>
     <plugins>
-      <plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>3.6.0</version>
+            <!-- this one is for checkstyle:check -->
+            <configuration>
+                <skip>${skipTests}</skip>
+                <configLocation>checkstyle.xml</configLocation>
+                <consoleOutput>true</consoleOutput>
+                <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                <testSourceDirectories>${project.basedir}/src/test/java</testSourceDirectories>
+                <failsOnError>true</failsOnError>
+            </configuration>
+            <!-- this one is for checkstyle in the complete build -->
+            <executions>
+                <execution>
+                    <id>check</id>
+                    <phase>validate</phase>
+                    <goals>
+                        <goal>check</goal>
+                    </goals>
+                    <configuration>
+                        <skip>${skipTests}</skip>
+                        <configLocation>checkstyle.xml</configLocation>
+                        <consoleOutput>true</consoleOutput>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                        <testSourceDirectories>${project.basedir}/src/test/java</testSourceDirectories>
+                        <failsOnError>true</failsOnError>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+        <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
               <argLine>@{surefireArgLine}</argLine>
@@ -161,6 +193,7 @@
       <plugin>
           <groupId>com.googlecode.maven-download-plugin</groupId>
           <artifactId>download-maven-plugin</artifactId>
+          <!-- can't update to 1.10.0, needs jdk11 -->
           <version>1.9.0</version>
           <configuration>
               <skip>${skipTests}</skip>
@@ -279,11 +312,14 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>10.0.3</version>
+                    <!-- can't update to 11, this needs jdk11 -->
+                    <version>10.0.4</version>
                     <configuration>
+                        <skip>true</skip>
                         <failBuildOnCVSS>0</failBuildOnCVSS>
                         <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
                         <skipSystemScope>true</skipSystemScope>
+                        <suppressionFile>suppressions.xml</suppressionFile>
                     </configuration>
                     <executions>
                         <execution>

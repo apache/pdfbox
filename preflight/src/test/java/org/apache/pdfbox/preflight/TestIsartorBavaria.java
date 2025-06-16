@@ -125,7 +125,7 @@ class TestIsartorBavaria
     }
 
     @BeforeAll
-    public static void beforeClass() throws Exception
+    static void beforeClass() throws Exception
     {
         String irp = System.getProperty("isartor.results.path");
         if (irp != null)
@@ -148,7 +148,7 @@ class TestIsartorBavaria
     }
 
     @AfterAll
-    public static void afterClass() throws Exception
+    static void afterClass() throws Exception
     {
         if (isartorResultFile != null)
         {
@@ -157,7 +157,7 @@ class TestIsartorBavaria
     }
 
     @ParameterizedTest
-	@MethodSource("initializeParameters")
+    @MethodSource("initializeParameters")
     void validate(File file, Set<String> expectedErrorSet) throws Exception
     {
         ValidationResult result = PreflightParser.validate(file);

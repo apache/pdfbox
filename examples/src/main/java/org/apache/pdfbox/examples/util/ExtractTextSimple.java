@@ -25,7 +25,7 @@ import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.text.PDFTextStripper;
 
 /**
- * This is a simple text extraction example to get started. For more advance usage, see the
+ * This is a simple text extraction example to get started. For more advanced usage, see the
  * ExtractTextByArea and the DrawPrintTextLocations examples in this subproject, as well as the
  * ExtractText tool in the tools subproject.
  *
@@ -90,7 +90,7 @@ public class ExtractTextSimple
                 // If the extracted text is empty or gibberish, please try extracting text
                 // with Adobe Reader first before asking for help. Also read the FAQ
                 // on the website: 
-                // https://pdfbox.apache.org/2.0/faq.html#text-extraction
+                // https://pdfbox.apache.org/3.0/faq.html#text-extraction
             }
         }
     }

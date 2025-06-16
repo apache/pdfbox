@@ -42,6 +42,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -55,7 +56,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
 /**
- * Test for the PDButton class.
+ * Test for the PDAcroForm class.
  *
  */
 class PDAcroFormTest
@@ -68,7 +69,7 @@ class PDAcroFormTest
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
     
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         document = new PDDocument();
         acroForm = new PDAcroForm(document);
@@ -214,7 +215,6 @@ class PDAcroFormTest
         catch (IOException e)
         {
             System.err.println("Couldn't create test document, test skipped");
-            return;
         }
     }
     
@@ -254,7 +254,6 @@ class PDAcroFormTest
         catch (IOException e)
         {
             System.err.println("Couldn't create test document, test skipped");
-            return;
         }
     }
 
@@ -271,17 +270,17 @@ class PDAcroFormTest
             PDPage page = new PDPage();
             doc.addPage(page);
 
-            PDAcroForm acroForm = new PDAcroForm(document);
-            doc.getDocumentCatalog().setAcroForm(acroForm);
-            acroForm.setDefaultResources(new PDResources());
+            PDAcroForm theAcroForm = new PDAcroForm(document);
+            doc.getDocumentCatalog().setAcroForm(theAcroForm);
+            theAcroForm.setDefaultResources(new PDResources());
 
-            PDTextField textBox = new PDTextField(acroForm);
+            PDTextField textBox = new PDTextField(theAcroForm);
             textBox.setPartialName("SampleField");
 
             // https://stackoverflow.com/questions/50609478/
             // "tf" is a typo, should have been "Tf" and this results that no font is chosen
             textBox.setDefaultAppearance("/Helv 0 tf 0 g");
-            acroForm.getFields().add(textBox);
+            theAcroForm.getFields().add(textBox);
 
             PDAnnotationWidget widget = textBox.getWidgets().get(0);
             PDRectangle rect = new PDRectangle(50, 750, 200, 20);
@@ -409,8 +408,35 @@ class PDAcroFormTest
         }
     }
 
+    /***
+     * PDFBOX-5797: Check that Sejda generated files have their widget /DA entries changed. 
+     */
+    @Test
+    void testPDFBox5797() throws IOException
+    {
+        try (PDDocument doc = Loader.loadPDF(new File(
+                "src/test/resources/org/apache/pdfbox/pdmodel/interactive/annotation/PDFBOX-5797-SO79271803.pdf")))
+        {
+            PDType0Font load = PDType0Font.load(doc, 
+                    PDAcroFormFromAnnotsTest.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"), 
+                    false);
+
+            PDAcroForm theAcroForm = doc.getDocumentCatalog().getAcroForm();
+            PDResources resources = theAcroForm.getDefaultResources();
+            String fontName = resources.add(load).getName();
+            String defaultAppearanceString = "/" + fontName + " 12 Tf 0 g";
+
+            PDTextField myField = (PDTextField) theAcroForm.getField("Name");
+            myField.setDefaultAppearance(defaultAppearanceString);
+            myField.getWidgets().get(0).setAppearance(null);
+            myField.setValue("ŞŞ"); // Text with the Ş character made it crash
+
+            assertEquals("ŞŞ", myField.getValue());
+        }
+    }
+
     @AfterEach
-    public void tearDown() throws IOException
+    void tearDown() throws IOException
     {
         document.close();
     }

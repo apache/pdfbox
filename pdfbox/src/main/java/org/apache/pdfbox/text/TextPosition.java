@@ -171,6 +171,11 @@ public final class TextPosition
         return unicode;
     }
 
+    void setUnicode(String unicode)
+    {
+        this.unicode = unicode;
+    }
+
     /**
      * Same as {@link #getUnicode()} except that returned text is ensured to be
      * visually ordered (i.e. same order you would see them displayed on screen when
@@ -603,6 +608,55 @@ public final class TextPosition
     }
 
     /**
+     * Determine if this TextPosition perfectly contains another (i.e. the other TextPosition
+     * overlaps 100% with this one and fits entirely inside its bounding box when they are rendered
+     * on top of each other).
+     *
+     * @param tp2 The other TestPosition to compare against
+     * @return True if tp2 is contained completely inside the bounding box of this text.
+     */
+    public boolean completelyContains(TextPosition tp2)
+    {
+        //  Note: (0, 0) is in the upper left and y-coordinate is top of TextPosition
+        //      +---thisTop------------+
+        //      |    +--tp2Top---+     |
+        //      |    |           |     |
+        //  thisLeft |       tp2Right  |
+        //      | tp2Left        | thisRight
+        //      |    |           |     |
+        //      |    +-tp2Bottom-+     |
+        //      +---------thisBottom---+
+
+        float thisLeft = getXDirAdj();
+        float thisWidth = getWidthDirAdj();
+        float thisRight = thisLeft + thisWidth;
+
+        float tp2Left = tp2.getXDirAdj();
+        float tp2Width = tp2.getWidthDirAdj();
+        float tp2Right = tp2Left + tp2Width;
+
+        if (thisLeft > tp2Left || tp2Right > thisRight)
+        {
+            return false;
+        }
+
+        float thisTop = getYDirAdj();
+        float thisHeight = getHeightDir();
+        float thisBottom = thisTop + thisHeight;
+
+        float tp2Top = tp2.getYDirAdj();
+        float tp2Height = tp2.getHeightDir();
+        float tp2Bottom = tp2Top + tp2Height;
+
+        if (thisTop > tp2Top || tp2Bottom > thisBottom)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Merge a single character TextPosition into the current object. This is to be used only for
      * cases where we have a diacritic that overlaps an existing TextPosition. In a graphical
      * display, we could overlay them, but for text extraction we need to merge them. Use the
@@ -704,16 +758,26 @@ public final class TextPosition
         float[] widths2 = new float[widths.length + 1];
         System.arraycopy(widths, 0, widths2, 0, i);
 
+        // First we add a zero-width entry for the diacritic in the widths array
+        widths2[i] = widths[i];
+        widths2[i + 1] = 0;
+        System.arraycopy(widths, i + 1, widths2, i + 2, widths.length - i - 1);
+
         // Unicode combining diacritics always go after the base character, regardless of whether
         // the string is in presentation order or logical order
         sb.append(unicode.charAt(i));
-        widths2[i] = widths[i];
+
+        // If a surrogate starts at the current position, make sure we preserve it
+        if (i < unicode.length() - 1 && Character.isSurrogatePair(unicode.charAt(i), unicode.charAt(i + 1)))
+        {
+            sb.append(unicode.charAt(i + 1));
+            i++;
+        }
+
         sb.append(combineDiacritic(diacritic.getUnicode()));
-        widths2[i + 1] = 0;
 
         // get the rest of the string
         sb.append(unicode.substring(i + 1));
-        System.arraycopy(widths, i + 1, widths2, i + 2, widths.length - i - 1);
 
         unicode = sb.toString();
         widths = widths2;

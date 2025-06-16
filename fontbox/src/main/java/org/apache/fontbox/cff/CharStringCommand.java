@@ -47,6 +47,8 @@ public class CharStringCommand
             .getInstance(Key.HSBW.hashValue);
     public static final CharStringCommand COMMAND_CALLOTHERSUBR = CharStringCommand
             .getInstance(Key.CALLOTHERSUBR.hashValue);
+    public static final CharStringCommand COMMAND_DIV = CharStringCommand
+            .getInstance(Key.DIV.hashValue);
 
     private static final int KEY_UNKNOWN = 99;
     private static final CharStringCommand COMMAND_UNKNOWN = new CharStringCommand(KEY_UNKNOWN, 0);
@@ -421,6 +423,11 @@ public class CharStringCommand
         public static Key valueOfKey(int b0, int b1)
         {
             return BY_KEY.get((b0 << 4) + b1);
+        }
+
+        int getHashValue()
+        {
+            return hashValue;
         }
     }
 }

@@ -73,10 +73,18 @@ public class Loader
      */
     public static FDFDocument loadFDF(File file) throws IOException
     {
-        try (RandomAccessRead readBuffer = new RandomAccessReadBufferedFile(file))
+        RandomAccessRead raFile = null;
+        try
         {
-            FDFParser parser = new FDFParser(readBuffer);
+            // PDFBOX-5894: RandomAccessRead is not closed here
+            raFile = new RandomAccessReadBufferedFile(file);
+            FDFParser parser = new FDFParser(raFile);
             return parser.parse();
+        }
+        catch (IOException ioe)
+        {
+            IOUtils.closeQuietly(raFile);
+            throw ioe;
         }
     }
 
@@ -357,8 +365,9 @@ public class Loader
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF new streams.
      * 
-     * @param randomAccessRead random access read representing the pdf to be loaded
-     * 
+     * @param randomAccessRead random access read representing the pdf to be loaded. To pass an
+     * InputStream, wrap it into a {@link RandomAccessReadBuffer}.
+     *
      * @return loaded document
      * 
      * @throws InvalidPasswordException If the PDF required a non-empty password.
@@ -372,7 +381,8 @@ public class Loader
     /**
      * Parses a PDF.
      * 
-     * @param randomAccessRead random access read representing the pdf to be loaded
+     * @param randomAccessRead random access read representing the pdf to be loaded. To pass an
+     * InputStream, wrap it into a {@link RandomAccessReadBuffer}.
      * @param streamCacheCreateFunction a function to create an instance of a stream cache to be used for buffering
      * new/altered PDF streams
      * 
@@ -391,7 +401,8 @@ public class Loader
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering new/altered PDF streams.
      *
-     * @param randomAccessRead random access read representing the pdf to be loaded
+     * @param randomAccessRead random access read representing the pdf to be loaded. To pass an
+     * InputStream, wrap it into a {@link RandomAccessReadBuffer}.
      * @param password password to be used for decryption
      *
      * @return loaded document
@@ -408,7 +419,8 @@ public class Loader
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering new/altered PDF streams.
      *
-     * @param randomAccessRead random access read representing the pdf to be loaded
+     * @param randomAccessRead random access read representing the pdf to be loaded. To pass an
+     * InputStream, wrap it into a {@link RandomAccessReadBuffer}.
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security
@@ -427,7 +439,8 @@ public class Loader
     /**
      * Parses a PDF.
      *
-     * @param randomAccessRead random access read representing the pdf to be loaded
+     * @param randomAccessRead random access read representing the pdf to be loaded. To pass an
+     * InputStream, wrap it into a {@link RandomAccessReadBuffer}.
      * @param password password to be used for decryption
      * @param streamCacheCreateFunction a function to create an instance of a stream cache to be used for buffering
      * new/altered PDF streams
@@ -446,7 +459,8 @@ public class Loader
     /**
      * Parses a PDF.
      * 
-     * @param randomAccessRead random access read representing the pdf to be loaded
+     * @param randomAccessRead random access read representing the pdf to be loaded. To pass an
+     * InputStream, wrap it into a {@link RandomAccessReadBuffer}.
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security

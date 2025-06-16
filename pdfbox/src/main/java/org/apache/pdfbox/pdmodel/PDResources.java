@@ -269,7 +269,7 @@ public final class PDResources implements COSObjectable
         COSBase base = get(COSName.EXT_G_STATE, name);
         if (base instanceof COSDictionary)
         {
-            extGState = new PDExtendedGraphicsState((COSDictionary) base);
+            extGState = new PDExtendedGraphicsState((COSDictionary) base, getResourceCache());
         }
 
         if (cache != null && indirect != null)

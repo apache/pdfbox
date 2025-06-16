@@ -53,7 +53,7 @@ class DataInputRandomAccessTest
         assertEquals(-7, dataInput.readByte());
         dataInput.setPosition(dataInput.length() - 1);
         assertEquals(-9, dataInput.readByte());
-        assertThrows(IOException.class, () -> dataInput.readByte());
+        assertThrows(IOException.class, dataInput::readByte);
     }
 
     @Test
@@ -68,7 +68,7 @@ class DataInputRandomAccessTest
         assertEquals(249, dataInput.readUnsignedByte());
         dataInput.setPosition(dataInput.length() - 1);
         assertEquals(247, dataInput.readUnsignedByte());
-        assertThrows(IOException.class, () -> dataInput.readUnsignedByte());
+        assertThrows(IOException.class, dataInput::readUnsignedByte);
     }
 
     @Test
@@ -103,7 +103,7 @@ class DataInputRandomAccessTest
         assertEquals((short) 0x000F, dataInput.readShort());
         assertEquals((short) 0xAA00, dataInput.readShort());
         assertEquals((short) 0xFEFF, dataInput.readShort());
-        assertThrows(IOException.class, () -> dataInput.readShort());
+        assertThrows(IOException.class, dataInput::readShort);
     }
 
     @Test
@@ -114,11 +114,11 @@ class DataInputRandomAccessTest
         assertEquals(0x000F, dataInput.readUnsignedShort());
         assertEquals(0xAA00, dataInput.readUnsignedShort());
         assertEquals(0xFEFF, dataInput.readUnsignedShort());
-        assertThrows(IOException.class, () -> dataInput.readUnsignedShort());
+        assertThrows(IOException.class, dataInput::readUnsignedShort);
 
         byte[] data2 = new byte[] { 0x00 };
         DataInput dataInput2 = new DataInputRandomAccessRead(new RandomAccessReadBuffer(data2));
-        assertThrows(IOException.class, () -> dataInput2.readUnsignedShort());
+        assertThrows(IOException.class, dataInput2::readUnsignedShort);
     }
 
     @Test
@@ -129,11 +129,11 @@ class DataInputRandomAccessTest
         DataInput dataInput = new DataInputRandomAccessRead(new RandomAccessReadBuffer(data));
         assertEquals(0x000FAA00, dataInput.readInt());
         assertEquals(0xFEFF3050, dataInput.readInt());
-        assertThrows(IOException.class, () -> dataInput.readInt());
+        assertThrows(IOException.class, dataInput::readInt);
 
         byte[] data2 = new byte[] { 0x00, 0x0F, (byte) 0xAA };
         DataInput dataInput2 = new DataInputRandomAccessRead(new RandomAccessReadBuffer(data2));
-        assertThrows(IOException.class, () -> dataInput2.readInt());
+        assertThrows(IOException.class, dataInput2::readInt);
 
     }
 }

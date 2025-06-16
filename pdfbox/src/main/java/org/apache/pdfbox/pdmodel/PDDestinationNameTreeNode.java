@@ -36,7 +36,6 @@ public class PDDestinationNameTreeNode extends PDNameTreeNode<PDPageDestination>
      */
     public PDDestinationNameTreeNode()
     {
-        super();
     }
 
     /**
@@ -60,7 +59,13 @@ public class PDDestinationNameTreeNode extends PDNameTreeNode<PDPageDestination>
             //it for now
             destination = ((COSDictionary)base).getDictionaryObject( COSName.D );
         }
-        return (PDPageDestination)PDDestination.create( destination );
+        PDDestination dest = PDDestination.create(destination);
+        if (dest instanceof PDPageDestination)
+        {
+            return (PDPageDestination) dest;
+        }
+        // PDFBOX-5975: invalid tree entry
+        return null;
     }
 
     @Override

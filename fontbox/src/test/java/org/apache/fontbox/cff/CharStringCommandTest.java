@@ -31,11 +31,11 @@ class CharStringCommandTest
     @Test
     void testKey()
     {
-        assertEquals(Key.HSTEM, Key.valueOfKey(1));
-        assertEquals(Key.ESCAPE, Key.valueOfKey(12));
-        assertEquals(Key.DOTSECTION, Key.valueOfKey(12, 0));
-        assertEquals(Key.AND, Key.valueOfKey(12, 3));
-        assertEquals(Key.HSBW, Key.valueOfKey(13));
+        assertEquals(Key.valueOfKey(1), Key.HSTEM);
+        assertEquals(Key.valueOfKey(12), Key.ESCAPE);
+        assertEquals(Key.valueOfKey(12, 0), Key.DOTSECTION);
+        assertEquals(Key.valueOfKey(12, 3), Key.AND);
+        assertEquals(Key.valueOfKey(13), Key.HSBW);
     }
 
     @Test

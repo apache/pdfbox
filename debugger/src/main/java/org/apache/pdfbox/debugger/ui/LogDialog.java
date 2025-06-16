@@ -17,6 +17,7 @@ package org.apache.pdfbox.debugger.ui;
 
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.Frame;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -30,6 +31,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+
+import org.apache.pdfbox.debugger.PDFDebugger;
 
 /**
  * Custom log dialog.
@@ -55,6 +58,13 @@ public class LogDialog extends JDialog
         this.logLabel = logLabel;
         
         textPane = new JTextPane();
+        String prop = PDFDebugger.configuration.getProperty("textFontHeight");
+        if (prop != null)
+        {
+            Font font = textPane.getFont();
+            float textFontHeight = Float.parseFloat(prop);
+            textPane.setFont(font.deriveFont(textFontHeight));
+        }
         scrollPane = new JScrollPane(textPane);
         getContentPane().add(scrollPane);
         
@@ -155,12 +165,12 @@ public class LogDialog extends JDialog
 
         if (exceptionCount > 0)
         {
-            infos.add(exceptionCount + " exception" + (errorCount > 1 ? "s" : ""));
+            infos.add(exceptionCount + " exception" + (exceptionCount > 1 ? "s" : ""));
         }
 
         if (fatalCount > 0)
         {
-            infos.add(errorCount + " error" + (errorCount > 1 ? "s" : ""));
+            infos.add(fatalCount + " fatal error" + (fatalCount > 1 ? "s" : ""));
         }
 
         if (errorCount > 0)

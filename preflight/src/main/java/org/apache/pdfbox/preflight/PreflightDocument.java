@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -49,20 +50,37 @@ public class PreflightDocument extends PDDocument
      */
     public PreflightDocument(COSDocument doc, Format format)
     {
-        this(doc, format, null);
+        this(doc, format, null, null);
     }
 
     /**
      * Create a preflight document based on the COSDocument that will use the given configuration bean to process the
-     * validation. if the configuration is null, a default configuration will be load using the given format.
+     * validation. If the configuration is null, a default configuration will be loaded using the given format.
      * 
      * @param doc the underlying COSDocument
      * @param format the format used for validation
      * @param config the configuration used for validation
+     *
+     * @deprecated use the 4 parameter constructor and pass the source.
      */
+    @Deprecated
     public PreflightDocument(COSDocument doc, Format format, PreflightConfiguration config)
     {
-        super(doc);
+        this(doc, format, config, null);
+    }
+
+    /**
+     * Create a preflight document based on the COSDocument that will use the given configuration bean to process the
+     * validation. If the configuration is null, a default configuration will be loaded using the given format.
+     * 
+     * @param doc the underlying COSDocument
+     * @param format the format used for validation
+     * @param config the configuration used for validation
+     * @param source input representing the pdf
+     */
+    public PreflightDocument(COSDocument doc, Format format, PreflightConfiguration config, RandomAccessRead source)
+    {
+        super(doc, source);
         this.specification = format;
         // PDF/A1-b is default
         this.config = config == null ? PreflightConfiguration.createPdfA1BConfiguration() : config;

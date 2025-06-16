@@ -180,8 +180,8 @@ public class CFFCIDFont extends CFFFont
         {
             return 1000;
         }
-        Map<String, Object> privDict = this.privateDictionaries.get(fdArrayIndex);
-        return privDict.containsKey("defaultWidthX") ? ((Number)privDict.get("defaultWidthX")).intValue() : 1000;
+        Object privDictValue = this.privateDictionaries.get(fdArrayIndex).get("defaultWidthX");
+        return privDictValue instanceof Number ? ((Number) privDictValue).intValue() : 1000;
     }
 
     /**
@@ -196,8 +196,8 @@ public class CFFCIDFont extends CFFFont
         {
             return 0;
         }
-        Map<String, Object> privDict = this.privateDictionaries.get(fdArrayIndex);
-        return privDict.containsKey("nominalWidthX") ? ((Number)privDict.get("nominalWidthX")).intValue() : 0;
+        Object privDictValue = this.privateDictionaries.get(fdArrayIndex).get("nominalWidthX");
+        return privDictValue instanceof Number ? ((Number) privDictValue).intValue() : 0;
     }
 
     /**

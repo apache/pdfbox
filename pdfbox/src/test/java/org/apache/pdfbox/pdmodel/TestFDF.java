@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -26,9 +24,15 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -52,6 +56,26 @@ class TestFDF
     {
         checkFields("/org/apache/pdfbox/pdfparser/withcatalog.fdf");
         checkFields("/org/apache/pdfbox/pdfparser/nocatalog.fdf");
+    }
+
+    /**
+     * PDFBOX-5894: check that premature file close bug is fixed.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testPDFBox5894() throws IOException
+    {
+        try (FDFDocument fdf = Loader.loadFDF(new File("target/pdfs/PDFBOX-5894.fdf")))
+        {
+            List<COSObject> objectsByType = fdf.getDocument().getObjectsByType(COSName.ANNOT);
+            assertEquals(4, objectsByType.size());
+            for (COSObject obj : objectsByType)
+            {
+                COSBase base = obj.getObject();
+                assertEquals(COSName.ANNOT, ((COSDictionary) base).getDictionaryObject(COSName.TYPE));
+            }
+        }
     }
 
     private void checkFields(String name) throws IOException, URISyntaxException

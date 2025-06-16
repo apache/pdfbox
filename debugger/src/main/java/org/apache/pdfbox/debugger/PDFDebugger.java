@@ -106,6 +106,7 @@ import org.apache.pdfbox.debugger.colorpane.CSSeparation;
 import org.apache.pdfbox.debugger.flagbitspane.FlagBitsPane;
 import org.apache.pdfbox.debugger.fontencodingpane.FontEncodingPaneController;
 import org.apache.pdfbox.debugger.pagepane.PagePane;
+import org.apache.pdfbox.debugger.signaturepane.SignaturePane;
 import org.apache.pdfbox.debugger.streampane.StreamPane;
 import org.apache.pdfbox.debugger.stringpane.StringPane;
 import org.apache.pdfbox.debugger.treestatus.TreeStatus;
@@ -194,7 +195,6 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
     private JMenuItem saveAsMenuItem;
     private JMenu recentFilesMenu;
     private JMenuItem printMenuItem;
-    private JMenu printDpiMenu;
     private JMenuItem reopenMenuItem;
 
     // edit > find menu
@@ -601,10 +601,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
 
         fileMenu.addSeparator();
         fileMenu.add(printMenuItem);
-
-        printDpiMenu = PrintDpiMenu.getInstance().getMenu();
-        printDpiMenu.setEnabled(false);
-        fileMenu.add(printDpiMenu);
+        fileMenu.add(PrintDpiMenu.getInstance().getMenu());
 
         if (!IS_MAC_OS)
         {
@@ -855,6 +852,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                     showFont(selectedNode, path);
                     return;
                 }
+                if (path.getParentPath() != null &&
+                    isSignature(selectedNode, path.getParentPath().getLastPathComponent()))
+                {
+                    showSignaturePane(selectedNode);
+                    return;
+                }
                 if (isString(selectedNode))
                 {
                     showString(selectedNode);
@@ -873,6 +876,40 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private void showSignaturePane(Object selectedNode)
+    {
+        COSBase base = getUnderneathObject(selectedNode);
+        if (base instanceof COSString)
+        {
+            replaceRightComponent(new SignaturePane((COSString) base).getPane());
+        }
+    }
+
+    private boolean isSignature(Object selectedNode, Object parentNode)
+    {
+        if (selectedNode instanceof MapEntry)
+        {
+            MapEntry entry = (MapEntry) selectedNode;
+            if (entry.getKey().equals(COSName.CONTENTS) &&
+                    parentNode instanceof MapEntry)
+            {
+                MapEntry mapEntry = (MapEntry) parentNode;
+                COSDictionary sigDict;
+                if (mapEntry.getValue() instanceof COSDictionary)
+                {
+                    sigDict = (COSDictionary)mapEntry.getValue();
+                    COSName type = sigDict.getCOSName(COSName.TYPE);
+                    if (type != null && type.equals(COSName.SIG))
+                    {
+                        LOG.info("Found signature contents entry");
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private boolean isSpecialColorSpace(Object selectedNode)
@@ -1196,7 +1233,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         }
         if (selectedNode instanceof COSInteger)
         {
-            return Integer.toString(((COSInteger) selectedNode).intValue());
+            return Long.toString(((COSInteger) selectedNode).longValue());
         }
         if (selectedNode instanceof COSName)
         {
@@ -1386,7 +1423,6 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         };
         document = documentOpener.parse();
         printMenuItem.setEnabled(true);
-        printDpiMenu.setEnabled(true);
         reopenMenuItem.setEnabled(true);
         saveAsMenuItem.setEnabled(true);
         
@@ -1435,7 +1471,6 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         };
         document = documentOpener.parse();
         printMenuItem.setEnabled(true);
-        printDpiMenu.setEnabled(true);
         reopenMenuItem.setEnabled(true);
         saveAsMenuItem.setEnabled(true);
 
@@ -1458,30 +1493,32 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         statusPane.updateTreeStatus(treeStatus);
         
         String treeViewMode = TreeViewMenu.getInstance().getTreeViewSelection();
-        if (TreeViewMenu.VIEW_PAGES.equals(treeViewMode))
+        switch (treeViewMode)
         {
-            File file = new File(currentFilePath);
-            DocumentEntry documentEntry = new DocumentEntry(document, file.getName());
-            ZoomMenu.getInstance().resetZoom();
-            RotationMenu.getInstance().setRotationSelection(RotationMenu.ROTATE_0_DEGREES);
-            ImageTypeMenu.getInstance().setImageTypeSelection(ImageTypeMenu.IMAGETYPE_RGB);
-            RenderDestinationMenu.getInstance()
-                    .setRenderDestinationSelection(RenderDestinationMenu.RENDER_DESTINATION_EXPORT);
-            tree.setModel(new PDFTreeModel(documentEntry));
-            // Root/Pages/Kids/[0] is not always the first page, so use the first row instead:
-            tree.setSelectionPath(tree.getPathForRow(1));
-        }
-        else if (TreeViewMenu.VIEW_STRUCTURE.equals(treeViewMode))
-        {
-            tree.setModel(new PDFTreeModel(document));
-            tree.setSelectionPath(treeStatus.getPathForString("Root"));
-            tree.setSelectionPath(tree.getPathForRow(1));
-        }
-        else if (TreeViewMenu.VIEW_CROSS_REF_TABLE.equals(treeViewMode))
-        {
-            tree.setModel(new PDFTreeModel(new XrefEntries(document)));
-            tree.setSelectionPath(treeStatus.getPathForString("CRT"));
-            tree.setSelectionPath(tree.getPathForRow(1));
+            case TreeViewMenu.VIEW_PAGES:
+                File file = new File(currentFilePath);
+                DocumentEntry documentEntry = new DocumentEntry(document, file.getName());
+                ZoomMenu.getInstance().resetZoom();
+                RotationMenu.getInstance().setRotationSelection(RotationMenu.ROTATE_0_DEGREES);
+                ImageTypeMenu.getInstance().setImageTypeSelection(ImageTypeMenu.IMAGETYPE_RGB);
+                RenderDestinationMenu.getInstance()
+                        .setRenderDestinationSelection(RenderDestinationMenu.RENDER_DESTINATION_EXPORT);
+                tree.setModel(new PDFTreeModel(documentEntry));
+                // Root/Pages/Kids/[0] is not always the first page, so use the first row instead:
+                tree.setSelectionPath(tree.getPathForRow(1));
+                break;
+            case TreeViewMenu.VIEW_STRUCTURE:
+                tree.setModel(new PDFTreeModel(document));
+                tree.setSelectionPath(treeStatus.getPathForString("Root"));
+                tree.setSelectionPath(tree.getPathForRow(1));
+                break;
+            case TreeViewMenu.VIEW_CROSS_REF_TABLE:
+                tree.setModel(new PDFTreeModel(new XrefEntries(document)));
+                tree.setSelectionPath(treeStatus.getPathForString("CRT"));
+                tree.setSelectionPath(tree.getPathForRow(1));
+                break;
+            default:
+                break;
         }
     }
 

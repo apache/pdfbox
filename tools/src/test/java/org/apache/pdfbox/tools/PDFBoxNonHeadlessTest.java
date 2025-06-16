@@ -40,7 +40,7 @@ class PDFBoxNonHeadlessTest
     final ByteArrayOutputStream err = new ByteArrayOutputStream();
 
     @BeforeEach
-    public void setUpStreams()
+    void setUpStreams()
     {
         out.reset();
         err.reset();
@@ -49,7 +49,7 @@ class PDFBoxNonHeadlessTest
     }
 
     @AfterEach
-    public void restoreStreams()
+    void restoreStreams()
     {
         System.setOut(originalOut);
         System.setErr(originalErr);

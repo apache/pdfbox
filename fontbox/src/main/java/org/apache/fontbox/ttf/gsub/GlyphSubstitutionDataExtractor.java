@@ -44,7 +44,6 @@ import org.apache.fontbox.ttf.table.gsub.LookupTypeLigatureSubstitutionSubstForm
 import org.apache.fontbox.ttf.table.gsub.LookupTypeMultipleSubstitutionFormat1;
 import org.apache.fontbox.ttf.table.gsub.LookupTypeSingleSubstFormat1;
 import org.apache.fontbox.ttf.table.gsub.LookupTypeSingleSubstFormat2;
-import org.apache.fontbox.ttf.table.gsub.SequenceTable;
 
 /**
  * This class has utility methods to extract meaningful GsubData from the highly obfuscated GSUB

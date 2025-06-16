@@ -148,7 +148,7 @@ class TestPublicKeyEncryption
      * {@inheritDoc}
      */
     @AfterEach
-    public void tearDown() throws Exception 
+    void tearDown() throws Exception 
     {
         document.close();
     }
@@ -160,19 +160,17 @@ class TestPublicKeyEncryption
      * @throws Exception If there is an unexpected error during the test.
      */
     @ParameterizedTest
-	@MethodSource("keyLengths")
-    void testProtectionError(int keyLength) throws Exception
+    @MethodSource("keyLengths")
+    void testProtectionError(int keyLength) throws IOException
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
         policy.setEncryptionKeyLength(keyLength);
         document.protect(policy);
 
-        PDDocument encryptedDoc = null;
-        try 
+        File file = save("testProtectionError");
+        try (PDDocument encryptedDoc = reload(file, password2, getKeyStore(keyStore2)))
         {
-            File file = save("testProtectionError");
-            encryptedDoc = reload(file, password2, getKeyStore(keyStore2));
             assertTrue(encryptedDoc.isEncrypted());
             fail("No exception when using an incorrect decryption key");
         }
@@ -180,13 +178,6 @@ class TestPublicKeyEncryption
         {
             String msg = ex.getMessage();
             assertTrue(msg.contains("serial-#: rid 2 vs. cert 3"), "not the expected exception: " + msg);
-        }
-        finally 
-        {
-            if (encryptedDoc != null)
-            {
-                encryptedDoc.close();
-            }
         }
     }
 
@@ -279,7 +270,7 @@ class TestPublicKeyEncryption
      * @throws Exception if 
      */
     private PDDocument reload(File file, String decryptionPassword, InputStream keyStore)
-            throws IOException, NoSuchAlgorithmException
+            throws IOException
     {
         PDDocument doc2 = Loader.loadPDF(file, decryptionPassword,
                 keyStore, null, IOUtils.createMemoryOnlyStreamCache());

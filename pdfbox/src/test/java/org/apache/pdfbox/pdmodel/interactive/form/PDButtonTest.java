@@ -54,7 +54,7 @@ class PDButtonTest
     
     
     @BeforeEach
-    public void setUp() throws IOException
+    void setUp() throws IOException
     {
         document = new PDDocument();
         acroForm = new PDAcroForm(document);
@@ -284,7 +284,7 @@ class PDButtonTest
     }
     
     @Test
-    void setCheckboxInvalidValue() throws IOException
+    void setCheckboxInvalidValue()
     {
         PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("Checkbox");
         // Set a value which doesn't match the radio button list 
@@ -292,7 +292,7 @@ class PDButtonTest
     }    
 
     @Test
-    void setCheckboxGroupInvalidValue() throws IOException
+    void setCheckboxGroupInvalidValue()
     {
         PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("CheckboxGroup");
         // Set a value which doesn't match the radio button list 
@@ -300,7 +300,7 @@ class PDButtonTest
     }    
 
     @Test
-    void setAbstractedCheckboxInvalidValue() throws IOException
+    void setAbstractedCheckboxInvalidValue()
     {
         PDField checkbox = acrobatAcroForm.getField("Checkbox");
         // Set a value which doesn't match the radio button list 
@@ -308,7 +308,7 @@ class PDButtonTest
     }    
 
     @Test
-    void setAbstractedCheckboxGroupInvalidValue() throws IOException
+    void setAbstractedCheckboxGroupInvalidValue()
     {
         PDField checkbox = acrobatAcroForm.getField("CheckboxGroup");
         // Set a value which doesn't match the radio button list
@@ -374,7 +374,7 @@ class PDButtonTest
     }
     
     @Test
-    void setRadioButtonInvalidValue() throws IOException
+    void setRadioButtonInvalidValue()
     {
         PDRadioButton radioButton = (PDRadioButton) acrobatAcroForm.getField("RadioButtonGroup");
         // Set a value which doesn't match the radio button list
@@ -382,7 +382,7 @@ class PDButtonTest
     }
 
     @Test
-    void setAbstractedRadioButtonInvalidValue() throws IOException
+    void setAbstractedRadioButtonInvalidValue()
     {
         PDField radioButton = acrobatAcroForm.getField("RadioButtonGroup");
         // Set a value which doesn't match the radio button list
@@ -390,7 +390,7 @@ class PDButtonTest
     }
     
     @AfterEach
-    public void tearDown() throws IOException
+    void tearDown() throws IOException
     {
         document.close();
         acrobatDocument.close();

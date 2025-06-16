@@ -26,7 +26,7 @@
 	<parent>
 		<groupId>org.apache.pdfbox</groupId>
 		<artifactId>pdfbox-parent</artifactId>
-		<version>3.0.4-SNAPSHOT</version>
+		<version>3.0.6-SNAPSHOT</version>
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
         
@@ -101,14 +101,6 @@
 						<exclude>src/main/resources/project.version</exclude>
 						<exclude>release.properties</exclude>
 					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.17</version>
-				<configuration>
-					<configLocation>../pdfbox-checkstyle-5.xml</configLocation>
 				</configuration>
 			</plugin>
             <plugin>

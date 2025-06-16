@@ -22,6 +22,7 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.concurrent.Callable;
 import javax.print.DocFlavor;
 
 import javax.print.PrintService;
+import javax.print.attribute.Attribute;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Media;
@@ -111,7 +113,7 @@ public final class PrintPDF implements Callable<Integer>
     @Option(names = "-border", description = "print with border.")    
     private boolean border;
 
-    @Option(names = "-dpi", description = "render into intermediate image with specific dpi and then print.")
+    @Option(names = "-dpi", description = "render into intermediate image with specific dpi and then print. Use \"-1\" for the dpi of the printer.")
     private int dpi;
 
     @Option(names = "-noCenter", description = "align top-left (default: center on page).")
@@ -174,7 +176,7 @@ public final class PrintPDF implements Callable<Integer>
                 boolean printerFound = false;
                 for (PrintService printService : printServices)
                 {
-                    if (printService.getName().equals(printerName))
+                    if (printService.getName().equalsIgnoreCase(printerName))
                     {
                         printJob.setPrintService(printService);
                         printerFound = true;
@@ -196,11 +198,11 @@ public final class PrintPDF implements Callable<Integer>
             {
                 // find the object with the same name
                 boolean found = false;
-                for (Media media : getTraysFromPrintService(printService))
+                for (MediaTray mediaTray : getTraysFromPrintService(printService))
                 {
-                    if (tray.equals(media.toString()))
+                    if (tray.equals(mediaTray.toString()))
                     {
-                        pras.add(media);
+                        pras.add(toPossibleAlternateMedia(mediaTray));
                         found = true;
                         break;
                     }                            
@@ -216,11 +218,11 @@ public final class PrintPDF implements Callable<Integer>
             {
                 // find the object with the same name
                 boolean found = false;
-                for (Media media : getMediaSizesFromPrintService(printService))
+                for (MediaSizeName mediaSizeName : getMediaSizesFromPrintService(printService))
                 {
-                    if (mediaSize.equals(media.toString()))
+                    if (mediaSize.equals(mediaSizeName.toString()))
                     {
-                        pras.add(media);
+                        pras.add(mediaSizeName);
                         found = true;
                         break;
                     }                            
@@ -254,7 +256,7 @@ public final class PrintPDF implements Callable<Integer>
         return 0;
     }
 
-    private static List<Media> getTraysFromPrintService(PrintService printService)
+    private static List<MediaTray> getTraysFromPrintService(PrintService printService)
     {
         Media[] medias = (Media[]) printService.getSupportedAttributeValues(
                 Media.class, DocFlavor.SERVICE_FORMATTED.PAGEABLE, null);
@@ -262,18 +264,18 @@ public final class PrintPDF implements Callable<Integer>
         {
             return Collections.emptyList();
         }
-        List<Media> trayList = new ArrayList<>();
+        List<MediaTray> trayList = new ArrayList<>();
         for (Media media : medias)
         {
             if (media instanceof MediaTray)
             {
-                trayList.add(media);
+                trayList.add((MediaTray) media);
             }
         }
         return trayList;
     }
 
-    private static List<Media> getMediaSizesFromPrintService(PrintService printService)
+    private static List<MediaSizeName> getMediaSizesFromPrintService(PrintService printService)
     {
         Media[] medias = (Media[]) printService.getSupportedAttributeValues(
                 Media.class, DocFlavor.SERVICE_FORMATTED.PAGEABLE, null);
@@ -281,12 +283,12 @@ public final class PrintPDF implements Callable<Integer>
         {
             return Collections.emptyList();
         }
-        List<Media> sizeList = new ArrayList<>();
+        List<MediaSizeName> sizeList = new ArrayList<>();
         for (Media media : medias)
         {
             if (media instanceof MediaSizeName)
             {
-                sizeList.add(media);
+                sizeList.add((MediaSizeName) media);
             }
         }
         return sizeList;
@@ -320,6 +322,39 @@ public final class PrintPDF implements Callable<Integer>
             pras.add(duplex.toSides());
         }
         return pras;
+    }
+
+    /**
+     * Wraps the MediaTray object into a sun.print.SunAlternateMedia class if it exists. This allows to
+     * select both tray and paper size when printing.
+     *
+     * @param mediaTray a MediaTray object.
+     * @return a wrapped MediaTray object or the original MediaTray object.
+     */
+    private Attribute toPossibleAlternateMedia(MediaTray mediaTray)
+    {
+        if (mediaSize == null)
+        {
+            // lets use this only if REALLY needed
+            return mediaTray;
+        }
+        String version = System.getProperty("java.specification.version");
+        if (!"1.8".equals(version))
+        {
+            // only for 1.8; jdk11 will display a nasty warning
+            return mediaTray;
+        }
+        try
+        {
+            // https://kbdeveloper.qoppa.com/selecting-both-tray-and-paper-size-when-printing-in-java/
+            Class<?> clazz = Class.forName("sun.print.SunAlternateMedia");
+            Constructor<?> ctor = clazz.getDeclaredConstructor(Media.class);
+            return (Attribute) ctor.newInstance(mediaTray);
+        }
+        catch (ReflectiveOperationException | IllegalArgumentException ex)
+        {
+            return mediaTray;
+        }
     }
 
     @Command(name = "listPrinters", description = "list available printers", helpCommand = true)

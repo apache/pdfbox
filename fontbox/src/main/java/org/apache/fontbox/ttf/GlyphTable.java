@@ -138,11 +138,12 @@ public class GlyphTable extends TTFTable
             // read a single glyph
             long[] offsets = loca.getOffsets();
 
-            if (offsets[gid] == offsets[gid + 1])
+            if (offsets[gid] == offsets[gid + 1] || offsets[gid] == data.getOriginalDataSize())
             {
                 // no outline
                 // PDFBOX-5135: can't return null, must return an empty glyph because
                 // sometimes this is used in a composite glyph.
+                // PDFBOX-5917: offset points to end of the stream
                 glyph = new GlyphData();
                 glyph.initEmptyData();
             }

@@ -136,12 +136,6 @@ public final class GlyphList
                     String name = parts[0];
                     String[] unicodeList = parts[1].split(" ");
 
-                    if (nameToUnicode.containsKey(name))
-                    {
-                        LOG.warn("duplicate value for " + name + " -> " + parts[1] + " " +
-                                 nameToUnicode.get(name));
-                    }
-
                     int[] codePoints = new int[unicodeList.length];
                     int index = 0;
                     for (String hex : unicodeList)
@@ -151,8 +145,12 @@ public final class GlyphList
                     String string = new String(codePoints, 0 , codePoints.length);
 
                     // forward mapping
-                    nameToUnicode.put(name, string);
-
+                    String oldMapping = nameToUnicode.put(name, string);
+                    if (oldMapping != null)
+                    {
+                        LOG.warn("duplicate value for " + name + " -> " + parts[1] + " "
+                                + nameToUnicode.get(name));
+                    }
                     // reverse mapping
                     // PDFBOX-3884: take the various standard encodings as canonical, 
                     // e.g. tilde over ilde
@@ -162,9 +160,13 @@ public final class GlyphList
                           MacExpertEncoding.INSTANCE.contains(name) ||
                           SymbolEncoding.INSTANCE.contains(name) ||
                           ZapfDingbatsEncoding.INSTANCE.contains(name);
-                    if (!unicodeToName.containsKey(string) || forceOverride)
+                    if (forceOverride)
                     {
                         unicodeToName.put(string, name);
+                    }
+                    else
+                    {
+                        unicodeToName.putIfAbsent(string, name);
                     }
                 }
             }
@@ -231,38 +233,14 @@ public final class GlyphList
             {
                 unicode = toUnicode(name.substring(0, name.indexOf('.')));
             }
-            else if (name.startsWith("uni") && name.length() == 7)
+            else if ((name.length() == 7 && name.startsWith("uni"))
+                    || (name.length() == 5 && name.startsWith("u")))
             {
                 // test for Unicode name in the format uniXXXX where X is hex
-                int nameLength = name.length();
-                StringBuilder uniStr = new StringBuilder();
+                int start = name.length() == 7 ? 3 : 1;
                 try
                 {
-                    for (int chPos = 3; chPos + 4 <= nameLength; chPos += 4)
-                    {
-                        int codePoint = Integer.parseInt(name.substring(chPos, chPos + 4), 16);
-                        if (codePoint > 0xD7FF && codePoint < 0xE000)
-                        {
-                            LOG.warn("Unicode character name with disallowed code area: " + name);
-                        }
-                        else
-                        {
-                            uniStr.append((char) codePoint);
-                        }
-                    }
-                    unicode = uniStr.toString();
-                }
-                catch (NumberFormatException nfe)
-                {
-                    LOG.warn("Not a number in Unicode character name: " + name);
-                }
-            }
-            else if (name.startsWith("u") && name.length() == 5)
-            {
-                // test for an alternate Unicode name representation uXXXX
-                try
-                {
-                    int codePoint = Integer.parseInt(name.substring(1), 16);
+                    int codePoint = Integer.parseInt(name.substring(start), 16);
                     if (codePoint > 0xD7FF && codePoint < 0xE000)
                     {
                         LOG.warn("Unicode character name with disallowed code area: " + name);

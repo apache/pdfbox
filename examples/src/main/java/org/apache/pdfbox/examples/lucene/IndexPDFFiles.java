@@ -1,5 +1,3 @@
-package org.apache.pdfbox.examples.lucene;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -16,6 +14,7 @@ package org.apache.pdfbox.examples.lucene;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.pdfbox.examples.lucene;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,6 +39,9 @@ import org.apache.lucene.store.FSDirectory;
  * usage information.
  * <p>
  * It's based on a demo provided by the lucene project.
+ * <p>
+ * <b>Important:</b> The pom.xml uses an outdated lucene version. Replace that version with the
+ * latest version to avoid security risks like CVE-2024-45772.
  */
 public final class IndexPDFFiles
 {

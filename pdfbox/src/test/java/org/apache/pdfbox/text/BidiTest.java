@@ -59,7 +59,7 @@ class BidiTest
     private PDFTextStripper stripper;
 
     @BeforeEach
-    public void setUp() throws IOException
+    void setUp() throws IOException
     {
         Files.createDirectories(OUT_DIR.toPath());
         document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
@@ -82,7 +82,7 @@ class BidiTest
     }
 
     @AfterEach
-    public void tearDown() throws IOException
+    void tearDown() throws IOException
     {
         document.close();
     }
@@ -153,12 +153,12 @@ class BidiTest
             while (true)
             {
                 String expectedLine = expectedReader.readLine();
-                while( expectedLine != null && expectedLine.trim().length() == 0 )
+                while( expectedLine != null && expectedLine.trim().isEmpty())
                 {
                     expectedLine = expectedReader.readLine();
                 }
                 String actualLine = actualReader.readLine();
-                while( actualLine != null && actualLine.trim().length() == 0 )
+                while( actualLine != null && actualLine.trim().isEmpty())
                 {
                     actualLine = actualReader.readLine();
                 }

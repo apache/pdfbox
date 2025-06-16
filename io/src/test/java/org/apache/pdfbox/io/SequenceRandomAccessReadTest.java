@@ -18,6 +18,7 @@
 package org.apache.pdfbox.io;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -194,7 +195,7 @@ class SequenceRandomAccessReadTest
         // closing a SequenceRandomAccessRead twice shouldn't be a problem
         sequenceRandomAccessRead.close();
 
-        assertThrows(IOException.class, () -> sequenceRandomAccessRead.read(),
+        assertThrows(IOException.class, sequenceRandomAccessRead::read,
                 "checkClosed should have thrown an IOException");
     }
 
@@ -238,6 +239,40 @@ class SequenceRandomAccessReadTest
             // check EOF after seek
             sequenceRandomAccessRead.seek(40);
             assertTrue(sequenceRandomAccessRead.isEOF());
+        }
+    }
+
+    @Test
+    void testPDFBox5981() throws IOException
+    {
+        RandomAccessReadBuffer r1 = new RandomAccessReadBuffer(new byte[2448]);
+        RandomAccessReadBuffer r2 = new RandomAccessReadBuffer(new byte[2412]);
+        RandomAccessReadBuffer r3 = new RandomAccessReadBuffer(new byte[2417]);
+        RandomAccessReadBuffer r4 = new RandomAccessReadBuffer(new byte[2433]);
+        RandomAccessReadBuffer r5 = new RandomAccessReadBuffer(new byte[2432]);
+        RandomAccessReadBuffer r6 = new RandomAccessReadBuffer(new byte[2416]);
+        RandomAccessReadBuffer r7 = new RandomAccessReadBuffer(new byte[2417]);
+        RandomAccessReadBuffer r8 = new RandomAccessReadBuffer(new byte[2266]);
+        List<RandomAccessRead> list = new ArrayList<>();
+        list.add(r1);
+        list.add(r2);
+        list.add(r3);
+        list.add(r4);
+        list.add(r5);
+        list.add(r6);
+        list.add(r7);
+        list.add(r8);
+
+        try (SequenceRandomAccessRead srar = new SequenceRandomAccessRead(list);
+             RandomAccessInputStream rais = new RandomAccessInputStream(srar))
+        {
+            int rc = rais.read(new byte[0], 0, 0);
+            assertEquals(0, rc);
+
+            // this part of test didn't fail before the fix when using jdk8
+            byte[] result = IOUtils.toByteArray(rais);
+            assertEquals(19241, result.length);
+            assertEquals(srar.length(), result.length);
         }
     }
 }

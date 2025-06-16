@@ -107,7 +107,7 @@ public final class TreeViewMenu extends MenuBase
         {
             return VIEW_CROSS_REF_TABLE;
         }
-        return null;
+        throw new IllegalStateException("No tree view selection");
     }
 
     /**

@@ -370,6 +370,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName LIGHTEN = new COSName("Lighten");
     public static final COSName LIMITS = new COSName("Limits");
     public static final COSName LINEARIZED = new COSName("Linearized");
+    public static final COSName LINK = getPDFName("Link");
     public static final COSName LJ = new COSName("LJ");
     public static final COSName LL = new COSName("LL");
     public static final COSName LLE = new COSName("LLE");
@@ -391,6 +392,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName MAX_LEN = new COSName("MaxLen");
     public static final COSName MAX_WIDTH = new COSName("MaxWidth");
     public static final COSName MCID = new COSName("MCID");
+    public static final COSName MCR = getPDFName("MCR");
     public static final COSName MDP = new COSName("MDP");
     public static final COSName MEDIA_BOX = new COSName("MediaBox");
     public static final COSName MEASURE = new COSName("Measure");

@@ -147,7 +147,7 @@ public class PDDocument implements Closeable
     private SigningSupport signingSupport;
 
     // document-wide cached resources
-    private ResourceCache resourceCache = new DefaultResourceCache();
+    private ResourceCache resourceCache = ResourceCacheFactory.createResourceCache();
 
     // to make sure only one signature is added
     private boolean signatureAdded = false;
@@ -646,7 +646,9 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Remove the page from the document.
+     * Remove the page from the document. Do not use this method if other pages link to this one or
+     * if your document has a structure tree for accessibility unless you are able to fix these as
+     * well. In such cases it is better to use the splitter() class which will do these fixes.
      * 
      * @param page The page to remove from the document.
      */
@@ -656,7 +658,9 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Remove the page from the document.
+     * Remove the page from the document. Do not use this method if other pages link to this one or
+     * if your document has a structure tree for accessibility unless you are able to fix these as
+     * well. In such cases it is better to use the splitter() class which will do these fixes.
      * 
      * @param pageNumber 0 based index to page number.
      */
@@ -919,6 +923,8 @@ public class PDDocument implements Closeable
      * <p>
      * If encryption has been activated (with {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy)
      * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted.
+     * The same applies if your file was created from parts of another file and that
+     * one is to be used after saving.
      *
      * @param fileName The file to save as.
      *
@@ -936,6 +942,8 @@ public class PDDocument implements Closeable
      * <p>
      * If encryption has been activated (with {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy)
      * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted.
+     * The same applies if your file was created from parts of another file and that
+     * one is to be used after saving.
      * 
      * @param file The file to save as.
      *
@@ -953,6 +961,8 @@ public class PDDocument implements Closeable
      * <p>
      * If encryption has been activated (with {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy)
      * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted.
+     * The same applies if your file was created from parts of another file and that
+     * one is to be used after saving.
      *
      * @param output The stream to write to. It is recommended to wrap it in a {@link java.io.BufferedOutputStream},
      * unless it is already buffered.
@@ -971,6 +981,8 @@ public class PDDocument implements Closeable
      * <p>
      * If encryption has been activated (with {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy)
      * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted.
+     * The same applies if your file was created from parts of another file and that
+     * one is to be used after saving.
      *
      * @param file The file to save as.
      * @param compressParameters The parameters for the document's compression.
@@ -998,6 +1010,8 @@ public class PDDocument implements Closeable
      * <p>
      * If encryption has been activated (with {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy)
      * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted.
+     * The same applies if your file was created from parts of another file and that
+     * one is to be used after saving.
      * 
      * @param fileName The file to save as.
      * @param compressParameters The parameters for the document's compression.
@@ -1016,6 +1030,8 @@ public class PDDocument implements Closeable
      * <p>
      * If encryption has been activated (with {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy)
      * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted.
+     * The same applies if your file was created from parts of another file and that
+     * one is to be used after saving.
      *
      * @param output The stream to write to. It is recommended to wrap it in a {@link java.io.BufferedOutputStream},
      * unless it is already buffered.
@@ -1293,6 +1309,8 @@ public class PDDocument implements Closeable
      * previously and logs a warning.
      * <p>
      * Do not use the document after saving, because the structures are encrypted.
+     * The same applies if your file was created from parts of another file and that
+     * one is to be used after saving.
      *
      * @see org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy
      * @see org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy

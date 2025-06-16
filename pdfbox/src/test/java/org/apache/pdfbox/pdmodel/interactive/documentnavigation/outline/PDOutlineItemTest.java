@@ -34,7 +34,7 @@ class PDOutlineItemTest
     private PDOutlineItem newSibling;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         root = new PDOutlineItem();
         first = new PDOutlineItem();

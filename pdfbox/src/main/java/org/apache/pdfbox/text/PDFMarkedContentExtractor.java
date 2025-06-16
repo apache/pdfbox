@@ -31,6 +31,8 @@ import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContent
 import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequenceWithProperties;
 import org.apache.pdfbox.contentstream.operator.markedcontent.DrawObject;
 import org.apache.pdfbox.contentstream.operator.markedcontent.EndMarkedContentSequence;
+import org.apache.pdfbox.contentstream.operator.markedcontent.MarkedContentPoint;
+import org.apache.pdfbox.contentstream.operator.markedcontent.MarkedContentPointWithProperties;
 
 /**
  * This is an stream engine to extract the marked content of a pdf.
@@ -45,7 +47,7 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
     private final Map<String, List<TextPosition>> characterListMapping = new HashMap<>();
 
     /**
-     * Instantiate a new PDFTextStripper object.
+     * Instantiate a new PDFMarkedContentExtractor object.
      */
     public PDFMarkedContentExtractor()
     {
@@ -63,8 +65,8 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
         addOperator(new BeginMarkedContentSequence(this));
         addOperator(new EndMarkedContentSequence(this));
         addOperator(new DrawObject(this));
-        // todo: DP - Marked Content Point
-        // todo: MP - Marked Content Point with Properties
+        addOperator(new MarkedContentPoint(this));
+        addOperator(new MarkedContentPointWithProperties(this));
     }
 
     /**
@@ -127,6 +129,13 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
         {
             this.currentMarkedContents.pop();
         }
+    }
+
+    @Override
+    public void markedContentPoint(COSName tag, COSDictionary properties)
+    {
+        // Nothing happens here yet. If you know anything useful that should happen, please tell us.
+        super.markedContentPoint(tag, properties);
     }
 
     public void xobject(PDXObject xobject)

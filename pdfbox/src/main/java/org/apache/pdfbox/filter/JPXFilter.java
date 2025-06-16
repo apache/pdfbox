@@ -34,9 +34,6 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
@@ -58,8 +55,6 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
  */
 public final class JPXFilter extends Filter
 {
-    private static final Log LOG = LogFactory.getLog(JPXFilter.class);
-
     /**
      * {@inheritDoc}
      */
@@ -178,7 +173,13 @@ public final class JPXFilter extends Filter
                 else if (image.getTransparency() == Transparency.TRANSLUCENT &&
                          parameters.getInt(COSName.SMASK_IN_DATA) > 0)
                 {
-                    LOG.warn("JPEG2000 SMaskInData is not supported, returning opaque image");
+                    // PDFBOX-5657: save the soft mask in DecodeResult and use it later
+                    // we never had SMaskInData = 2, maybe more work is needed
+                    BufferedImage smask = new BufferedImage(
+                            image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+                    smask.setData(image.getAlphaRaster());
+                    result.setJPXSMask(smask);
+                    // create opaque image
                     BufferedImage bim = new BufferedImage(
                             image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
                     Graphics2D g2d = (Graphics2D) bim.getGraphics();

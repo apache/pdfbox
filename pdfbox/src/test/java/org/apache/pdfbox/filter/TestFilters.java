@@ -179,7 +179,7 @@ class TestFilters
     }
 
     @Test
-    void testEmptyFilterList() throws Exception
+    void testEmptyFilterList()
     {
         assertThrows(IllegalArgumentException.class, () ->
         {

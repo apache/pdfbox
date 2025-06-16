@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
+import java.util.StringJoiner;
+
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -202,16 +204,12 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
      */
     protected static String arrayToString(Object[] array)
     {
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < array.length; i++)
+        StringJoiner sj = new StringJoiner(", ", "[", "]");
+        for (Object o : array)
         {
-            if (i > 0)
-            {
-                sb.append(", ");
-            }
-            sb.append(array[i]);
+            sj.add(o.toString());
         }
-        return sb.append(']').toString();
+        return sj.toString();
     }
 
     /**
@@ -222,16 +220,12 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
      */
     protected static String arrayToString(float[] array)
     {
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < array.length; i++)
+        StringJoiner sj = new StringJoiner(", ", "[", "]");
+        for (float f : array)
         {
-            if (i > 0)
-            {
-                sb.append(", ");
-            }
-            sb.append(array[i]);
+            sj.add(Float.toString(f));
         }
-        return sb.append(']').toString();
+        return sj.toString();
     }
 
 }
