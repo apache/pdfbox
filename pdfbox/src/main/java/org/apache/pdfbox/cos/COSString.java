@@ -135,36 +135,60 @@ public final class COSString extends COSBase
      */
     public static COSString parseHex(String hex) throws IOException
     {
-        StringBuilder hexBuffer = new StringBuilder(hex.trim());
-
-        // if odd number then the last hex digit is assumed to be 0
-        if (hexBuffer.length() % 2 != 0)
+        // skip leading and trailing whitespace
+        int end = hex.length();
+        while (end > 0 && Character.isWhitespace(hex.charAt(end - 1)))
         {
-            hexBuffer.append('0');
+            end--;
+        }
+        int start = 0;
+        while (start < end && Character.isWhitespace(hex.charAt(start)))
+        {
+            start++;
         }
 
-        int length = hexBuffer.length();
+        int length = end - start;
         ByteArrayOutputStream bytes = new ByteArrayOutputStream((length + 1) / 2);
+
+        boolean isLengthUneven = length % 2 != 0;
+        if (isLengthUneven)
+        {
+            length--;
+        }
         for (int i = 0; i < length; i += 2)
         {
-            try
+            int value = 16 * Hex.getHexValue(hex.charAt(i)) + Hex.getHexValue(hex.charAt(i + 1));
+            if (value >= 0)
             {
-                bytes.write(Integer.parseInt(hexBuffer.substring(i, i + 2), 16));
+                bytes.write(value);
             }
-            catch (NumberFormatException e)
+            else if (FORCE_PARSING)
             {
-                if (FORCE_PARSING)
-                {
-                    LOG.warn("Encountered a malformed hex string");
-                    bytes.write('?'); // todo: what does Acrobat do? Any example PDFs?
-                }
-                else
-                {
-                    throw new IOException("Invalid hex string: " + hex, e);
-                }
+                LOG.warn("Encountered a malformed hex string");
+                bytes.write('?'); // todo: what does Acrobat do? Any example PDFs?
+            }
+            else
+            {
+                throw new IOException("Invalid hex string: " + hex);
             }
         }
-
+        if (isLengthUneven)
+        {
+            int value = 16 * Hex.getHexValue(hex.charAt(length));
+            if (value >= 0)
+            {
+                bytes.write(value);
+            }
+            else if (FORCE_PARSING)
+            {
+                LOG.warn("Encountered a malformed hex string");
+                bytes.write('?'); // todo: what does Acrobat do? Any example PDFs?
+            }
+            else
+            {
+                throw new IOException("Invalid hex string: " + hex);
+            }
+        }
         return new COSString(bytes.toByteArray());
     }
 
