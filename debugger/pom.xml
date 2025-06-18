@@ -97,6 +97,39 @@
       </resource>
     </resources>
     <plugins>
+        <!-- https://logging.apache.org/log4j/2.x/manual/plugins.html#plugin-registry -->
+        <!-- needed since log4j 2.25.0 because of DebugLogAppender.java plugin -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>generate-log4j-plugin-descriptor</id>
+                    <goals>
+                        <goal>compile</goal>
+                    </goals>
+                    <phase>process-classes</phase>
+                    <configuration>
+                        <proc>only</proc>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.apache.logging.log4j</groupId>
+                                <artifactId>log4j-core</artifactId>
+                                <version>${log4j2.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                        <annotationProcessors>
+                            <processor>org.apache.logging.log4j.core.config.plugins.processor.PluginProcessor</processor>
+                            <processor>org.apache.logging.log4j.core.config.plugins.processor.GraalVmProcessor</processor>
+                        </annotationProcessors>
+                        <compilerArgs>
+                            <arg>-Alog4j.graalvm.groupId=${project.groupId}</arg>
+                            <arg>-Alog4j.graalvm.artifactId=${project.artifactId}</arg>
+                        </compilerArgs>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
