@@ -97,6 +97,48 @@
       </resource>
     </resources>
     <plugins>
+        <!-- https://logging.apache.org/log4j/2.x/manual/plugins.html#plugin-registry -->
+        <!-- needed since log4j 2.25.0 because of DebugLogAppender.java plugin -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <!-- Enable generation of Log4j Core plugin metadata -->
+            <executions>
+                <execution>
+                    <id>default-compile</id>
+                    <configuration>
+                        <!--
+                        ~ Enables annotation processing
+                        ~ This option is only recognized by recent JDK versions:
+                        ~ - 11.0.23 or later
+                        ~ - 17.0.11 or later
+                        -->
+                        <proc>full</proc>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.apache.logging.log4j</groupId>
+                                <artifactId>log4j-core</artifactId>
+                            </path>
+                        </annotationProcessorPaths>
+                        <annotationProcessors>
+                            <!-- Generate a `Log4j2Plugins.dat` descriptor -->
+                            <annotationProcessor>
+                                org.apache.logging.log4j.core.config.plugins.processor.PluginProcessor
+                            </annotationProcessor>
+                            <!-- Generate GraalVM reachability metadata -->
+                            <annotationProcessor>
+                                org.apache.logging.log4j.core.config.plugins.processor.GraalVmProcessor
+                            </annotationProcessor>
+                        </annotationProcessors>
+                        <compilerArgs>
+                            <!-- Required arguments for GraalVmProcessor -->
+                            <arg>-Alog4j.graalvm.groupId=${project.groupId}</arg>
+                            <arg>-Alog4j.graalvm.artifactId=${project.artifactId}</arg>
+                        </compilerArgs>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
