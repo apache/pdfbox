@@ -51,7 +51,7 @@ public class PDStructureElementNameTreeNode extends PDNameTreeNode<PDStructureEl
     @Override
     protected PDStructureElement convertCOSToPD( COSBase base ) throws IOException
     {
-        if (!(base instanceof COSDictionary))
+        if (base != null && !(base instanceof COSDictionary))
         {
             throw new IOException("dictionary expected here, but got " + base);
         }
