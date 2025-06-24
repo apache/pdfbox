@@ -34,7 +34,6 @@ public class PDEmbeddedFilesNameTreeNode extends PDNameTreeNode<PDComplexFileSpe
      */
     public PDEmbeddedFilesNameTreeNode()
     {
-        super();
     }
 
     /**

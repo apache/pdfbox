@@ -34,7 +34,6 @@ public class PDIntegerNameTreeNode extends PDNameTreeNode<COSInteger>
      */
     public PDIntegerNameTreeNode()
     {
-        super();
     }
 
     /**
