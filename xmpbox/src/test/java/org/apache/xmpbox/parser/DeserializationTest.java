@@ -28,7 +28,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import javax.xml.transform.TransformerException;
 
 import org.apache.xmpbox.DateConverter;
 import org.apache.xmpbox.XMPMetadata;
@@ -98,12 +102,11 @@ class DeserializationTest
     }
 
     @Test
-    void testAltBagSeq() throws XmpParsingException
+    void testAltBagSeq() throws XmpParsingException, TransformerException, NoSuchAlgorithmException
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/AltBagSeqTest.xml");
-        xdb.parse(fis);
-        // XMPMetadata metadata=xdb.parse(fis);
-        // SaveMetadataHelper.serialize(metadata, true, System.out);
+        XMPMetadata metadata=xdb.parse(fis);
+        checkTransform(metadata, "AA3B148E4F802DE4");
     }
 
     @Test
@@ -321,5 +324,15 @@ class DeserializationTest
         assertEquals(" ", meta.getAdobePDFSchema().getProducer());
         // check creator tool
         assertEquals("Canon ",meta.getXMPBasicSchema().getCreatorTool());
+    }
+
+    private void checkTransform(XMPMetadata metadata, String expected)
+            throws TransformerException, NoSuchAlgorithmException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        serializer.serialize(metadata, baos, true);
+        byte[] digest = MessageDigest.getInstance("SHA-256").digest(baos.toByteArray());
+        String result = String.format("%X", ByteBuffer.wrap(digest).getLong());
+        assertEquals(expected, result);
     }
 }
