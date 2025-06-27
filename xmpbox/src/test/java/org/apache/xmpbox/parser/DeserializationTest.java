@@ -28,7 +28,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -102,11 +103,11 @@ class DeserializationTest
     }
 
     @Test
-    void testAltBagSeq() throws XmpParsingException, TransformerException, NoSuchAlgorithmException
+    void testAltBagSeq() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, IOException
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/AltBagSeqTest.xml");
         XMPMetadata metadata=xdb.parse(fis);
-        checkTransform(metadata, "AA3B148E4F802DE4");
+        checkTransform(metadata, "96393121650279079517435472505216876362174786845882116375023427217573081361024");
     }
 
     @Test
@@ -327,12 +328,14 @@ class DeserializationTest
     }
 
     private void checkTransform(XMPMetadata metadata, String expected)
-            throws TransformerException, NoSuchAlgorithmException
+            throws TransformerException, NoSuchAlgorithmException, IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         serializer.serialize(metadata, baos, true);
-        byte[] digest = MessageDigest.getInstance("SHA-256").digest(baos.toByteArray());
-        String result = String.format("%X", ByteBuffer.wrap(digest).getLong());
+        String replaced = baos.toString(StandardCharsets.UTF_8).replace("\r\n", "\n");
+        byte[] ba = replaced.getBytes(StandardCharsets.UTF_8);
+        byte[] digest = MessageDigest.getInstance("SHA-256").digest(ba);
+        String result = new BigInteger(1, digest).toString();
         assertEquals(expected, result);
     }
 }
