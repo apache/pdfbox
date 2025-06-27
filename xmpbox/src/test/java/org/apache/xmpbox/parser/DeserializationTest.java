@@ -33,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.TimeZone;
 import javax.xml.transform.TransformerException;
 
 import org.apache.xmpbox.DateConverter;
@@ -46,6 +47,8 @@ import org.apache.xmpbox.type.ThumbnailType;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpParsingException;
 import org.apache.xmpbox.xml.XmpParsingException.ErrorType;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.apache.xmpbox.xml.XmpSerializer;
@@ -53,18 +56,34 @@ import org.apache.xmpbox.xml.XmpSerializer;
 class DeserializationTest
 {
 
-    protected ByteArrayOutputStream bos;
+    private ByteArrayOutputStream baos;
 
-    protected XmpSerializer serializer;
+    private XmpSerializer serializer;
 
     private DomXmpParser xdb;
+
+    private static TimeZone defaultTZ;
+
+    @BeforeAll
+    static void initAll()
+    {
+        defaultTZ = TimeZone.getDefault();
+        // Need to set a timezone or date values will be different depending on test location
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
 
     @BeforeEach
     void init() throws XmpParsingException
     {
-        bos = new ByteArrayOutputStream();
+        baos = new ByteArrayOutputStream();
         serializer = new XmpSerializer();
         xdb = new DomXmpParser();
+    }
+
+    @AfterAll
+    static void finishAll()
+    {
+        TimeZone.setDefault(defaultTZ);
     }
 
     @Test
@@ -107,7 +126,7 @@ class DeserializationTest
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/AltBagSeqTest.xml");
         XMPMetadata metadata=xdb.parse(fis);
-        checkTransform(metadata, "96393121650279079517435472505216876362174786845882116375023427217573081361024");
+        checkTransform(metadata, "16805992283807186369849610414335227396239089071611806706387795179375897398118");
     }
 
     @Test
@@ -330,7 +349,6 @@ class DeserializationTest
     private void checkTransform(XMPMetadata metadata, String expected)
             throws TransformerException, NoSuchAlgorithmException, IOException
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         serializer.serialize(metadata, baos, true);
         String replaced = baos.toString(StandardCharsets.UTF_8).replace("\r\n", "\n");
         byte[] ba = replaced.getBytes(StandardCharsets.UTF_8);
