@@ -48,6 +48,17 @@
     <!-- be careful when updating this, because Lucene 9 requires jdk11 -->
   </properties>
 
+  <!-- verapdf uses outdated version -->
+  <dependencyManagement>
+      <dependencies>
+          <dependency>
+              <groupId>com.fasterxml.jackson.core</groupId>
+              <artifactId>jackson-core</artifactId>
+              <version>2.19.1</version>
+          </dependency>
+      </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.bouncycastle</groupId>
