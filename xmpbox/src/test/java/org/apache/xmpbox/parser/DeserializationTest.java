@@ -87,42 +87,43 @@ class DeserializationTest
     }
 
     @Test
-    void testStructuredRecursive() throws XmpParsingException
+    void testStructuredRecursive() throws XmpParsingException, TransformerException, NoSuchAlgorithmException
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/structured_recursive.xml");
-
-        xdb.parse(fis);
+        XMPMetadata metadata = xdb.parse(fis);
+        checkTransform(metadata, "50429052370059903229869639943824137435756655804864824611365505219590816799783");
     }
 
     @Test
-    void testEmptyLi() throws XmpParsingException
+    void testEmptyLi() throws XmpParsingException, TransformerException, NoSuchAlgorithmException
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/empty_list.xml");
-
-        xdb.parse(fis);
+        XMPMetadata metadata = xdb.parse(fis);
+        checkTransform(metadata, "92757984740574362800045336947395134346147179161385043989715484359442690118913");
     }
 
     @Test
-    void testEmptyLi2() throws XmpParsingException
+    void testEmptyLi2() throws XmpParsingException, TransformerException, NoSuchAlgorithmException
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/emptyli.xml");
-        XMPMetadata meta = xdb.parse(fis);
-        DublinCoreSchema dc = meta.getDublinCoreSchema();
+        XMPMetadata metadata = xdb.parse(fis);
+        DublinCoreSchema dc = metadata.getDublinCoreSchema();
         dc.getCreatorsProperty();
+        checkTransform(metadata, "84846877440303452108560435796840772468446174326989274262473618453524301429629");
     }
 
     @Test
     void testGetTitle() throws XmpParsingException, BadFieldValueException
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/emptyli.xml");
-        XMPMetadata meta = xdb.parse(fis);
-        DublinCoreSchema dc = meta.getDublinCoreSchema();
+        XMPMetadata metadata = xdb.parse(fis);
+        DublinCoreSchema dc = metadata.getDublinCoreSchema();
         String s = dc.getTitle(null);
         assertEquals("title value", s);
     }
 
     @Test
-    void testAltBagSeq() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, IOException
+    void testAltBagSeq() throws XmpParsingException, TransformerException, NoSuchAlgorithmException
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/AltBagSeqTest.xml");
         XMPMetadata metadata=xdb.parse(fis);
@@ -130,9 +131,9 @@ class DeserializationTest
     }
 
     @Test
-    void testIsartorStyleWithThumbs() throws XmpParsingException, IOException, BadFieldValueException
+    void testIsartorStyleWithThumbs()
+            throws XmpParsingException, IOException, BadFieldValueException, TransformerException, NoSuchAlgorithmException
     {
-
         InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/ThumbisartorStyle.xml");
 
         XMPMetadata metadata = xdb.parse(fis);
@@ -168,6 +169,7 @@ class DeserializationTest
         assertEquals("JPEG", thumb.getFormat());
         assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
 
+        checkTransform(metadata, "29120813843205587378639665706339183422557956085575883885304382528664692315203");
     }
 
     @Test
@@ -309,8 +311,8 @@ class DeserializationTest
     void testRdfAboutFound() throws XmpParsingException
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/emptyli.xml");
-        XMPMetadata meta = xdb.parse(fis);
-        List<XMPSchema> schemas = meta.getAllSchemas();
+        XMPMetadata metadata = xdb.parse(fis);
+        List<XMPSchema> schemas = metadata.getAllSchemas();
         for (XMPSchema xmpSchema : schemas)
         {
             assertNotNull(xmpSchema.getAboutAttribute());
@@ -318,43 +320,46 @@ class DeserializationTest
     }
 
     @Test
-    void testWihtAttributesAsProperties() throws XmpParsingException
+    void testWihtAttributesAsProperties() throws XmpParsingException, TransformerException, NoSuchAlgorithmException
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/attr_as_props.xml");
-        XMPMetadata meta = xdb.parse(fis);
+        XMPMetadata metadata = xdb.parse(fis);
 
-        AdobePDFSchema pdf = meta.getAdobePDFSchema();
+        AdobePDFSchema pdf = metadata.getAdobePDFSchema();
         assertEquals("GPL Ghostscript 8.64", pdf.getProducer());
 
-        DublinCoreSchema dc = meta.getDublinCoreSchema();
+        DublinCoreSchema dc = metadata.getDublinCoreSchema();
         assertEquals("application/pdf", dc.getFormat());
 
-        XMPBasicSchema basic = meta.getXMPBasicSchema();
+        XMPBasicSchema basic = metadata.getXMPBasicSchema();
         assertNotNull(basic.getCreateDate());
+        
+        checkTransform(metadata, "91466370449938102905842936306160100538543510664071400903097987792216034311743");
     }
 
     @Test
-    void testSpaceTextValues() throws XmpParsingException
+    void testSpaceTextValues() throws XmpParsingException, TransformerException, NoSuchAlgorithmException
     {
         // check values with spaces at start or end
         // in this case, the value should not be trimmed
         InputStream is = DomXmpParser.class.getResourceAsStream("/validxmp/only_space_fields.xmp");
-        XMPMetadata meta = xdb.parse(is);
+        XMPMetadata metadata = xdb.parse(is);
         // check producer
-        assertEquals(" ", meta.getAdobePDFSchema().getProducer());
+        assertEquals(" ", metadata.getAdobePDFSchema().getProducer());
         // check creator tool
-        assertEquals("Canon ",meta.getXMPBasicSchema().getCreatorTool());
+        assertEquals("Canon ",metadata.getXMPBasicSchema().getCreatorTool());
+        
+        checkTransform(metadata, "65475542891943378255730260794798768587695617138297196920293698476028940113080");
     }
 
     private void checkTransform(XMPMetadata metadata, String expected)
-            throws TransformerException, NoSuchAlgorithmException, IOException
+            throws TransformerException, NoSuchAlgorithmException
     {
         serializer.serialize(metadata, baos, true);
         String replaced = baos.toString(StandardCharsets.UTF_8).replace("\r\n", "\n");
         byte[] ba = replaced.getBytes(StandardCharsets.UTF_8);
         byte[] digest = MessageDigest.getInstance("SHA-256").digest(ba);
         String result = new BigInteger(1, digest).toString();
-        System.out.println("output:\n"+ replaced);
         assertEquals(expected, result);
     }
 }
