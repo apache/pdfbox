@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -357,8 +356,8 @@ class DeserializationTest
             throws TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException
     {
         serializer.serialize(metadata, baos, true);
-        String replaced = baos.toString(StandardCharsets.UTF_8.displayName()).replace("\r\n", "\n");
-        byte[] ba = replaced.getBytes(StandardCharsets.UTF_8);
+        String replaced = baos.toString("UTF-8").replace("\r\n", "\n");
+        byte[] ba = replaced.getBytes("UTF-8");
         byte[] digest = MessageDigest.getInstance("SHA-256").digest(ba);
         String result = new BigInteger(1, digest).toString();
         assertEquals(expected, result);
