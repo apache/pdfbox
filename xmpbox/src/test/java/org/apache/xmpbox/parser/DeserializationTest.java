@@ -53,9 +53,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-class DeserializationTest
+public class DeserializationTest
 {
-
     private ByteArrayOutputStream baos;
 
     private XmpSerializer serializer;
@@ -65,7 +64,7 @@ class DeserializationTest
     private static TimeZone defaultTZ;
 
     @BeforeClass
-    static void initAll()
+    static public void initAll()
     {
         defaultTZ = TimeZone.getDefault();
         // Need to set a timezone or date values will be different depending on test location
@@ -73,7 +72,7 @@ class DeserializationTest
     }
 
     @Before
-    void init() throws XmpParsingException
+    public void init() throws XmpParsingException
     {
         baos = new ByteArrayOutputStream();
         serializer = new XmpSerializer();
@@ -81,7 +80,7 @@ class DeserializationTest
     }
 
     @AfterClass
-    static void finishAll()
+    static public void finishAll()
     {
         TimeZone.setDefault(defaultTZ);
     }
