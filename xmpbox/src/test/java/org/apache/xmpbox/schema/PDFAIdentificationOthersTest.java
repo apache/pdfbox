@@ -21,8 +21,11 @@
 
 package org.apache.xmpbox.schema;
 
+import java.io.ByteArrayOutputStream;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.BadFieldValueException;
+import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpSerializer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +65,18 @@ public class PDFAIdentificationOthersTest
         // check retrieve this schema in metadata
         Assert.assertEquals(pdfaid, metadata.getPDFIdentificationSchema());
 
-        // SaveMetadataHelper.serialize(metadata, true, System.out);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        new XmpSerializer().serialize(metadata, bos, true);
+        XMPMetadata rxmp = new DomXmpParser().parse(bos.toByteArray());
+        pdfaid = rxmp.getPDFIdentificationSchema();
+
+        Assert.assertEquals(versionId, pdfaid.getPart());
+        Assert.assertEquals(amdId, pdfaid.getAmendment());
+        Assert.assertEquals(conformance, pdfaid.getConformance());
+
+        Assert.assertEquals("" + versionId, pdfaid.getPartProperty().getStringValue());
+        Assert.assertEquals(amdId, pdfaid.getAmdProperty().getStringValue());
+        Assert.assertEquals(conformance, pdfaid.getConformanceProperty().getStringValue());
     }
 
     @Test(expected = BadFieldValueException.class)
