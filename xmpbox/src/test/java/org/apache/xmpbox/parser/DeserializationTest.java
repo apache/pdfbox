@@ -405,6 +405,6 @@ class DeserializationTest
         byte[] ba = replaced.getBytes(StandardCharsets.UTF_8);
         byte[] digest = MessageDigest.getInstance("SHA-256").digest(ba);
         String result = new BigInteger(1, digest).toString();
-        assertEquals(expected, result);
+        assertEquals(expected, result, "output:\n" + replaced);
     }
 }
