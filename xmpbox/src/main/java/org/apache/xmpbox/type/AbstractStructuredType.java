@@ -41,6 +41,13 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty
         this(metadata, null, null, null);
     }
 
+    /**
+     * 
+     * @param metadata
+     * @param namespaceURI
+     * @deprecated use the longer constructor.
+     */
+    @Deprecated
     public AbstractStructuredType(XMPMetadata metadata, String namespaceURI)
     {
         this(metadata, namespaceURI, null, null);
