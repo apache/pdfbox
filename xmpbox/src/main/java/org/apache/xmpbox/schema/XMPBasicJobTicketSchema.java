@@ -60,6 +60,15 @@ public class XMPBasicJobTicketSchema extends XMPSchema
 
     public void addJob(String id, String name, String url, String fieldPrefix)
     {
+        if (bagJobs != null && fieldPrefix == null)
+        {
+            // use same prefix for all jobs
+            JobType first = (JobType) bagJobs.getAllProperties().get(0);
+            if (first.getPrefix() != null)
+            {
+                fieldPrefix = first.getPrefix();
+            }
+        }
         JobType job = new JobType(getMetadata(), fieldPrefix);
         job.setId(id);
         job.setName(name);
@@ -74,6 +83,13 @@ public class XMPBasicJobTicketSchema extends XMPSchema
         {
             // use same prefix for all jobs
             job.setPrefix(prefix);
+            if (bagJobs != null)
+            {
+                for (AbstractField field : bagJobs.getAllProperties())
+                {
+                    ((JobType) field).setPrefix(prefix);
+                }
+            }
         }
         else
         {
