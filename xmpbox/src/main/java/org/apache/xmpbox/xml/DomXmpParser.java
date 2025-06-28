@@ -618,8 +618,8 @@ public class DomXmpParser
         Types tt = ctype.type();
         AbstractStructuredType ast = instanciateStructured(tm, tt, descriptor.getLocalPart(), first.getNamespaceURI());
 
-        ast.setNamespace(descriptor.getNamespaceURI());
-        ast.setPrefix(descriptor.getPrefix());
+        ast.setNamespace(first.getNamespaceURI());
+        ast.setPrefix(first.getPrefix());
 
         PropertiesDescription pm;
         if (tt.isStructured())
