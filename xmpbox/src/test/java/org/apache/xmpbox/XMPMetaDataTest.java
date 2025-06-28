@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -166,7 +167,7 @@ class XMPMetaDataTest
                 + "<?xpacket end=\"w\"?>";
         DomXmpParser xmpParser = new DomXmpParser();
         xmpParser.setStrictParsing(false);
-        XMPMetadata xmp = xmpParser.parse(xmpmeta.getBytes());
+        XMPMetadata xmp = xmpParser.parse(xmpmeta.getBytes(StandardCharsets.UTF_8));
         XMPBasicSchema basicSchema = xmp.getXMPBasicSchema();
         Calendar createDate1 = basicSchema.getCreateDate();
         basicSchema.setCreateDate(new GregorianCalendar());
