@@ -391,7 +391,7 @@ class DeserializationTest
                 + "<?xpacket end=\"w\"?>";
         DomXmpParser xmpParser = new DomXmpParser();
         xmpParser.setStrictParsing(false);
-        XMPMetadata xmp = xmpParser.parse(xmpmeta.getBytes());
+        XMPMetadata xmp = xmpParser.parse(xmpmeta.getBytes(StandardCharsets.UTF_8));
         checkTransform(xmp, "12127125812762553969536294425864809210802519304519294152028982122058554009237");
     }
 
