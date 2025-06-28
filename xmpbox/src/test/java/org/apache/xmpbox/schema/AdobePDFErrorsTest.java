@@ -21,9 +21,11 @@
 
 package org.apache.xmpbox.schema;
 
+import java.io.ByteArrayOutputStream;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpSerializer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,10 +70,18 @@ public class AdobePDFErrorsTest
         Assert.assertEquals("Producer", schem.getProducerProperty().getPropertyName());
         Assert.assertEquals(producer, schem.getProducer());
 
-        // check retrieve this schema in metadata
-        Assert.assertEquals(schem, metadata.getAdobePDFSchema());
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        new XmpSerializer().serialize(metadata, bos, true);
+        schem = new DomXmpParser().parse(bos.toByteArray()).getAdobePDFSchema();
 
-        // SaveMetadataHelper.serialize(metadata, true, System.out);
+        Assert.assertEquals("Keywords", schem.getKeywordsProperty().getPropertyName());
+        Assert.assertEquals(keywords, schem.getKeywords());
+
+        Assert.assertEquals("PDFVersion", schem.getPDFVersionProperty().getPropertyName());
+        Assert.assertEquals(pdfVersion, schem.getPDFVersion());
+
+        Assert.assertEquals("Producer", schem.getProducerProperty().getPropertyName());
+        Assert.assertEquals(producer, schem.getProducer());
     }
 
     @Test(expected = BadFieldValueException.class)
