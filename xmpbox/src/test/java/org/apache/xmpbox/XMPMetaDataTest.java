@@ -88,14 +88,6 @@ public class XMPMetaDataTest
         Assert.assertTrue(vals.contains(tmp2));
     }
 
-    /*
-     * @Test public void displayResult() throws TransformException { System.out.println
-     * ("info used:\n XPacketBegin:"+metadata.getXpacketBegin()+ "\n XPacketID:"+metadata.getXpacketId());
-     * SaveMetadataHelper.serialize(metadata, true, System.out);
-     * 
-     * }
-     */
-
     @Test(expected = org.apache.xmpbox.xml.XmpSerializationException.class)
     public void testTransformerExceptionMessage() throws XmpSerializationException
     {
