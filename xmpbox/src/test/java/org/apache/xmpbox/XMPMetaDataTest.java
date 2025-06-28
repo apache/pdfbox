@@ -169,7 +169,7 @@ public class XMPMetaDataTest
                 + "<?xpacket end=\"w\"?>";
         DomXmpParser xmpParser = new DomXmpParser();
         xmpParser.setStrictParsing(false);
-        XMPMetadata xmp = xmpParser.parse(xmpmeta.getBytes());
+        XMPMetadata xmp = xmpParser.parse(xmpmeta.getBytes("UTF-8"));
         XMPBasicSchema basicSchema = xmp.getXMPBasicSchema();
         Calendar createDate1 = basicSchema.getCreateDate();
         basicSchema.setCreateDate(new GregorianCalendar());
