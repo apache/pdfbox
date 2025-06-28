@@ -370,6 +370,31 @@ class DeserializationTest
         checkTransform(metadata, "90022311886271402508155234494196354960301469636090129252744270615851988530557");
     }
 
+    /**
+     * PDFBOX-6029: serialize an empty date property, this brought a NullPointerException.
+     *
+     * @throws XmpParsingException
+     * @throws TransformerException
+     * @throws NoSuchAlgorithmException 
+     */
+    @Test
+    void testEmptyDate() throws XmpParsingException, TransformerException, NoSuchAlgorithmException
+    {
+        String xmpmeta = "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n"
+                + "<x:xmpmeta x:xmptk=\"Adobe XMP Core 4.2.1-c041 52.342996, 2008/05/07-20:48:00\" xmlns:x=\"adobe:ns:meta/\">\n"
+                + "  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n"
+                + "   <rdf:Description rdf:about=\"\" xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\">\n"
+                + "    <xmp:CreateDate></xmp:CreateDate>\n"
+                + "   </rdf:Description>\n"
+                + "  </rdf:RDF>\n"
+                + "</x:xmpmeta>\n"
+                + "<?xpacket end=\"w\"?>";
+        DomXmpParser xmpParser = new DomXmpParser();
+        xmpParser.setStrictParsing(false);
+        XMPMetadata xmp = xmpParser.parse(xmpmeta.getBytes());
+        checkTransform(xmp, "12127125812762553969536294425864809210802519304519294152028982122058554009237");
+    }
+
     private void checkTransform(XMPMetadata metadata, String expected)
             throws TransformerException, NoSuchAlgorithmException
     {
@@ -378,6 +403,7 @@ class DeserializationTest
         byte[] ba = replaced.getBytes(StandardCharsets.UTF_8);
         byte[] digest = MessageDigest.getInstance("SHA-256").digest(ba);
         String result = new BigInteger(1, digest).toString();
+        System.out.println(replaced);
         assertEquals(expected, result);
     }
 }
