@@ -21,12 +21,17 @@
 
 package org.apache.xmpbox.schema;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.io.ByteArrayOutputStream;
+import javax.xml.transform.TransformerException;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.BadFieldValueException;
+import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpParsingException;
+import org.apache.xmpbox.xml.XmpSerializer;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 class AdobePDFErrorsTest
@@ -35,7 +40,7 @@ class AdobePDFErrorsTest
     private final XMPMetadata metadata = XMPMetadata.createXMPMetadata();
 
     @Test
-    void testPDFAIdentification()
+    void testPDFAIdentification() throws TransformerException, XmpParsingException
     {
         AdobePDFSchema schem = metadata.createAndAddAdobePDFSchema();
 
@@ -63,7 +68,18 @@ class AdobePDFErrorsTest
         // check retrieve this schema in metadata
         assertEquals(schem, metadata.getAdobePDFSchema());
 
-        // SaveMetadataHelper.serialize(metadata, true, System.out)
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        new XmpSerializer().serialize(metadata, bos, true);
+        schem = new DomXmpParser().parse(bos.toByteArray()).getAdobePDFSchema();
+
+        assertEquals("Keywords", schem.getKeywordsProperty().getPropertyName());
+        assertEquals(keywords, schem.getKeywords());
+
+        assertEquals("PDFVersion", schem.getPDFVersionProperty().getPropertyName());
+        assertEquals(pdfVersion, schem.getPDFVersion());
+
+        assertEquals("Producer", schem.getProducerProperty().getPropertyName());
+        assertEquals(producer, schem.getProducer());
     }
 
     @Test
