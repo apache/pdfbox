@@ -353,6 +353,24 @@ class DeserializationTest
         checkTransform(metadata, "65475542891943378255730260794798768587695617138297196920293698476028940113080");
     }
 
+    @Test
+    void testMetadataParsing() throws TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException
+    {
+        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+
+        DublinCoreSchema dc = metadata.createAndAddDublinCoreSchema();
+        dc.setCoverage("coverage");
+        dc.addContributor("contributor1");
+        dc.addContributor("contributor2");
+        dc.addDescription("x-default", "Description");
+
+        AdobePDFSchema pdf = metadata.createAndAddAdobePDFSchema();
+        pdf.setProducer("Producer");
+        pdf.setPDFVersion("1.4");
+        
+        checkTransform(metadata, "90022311886271402508155234494196354960301469636090129252744270615851988530557");
+    }
+
     private void checkTransform(XMPMetadata metadata, String expected)
             throws TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException
     {
