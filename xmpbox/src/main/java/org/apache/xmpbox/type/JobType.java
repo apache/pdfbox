@@ -43,7 +43,7 @@ public class JobType extends AbstractStructuredType
 
     public JobType(XMPMetadata metadata, String fieldPrefix)
     {
-        super(metadata, fieldPrefix);
+        super(metadata, null, fieldPrefix, null);
         addNamespace(getNamespace(), getPrefix());
     }
 
