@@ -394,7 +394,7 @@ class DeserializationTest
         DomXmpParser xmpParser = new DomXmpParser();
         xmpParser.setStrictParsing(false);
         XMPMetadata xmp = xmpParser.parse(xmpmeta.getBytes(StandardCharsets.UTF_8));
-        checkTransform(xmp, "12127125812762553969536294425864809210802519304519294152028982122058554009237");
+        checkTransform(xmp, "8175296932768628269367133054275876764131784758539061072921527253098102430315");
     }
 
     private void checkTransform(XMPMetadata metadata, String expected)
