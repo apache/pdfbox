@@ -24,11 +24,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 import javax.xml.transform.TransformerException;
 
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.type.JobType;
+import org.apache.xmpbox.type.StructuredType;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpParsingException;
 import org.apache.xmpbox.xml.XmpSerializer;
@@ -47,16 +49,22 @@ class BasicJobTicketSchemaTest
         basic.addJob("zeid1", "zename1", "zeurl1", "aaa");
         basic.addJob("zeid2", "zename2", "zeurl2");
 
-        // serializer.serialize(metadata, System.out, true);
-
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         serializer.serialize(metadata, bos, true);
 
         XMPMetadata rxmp = builder.parse(bos.toByteArray());
 
         XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
-        assertNotNull(jt);
-        assertEquals(2, jt.getJobs().size());
+        List<JobType> jobs = jt.getJobs();
+        assertEquals(2, jobs.size());
+        JobType jt0 = jobs.get(0);
+        assertEquals("zeid1", jt0.getId());
+        assertEquals("zename1", jt0.getName());
+        assertEquals("zeurl1", jt0.getUrl());
+        JobType jt1 = jobs.get(1);
+        assertEquals("zeid2", jt1.getId());
+        assertEquals("zename2", jt1.getName());
+        assertEquals("zeurl2", jt1.getUrl());
     }
 
     @Test
@@ -70,10 +78,7 @@ class BasicJobTicketSchemaTest
 
         basic.addJob("zeid2", "zename2", "zeurl2");
 
-        // serializer.serialize(metadata, System.out, true);
-
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
         serializer.serialize(metadata, bos, true);
         XMPMetadata rxmp = builder.parse(bos.toByteArray());
 
@@ -98,30 +103,23 @@ class BasicJobTicketSchemaTest
 
         basic.addJob("zeid2", "zename2", "zeurl2", "aaa");
 
-        // SaveMetadataHelper.serialize(metadata, System.out);
-
-        // serializer.serialize(metadata, System.out, true);
-
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         serializer.serialize(metadata, bos, true);
         XMPMetadata rxmp = builder.parse(bos.toByteArray());
 
         XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
-        assertNotNull(jt);
         assertEquals(1, jt.getJobs().size());
 
         JobType job = jt.getJobs().get(0);
-        // SaveMetadataHelper.serialize(rxmp, System.out);
 
-        // StructuredType stjob =
-        // JobType.class.getAnnotation(StructuredType.class);
+        StructuredType stjob = JobType.class.getAnnotation(StructuredType.class);
 
         assertEquals("zeid2", job.getId());
         assertEquals("zename2", job.getName());
         assertEquals("zeurl2", job.getUrl());
-        // assertEquals(stjob.namespace(), job.getNamespace());
-        // assertEquals("aaa", job.getPrefix());
 
+        assertEquals(stjob.namespace(), job.getNamespace());
+        assertEquals("aaa", job.getPrefix());
     }
 
 }
