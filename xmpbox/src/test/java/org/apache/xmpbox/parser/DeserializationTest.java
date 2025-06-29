@@ -389,9 +389,7 @@ public class DeserializationTest
                 + "  </rdf:RDF>\n"
                 + "</x:xmpmeta>\n"
                 + "<?xpacket end=\"w\"?>";
-        DomXmpParser xmpParser = new DomXmpParser();
-        xmpParser.setStrictParsing(false);
-        XMPMetadata xmp = xmpParser.parse(xmpmeta.getBytes("UTF-8"));
+        XMPMetadata xmp = xdb.parse(xmpmeta.getBytes("UTF-8"));
         checkTransform(xmp, "8175296932768628269367133054275876764131784758539061072921527253098102430315");
     }
 
