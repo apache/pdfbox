@@ -22,10 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.util.HashSet;
 import java.util.Set;
+import javax.xml.transform.TransformerException;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.examples.pdmodel.CreatePDFA;
@@ -35,9 +38,12 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.xml.DomXmpParser;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.xmpbox.xml.XmpParsingException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.verapdf.core.VeraPDFException;
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
 import org.verapdf.pdfa.Foundries;
 import org.verapdf.pdfa.PDFAParser;
@@ -51,23 +57,23 @@ import org.verapdf.pdfa.results.ValidationResult;
  */
 class CreatePDFATest
 {
-    private final String outDir = "target/test-output";
+    private static final String OUTDIR = "target/test-output";
 
-    @BeforeEach
-    protected void setUp()
+    @BeforeAll
+    static void setUp()
     {
-        new File(outDir).mkdirs();
+        new File(OUTDIR).mkdirs();
     }
 
     /**
      * Test of doIt method of class CreatePDFA.
      */
     @Test
-    void testCreatePDFA() throws Exception
+    void testCreatePDFA() throws IOException, TransformerException, GeneralSecurityException,
+            XmpParsingException, BadFieldValueException, VeraPDFException
     {
-        System.out.println("testCreatePDFA");
-        String pdfaFilename = outDir + "/PDFA.pdf";
-        String signedPdfaFilename = outDir + "/PDFA_signed.pdf";
+        String pdfaFilename = OUTDIR + "/PDFA.pdf";
+        String signedPdfaFilename = OUTDIR + "/PDFA_signed.pdf";
         String keystorePath = "src/test/resources/org/apache/pdfbox/examples/signature/keystore.p12";
         String message = "The quick brown fox jumps over the lazy dog äöüÄÖÜß @°^²³ {[]}";
         String dir = "../pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/";
@@ -92,34 +98,35 @@ class CreatePDFATest
         }
 
         File signedFile = new File(signedPdfaFilename);
-        BufferedReader br = new BufferedReader(
-                new InputStreamReader(new FileInputStream(signedFile)));
-        String line;
-        boolean isIncrementalArea = false;
-        Set<String> set = new HashSet<>();
-        int linePos = 0;
-        while ((line = br.readLine()) != null)
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(new FileInputStream(signedFile))))
         {
-            ++linePos;
-            if (line.equals("%%EOF"))
+            String line;
+            boolean isIncrementalArea = false;
+            Set<String> set = new HashSet<>();
+            int linePos = 0;
+            while ((line = br.readLine()) != null)
             {
-                isIncrementalArea = true;
-                set.clear(); // for cases with several revisions
-            }
-            if (!isIncrementalArea)
-            {
-                continue;
-            }
-            if (line.matches("\\d+ 0 obj"))
-            {
-                int pos = line.indexOf(" 0 obj");
-                line = line.substring(0, pos);
-                assertFalse(set.contains(line), "object '" + line
-                        + " 0 obj' twice in incremental part of PDF at line " + linePos);
-                set.add(line);
+                ++linePos;
+                if (line.equals("%%EOF"))
+                {
+                    isIncrementalArea = true;
+                    set.clear(); // for cases with several revisions
+                }
+                if (!isIncrementalArea)
+                {
+                    continue;
+                }
+                if (line.matches("\\d+ 0 obj"))
+                {
+                    int pos = line.indexOf(" 0 obj");
+                    line = line.substring(0, pos);
+                    assertFalse(set.contains(line), "object '" + line
+                            + " 0 obj' twice in incremental part of PDF at line " + linePos);
+                    set.add(line);
+                }
             }
         }
-        br.close();
 
         // https://docs.verapdf.org/develop/
         VeraGreenfieldFoundryProvider.initialise();

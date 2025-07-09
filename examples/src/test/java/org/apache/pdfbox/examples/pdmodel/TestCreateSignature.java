@@ -38,8 +38,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
@@ -48,7 +48,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.Security;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -163,7 +162,7 @@ class TestCreateSignature
     }
 
     @BeforeAll
-    static void init() throws Exception
+    static void init() throws IOException, GeneralSecurityException
     {
         Security.addProvider(SecurityProvider.getProvider());
         certificateFactory = CertificateFactory.getInstance("X.509");
@@ -186,7 +185,7 @@ class TestCreateSignature
      * answer is too old".
      */
     @Test
-    void testTimeDifference() throws IOException
+    void testTimeDifference() throws IOException, URISyntaxException
     {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
@@ -211,7 +210,7 @@ class TestCreateSignature
             String dateString;
             try
             {
-                HttpsURLConnection con = (HttpsURLConnection) new URL("https://www.google.com/").openConnection();
+                HttpsURLConnection con = (HttpsURLConnection) new URI("https://www.google.com/").toURL().openConnection();
                 if (con.getResponseCode() != HttpsURLConnection.HTTP_OK)
                 {
                     System.out.println("Google returns " + con.getResponseCode());
@@ -246,7 +245,7 @@ class TestCreateSignature
      * @throws CertificateVerificationException
      */
     @ParameterizedTest
-	@MethodSource("signingTypes")
+    @MethodSource("signingTypes")
     void testDetachedSHA256(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException, URISyntaxException
@@ -286,7 +285,7 @@ class TestCreateSignature
      * @throws CertificateVerificationException
      */
     @ParameterizedTest
-	@MethodSource("signingTypes")
+    @MethodSource("signingTypes")
     void testDetachedSHA256WithTSA(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
@@ -398,7 +397,7 @@ class TestCreateSignature
      * @throws CertificateVerificationException
      */
     @ParameterizedTest
-	@MethodSource("signingTypes")
+    @MethodSource("signingTypes")
     void testCreateVisibleSignature(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
@@ -430,7 +429,7 @@ class TestCreateSignature
      * @throws CertificateVerificationException
      */
     @ParameterizedTest
-	@MethodSource("signingTypes")
+    @MethodSource("signingTypes")
     void testCreateVisibleSignature2(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
@@ -454,9 +453,6 @@ class TestCreateSignature
      * been signed before.
      * 
      * @throws IOException
-     * @throws NoSuchAlgorithmException
-     * @throws CertificateException
-     * @throws UnrecoverableKeyException
      * @throws CMSException
      * @throws OperatorCreationException
      * @throws GeneralSecurityException
@@ -464,8 +460,7 @@ class TestCreateSignature
      * @throws CertificateVerificationException
      */
     @Test
-    void testPDFBox3978() throws IOException, NoSuchAlgorithmException, 
-                                        CertificateException, UnrecoverableKeyException, 
+    void testPDFBox3978() throws IOException,
                                         CMSException, OperatorCreationException, GeneralSecurityException,
                                         TSPException, CertificateVerificationException
     {
@@ -600,7 +595,7 @@ class TestCreateSignature
                 // verify that all getContents() methods returns the same content
                 try (FileInputStream fis = new FileInputStream(signedFile))
                 {
-                    byte[] contents2 = sig.getContents(((InputStream) fis).readAllBytes());
+                    byte[] contents2 = sig.getContents(fis.readAllBytes());
                     assertArrayEquals(contents, contents2);
                 }
                 byte[] contents3 = sig.getContents(new FileInputStream(signedFile));
@@ -712,11 +707,13 @@ class TestCreateSignature
      * This should not break the signature, and the value and its display must have changed as
      * expected. Do this both for the old and new incremental save methods.
      *
-     * @throws Exception
+     * @throws IOException
      */
     @ParameterizedTest
-	@MethodSource("signingTypes")
-    void testSaveIncrementalAfterSign(boolean externallySign) throws Exception
+    @MethodSource("signingTypes")
+    void testSaveIncrementalAfterSign(boolean externallySign)
+            throws IOException, GeneralSecurityException, CMSException, OperatorCreationException,
+            TSPException, CertificateVerificationException
     {
         BufferedImage oldImage, expectedImage1, actualImage1, expectedImage2, actualImage2;
 
@@ -821,7 +818,7 @@ class TestCreateSignature
     }
 
     @Test
-    void testPDFBox4784() throws Exception
+    void testPDFBox4784() throws IOException, GeneralSecurityException
     {
         Date signingTime = new Date();
 
@@ -935,9 +932,9 @@ class TestCreateSignature
             PDSignature signature = doc.getLastSignatureDictionary();
             byte[] contents = signature.getContents();
             PDDocumentCatalog docCatalog = doc.getDocumentCatalog();
-            COSDictionary dssDict = docCatalog.getCOSObject().getCOSDictionary(COSName.getPDFName("DSS"));
-            COSArray dssCertArray = dssDict.getCOSArray(COSName.getPDFName("Certs"));
-            COSDictionary vriDict = dssDict.getCOSDictionary(COSName.getPDFName("VRI"));
+            COSDictionary dssDict = docCatalog.getCOSObject().getCOSDictionary(COSName.DSS);
+            COSArray dssCertArray = dssDict.getCOSArray(COSName.CERTS);
+            COSDictionary vriDict = dssDict.getCOSDictionary(COSName.VRI);
             // Check that all known signature certificates are in the VRI/signaturehash/Cert array
             byte[] signatureHash = MessageDigest.getInstance("SHA-1").digest(contents);
             String hexSignatureHash = Hex.getString(signatureHash);
@@ -947,7 +944,7 @@ class TestCreateSignature
             HashSet<X509CertificateHolder> certificateHolderSet =
                     new HashSet<>(certificatesStore.getMatches(null));
             COSDictionary sigDict = vriDict.getCOSDictionary(COSName.getPDFName(hexSignatureHash));
-            COSArray sigCertArray = sigDict.getCOSArray(COSName.getPDFName("Cert"));
+            COSArray sigCertArray = sigDict.getCOSArray(COSName.CERT);
             Set<X509CertificateHolder> sigCertHolderSetFromVRIArray = new HashSet<>();
             for (int i = 0; i < sigCertArray.size(); ++i)
             {
@@ -963,11 +960,11 @@ class TestCreateSignature
                 {
                     continue; // not relevant here
                 }
-                // disabled until PDFBOX-5203 is fixed
-//                assertTrue(sigCertHolderSetFromVRIArray.contains(holder),
-//                        "File '" + outFile + "' Root/DSS/VRI/" + hexSignatureHash +
-//                                "/Cert array doesn't contain a certificate with subject '" +
-//                                holder.getSubject() + "' and serial " + holder.getSerialNumber());
+                assertTrue(sigCertHolderSetFromVRIArray.contains(holder),
+                        "File '" + outFile + "' Root/DSS/VRI/" + hexSignatureHash +
+                                "/Cert array doesn't contain a certificate with subject '" +
+                                holder.getSubject() +
+                                "' and serial " + holder.getSerialNumber().toString(16).toUpperCase());
             }
             // Get all certificates. Each one should either be issued (= signed) by a certificate of the set
             Set<X509Certificate> certSet = new HashSet<>();
@@ -995,9 +992,8 @@ class TestCreateSignature
                         // not the issuer
                     }
                 }
-                // disabled until PDFBOX-5203 is fixed
-//                assertTrue(verified,
-//                    "Certificate " + cert.getSubjectX500Principal() + " not issued by any certificate in the Certs array");
+                assertTrue(verified,
+                    "Certificate " + cert.getSubjectX500Principal() + " not issued by any certificate in the Certs array");
             }
             // Each CRL should be signed by one of the certificates in Certs
             Set<X509CRL> crlSet = new HashSet<>();
@@ -1037,7 +1033,7 @@ class TestCreateSignature
                 
                 // Check that the issueing certificate is in the VRI array
                 COSDictionary crlSigDict = vriDict.getCOSDictionary(COSName.getPDFName(hexCrlSignatureHash));
-                COSArray certArray2 = crlSigDict.getCOSArray(COSName.getPDFName("Cert"));
+                COSArray certArray2 = crlSigDict.getCOSArray(COSName.CERT);
                 COSStream certStream = (COSStream) certArray2.getObject(0);
                 X509CertificateHolder certHolder2;
                 try (InputStream is2 = certStream.createInputStream())
@@ -1078,7 +1074,7 @@ class TestCreateSignature
                 COSDictionary ocspSigDict = vriDict.getCOSDictionary(COSName.getPDFName(hexOcspSignatureHash));
 
                 // Check that the Cert is in the VRI array
-                COSArray certArray2 = ocspSigDict.getCOSArray(COSName.getPDFName("Cert"));
+                COSArray certArray2 = ocspSigDict.getCOSArray(COSName.CERT);
                 COSStream certStream = (COSStream) certArray2.getObject(0);
                 X509CertificateHolder certHolder2;
                 try (InputStream is2 = certStream.createInputStream())
@@ -1091,7 +1087,7 @@ class TestCreateSignature
         }
     }
 
-    private byte[] signEncrypted(SecureRandom secureRandom, Date signingTime) throws Exception
+    private byte[] signEncrypted(SecureRandom secureRandom, Date signingTime) throws IOException, GeneralSecurityException
     {
         KeyStore keystore = KeyStore.getInstance("PKCS12");
         keystore.load(new FileInputStream(KEYSTORE_PATH), PASSWORD.toCharArray());

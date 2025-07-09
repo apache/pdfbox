@@ -140,7 +140,22 @@ public class XmpSerializer
                 List<Attribute> attributes = simple.getAllAttributes();
                 for (Attribute attribute : attributes)
                 {
-                    esimple.setAttributeNS(attribute.getNamespace(), attribute.getName(), attribute.getValue());
+                    String name = attribute.getName();
+                    // we must add "xml:" to the qualifiedName parameter or it won't appear in the result
+                    // If a more strict transformer like Apache Xalan is in the classpath (e.g. PDFBOX-4817)
+                    if (XMLConstants.XML_NS_URI.equals(attribute.getNamespace()) && 
+                        name != null && !name.contains(":"))
+                    {
+                        esimple.setAttributeNS(XMLConstants.XML_NS_URI,
+                                               XMLConstants.XML_NS_PREFIX + ":" + name,
+                                               attribute.getValue());
+                    }
+                    else
+                    {
+                        esimple.setAttributeNS(attribute.getNamespace(),
+                                               name,
+                                               attribute.getValue());
+                    }
                 }
                 parent.appendChild(esimple);
             }

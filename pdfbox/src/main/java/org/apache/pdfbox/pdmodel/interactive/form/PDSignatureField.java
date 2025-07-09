@@ -36,8 +36,8 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
  */
 public class PDSignatureField extends PDTerminalField
 {
-	private static final Logger LOG = LogManager.getLogger(PDSignatureField.class);
-	
+    private static final Logger LOG = LogManager.getLogger(PDSignatureField.class);
+    
     /**
      * @see PDTerminalField#PDTerminalField(PDAcroForm)
      *

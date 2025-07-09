@@ -476,7 +476,7 @@ public class PDDocumentCatalog implements COSObjectable
             }
             catch (IllegalArgumentException e)
             {
-                LOG.debug("Invalid PageMode used '{}' - setting to PageMode.USE_NONE", mode, e);
+                LOG.debug(() -> "Invalid PageMode used '" + mode + "' - setting to PageMode.USE_NONE", e);
                 return PageMode.USE_NONE;
             }
         }
@@ -512,7 +512,7 @@ public class PDDocumentCatalog implements COSObjectable
             }
             catch (IllegalArgumentException e)
             {
-                LOG.warn("Invalid PageLayout used '{}' - returning PageLayout.SINGLE_PAGE", mode,
+                LOG.warn(() -> "Invalid PageLayout used '" + mode + "' - returning PageLayout.SINGLE_PAGE",
                         e);
             }
         }

@@ -47,7 +47,7 @@ class PDFAIdentificationTest
     
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testElementValue(String property, PropertyType type, Object value) throws Exception
+    void testElementValue(String property, PropertyType type, Object value) throws ReflectiveOperationException
     {
         XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetValue();
@@ -55,13 +55,13 @@ class PDFAIdentificationTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testElementProperty(String property, PropertyType type, Object value) throws Exception
+    void testElementProperty(String property, PropertyType type, Object value) throws ReflectiveOperationException
     {
         XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetProperty();
     }
 
-    static Stream<Arguments> initializeParameters() throws Exception
+    static Stream<Arguments> initializeParameters()
     {
         return Stream.of(
             Arguments.of("part", XMPSchemaTester.createPropertyType(Types.Integer), 1),

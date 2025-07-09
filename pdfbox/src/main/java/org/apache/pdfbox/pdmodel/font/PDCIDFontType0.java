@@ -99,7 +99,7 @@ public class PDCIDFontType0 extends PDCIDFont
                 }
                 catch (IOException e)
                 {
-                    LOG.error("Can't read the embedded CFF font {}", fd.getFontName(), e);
+                    LOG.error(() -> "Can't read the embedded CFF font " + fd.getFontName(), e);
                     fontIsDamaged = true;
                 }
             }

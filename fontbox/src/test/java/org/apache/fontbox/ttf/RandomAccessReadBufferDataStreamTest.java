@@ -69,7 +69,7 @@ class RandomAccessReadBufferDataStreamTest
                 randomAccessReadBuffer))
         {
             dataStream.readUnsignedShort();
-            assertThrows(EOFException.class, () -> dataStream.readUnsignedShort());
+            assertThrows(EOFException.class, dataStream::readUnsignedShort);
         }
     }
 
@@ -82,7 +82,7 @@ class RandomAccessReadBufferDataStreamTest
                 randomAccessReadBuffer))
         {
             dataStream.readUnsignedInt();
-            assertThrows(EOFException.class, () -> dataStream.readUnsignedInt());
+            assertThrows(EOFException.class, dataStream::readUnsignedInt);
         }
     }
 
@@ -96,7 +96,7 @@ class RandomAccessReadBufferDataStreamTest
         {
             dataStream.readUnsignedByte();
             dataStream.readUnsignedByte();
-            assertThrows(EOFException.class, () -> dataStream.readUnsignedByte());
+            assertThrows(EOFException.class, dataStream::readUnsignedByte);
         }
     }
     /**
@@ -112,7 +112,7 @@ class RandomAccessReadBufferDataStreamTest
         RandomAccessReadDataStream randomAccessReadDataStream = new RandomAccessReadDataStream(
                 randomAccessRead);
         randomAccessReadDataStream.close();
-        assertDoesNotThrow(() -> randomAccessReadDataStream.close());
+        assertDoesNotThrow(randomAccessReadDataStream::close);
     }
 
     /**

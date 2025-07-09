@@ -50,7 +50,7 @@ class XmpRightsSchemaTest
     
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testElementValue(String property, PropertyType type, Object value) throws Exception
+    void testElementValue(String property, PropertyType type, Object value) throws ReflectiveOperationException
     {
         XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetValue();
@@ -58,13 +58,13 @@ class XmpRightsSchemaTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testElementProperty(String property, PropertyType type, Object value) throws Exception
+    void testElementProperty(String property, PropertyType type, Object value) throws ReflectiveOperationException
     {
         XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetProperty();
     }
 
-    static Stream<Arguments> initializeParameters() throws Exception
+    static Stream<Arguments> initializeParameters()
     {
         Map<String, String> desc = new HashMap<>(2);
         desc.put("fr", "Termes d'utilisation");

@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * 
@@ -122,17 +123,12 @@ public class Revisions<T>
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder();
+        StringJoiner sj = new StringJoiner("; ", "{", "}");
         for (int i = 0; i < this.getObjects().size(); i++)
         {
-            if (i > 0)
-            {
-                sb.append("; ");
-            }
-            sb.append("object=").append(this.getObjects().get(i))
-                .append(", revisionNumber=").append(this.getRevisionNumber(i));
+            sj.add("object=" + this.getObjects().get(i) + ", revisionNumber=" + this.getRevisionNumber(i));
         }
-        return sb.toString();
+        return sj.toString();
     }
 
 }

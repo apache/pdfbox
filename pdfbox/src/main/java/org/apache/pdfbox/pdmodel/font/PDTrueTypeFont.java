@@ -78,10 +78,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     {
         MacOSRomanEncoding.INSTANCE.getCodeToNameMap().forEach((key, value) ->
         {
-            if (!INVERTED_MACOS_ROMAN.containsKey(value))
-            {
-                INVERTED_MACOS_ROMAN.put(value, key);
-            }
+            INVERTED_MACOS_ROMAN.putIfAbsent(value, key);
         });
     }
 
@@ -93,7 +90,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     private CmapSubtable cmapWinSymbol = null;
     private CmapSubtable cmapMacRoman = null;
     private boolean cmapInitialized = false;
-    private Map<Integer, Integer> gidToCode; // for embedding
+    private final Map<Integer, Integer> gidToCode = new HashMap<>(); // for embedding
     private BoundingBox fontBBox;
 
     /**
@@ -126,7 +123,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
                 }
                 catch (IOException e)
                 {
-                    LOG.warn("Could not read embedded TTF for font {}", getBaseFont(), e);
+                    LOG.warn(() -> "Could not read embedded TTF for font " + getBaseFont(), e);
                     fontIsDamaged = true;
                     IOUtils.closeQuietly(view);
                 }
@@ -454,19 +451,15 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
      */
     protected Map<Integer, Integer> getGIDToCode() throws IOException
     {
-        if (gidToCode != null)
+        if (!gidToCode.isEmpty())
         {
             return gidToCode;
         }
 
-        gidToCode = new HashMap<>();
         for (int code = 0; code <= 255; code++)
         {
             int gid = codeToGID(code);
-            if (!gidToCode.containsKey(gid))
-            {
-                gidToCode.put(gid, code);
-            }
+            gidToCode.putIfAbsent(gid, code);
         }
         return gidToCode;
     }

@@ -33,43 +33,43 @@ class PlainTextTest
     @Test
     void characterCR()
     {
-    	PlainText text = new PlainText("CR\rCR");
-    	assertEquals(2,text.getParagraphs().size());
+        PlainText text = new PlainText("CR\rCR");
+        assertEquals(2,text.getParagraphs().size());
     }
 
     @Test
     void characterLF()
     {
-    	PlainText text = new PlainText("LF\nLF");
-    	assertEquals(2,text.getParagraphs().size());
+        PlainText text = new PlainText("LF\nLF");
+        assertEquals(2,text.getParagraphs().size());
     }
     
     @Test
     void characterCRLF()
     {
-    	PlainText text = new PlainText("CRLF\r\nCRLF");
-    	assertEquals(2,text.getParagraphs().size());
+        PlainText text = new PlainText("CRLF\r\nCRLF");
+        assertEquals(2,text.getParagraphs().size());
     }
 
     @Test
     void characterLFCR()
     {
-    	PlainText text = new PlainText("LFCR\n\rLFCR");
-    	assertEquals(3,text.getParagraphs().size());
+        PlainText text = new PlainText("LFCR\n\rLFCR");
+        assertEquals(3,text.getParagraphs().size());
     }
     
     @Test
     void characterUnicodeLinebreak()
     {
-    	PlainText text = new PlainText("linebreak\u2028linebreak");
-    	assertEquals(2,text.getParagraphs().size());
+        PlainText text = new PlainText("linebreak\u2028linebreak");
+        assertEquals(2,text.getParagraphs().size());
     }
     
     @Test
     void characterUnicodeParagraphbreak()
     {
-    	PlainText text = new PlainText("paragraphbreak\u2029paragraphbreak");
-    	assertEquals(2,text.getParagraphs().size());
+        PlainText text = new PlainText("paragraphbreak\u2029paragraphbreak");
+        assertEquals(2,text.getParagraphs().size());
     }
 
 }

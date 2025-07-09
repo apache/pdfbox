@@ -30,6 +30,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -37,7 +38,6 @@ import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.jupiter.api.BeforeAll;
@@ -130,9 +130,6 @@ class PDAcroFormFlattenTest
         // annotations.
         "https://issues.apache.org/jira/secure/attachment/12994791/flatten.pdf,PDFBOX-4788.pdf",
     
-        // PDFBOX-4889: appearance streams with empty /BBox.
-        "https://issues.apache.org/jira/secure/attachment/13005793/f1040sb%20test.pdf,PDFBOX-4889.pdf",
-
         // PDFBOX-4955: appearance streams with forms that are not used.
         "https://issues.apache.org/jira/secure/attachment/13011410/PDFBOX-4955.pdf,PDFBOX-4955.pdf",
 
@@ -148,10 +145,8 @@ class PDAcroFormFlattenTest
     @Test
     void flattenSingleField() throws IOException
     {
-        final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
-        final String NAME_OF_PDF = "MultilineFields.pdf";
-
-        PDDocument document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
+        String filename = "src/test/resources/org/apache/pdfbox/pdmodel/interactive/form/MultilineFields.pdf";
+        PDDocument document = Loader.loadPDF(new File(filename));
         PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
         int numFieldsBefore = acroForm.getFields().size();
     
@@ -183,8 +178,9 @@ class PDAcroFormFlattenTest
         {
             testPdf.getDocumentCatalog().getAcroForm().flatten();
             testPdf.setAllSecurityToBeRemoved(true);
-            assertTrue(testPdf.getDocumentCatalog().getAcroForm().getFields().isEmpty());
-            testPdf.save(outputFile, CompressParameters.NO_COMPRESSION);
+            testPdf.save(outputFile);
+            assertTrue(testPdf.getDocumentCatalog().getAcroForm(null).getFields().isEmpty());
+            assertEquals(72, testPdf.getPage(0).getAnnotations().size());
         }
 
         // compare rendering
@@ -192,6 +188,61 @@ class PDAcroFormFlattenTest
                 OUT_DIR.getAbsolutePath()))
         {
             fail("Rendering of " + outputFile
+                    + " failed or is not identical to expected rendering in " + IN_DIR
+                    + " directory");
+        }
+        else
+        {
+            // cleanup input and output directory for matching files.
+            removeAllRenditions(inputFile);
+            inputFile.delete();
+            outputFile.delete();
+        }
+    }
+
+    /**
+     * Check that only VN_Name is removed in the field tree and in the annotations list. That field
+     * has an "orphan" widget that belongs to no page.
+     *
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    @Test
+    void flattenTestPDFBOX5225() throws IOException, URISyntaxException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13027311/SourceFailure.pdf";
+        String targetFileName = "PDFBOX-5225.pdf";
+
+        generateSamples(sourceUrl, targetFileName);
+
+        File inputFile = new File(IN_DIR, targetFileName);
+        File outputFile = new File(OUT_DIR, targetFileName);
+
+        try (PDDocument testPdf = Loader.loadPDF(inputFile))
+        {
+            PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
+            List<PDField> list = new ArrayList<>();
+            list.add(acroForm.getField("VN_NAME"));
+            acroForm.flatten(list, false);
+            testPdf.setAllSecurityToBeRemoved(true);
+            testPdf.save(outputFile);
+            int count = 0;
+            Iterator<PDField> iterator = acroForm.getFieldTree().iterator();
+            while (iterator.hasNext())
+            {
+                iterator.next();
+                ++count;
+            }
+            assertEquals(76, count);
+            assertEquals(59, testPdf.getPage(0).getAnnotations().size());
+        }
+
+        // compare rendering
+        if (!TestPDFToImage.doTestFile(outputFile, IN_DIR.getAbsolutePath(),
+                OUT_DIR.getAbsolutePath()))
+        {
+            // check manually
+            System.err.println("Rendering of " + outputFile
                     + " failed or is not identical to expected rendering in " + IN_DIR
                     + " directory");
         }

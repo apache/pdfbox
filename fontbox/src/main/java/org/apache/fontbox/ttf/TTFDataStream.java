@@ -24,6 +24,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.TimeZone;
+import org.apache.pdfbox.io.RandomAccessRead;
 
 /**
  * An abstract class to read a data stream.
@@ -134,7 +135,8 @@ abstract class TTFDataStream implements Closeable
         long byte4 = read();
         if (byte4 < 0)
         {
-            throw new EOFException();
+            throw new EOFException("EOF at " + getCurrentPosition() + 
+                    ", b1: " + byte1 + ", b2: " + byte2 + ", b3: " + byte3 + ", b4: " + byte4);
         }
         return (byte1 << 24) + (byte2 << 16) + (byte3 << 8) + byte4;
     }
@@ -151,7 +153,7 @@ abstract class TTFDataStream implements Closeable
         int b2 = read();
         if ((b1 | b2) < 0)
         {
-            throw new EOFException();
+            throw new EOFException("EOF at " + getCurrentPosition() + ", b1: " + b1 + ", b2: " + b2);
         }
         return (b1 << 8) + b2;
     }
@@ -276,6 +278,18 @@ abstract class TTFDataStream implements Closeable
      * @throws IOException If there is an error reading from the stream.
      */
     public abstract int read(byte[] b, int off, int len) throws IOException;
+
+    /**
+     * Creates a view from current position to {@code pos + length}.
+     * It can be faster than {@code read(length)} if you only need a few bytes.
+     * {@code SubView.close()} should never close {@code TTFDataStream.this}, only itself.
+     *
+     * @return A view or null (caller can use {@link #read} instead). Please close() the result
+     */
+    public RandomAccessRead createSubView(long length)
+    {
+        return null;
+    }
 
     /**
      * Get the current position in the stream.

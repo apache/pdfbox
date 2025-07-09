@@ -181,7 +181,7 @@ public abstract class PDColorSpace implements COSObjectable
             }
             else if (name == COSName.DEVICEN)
             {
-                return new PDDeviceN(array);
+                return new PDDeviceN(array, resources);
             }
             else if (name == COSName.INDEXED)
             {
@@ -189,7 +189,7 @@ public abstract class PDColorSpace implements COSObjectable
             }
             else if (name == COSName.SEPARATION)
             {
-                return new PDSeparation(array);
+                return new PDSeparation(array, resources);
             }
             else if (name == COSName.ICCBASED)
             {

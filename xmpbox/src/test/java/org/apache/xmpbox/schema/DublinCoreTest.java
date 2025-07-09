@@ -46,7 +46,7 @@ class DublinCoreTest
     
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testInitializedToNull(String fieldName, Types type, Cardinality card) throws Exception
+    void testInitializedToNull(String fieldName, Types type, Cardinality card) throws ReflectiveOperationException
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testInitializedToNull();
@@ -54,7 +54,8 @@ class DublinCoreTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testSettingValue(String fieldName, Types type, Cardinality card) throws Exception
+    void testSettingValue(String fieldName, Types type, Cardinality card)
+            throws IllegalArgumentException, IllegalAccessException
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testSettingValue();
@@ -62,7 +63,8 @@ class DublinCoreTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testRandomSettingValue(String fieldName, Types type, Cardinality card) throws Exception
+    void testRandomSettingValue(String fieldName, Types type, Cardinality card)
+            throws IllegalArgumentException, IllegalAccessException
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomSettingValue();
@@ -70,7 +72,8 @@ class DublinCoreTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testSettingValueInArray(String fieldName, Types type, Cardinality card) throws Exception
+    void testSettingValueInArray(String fieldName, Types type, Cardinality card)
+            throws IllegalArgumentException, IllegalAccessException
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testSettingValueInArray();
@@ -78,7 +81,8 @@ class DublinCoreTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testRandomSettingValueInArray(String fieldName, Types type, Cardinality card) throws Exception
+    void testRandomSettingValueInArray(String fieldName, Types type, Cardinality card)
+            throws IllegalArgumentException, IllegalAccessException
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomSettingValueInArray();
@@ -86,7 +90,7 @@ class DublinCoreTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testPropertySetterSimple(String fieldName, Types type, Cardinality card) throws Exception
+    void testPropertySetterSimple(String fieldName, Types type, Cardinality card) throws ReflectiveOperationException
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testPropertySetterSimple();
@@ -94,7 +98,7 @@ class DublinCoreTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testRandomPropertySetterSimple(String fieldName, Types type, Cardinality card) throws Exception
+    void testRandomPropertySetterSimple(String fieldName, Types type, Cardinality card) throws ReflectiveOperationException
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomPropertySetterSimple();
@@ -102,7 +106,7 @@ class DublinCoreTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testPropertySetterInArray(String fieldName, Types type, Cardinality card) throws Exception
+    void testPropertySetterInArray(String fieldName, Types type, Cardinality card) throws ReflectiveOperationException
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testPropertySetterInArray();
@@ -110,7 +114,7 @@ class DublinCoreTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testRandomPropertySetterInArray(String fieldName, Types type, Cardinality card) throws Exception
+    void testRandomPropertySetterInArray(String fieldName, Types type, Cardinality card) throws ReflectiveOperationException
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomPropertySetterInArray();

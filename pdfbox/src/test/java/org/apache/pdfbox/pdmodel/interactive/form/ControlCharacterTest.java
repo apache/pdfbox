@@ -71,7 +71,7 @@ class ControlCharacterTest
     private PDAcroForm acroForm;
 
     @BeforeEach
-    public void setUp() throws IOException
+    void setUp() throws IOException
     {
         document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
         acroForm = document.getDocumentCatalog().getAcroForm();
@@ -92,7 +92,7 @@ class ControlCharacterTest
     void characterTAB() throws IOException
     {
         PDField field = acroForm.getField("pdfbox-tab");
-    	field.setValue("TAB\tTAB");
+        field.setValue("TAB\tTAB");
 
         List<String> pdfboxValues = getStringsFromStream(field);
         pdfboxValues.forEach(token -> assertEquals("TAB", token));
@@ -124,25 +124,27 @@ class ControlCharacterTest
     }
 
     @AfterEach
-    public void tearDown() throws IOException
+    void tearDown() throws IOException
     {
         document.close();
     }
     
     private List<String> getStringsFromStream(PDField field) throws IOException
     {
-    	PDAnnotationWidget widget = field.getWidgets().get(0);
+        PDAnnotationWidget widget = field.getWidgets().get(0);
         PDFStreamParser parser = new PDFStreamParser(
                 widget.getNormalAppearanceStream());
-    	
+        
         List<Object> tokens = parser.parse();
-    	
+        
         // TODO: improve the string output to better match
         // trimming as Acrobat adds spaces to strings
         // where we don't
         return tokens.stream() //
-                .filter(t -> t instanceof COSString) //
-                .map(t -> ((COSString) t).getString().trim()) //
+                .filter(COSString.class::isInstance) //
+                .map(COSString.class::cast) //
+                .map(COSString::getString) //
+                .map(String::trim) //
                 .collect(Collectors.toList());
     }
 }

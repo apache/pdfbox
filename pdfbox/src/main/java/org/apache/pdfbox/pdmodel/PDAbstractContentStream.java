@@ -43,6 +43,7 @@ import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfwriter.COSWriter;
@@ -198,17 +199,16 @@ abstract class PDAbstractContentStream implements Closeable
         // complex text layout
         if (font instanceof PDType0Font)
         {
-            PDType0Font pdType0Font = (PDType0Font) font;
-            GsubData gsubData = pdType0Font.getGsubData();
+            PDType0Font type0Font = (PDType0Font) font;
+            GsubData gsubData = type0Font.getGsubData();
             if (gsubData != GsubData.NO_DATA_FOUND)
             {
-                GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(pdType0Font.getCmapLookup(),
-                        gsubData);
-                gsubWorkers.put((PDType0Font) font, gsubWorker);
+                GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(type0Font.getCmapLookup(), gsubData);
+                gsubWorkers.put(type0Font, gsubWorker);
             }
             else
             {
-                LOG.debug("No GSUB data found in font {}", font.getName());
+                LOG.info("No GSUB data found in font {}", font.getName());
             }
         }
 
@@ -291,16 +291,15 @@ abstract class PDAbstractContentStream implements Closeable
         byte[] encodedText = null;
         if (font instanceof PDType0Font)
         {
-
             GsubWorker gsubWorker = gsubWorkers.get(font);
             if (gsubWorker != null)
             {
-                PDType0Font pdType0Font = (PDType0Font) font;
+                PDType0Font type0Font = (PDType0Font) font;
                 Set<Integer> glyphIds = new HashSet<>();
-                encodedText = encodeForGsub(gsubWorker, glyphIds, pdType0Font, text);
-                if (pdType0Font.willBeSubset())
+                encodedText = encodeForGsub(gsubWorker, glyphIds, type0Font, text);
+                if (type0Font.willBeSubset())
                 {
-                    pdType0Font.addGlyphsToSubset(glyphIds);
+                    type0Font.addGlyphsToSubset(glyphIds);
                 }
             }
         }
@@ -705,7 +704,7 @@ abstract class PDAbstractContentStream implements Closeable
     /**
      * Set the stroking color in the DeviceRGB color space. Range is 0..1.
      *
-     * @param r The red value
+     * @param r The red value.
      * @param g The green value.
      * @param b The blue value.
      * @throws IOException If an IO error occurs while writing to the stream.
@@ -1321,6 +1320,24 @@ abstract class PDAbstractContentStream implements Closeable
     }
 
     /**
+     * Begin a marked content sequence with a reference to the marked content identifier (MCID).
+     *
+     * @param tag the tag to be added to the content stream
+     * @param mcid the marked content identifier (MCID)
+     * @throws IOException If the content stream could not be written
+     */
+    public void beginMarkedContent(COSName tag, int mcid) throws IOException
+    {
+        if (mcid < 0)
+        {
+            throw new IllegalArgumentException("mcid should not be negative");
+        }
+        writeOperand(tag);
+        write("<</MCID " + mcid + ">> ");
+        writeOperator(OperatorName.BEGIN_MARKED_CONTENT_SEQ);
+    }
+
+    /**
      * Begin a marked content sequence with a reference to an entry in the page resources' Properties dictionary.
      *
      * @param tag the tag to be added to the content stream
@@ -1330,7 +1347,18 @@ abstract class PDAbstractContentStream implements Closeable
     public void beginMarkedContent(COSName tag, PDPropertyList propertyList) throws IOException
     {
         writeOperand(tag);
-        writeOperand(resources.add(propertyList));
+
+        COSDictionary dict = propertyList.getCOSObject();
+        if (dict.getInt(COSName.MCID) > -1 && dict.size() == 1)
+        {
+            // PDFBOX-5890: use simplified notation if there's only an MCID
+            write("<</MCID " + dict.getInt(COSName.MCID) + ">> ");
+        }
+        else
+        {
+            writeOperand(resources.add(propertyList));
+        }
+
         writeOperator(OperatorName.BEGIN_MARKED_CONTENT_SEQ);
     }
 
@@ -1342,6 +1370,32 @@ abstract class PDAbstractContentStream implements Closeable
     public void endMarkedContent() throws IOException
     {
         writeOperator(OperatorName.END_MARKED_CONTENT);
+    }
+
+    /**
+     * set a marked content point.
+     *
+     * @param tag the tag to be added to the content stream
+     * @throws IOException If the content stream could not be written
+     */
+    public void setMarkedContentPoint(COSName tag) throws IOException
+    {
+        writeOperand(tag);
+        writeOperator(OperatorName.MARKED_CONTENT_POINT);
+    }
+
+    /**
+     * Set a marked content point with a reference to an entry in the page resources' Properties dictionary.
+     *
+     * @param tag the tag to be added to the content stream
+     * @param propertyList property list to be added to the content stream
+     * @throws IOException If the content stream could not be written
+     */
+    public void setMarkedContentPointWithProperties(COSName tag, PDPropertyList propertyList) throws IOException
+    {
+        writeOperand(tag);
+        writeOperand(resources.add(propertyList));
+        writeOperator(OperatorName.MARKED_CONTENT_POINT_WITH_PROPS);
     }
 
     /**
@@ -1611,41 +1665,61 @@ abstract class PDAbstractContentStream implements Closeable
         writeOperator(OperatorName.SET_TEXT_RISE);
     }
 
+    /**
+     * Retrieve the encoded glyph IDs for the characters in the specified text, after applying any
+     * relevant GSUB rules. The glyph IDs used are also added to the specified glyph ID set.
+     *
+     * @param gsubWorker The GSUB worker which defines the GSUB transformations to apply.
+     * @param glyphIds The set of glyph IDs which is to be populated with the glyph IDs found in the
+     * text.
+     * @param font The font whose cmap table will be used to map characters to glyph IDs.
+     * @param text The text which is being converted from characters to glyph IDs.
+     * @return The encoded glyph IDs for the characters in the specified text, after applying any
+     * relevant GSUB rules.
+     * @throws IOException If there is an error during encoding.
+     * @throws IllegalStateException If we cannot find a glyph ID for any characters in the
+     * specified text.
+     */
     private byte[] encodeForGsub(GsubWorker gsubWorker,
-                                 Set<Integer> glyphIds, PDType0Font font, String text) throws IOException
+            Set<Integer> glyphIds, PDType0Font font, String text) throws IOException
     {
-        // break the entire chunk of text into words by splitting it with space
+        ByteArrayOutputStream out = new ByteArrayOutputStream(2 * text.length());
         String[] words = StringUtil.tokenizeOnSpace(text);
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
         for (String word : words)
         {
-            if (word == null)
-            {
-                continue;
-            }
             if (word.length() == 1 && word.isBlank())
             {
-                out.write(font.encode(word));
+                out.writeBytes(font.encode(word));
             }
             else
             {
                 glyphIds.addAll(applyGSUBRules(gsubWorker, out, font, word));
             }
         }
-
         return out.toByteArray();
     }
 
-    private List<Integer> applyGSUBRules(GsubWorker gsubWorker, ByteArrayOutputStream out, PDType0Font font, String word) throws IOException
+    /**
+     * Retrieve the glyph IDs for the characters in the specified word, after applying any relevant
+     * GSUB rules. The encoded glyph IDs are also written to the specified output stream.
+     *
+     * @param gsubWorker The GSUB worker which defines the GSUB transformations to apply.
+     * @param out The output stream to write the glyph IDs to.
+     * @param font The font whose cmap table will be used to map characters to glyph IDs.
+     * @param word The word which is being converted from characters to glyph IDs.
+     * @return The glyph IDs for the characters in the specified word, after applying any relevant
+     * GSUB rules.
+     * @throws IllegalStateException If we cannot find a glyph ID for any characters in the
+     * specified word.
+     */
+    private List<Integer> applyGSUBRules(GsubWorker gsubWorker, ByteArrayOutputStream out, PDType0Font font, String word)
     {
-        int[] codePointArray = word.codePoints().toArray();
-        List<Integer> originalGlyphIds = new ArrayList<>(word.codePointCount(0, word.length()));
+        int[] codePoints = word.codePoints().toArray();
+        List<Integer> originalGlyphIds = new ArrayList<>(codePoints.length);
         CmapLookup cmapLookup = font.getCmapLookup();
 
-        // convert characters into glyphIds
-        for (int codePoint : codePointArray)
+        // convert characters into glyph IDs
+        for (int codePoint : codePoints)
         {
             int glyphId = cmapLookup.getGlyphId(codePoint);
             if (glyphId <= 0)
@@ -1663,19 +1737,20 @@ abstract class PDAbstractContentStream implements Closeable
                 {
                     source = "?";
                 }
-                throw new IllegalStateException("could not find the glyphId for the character: " + source);
+                throw new IllegalStateException("could not find the glyphId for the character: " +
+                        source + ", codePoint: " + codePoint +
+                        " (0x" + Integer.toHexString(codePoint).toUpperCase() + ")");
             }
             originalGlyphIds.add(glyphId);
         }
 
+        // transform glyph IDs, write them to the output stream
         List<Integer> glyphIdsAfterGsub = gsubWorker.applyTransforms(originalGlyphIds);
-
         for (Integer glyphId : glyphIdsAfterGsub)
         {
-            out.write(font.encodeGlyphId(glyphId));
+            out.writeBytes(font.encodeGlyphId(glyphId));
         }
 
         return glyphIdsAfterGsub;
-
     }
 }

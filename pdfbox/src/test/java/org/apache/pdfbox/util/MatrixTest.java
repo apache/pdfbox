@@ -32,7 +32,7 @@ class MatrixTest
 {
     
     @Test
-    void testConstructionAndCopy() throws Exception
+    void testConstructionAndCopy()
     {
         Matrix m1 = new Matrix();
         assertMatrixIsPristine(m1);
@@ -141,7 +141,7 @@ class MatrixTest
     }
 
     @Test
-    void testOldMultiplication() throws Exception
+    void testOldMultiplication()
     {
         // This matrix will not change - we use it to drive the various multiplications.
         final Matrix testMatrix = new Matrix();

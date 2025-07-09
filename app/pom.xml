@@ -24,13 +24,19 @@
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
     <version>4.0.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>pdfbox-app</artifactId>
   <packaging>jar</packaging>
   <name>Apache PDFBox application</name>
   <url>http://pdfbox.apache.org/</url>
+
+	<scm>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk/pdfbox-app</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk/pdfbox-app</developerConnection>
+		<url>https://svn.apache.org/viewvc/pdfbox/trunk/pdfbox-app</url>
+	</scm>
 
   <dependencies>
     <dependency>
@@ -59,7 +65,7 @@
           <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-transform-maven-shade-plugin-extensions</artifactId>
-            <version>0.1.0</version>
+            <version>0.2.0</version>
           </dependency>
         </dependencies>
         <executions>
@@ -86,6 +92,7 @@
               <!-- Exclude META-INF directories that might conflict -->
               <artifact>*:*</artifact>
               <excludes>
+                <exclude>META-INF/maven/plugin.xml</exclude> <!-- MNG-8180 -->
                 <exclude>META-INF/*.SF</exclude>
                 <exclude>META-INF/*.DSA</exclude>
                 <exclude>META-INF/*.RSA</exclude>

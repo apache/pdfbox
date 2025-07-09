@@ -221,8 +221,8 @@ final class DebugTextOverlay
             }
             catch (IOException ex)
             {
-                LOG.error("Couldn't get bounds for code {} at position ({},{})", code,
-                        at.getTranslateX(), at.getTranslateY(), ex);
+                LOG.error(() -> "Couldn't get bounds for code " + code + " at position (" +
+                        at.getTranslateX() + "," + at.getTranslateY() + ")", ex);
             }
             if (bbox == null)
             {

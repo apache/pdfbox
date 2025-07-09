@@ -194,7 +194,7 @@ class SequenceRandomAccessReadTest
         // closing a SequenceRandomAccessRead twice shouldn't be a problem
         sequenceRandomAccessRead.close();
 
-        assertThrows(IOException.class, () -> sequenceRandomAccessRead.read(),
+        assertThrows(IOException.class, sequenceRandomAccessRead::read,
                 "checkClosed should have thrown an IOException");
     }
 
@@ -238,6 +238,29 @@ class SequenceRandomAccessReadTest
             // check EOF after seek
             sequenceRandomAccessRead.seek(40);
             assertTrue(sequenceRandomAccessRead.isEOF());
+        }
+    }
+
+    @Test
+    void testPDFBox5981() throws IOException
+    {
+        RandomAccessReadBuffer r1 = new RandomAccessReadBuffer(new byte[2448]);
+        RandomAccessReadBuffer r2 = new RandomAccessReadBuffer(new byte[2412]);
+        RandomAccessReadBuffer r3 = new RandomAccessReadBuffer(new byte[2417]);
+        RandomAccessReadBuffer r4 = new RandomAccessReadBuffer(new byte[2433]);
+        RandomAccessReadBuffer r5 = new RandomAccessReadBuffer(new byte[2432]);
+        RandomAccessReadBuffer r6 = new RandomAccessReadBuffer(new byte[2416]);
+        RandomAccessReadBuffer r7 = new RandomAccessReadBuffer(new byte[2417]);
+        RandomAccessReadBuffer r8 = new RandomAccessReadBuffer(new byte[2266]);
+
+        try (SequenceRandomAccessRead srar = new SequenceRandomAccessRead(List.of(r1, r2, r3, r4, r5, r6, r7, r8));
+             RandomAccessInputStream rais = new RandomAccessInputStream(srar))
+        {
+            int rc = rais.read(new byte[0], 0, 0);
+            assertEquals(0, rc);
+            byte[] result = rais.readAllBytes();
+            assertEquals(19241, result.length);
+            assertEquals(srar.length(), result.length);
         }
     }
 }

@@ -44,7 +44,10 @@ public class GSUBTablePrintUtil
     public void printCharacterToGlyph(GsubData gsubData, CmapLookup cmap)
     {
         System.err.println(
-                "Format:\n<Serial no.>.) <Space separated characters to be replaced> : RawUnicode: [<Space separated unicode representation of each character to be replaced in hexadecimal>] : <The compound character> : <The GlyphId with which these characters are replaced>");
+                "Format:\n<Serial no.>.) <Space separated characters to be replaced> : "
+                        + "RawUnicode: [<Space separated unicode representation of each character "
+                        + "to be replaced in hexadecimal>] : <The compound character> : "
+                        + "<The GlyphId with which these characters are replaced>");
         Map<List<Integer>, List<Integer>> rawGSubTableData = new HashMap<>();
 
         for (String featureName : gsubData.getSupportedFeatures())

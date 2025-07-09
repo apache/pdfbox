@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -81,32 +82,24 @@ class XMPMetaDataTest
         assertTrue(vals.contains(tmp2));
     }
 
-    /*
-     * @Test public void displayResult() throws TransformException { System.out.println
-     * ("info used:\n XPacketBegin:"+metadata.getXpacketBegin()+ "\n XPacketID:"+metadata.getXpacketId());
-     * SaveMetadataHelper.serialize(metadata, true, System.out);
-     * 
-     * }
-     */
-
     @Test
-    void testTransformerExceptionMessage() throws XmpSerializationException
+    void testTransformerExceptionMessage()
     {
         assertThrows(org.apache.xmpbox.xml.XmpSerializationException.class, () -> {
-	        throw new XmpSerializationException("TEST");
-	    });  
+            throw new XmpSerializationException("TEST");
+        });  
     }
 
     @Test
-    void testTransformerExceptionWithCause() throws XmpSerializationException
+    void testTransformerExceptionWithCause()
     {
         assertThrows(org.apache.xmpbox.xml.XmpSerializationException.class, () -> {
-	        throw new XmpSerializationException("TEST", new Throwable());
-	    });
+            throw new XmpSerializationException("TEST", new Throwable());
+        });
     }
 
     @Test
-    void testInitMetaDataWithInfo() throws Exception
+    void testInitMetaDataWithInfo()
     {
         String xpacketBegin = "TESTBEG", xpacketId = "TESTID", xpacketBytes = "TESTBYTES", xpacketEncoding = "TESTENCOD";
         XMPMetadata metadata = XMPMetadata.createXMPMetadata(xpacketBegin, xpacketId, xpacketBytes, xpacketEncoding);
@@ -125,7 +118,7 @@ class XMPMetaDataTest
      * @throws XmpParsingException 
      */
     @Test
-    void testPDFBOX3257() throws IOException, XmpParsingException
+    void testPDFBOX3257() throws XmpParsingException
     {
         // taken from file test-landscape2.pdf
         String xmpmeta = "<?xpacket id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n"
@@ -174,8 +167,7 @@ class XMPMetaDataTest
                 + "<?xpacket end=\"w\"?>";
         DomXmpParser xmpParser = new DomXmpParser();
         xmpParser.setStrictParsing(false);
-        //IOUtils.copy(meta.createInputStream(),System.out);
-        XMPMetadata xmp = xmpParser.parse(xmpmeta.getBytes());
+        XMPMetadata xmp = xmpParser.parse(xmpmeta.getBytes(StandardCharsets.UTF_8));
         XMPBasicSchema basicSchema = xmp.getXMPBasicSchema();
         Calendar createDate1 = basicSchema.getCreateDate();
         basicSchema.setCreateDate(new GregorianCalendar());

@@ -51,7 +51,7 @@ public abstract class AbstractField
      * @param propertyName
      *            the local name to set for this field
      */
-    public AbstractField(XMPMetadata metadata, String propertyName)
+    protected AbstractField(XMPMetadata metadata, String propertyName)
     {
         this.metadata = metadata;
         this.propertyName = propertyName;

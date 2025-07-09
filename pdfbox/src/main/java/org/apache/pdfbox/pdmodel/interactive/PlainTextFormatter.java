@@ -146,7 +146,7 @@ public class PlainTextFormatter
         if (textContent != null && !textContent.getParagraphs().isEmpty())
         {
             boolean isFirstParagraph = true;
-        	for (Paragraph paragraph : textContent.getParagraphs())
+            for (Paragraph paragraph : textContent.getParagraphs())
             {
                 if (wrapLines)
                 {

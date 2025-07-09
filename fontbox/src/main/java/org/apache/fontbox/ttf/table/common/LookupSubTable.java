@@ -30,7 +30,7 @@ public abstract class LookupSubTable
     private final int substFormat;
     private final CoverageTable coverageTable;
 
-    public LookupSubTable(int substFormat, CoverageTable coverageTable)
+    protected LookupSubTable(int substFormat, CoverageTable coverageTable)
     {
         this.substFormat = substFormat;
         this.coverageTable = coverageTable;

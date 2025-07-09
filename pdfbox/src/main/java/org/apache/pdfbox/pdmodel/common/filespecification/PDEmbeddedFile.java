@@ -62,9 +62,6 @@ public class PDEmbeddedFile extends PDStream
 
     /**
      * {@inheritDoc}
-     * @param filter Filter to apply to the stream.
-     *
-     * @throws IOException {@inheritDoc}
      */
     public PDEmbeddedFile(PDDocument doc, InputStream input, COSName filter) throws IOException
     {

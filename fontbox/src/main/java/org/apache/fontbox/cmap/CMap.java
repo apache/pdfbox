@@ -57,6 +57,8 @@ public class CMap
     private final Map<Integer, String> charToUnicodeOneByte = new HashMap<>();
     // two byte input values
     private final Map<Integer, String> charToUnicodeTwoBytes = new HashMap<>();
+    // 3 / 4 byte input values
+    private final Map<Integer, String> charToUnicodeMoreBytes = new HashMap<>();
 
     // CID mappings
     // map with all code to cid mappings organized by the origin byte length of the input value
@@ -93,7 +95,7 @@ public class CMap
      */
     public boolean hasUnicodeMappings()
     {
-        return !charToUnicodeOneByte.isEmpty() || !charToUnicodeTwoBytes.isEmpty();
+        return !charToUnicodeOneByte.isEmpty() || !charToUnicodeTwoBytes.isEmpty() || !charToUnicodeMoreBytes.isEmpty();
     }
 
     /**
@@ -113,7 +115,15 @@ public class CMap
         String unicode = code < 256 ? toUnicode(code, 1) : null;
         if (unicode == null)
         {
-            unicode = toUnicode(code, 2);
+            if (code <= 0xFFFF)
+            {
+                return toUnicode(code, 2);
+            }
+            if (code <= 0xFFFFFF)
+            {
+                return toUnicode(code, 3);
+            }
+            return toUnicode(code, 4);
         }
         return unicode;
     }
@@ -135,8 +145,7 @@ public class CMap
         {
             return charToUnicodeTwoBytes.get(code);
         }
-        LOG.warn("Mappings with more than 2 bytes aren't supported");
-        return null;
+        return charToUnicodeMoreBytes.get(code);
     }
 
     /**
@@ -233,15 +242,12 @@ public class CMap
             return 0;
         }
         Integer cid = null;
-        if (codeToCid.containsKey(code.length))
+        Map<Integer, Integer> codeToCidMap = codeToCid.get(code.length);
+        if (codeToCidMap != null)
         {
-            cid = codeToCid.get(code.length).get(toInt(code));
+            cid = codeToCidMap.get(toInt(code));
         }
-        if (cid == null)
-        {
-            cid = toCIDFromRanges(code);
-        }
-        return cid;
+        return cid != null ? cid : toCIDFromRanges(code);
     }
 
     /**
@@ -285,9 +291,10 @@ public class CMap
             return 0;
         }
         Integer cid = null;
-        if (codeToCid.containsKey(length))
+        Map<Integer, Integer> codeToCidMap = codeToCid.get(length);
+        if (codeToCidMap != null)
         {
-            cid = codeToCid.get(length).get(code);
+            cid = codeToCidMap.get(code);
         }
         return cid != null ? cid : toCIDFromRanges(code, length);
     }
@@ -333,25 +340,6 @@ public class CMap
     }
 
     /**
-     * Convert the given part of a byte array to an integer.
-     * 
-     * @param data   the byte array
-     * @param offset The offset into the byte array.
-     * @param length The length of the data we are getting.
-     * @return the resulting integer
-     */
-    private int getCodeFromArray( byte[] data, int offset, int length )
-    {
-        int code = 0;
-        for( int i=0; i<length; i++ )
-        {
-            code <<= 8;
-            code |= (data[offset+i]+256)%256;
-        }
-        return code;
-    }
-
-    /**
      * This will add a character code to Unicode character sequence mapping.
      *
      * @param codes The character codes to map from.
@@ -359,24 +347,29 @@ public class CMap
      */
     void addCharMapping(byte[] codes, String unicode)
     {
-        unicodeToByteCodes.put(unicode, codes.clone()); // clone needed, bytes is modified later
-        int code = getCodeFromArray(codes, 0, codes.length);
-        if (codes.length == 1)
+        switch (codes.length)
         {
-            charToUnicodeOneByte.put(code, unicode);
-        }
-        else if (codes.length == 2)
-        {
-            charToUnicodeTwoBytes.put(code, unicode);
-        }
-        else
-        {
-            LOG.warn("Mappings with more than 2 bytes aren't supported yet");
+            case 1:
+                charToUnicodeOneByte.put(CMapStrings.getIndexValue(codes), unicode);
+                unicodeToByteCodes.put(unicode, CMapStrings.getByteValue(codes));
+                break;
+            case 2:
+                charToUnicodeTwoBytes.put(CMapStrings.getIndexValue(codes), unicode);
+                unicodeToByteCodes.put(unicode, CMapStrings.getByteValue(codes));
+                break;
+            case 3:
+            case 4:
+                charToUnicodeMoreBytes.put(toInt(codes), unicode);
+                unicodeToByteCodes.put(unicode, codes.clone());
+                break;
+            default:
+                LOG.warn("Mappings with more than 4 bytes (here: {}) aren't supported yet", codes.length);
+                break;
         }
         // fixme: ugly little hack
         if (SPACE.equals(unicode))
         {
-            spaceMapping = code;
+            spaceMapping = toInt(codes);
         }
     }
 
@@ -461,10 +454,28 @@ public class CMap
         cmap.codespaceRanges.forEach(this::addCodespaceRange);
         charToUnicodeOneByte.putAll(cmap.charToUnicodeOneByte);
         charToUnicodeTwoBytes.putAll(cmap.charToUnicodeTwoBytes);
+        charToUnicodeMoreBytes.putAll(cmap.charToUnicodeMoreBytes);
         cmap.charToUnicodeOneByte.forEach((k, v) -> unicodeToByteCodes.put(v, new byte[]{(byte) (k % 0xFF)}));
         cmap.charToUnicodeTwoBytes.forEach((k, v) -> unicodeToByteCodes.put(v,
                 new byte[]{(byte) ((k >>> 8) & 0xFF), (byte) (k & 0xFF)})
         );
+        cmap.charToUnicodeMoreBytes.forEach((k, v) -> 
+            {
+                byte[] bar;
+                if (k <= 0xFFFFFF)
+                {
+                    // 3 bytes
+                    bar = new byte[]{(byte) ((k >>> 16) & 0xFF), (byte) ((k >>> 8) & 0xFF), 
+                        (byte) (k & 0xFF)};
+                }
+                else
+                {
+                    // 4 bytes
+                    bar = new byte[]{(byte) ((k >>> 24) & 0xFF), (byte) ((k >>> 16) & 0xFF),
+                        (byte) ((k >>> 8) & 0xFF), (byte) (k & 0xFF)};
+                }
+                unicodeToByteCodes.put(v, bar);
+            });
         cmap.codeToCid.forEach((key, value) ->
         {
             Map<Integer, Integer> existingMapping = codeToCid.putIfAbsent(key, value);

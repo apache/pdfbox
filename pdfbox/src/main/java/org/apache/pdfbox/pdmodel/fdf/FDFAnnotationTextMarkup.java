@@ -33,9 +33,8 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
     /**
      * Default constructor.
      */
-    public FDFAnnotationTextMarkup()
+    protected FDFAnnotationTextMarkup()
     {
-        super();
     }
 
     /**
@@ -43,7 +42,7 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationTextMarkup(COSDictionary a)
+    protected FDFAnnotationTextMarkup(COSDictionary a)
     {
         super(a);
     }
@@ -55,7 +54,7 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
      *
      * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationTextMarkup(Element element) throws IOException
+    protected FDFAnnotationTextMarkup(Element element) throws IOException
     {
         super(element);
 

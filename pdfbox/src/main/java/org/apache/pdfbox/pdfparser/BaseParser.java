@@ -79,7 +79,8 @@ public abstract class BaseParser
         catch (IllegalArgumentException | UnsupportedOperationException e)
         {
             cs = StandardCharsets.ISO_8859_1;
-            LOG.warn("Charset is not supported: {}, falling back to {}", charsetName, cs.name(), e);
+            LOG.warn(() -> "Charset is not supported: " + charsetName + ", falling back to " +
+                    StandardCharsets.ISO_8859_1.name(), e);
         }
         ALTERNATIVE_CHARSET = cs;
     }
@@ -401,9 +402,9 @@ public abstract class BaseParser
     }
 
     /**
-     * Skip the upcoming CRLF or LF which are supposed to follow a stream.
+     * Skip the upcoming CRLF or LF which are supposed to follow a stream. Trailing spaces are removed as well.
      * 
-     * @throws IOException
+     * @throws IOException if something went wrong
      */
     protected void skipWhiteSpaces() throws IOException
     {
@@ -417,24 +418,55 @@ public abstract class BaseParser
         {
             whitespace = source.read();
         }
-
-        if (isCR(whitespace))
+        if (!skipLinebreak(whitespace))
         {
-            whitespace = source.read();
-            if (!isLF(whitespace))
-            {
-                source.rewind(1);
-                //The spec says this is invalid but it happens in the real
-                //world so we must support it.
-            }
-        }
-        else if (!isLF(whitespace))
-        {
-            //we are in an error.
-            //but again we will do a lenient parsing and just assume that everything
-            //is fine
             source.rewind(1);
         }
+    }
+
+    /**
+     * Skip one line break, such as CR, LF or CRLF.
+     * 
+     * @return true if a line break was found and removed.
+     * 
+     * @throws IOException if something went wrong
+     */
+    protected boolean skipLinebreak() throws IOException
+    {
+        // a line break is a CR, or LF or CRLF
+        if (!skipLinebreak(source.read()))
+        {
+            source.rewind(1);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Skip one line break, such as CR, LF or CRLF.
+     * 
+     * @param linebreak the first character to be checked.
+     * 
+     * @return true if a line break was found and removed.
+     * 
+     * @throws IOException if something went wrong
+     */
+    private boolean skipLinebreak(int linebreak) throws IOException
+    {
+        // a line break is a CR, or LF or CRLF
+        if (isCR(linebreak))
+        {
+            int next = source.read();
+            if (!isLF(next))
+            {
+                source.rewind(1);
+            }
+        }
+        else if (!isLF(linebreak))
+        {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -900,7 +932,8 @@ public abstract class BaseParser
         catch (CharacterCodingException e)
         {
             // some malformed PDFs don't use UTF-8 see PDFBOX-3347
-            LOG.debug("Buffer could not be decoded using StandardCharsets.UTF_8 - trying {}", ALTERNATIVE_CHARSET.name(), e);
+            LOG.debug(() -> "Buffer could not be decoded using StandardCharsets.UTF_8 - trying " + 
+                    ALTERNATIVE_CHARSET.name(), e);
             return buffer.toString(ALTERNATIVE_CHARSET);
         }
     }
@@ -997,6 +1030,15 @@ public abstract class BaseParser
         {
             source.rewind(1);
         }
+
+        // PDFBOX-5025: catch "74191endobj"
+        char lastc = buf.charAt(buf.length() - 1);
+        if (lastc == 'e' || lastc == 'E')
+        {
+            buf.deleteCharAt(buf.length() - 1);
+            source.rewind(1);
+        }
+
         return COSNumber.get(buf.toString());
     }
 

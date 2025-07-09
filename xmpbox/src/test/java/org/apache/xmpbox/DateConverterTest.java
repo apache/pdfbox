@@ -21,7 +21,10 @@
 
 package org.apache.xmpbox;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
@@ -43,30 +46,32 @@ class DateConverterTest
      * Test with additional time zone
      * information normally not supported by ISO8601
      *
-     * @throws Exception when there is an exception
+     * @throws IOException when there is an exception
      */
     @Test
-    void testDateConversion() throws Exception
+    void testDateConversion() throws IOException
     {
         // Test partial dates
         Calendar convDate = DateConverter.toCalendar("2015-02-02");
         assertEquals(2015, convDate.get(Calendar.YEAR));
 
-        //Test missing seconds
+        convDate = DateConverter.toCalendar("D:2015-02-02");
+        assertEquals(2015, convDate.get(Calendar.YEAR));
+
+        assertThrows(IOException.class, () -> DateConverter.toCalendar("123"));
+
+        // Test missing seconds
         assertEquals(DateConverter.toCalendar("2015-12-08T12:07:00-05:00"),
                      DateConverter.toCalendar("2015-12-08T12:07-05:00"));
         assertEquals(DateConverter.toCalendar("2011-11-20T10:09:00Z"),
                      DateConverter.toCalendar("2011-11-20T10:09Z"));
         
         // Test some time zone offsets
-        String testString1 = "";
-        String testString2 = "";
-
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm[:ss][.SSS][XXX]");
 
         //Test missing seconds
-        testString1 = "2015-12-08T12:07:00-05:00";
-        testString2 = "2015-12-08T12:07-05:00";
+        String testString1 = "2015-12-08T12:07:00-05:00";
+        String testString2 = "2015-12-08T12:07-05:00";
 
         assertEquals(DateConverter.toCalendar(testString1), DateConverter.toCalendar(testString2));
         assertEquals(DateConverter.toCalendar(testString1).toInstant(),ZonedDateTime.parse(testString1, dateTimeFormatter).toInstant());
@@ -115,10 +120,10 @@ class DateConverterTest
      * Test with additional time zone
      * information normally not supported by ISO8601
      *
-     * @throws Exception when there is an exception
+     * @throws IOException when there is an exception
      */
     @Test
-    void testDateFormatting() throws Exception
+    void testDateFormatting() throws IOException
     {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         Calendar cal = DateConverter.toCalendar("2015-02-02T16:37:19.192Z");

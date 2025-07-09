@@ -119,7 +119,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
             }
             catch (IOException e)
             {
-                LOG.error("Can't dereference {}", this, e);
+                LOG.error(() -> "Can't dereference " + this, e);
             }
             finally
             {
@@ -148,7 +148,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
     @Override
     public String toString()
     {
-		return "COSObject{" + getKey() + "}";
+        return "COSObject{" + getKey() + "}";
     }
 
     /**

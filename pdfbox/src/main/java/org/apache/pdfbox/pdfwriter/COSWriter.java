@@ -232,8 +232,7 @@ public class COSWriter implements ICOSVisitor
     /**
      * COSWriter constructor.
      *
-     * @param outputStream The output stream to write the PDF. It will be closed when this object is
-     * closed.
+     * @param outputStream The output stream to write the PDF.
      */
     public COSWriter(OutputStream outputStream)
     {
@@ -243,7 +242,7 @@ public class COSWriter implements ICOSVisitor
     /**
      * COSWriter constructor.
      *
-     * @param outputStream The output stream to write the PDF. It will be closed when this object is closed.
+     * @param outputStream The output stream to write the PDF.
      * @param compressParameters The configuration for the document's compression.
      */
     public COSWriter(OutputStream outputStream, CompressParameters compressParameters)
@@ -258,8 +257,7 @@ public class COSWriter implements ICOSVisitor
      * {@link COSUpdateInfo#isNeedToBeUpdated()} set, starting from the document catalog. For signatures this is taken
      * care by PDFBox itself.
      *
-     * @param outputStream output stream where the new PDF data will be written. It will be closed when this object is
-     * closed.
+     * @param outputStream output stream where the new PDF data will be written.
      * @param inputData random access read containing source PDF data
      *
      * @throws IOException if something went wrong
@@ -283,8 +281,7 @@ public class COSWriter implements ICOSVisitor
      * dictionaries are supported; if you need to update other objects classes, then add their
      * parent dictionary.
      *
-     * @param outputStream output stream where the new PDF data will be written. It will be closed
-     * when this object is closed.
+     * @param outputStream output stream where the new PDF data will be written.
      * @param inputData random access read containing source PDF data.
      * @param objectsToWrite objects that <b>must</b> be part of the incremental saving.
      * @throws IOException if something went wrong
@@ -684,18 +681,19 @@ public class COSWriter implements ICOSVisitor
         getStandardOutput().writeEOL();
 
         COSDictionary trailer = doc.getTrailer();
-        //sort xref, needed only if object keys not regenerated
-        Collections.sort(getXRefEntries());
-        XReferenceEntry lastEntry = getXRefEntries().get(getXRefEntries().size() - 1);
-        trailer.setLong(COSName.SIZE, lastEntry.getReferencedKey().getNumber() + 1);
         // Only need to stay, if an incremental update will be performed
-        if (!incrementalUpdate) 
+        if (!incrementalUpdate)
         {
-          trailer.removeItem( COSName.PREV );
+            // sort xref, needed only if object keys not regenerated
+            Collections.sort(getXRefEntries());
+            XReferenceEntry lastEntry = getXRefEntries().get(getXRefEntries().size() - 1);
+            trailer.setLong(COSName.SIZE, lastEntry.getReferencedKey().getNumber() + 1);
+            trailer.removeItem(COSName.PREV);
         }
         if (!doc.isXRefStream())
         {
-            trailer.removeItem( COSName.XREF_STM );
+            trailer.setLong(COSName.SIZE, number + 1);
+            trailer.removeItem(COSName.XREF_STM);
         }
         // Remove a checksum if present
         trailer.removeItem( COSName.DOC_CHECKSUM );
@@ -803,7 +801,7 @@ public class COSWriter implements ICOSVisitor
     private void fillGapsWithFreeEntries()
     {
         List<NormalXReference> normalXReferences = getXRefEntries().stream() //
-                .filter(e -> e instanceof NormalXReference) //
+                .filter(NormalXReference.class::isInstance) //
                 .map(NormalXReference.class::cast) //
                 .sorted() //
                 .collect(Collectors.toList());
@@ -1555,11 +1553,10 @@ public class COSWriter implements ICOSVisitor
         }
         if( missingID || incrementalUpdate)
         {
-            @SuppressWarnings({"squid:S5542","lgtm [java/weak-cryptographic-algorithm]"})
-            MessageDigest md5;
+            MessageDigest sha256;
             try
             {
-                md5 = MessageDigest.getInstance("MD5");
+                sha256 = MessageDigest.getInstance("SHA-256");
             }
             catch (NoSuchAlgorithmException e)
             {
@@ -1569,20 +1566,20 @@ public class COSWriter implements ICOSVisitor
 
             // algorithm says to use time/path/size/values in doc to generate the id.
             // we don't have path or size, so do the best we can
-            md5.update( Long.toString(idTime).getBytes(StandardCharsets.ISO_8859_1) );
+            sha256.update(Long.toString(idTime).getBytes(StandardCharsets.ISO_8859_1));
 
             COSDictionary info = trailer.getCOSDictionary(COSName.INFO);
             if( info != null )
             {
                 for (COSBase cosBase : info.getValues())
                 {
-                    md5.update(cosBase.toString().getBytes(StandardCharsets.ISO_8859_1));
+                    sha256.update(cosBase.toString().getBytes(StandardCharsets.ISO_8859_1));
                 }
             }
             // reuse origin documentID if available as first value
-            COSString firstID = missingID ? new COSString( md5.digest() ) : (COSString)idArray.get(0);
+            COSString firstID = missingID ? new COSString(sha256.digest()) : (COSString) idArray.get(0);
             // it's ok to use the same ID for the second part if the ID is created for the first time
-            COSString secondID = missingID ? firstID : new COSString( md5.digest() );
+            COSString secondID = missingID ? firstID : new COSString(sha256.digest());
             idArray = new COSArray();
             idArray.add( firstID );
             idArray.add( secondID );

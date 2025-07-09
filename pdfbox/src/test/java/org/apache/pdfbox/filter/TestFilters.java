@@ -180,11 +180,11 @@ class TestFilters
     }
 
     @Test
-    void testEmptyFilterList() throws Exception
+    void testEmptyFilterList()
     {
         assertThrows(IllegalArgumentException.class, () ->
         {
-            Filter.decode(null, new ArrayList(), new COSDictionary(), null, null);
+            Filter.decode(null, new ArrayList<>(), new COSDictionary(), null, null);
         });
     }
 

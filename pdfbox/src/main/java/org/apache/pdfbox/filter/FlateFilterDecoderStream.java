@@ -19,6 +19,7 @@ package org.apache.pdfbox.filter;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -38,7 +39,6 @@ public final class FlateFilterDecoderStream extends FilterInputStream
 
     private boolean isEOF = false;
     private int currentDataIndex = 0;
-    private int bytesRead = 0;
     private int bytesDecoded = 0;
 
     private byte[] buffer = new byte[2048];
@@ -66,12 +66,11 @@ public final class FlateFilterDecoderStream extends FilterInputStream
         {
             isEOF = true;
             bytesDecoded = 0;
-            bytesRead = 0;
             return false;
         }
         if (inflater.needsInput())
         {
-            bytesRead = in.read(buffer);
+            int bytesRead = in.read(buffer);
             if (bytesRead > -1)
             {
                 inflater.setInput(buffer, 0, bytesRead);
@@ -82,24 +81,36 @@ public final class FlateFilterDecoderStream extends FilterInputStream
                 return false;
             }
         }
-        boolean dataWritten = false;
         try
         {
+            // overwrite formerly read bytes
+            if (bytesDecoded > 0)
+            {
+                Arrays.fill(decodedData, 0, bytesDecoded, (byte) 0);
+            }
             bytesDecoded = inflater.inflate(decodedData);
         }
         catch (DataFormatException exception)
         {
-            if (dataWritten)
+            isEOF = true;
+            // check if some bytes could be read at all
+            int countZeros = 0;
+            for (int i = 0; i < decodedData.length; i++)
             {
-                // some data could be read -> don't throw an exception
-                LOG.warn("FlateFilter: premature end of stream due to a DataFormatException");
-                return false;
+                if (decodedData[i] == 0)
+                {
+                    countZeros++;
+                }
+                else
+                {
+                    countZeros = 0;
+                }
             }
-            else
-            {
-                // nothing could be read -> re-throw exception
-                throw new IOException(exception);
-            }
+            bytesDecoded = decodedData.length - countZeros;
+            // don't throw an exception, use the already read data or an empty stream
+            LOG.warn("FlateFilter: premature end of stream due to a DataFormatException = {}",
+                    exception.getMessage());
+            return bytesDecoded > 0;
         }
         return true;
     }
@@ -118,12 +129,9 @@ public final class FlateFilterDecoderStream extends FilterInputStream
         {
             return -1;
         }
-        if (currentDataIndex == bytesDecoded)
+        if (currentDataIndex == bytesDecoded && !fetch())
         {
-            if (!fetch())
-            {
-                return -1;
-            }
+            return -1;
         }
         return decodedData[currentDataIndex++] & 0xFF;
     }

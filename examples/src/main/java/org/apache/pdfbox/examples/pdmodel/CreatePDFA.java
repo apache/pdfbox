@@ -77,8 +77,8 @@ public final class CreatePDFA
             // 
             if (!font.isEmbedded())
             {
-            	throw new IllegalStateException("PDF/A compliance requires that all fonts used for"
-            			+ " text rendering in rendering modes other than rendering mode 3 are embedded.");
+                throw new IllegalStateException("PDF/A compliance requires that all fonts used for"
+                        + " text rendering in rendering modes other than rendering mode 3 are embedded.");
             }
             
             // create a page with the message

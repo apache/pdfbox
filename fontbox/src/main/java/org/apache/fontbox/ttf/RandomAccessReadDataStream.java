@@ -20,7 +20,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 
 /**
  * An implementation of the TTFDataStream using RandomAccessRead as source.
@@ -29,6 +33,8 @@ import org.apache.pdfbox.io.RandomAccessRead;
  */
 class RandomAccessReadDataStream extends TTFDataStream
 {
+    private static final Logger LOG = LogManager.getLogger(RandomAccessReadDataStream.class);
+
     private final long length;
     private final byte[] data;
     private int currentPosition = 0;
@@ -36,13 +42,18 @@ class RandomAccessReadDataStream extends TTFDataStream
     /**
      * Constructor.
      *
-     * @param randomAccessRead source to be read from
+     * @param randomAccessRead source to be read from. Caller should close it.
      *
      * @throws IOException If there is a problem reading the source data.
      */
     RandomAccessReadDataStream(RandomAccessRead randomAccessRead) throws IOException
     {
         length = randomAccessRead.length();
+        if (length > Integer.MAX_VALUE - 8) // https://www.baeldung.com/java-arrays-max-size
+        {
+            // PDFBOX-5991
+            throw new IOException("Stream is too long, size: " + length);
+        }
         data = new byte[(int) length];
         int remainingBytes = data.length;
         int amountRead;
@@ -56,7 +67,7 @@ class RandomAccessReadDataStream extends TTFDataStream
     /**
      * Constructor.
      *
-     * @param inputStream source to be read from
+     * @param inputStream source to be read from. Caller should close it.
      *
      * @throws IOException If there is a problem reading the source data.
      */
@@ -171,6 +182,20 @@ class RandomAccessReadDataStream extends TTFDataStream
         System.arraycopy(data, currentPosition, b, off, bytesToRead);
         currentPosition += bytesToRead;
         return bytesToRead;
+    }
+
+    @Override
+    public RandomAccessRead createSubView(long length)
+    {
+        try
+        {
+            return new RandomAccessReadBuffer(data).createView(currentPosition, length);
+        }
+        catch (IOException e)
+        {
+            LOG.warn("Could not create a SubView", e);
+            return null;
+        }
     }
 
     /**

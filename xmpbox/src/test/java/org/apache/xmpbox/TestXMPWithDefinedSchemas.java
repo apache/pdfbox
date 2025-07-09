@@ -21,18 +21,19 @@
 
 package org.apache.xmpbox;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.InputStream;
 import java.util.stream.Stream;
 
 import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpParsingException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class TestXMPWithDefinedSchemas
 {
-    static Stream<String> initializeParameters() throws Exception
+    static Stream<String> initializeParameters()
     {
         return Stream.of(
             "/validxmp/override_ns.rdf",
@@ -45,13 +46,13 @@ class TestXMPWithDefinedSchemas
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void main(String path) throws Exception
+    void main(String path) throws XmpParsingException
     {
         InputStream is = this.getClass().getResourceAsStream(path);
 
         DomXmpParser builder = new DomXmpParser();
         XMPMetadata rxmp = builder.parse(is);
         // ensure basic parsing was OK
-        assertTrue(rxmp.getAllSchemas().size()>0);
+        assertFalse(rxmp.getAllSchemas().isEmpty());
     }
 }

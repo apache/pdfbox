@@ -71,7 +71,7 @@ public class PDStructureTreeRoot extends PDStructureNode
 
     /**
      * Returns the K entry. This can be a dictionary representing a structure element, or an array
-     * of them.
+     * of them. To get it as a list of PDStructureElement objects, use {@link #getKids()} instead.
      *
      * @return the K entry.
      */
@@ -112,9 +112,15 @@ public class PDStructureTreeRoot extends PDStructureNode
     }
 
     /**
-     * Returns the parent tree.
-     * 
-     * @return the parent tree
+     * Returns the parent tree.<p>
+     * The keys correspond to a single page of the document or to an individual object, e.g. an
+     * annotation or an XObject, which have a <b>/StructParent</b> or <b>/StructParents</b>
+     * entry.<p>
+     * The values of type {@link PDParentTreeValue} are either a dictionary or an array. It's a
+     * dictionary for individual objects like an annotation or an XObject, and an array for a page
+     * object or a content stream containing marked-content sequences identified by an MCID.
+     *
+     * @return the parent tree.
      */
     public PDNumberTreeNode getParentTree()
     {
@@ -123,8 +129,16 @@ public class PDStructureTreeRoot extends PDStructureNode
     }
 
     /**
-     * Sets the parent tree.
-     * 
+     * Sets the parent tree.<p>
+     * The keys correspond to a single page of the document or to an individual object, e.g. an
+     * annotation or an XObject, which have a <b>/StructParent</b> or <b>/StructParents</b>
+     * entry.<p>
+     * The values of type {@link PDParentTreeValue} are either a dictionary or an array. It's a
+     * dictionary for individual objects like an annotation or an XObject, and an array for a page
+     * object or a content stream containing marked-content sequences identified by an MCID.
+     * <p>
+     * To create an empty parent tree, call {@code new PDNumberTreeNode(PDParentTreeValue.class)}.
+     *
      * @param parentTree the parent tree
      */
     public void setParentTree(PDNumberTreeNode parentTree)
@@ -133,9 +147,10 @@ public class PDStructureTreeRoot extends PDStructureNode
     }
 
     /**
-     * Returns the next key in the parent tree.
-     * 
-     * @return the next key in the parent tree
+     * Returns The next key for the parent tree. This is a number greater than any existing key, and
+     * which shall be used for the next entry to be added to the tree.
+     *
+     * @return The next key for the parent tree
      */
     public int getParentTreeNextKey()
     {
@@ -143,9 +158,10 @@ public class PDStructureTreeRoot extends PDStructureNode
     }
 
     /**
-     * Sets the next key in the parent tree.
+     * Sets the next key in the parent tree. This is a number greater than any existing key, and
+     * which shall be used for the next entry to be added to the tree.
      * 
-     * @param parentTreeNextkey the next key in the parent tree.
+     * @param parentTreeNextkey The next key in the parent tree.
      */
     public void setParentTreeNextKey(int parentTreeNextkey)
     {

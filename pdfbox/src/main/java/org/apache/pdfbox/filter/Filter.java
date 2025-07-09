@@ -149,7 +149,7 @@ public abstract class Filter
     }
 
     /**
-     * Finds a suitable image raster reader for an image format.
+     * Finds a suitable image reader for an image format.
      *
      * @param formatName The image format to search for.
      * @param errorCause The probably cause if something goes wrong.
@@ -163,11 +163,37 @@ public abstract class Filter
         while (readers.hasNext())
         {
             ImageReader reader = readers.next();
-            if (reader.canReadRaster())
+            if (reader != null)
             {
                 return reader;
             }
-            reader.dispose();
+        }
+        throw new MissingImageReaderException("Cannot read " + formatName + " image: " + errorCause);
+    }
+
+    /**
+     * Finds a suitable image raster reader for an image format.
+     *
+     * @param formatName The image format to search for.
+     * @param errorCause The probably cause if something goes wrong.
+     * @return The image reader for the format.
+     * @throws MissingImageReaderException if no image reader is found.
+     */
+    public static final ImageReader findRasterReader(String formatName, String errorCause)
+            throws MissingImageReaderException
+    {
+        Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName(formatName);
+        while (readers.hasNext())
+        {
+            ImageReader reader = readers.next();
+            if (reader != null)
+            {
+                if (reader.canReadRaster())
+                {
+                    return reader;
+                }
+                reader.dispose();
+            }
         }
         throw new MissingImageReaderException("Cannot read " + formatName + " image: " + errorCause);
     }
@@ -206,7 +232,7 @@ public abstract class Filter
             COSDictionary parameters, DecodeOptions options, List<DecodeResult> results)
             throws IOException
     {
-        int length = parameters.getInt(COSName.LENGTH,
+        long length = parameters.getLong(COSName.LENGTH,
                 RandomAccessReadBuffer.DEFAULT_CHUNK_SIZE_4KB);
         if (filterList.isEmpty())
         {
@@ -240,14 +266,19 @@ public abstract class Filter
             {
                 randomAccessWriteBuffer.seek(0);
                 input = new RandomAccessInputStream(randomAccessWriteBuffer);
-                length = (int) randomAccessWriteBuffer.length();
+                length = randomAccessWriteBuffer.length();
             }
-            // avoid invalid values
-            length = length <= 0 ? RandomAccessReadBuffer.DEFAULT_CHUNK_SIZE_4KB : length;
             // we don't know the size of the decoded stream, just estimate a 4 times bigger size than the encoded stream
             // use the estimated stream size as chunk size, use the default chunk size as limit to avoid to big values
-            randomAccessWriteBuffer = new RandomAccessReadWriteBuffer(
-                    Math.min(length << 2, RandomAccessReadBuffer.DEFAULT_CHUNK_SIZE_4KB));
+            if (length <= 0 || length >= RandomAccessReadBuffer.DEFAULT_CHUNK_SIZE_4KB / 4)
+            {
+                length = RandomAccessReadBuffer.DEFAULT_CHUNK_SIZE_4KB;
+            }
+            else
+            {
+                length = length * 4;
+            }
+            randomAccessWriteBuffer = new RandomAccessReadWriteBuffer((int) length);
             output = new RandomAccessOutputStream(randomAccessWriteBuffer);
             try
             {

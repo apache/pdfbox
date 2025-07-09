@@ -51,11 +51,6 @@ public class CompoundCharacterTokenizer
         regexExpression = Pattern.compile(getRegexFromTokens(compoundWords));
     }
 
-    public CompoundCharacterTokenizer(Pattern pattern)
-    {
-        regexExpression = pattern;
-    }
-
     /**
      * Validate the compound words. They should not be null or empty and should start and end with
      * the GLYPH_ID_SEPARATOR

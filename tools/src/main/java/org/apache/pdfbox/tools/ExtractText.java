@@ -32,7 +32,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -90,6 +89,9 @@ public final class ExtractText  implements Callable<Integer>
 
     @Option(names = "-html", description = "Output in HTML format instead of raw text")
     private boolean toHTML = false;
+
+    @Option(names = "-md", description = "Output in Markdown format instead of raw text")
+    private boolean toMD = false;
 
     @Option(names = "-ignoreBeads", description = "Disables the separation by beads")
     private boolean ignoreBeads = false;
@@ -149,7 +151,13 @@ public final class ExtractText  implements Callable<Integer>
     public Integer call()
     {
         // set file extension
+        if (toHTML && toMD)
+        {
+            SYSERR.println( "You can't set md and html at the same time");
+            return 1;
+        }
         String ext = toHTML ? ".html" : ".txt";
+        ext = toMD ? ".md" : ext;
 
         if (outfile == null)
         {
@@ -210,13 +218,27 @@ public final class ExtractText  implements Callable<Integer>
             }
             else
             {
-                if (rotationMagic)
+                if (toMD)
                 {
-                    stripper = new FilteredTextStripper();
+                    if (rotationMagic)
+                    {
+                        stripper = new FilteredText2Markdown();
+                    }
+                    else
+                    {
+                        stripper = new PDFText2Markdown();
+                    }
                 }
                 else
                 {
-                    stripper = new PDFTextStripper();
+                    if (rotationMagic)
+                    {
+                        stripper = new FilteredTextStripper();
+                    }
+                    else
+                    {
+                        stripper = new PDFTextStripper();
+                    }
                 }
                 stripper.setSortByPosition(sort);
                 stripper.setShouldSeparateByBeads(!ignoreBeads);
@@ -334,7 +356,7 @@ public final class ExtractText  implements Callable<Integer>
                         stripper.writeText(document, output);
 
                         // remove prepended transformation
-                        ((COSArray) page.getCOSObject().getItem(COSName.CONTENTS)).remove(0);
+                        page.getCOSObject().getCOSArray(COSName.CONTENTS).remove(0);
                     }
                     page.setRotation(rotation);
                 }
@@ -349,7 +371,7 @@ public final class ExtractText  implements Callable<Integer>
                 {
                     throw ex;
                 }
-                LOG.error("Failed to process page {}", p, ex);
+                LOG.error("Failed to process page " + p, ex);
             }
         }
     }
@@ -415,10 +437,22 @@ class AngleCollector extends PDFTextStripper
  */
 class FilteredTextStripper extends PDFTextStripper
 {
-    FilteredTextStripper() throws IOException
+    @Override
+    protected void processTextPosition(TextPosition text)
     {
+        int angle = ExtractText.getAngle(text);
+        if (angle == 0)
+        {
+            super.processTextPosition(text);
+        }
     }
+}
 
+/**
+ * PDFText2Markdown that only processes glyphs that have angle 0.
+ */
+class FilteredText2Markdown extends PDFText2Markdown
+{
     @Override
     protected void processTextPosition(TextPosition text)
     {

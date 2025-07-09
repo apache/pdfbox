@@ -148,7 +148,7 @@ class TestPublicKeyEncryption
      * {@inheritDoc}
      */
     @AfterEach
-    public void tearDown() throws Exception 
+    void tearDown() throws IOException
     {
         document.close();
     }
@@ -157,22 +157,20 @@ class TestPublicKeyEncryption
      * Protect a document with certificate 1 and try to open it with
      * certificate 2 and catch the exception.
      *
-     * @throws Exception If there is an unexpected error during the test.
+     * @throws IOException If there is an unexpected error during the test.
      */
     @ParameterizedTest
-	@MethodSource("keyLengths")
-    void testProtectionError(int keyLength) throws Exception
+    @MethodSource("keyLengths")
+    void testProtectionError(int keyLength) throws IOException
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
         policy.setEncryptionKeyLength(keyLength);
         document.protect(policy);
 
-        PDDocument encryptedDoc = null;
-        try 
+        File file = save("testProtectionError");
+        try (PDDocument encryptedDoc = reload(file, password2, getKeyStore(keyStore2)))
         {
-            File file = save("testProtectionError");
-            encryptedDoc = reload(file, password2, getKeyStore(keyStore2));
             assertTrue(encryptedDoc.isEncrypted());
             fail("No exception when using an incorrect decryption key");
         }
@@ -181,13 +179,6 @@ class TestPublicKeyEncryption
             String msg = ex.getMessage();
             assertTrue(msg.contains("serial-#: rid 2 vs. cert 3"), "not the expected exception: " + msg);
         }
-        finally 
-        {
-            if (encryptedDoc != null)
-            {
-                encryptedDoc.close();
-            }
-        }
     }
 
 
@@ -195,11 +186,11 @@ class TestPublicKeyEncryption
      * Protect a document with a public certificate and try to open it
      * with the corresponding private certificate.
      *
-     * @throws Exception If there is an unexpected error during the test.
+     * @throws IOException If there is an unexpected error during the test.
      */
     @ParameterizedTest
     @MethodSource("keyLengths")
-    void testProtection(int keyLength) throws Exception
+    void testProtection(int keyLength) throws IOException
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
@@ -227,11 +218,11 @@ class TestPublicKeyEncryption
     /**
      * Protect the document for 2 recipients and try to open it.
      *
-     * @throws Exception If there is an error during the test.
+     * @throws IOException If there is an error during the test.
      */
     @ParameterizedTest
     @MethodSource("keyLengths")
-    void testMultipleRecipients(int keyLength) throws Exception
+    void testMultipleRecipients(int keyLength) throws IOException
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
@@ -279,7 +270,7 @@ class TestPublicKeyEncryption
      * @throws Exception if 
      */
     private PDDocument reload(File file, String decryptionPassword, InputStream keyStore)
-            throws IOException, NoSuchAlgorithmException
+            throws IOException
     {
         PDDocument doc2 = Loader.loadPDF(file, decryptionPassword,
                 keyStore, null, IOUtils.createMemoryOnlyStreamCache());

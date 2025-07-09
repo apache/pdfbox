@@ -24,7 +24,7 @@
         <groupId>org.apache.pdfbox</groupId>
         <artifactId>pdfbox-parent</artifactId>
         <version>4.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>pdfbox</artifactId>
@@ -35,7 +35,13 @@
         The Apache PDFBox library is an open source Java tool for working with PDF documents.
     </description>
     <inceptionYear>2002</inceptionYear>
-    
+
+	<scm>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk/pdfbox</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk/pdfbox</developerConnection>
+		<url>https://svn.apache.org/viewvc/pdfbox/trunk/pdfbox</url>
+	</scm>
+
     <properties>
     	<git.scmJavadocUrl>git:https://git-wip-us.apache.org/repos/asf/pdfbox-docs//content/docs/${project.version}/javadocs</git.scmJavadocUrl>
     </properties>
@@ -86,8 +92,19 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.12.0</version>
+            <version>5.18.0</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.bytebuddy</groupId>
+                    <artifactId>byte-buddy</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.17.6</version>
         </dependency>
         <!-- For legal reasons (incompatible license), these three dependencies below
         are to be used only in the tests and may not be distributed. 
@@ -107,12 +124,10 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>${log4j2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>${log4j2.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -771,6 +786,111 @@
                             <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
                             <outputFileName>PDFBOX-5742.pdf</outputFileName>
                             <sha512>1c645cc1a6da616cf1af23b623562161493c79c2f8382622515138628cfee71fb318fdebd0b7167d9bdac92119928d57f39de213089f7f1832296ea068189380</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-5894</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13072508/sticky-notes.fdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5894.fdf</outputFileName>
+                            <sha512>995b25abc41bcb3e89f93d1495d4e178010c7dfbbdd55fed71de395d3798a83575b619c333a22386d441152f821debffd01c26494bef86cb35ef0d04e0198a3b</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-5927</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13073586/SO79293670.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5927.pdf</outputFileName>
+                            <sha512>73cabf224a56cd7256262245d5edb79729401a7485e420a0d66c931bdb22cbd3a08eeaebf73b718fd68dc458cfd0008c168c234ae7827d62cb0448b0c36af1c5</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-5025</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13015946/issue3323.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5025.pdf</outputFileName>
+                            <sha512>d56d05eea079290133246f10ae327b3d51bd213f9e121717cb70155009608fe3164a174f80f92678e42ac00a9b2041ae7933f4f2c5734c9765cf2b145a28fc64</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-5939</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13074264/google-docs-1.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5939-google-docs-1.pdf</outputFileName>
+                            <sha512>5900c8deb9ec44579ee70d92af27635f27ccb73c8817ae43f61962dec5ad017864bbbcd1aaf41114455693d808c68880bcb61ef5618c86aa15c21cdf3efef733</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-515</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12421531/pdfboxpdfs.zip</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-515.zip</outputFileName>
+                            <unpack>true</unpack>
+                            <sha512>cb8033ed21d8e43b4a62ffbcff4fc8c829c2c29e21fa9e9ea302959e036869d0470fa7e2dd2dc206bbaf02d08bf8b5631ab397cd5f19896d3a12e207d3da165a</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-5955-40bit</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13074727/R%3D4%2C%20V%3D4%2C%2040-bit%20RC4.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5955-40bit.pdf</outputFileName>
+                            <sha512>1a46131f8276f139e81453a427c17fb70bfd05bfb1de4f3f74b976a0a6b6b7b2d74013edcd5367ba6353249b7b1b303cc7a08d561194447b422900d7d5767ec4</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-5955-48bit</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13074728/R%3D4%2C%20V%3D4%2C%2048-bit%20RC4.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5955-48bit.pdf</outputFileName>
+                            <sha512>5a9c237b8e1b93eb492c7a387180d937f8fb82d1fa2ffcf73698489b3ec4cdefc2ceb4e9204867c834a2139069c5667811aaf522d6e1f6ff8fd1591528a65007</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-6009</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13076529/pdfbox-split-missing-tags_mail%2015.5.2025.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-6009.pdf</outputFileName>
+                            <sha512>60e7b46f11a655083a57f4a627edf75bee477cd1ebfb06fbaefeb8ba16a01be37039cfd51c7c181a3ea368b53d22e327d480a7b0699c0edb2e06b4faaae7790f</sha512>
                         </configuration>
                     </execution>
                 </executions>

@@ -110,7 +110,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
                 }
                 catch (IOException e)
                 {
-                    LOG.error("Can't read the embedded Type1C font {}", getName(), e);
+                    LOG.error(() -> "Can't read the embedded Type1C font " + getName(), e);
                     fontIsDamaged = true;
                 }
             }
@@ -424,6 +424,12 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
         {
             int codePoint = string.codePointAt(i);
             String name = getGlyphList().codePointToName(codePoint);
+            if (!cffFont.hasGlyph(name))
+            {
+                throw new IllegalArgumentException(
+                    String.format("U+%04X ('%s') is not available in font %s",
+                                  codePoint, name, getName()));
+            }
             width += cffFont.getType1CharString(name).getWidth();
         }
         return width;

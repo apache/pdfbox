@@ -50,7 +50,7 @@ public abstract class PDFunction implements COSObjectable
      * @param function The function stream.
      * 
      */
-    public PDFunction( COSBase function )
+    protected PDFunction( COSBase function )
     {
         if (function instanceof COSStream)
         {

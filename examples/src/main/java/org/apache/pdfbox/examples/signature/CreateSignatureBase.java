@@ -61,7 +61,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
      * @throws CertificateException if the certificate is not valid as signing time
      * @throws IOException if no certificate could be found
      */
-    public CreateSignatureBase(KeyStore keystore, char[] pin)
+    protected CreateSignatureBase(KeyStore keystore, char[] pin)
             throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, CertificateException
     {
         // grabs the first alias from the keystore and get the private key. An
@@ -138,7 +138,10 @@ public abstract class CreateSignatureBase implements SignatureInterface
         {
             CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
             X509Certificate cert = (X509Certificate) certificateChain[0];
-            ContentSigner sha1Signer = new JcaContentSignerBuilder("SHA256WithRSA").build(privateKey);
+            // cert.getSigAlgName() returns the algorithm the certificate itself has been signed with,
+            // this is usually also the algorithm to use for signing, but not always.
+            // See also the comment by mkl at the bottom of https://issues.apache.org/jira/browse/PDFBOX-5940
+            ContentSigner sha1Signer = new JcaContentSignerBuilder(cert.getSigAlgName()).build(privateKey);
             gen.addSignerInfoGenerator(new JcaSignerInfoGeneratorBuilder(new JcaDigestCalculatorProviderBuilder().build()).build(sha1Signer, cert));
             gen.addCertificates(new JcaCertStore(Arrays.asList(certificateChain)));
             CMSProcessableInputStream msg = new CMSProcessableInputStream(content);

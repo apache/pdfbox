@@ -19,6 +19,7 @@ package org.apache.fontbox.ttf;
 
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.pdfbox.io.RandomAccessRead;
 
 /**
  * A wrapper for a TTF stream inside a TTC file, does not close the underlying shared stream.
@@ -83,4 +84,9 @@ class TTCDataStream extends TTFDataStream
         return stream.getOriginalDataSize();
     }
 
+    @Override
+    public RandomAccessRead createSubView(long length)
+    {
+        return stream.createSubView(length);
+    }
 }

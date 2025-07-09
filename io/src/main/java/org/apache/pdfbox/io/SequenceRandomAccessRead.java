@@ -115,6 +115,10 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     public int read(byte[] b, int offset, int length) throws IOException
     {
         checkClosed();
+        if (length == 0)
+        {
+            return 0;
+        }
         int maxAvailBytes = Math.min(available(), length);
         if (maxAvailBytes == 0)
         {

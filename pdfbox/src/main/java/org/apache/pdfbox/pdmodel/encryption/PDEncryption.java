@@ -18,6 +18,7 @@
 package org.apache.pdfbox.pdmodel.encryption;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -276,6 +277,15 @@ public class PDEncryption implements COSObjectable
         if( owner != null )
         {
             o = owner.getBytes();
+            int r = getRevision();
+            if (r <= 4)
+            {
+                o = Arrays.copyOf(o, 32);
+            }
+            else if (r == 5 || r == 6)
+            {
+                o = Arrays.copyOf(o, 48);
+            }
         }
         return o;
     }
@@ -306,6 +316,15 @@ public class PDEncryption implements COSObjectable
         if( user != null )
         {
             u = user.getBytes();
+            int r = getRevision();
+            if (r <= 4)
+            {
+                u = Arrays.copyOf(u, 32);
+            }
+            else if (r == 5 || r == 6)
+            {
+                u = Arrays.copyOf(u, 48);
+            }
         }
         return u;
     }
@@ -335,7 +354,7 @@ public class PDEncryption implements COSObjectable
         COSString ownerEncryptionKey = (COSString)dictionary.getDictionaryObject( COSName.OE );
         if( ownerEncryptionKey != null )
         {
-            oe = ownerEncryptionKey.getBytes();
+            oe = Arrays.copyOf(ownerEncryptionKey.getBytes(), 32);
         }
         return oe;
     }
@@ -365,7 +384,7 @@ public class PDEncryption implements COSObjectable
         COSString userEncryptionKey = (COSString)dictionary.getDictionaryObject( COSName.UE );
         if( userEncryptionKey != null )
         {
-            ue = userEncryptionKey.getBytes();
+            ue = Arrays.copyOf(userEncryptionKey.getBytes(), 32);
         }
         return ue;
     }

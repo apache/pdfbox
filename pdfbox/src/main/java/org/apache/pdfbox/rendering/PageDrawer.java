@@ -482,10 +482,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // PDFBOX-4150: this is much faster than using textClippingArea.add(new Area(glyph))
             // https://stackoverflow.com/questions/21519007/fast-union-of-shapes-in-java
             GeneralPath path = new GeneralPath(Path2D.WIND_NON_ZERO, textClippings.size());
-            for (Shape shape : textClippings)
-            {
-                path.append(shape, false);
-            }
+            textClippings.forEach(shape -> path.append(shape, false));
             state.intersectClippingPath(path);
             textClippings = new ArrayList<>();
 
@@ -963,6 +960,22 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         // the clipping path will not be updated until the succeeding painting operator is called
         clipWindingRule = windingRule;
+        if (clipWindingRule != -1)
+        {
+            linePath.setWindingRule(clipWindingRule);
+
+            if (!linePath.getPathIterator(null).isDone())
+            {
+                // PDFBOX-4949 / PDF.js 12306: don't clip if "W n" only
+                getGraphicsState().intersectClippingPath(adjustClip(linePath));
+            }
+
+            // PDFBOX-3836: lastClip needs to be reset, because after intersection it is still the same 
+            // object, thus setClip() would believe that it is cached.
+            lastClips = null;
+
+            clipWindingRule = -1;
+        }
     }
 
     @Override
@@ -998,22 +1011,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void endPath()
     {
-        if (clipWindingRule != -1)
-        {
-            linePath.setWindingRule(clipWindingRule);
-
-            if (!linePath.getPathIterator(null).isDone())
-            {
-                // PDFBOX-4949 / PDF.js 12306: don't clip if "W n" only
-                getGraphicsState().intersectClippingPath(adjustClip(linePath));
-            }
-
-            // PDFBOX-3836: lastClip needs to be reset, because after intersection it is still the same 
-            // object, thus setClip() would believe that it is cached.
-            lastClips = null;
-
-            clipWindingRule = -1;
-        }
         linePath.reset();
     }
     
@@ -1192,13 +1189,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 {
                     g.drawImage(mask, imageTransform, null);
                 }
-                else
+                else if (scaleX != 0 && scaleY != 0)
                 {
-                    while (scaleX < 0.25)
+                    while (scaleX < 0.25 || Math.round(mask.getWidth() * scaleX) < 1)
                     {
                         scaleX *= 2.0;
                     }
-                    while (scaleY < 0.25)
+                    while (scaleY < 0.25 || Math.round(mask.getHeight() * scaleY) < 1)
                     {
                         scaleY *= 2.0;
                     }
@@ -1238,7 +1235,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 BufferedImage image = pdImage.getStencilImage(getNonStrokingPaint());
 
                 // draw the image
-                drawBufferedImage(image, at);
+                drawBufferedImage(pdImage, image, at);
             }
         }
         else
@@ -1247,12 +1244,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 int subsampling = getSubsampling(pdImage, at);
                 // draw the subsampled image
-                drawBufferedImage(pdImage.getImage(null, subsampling), at);
+                drawBufferedImage(pdImage, pdImage.getImage(null, subsampling), at);
             }
             else
             {
                 // subsampling not allowed, draw the image
-                drawBufferedImage(pdImage.getImage(), at);
+                drawBufferedImage(pdImage, pdImage.getImage(), at);
             }
         }
 
@@ -1296,7 +1293,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         return subsampling;
     }
 
-    private void drawBufferedImage(BufferedImage image, AffineTransform at) throws IOException
+    private void drawBufferedImage(PDImage pdImage, BufferedImage image, AffineTransform at) throws IOException
     {
         AffineTransform originalTransform = graphics.getTransform();
         AffineTransform imageTransform = new AffineTransform(at);
@@ -1306,7 +1303,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         imageTransform.translate(0, -height);
 
         PDSoftMask softMask = getGraphicsState().getSoftMask();
-        if( softMask != null )
+
+        // PDFBOX-5307 / PDF.js PR#19269
+        // From section 11.6.4.3 Mask Shape and Opacity in the PDF specification:
+        // "Either form of mask in the image dictionary shall override the current soft mask
+        //  in the graphics state"
+        boolean hasImageMask = pdImage.getCOSObject().containsKey(COSName.MASK) ||
+                               pdImage.getCOSObject().containsKey(COSName.SMASK);
+
+        if (softMask != null && !hasImageMask)
         {
             Rectangle2D rectangle = new Rectangle2D.Float(0, 0, width, height);
             Paint awtPaint = new TexturePaint(image, rectangle);
@@ -1539,41 +1544,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public void showAnnotation(PDAnnotation annotation) throws IOException
     {
         lastClips = null;
-        int deviceType = -1;
-        GraphicsConfiguration graphicsConfiguration = graphics.getDeviceConfiguration();
-        if (graphicsConfiguration != null)
-        {
-            GraphicsDevice graphicsDevice = graphicsConfiguration.getDevice();
-            if (graphicsDevice != null)
-            {
-                deviceType = graphicsDevice.getType();
-            }
-        }
-        if (deviceType == GraphicsDevice.TYPE_PRINTER && !annotation.isPrinted())
+
+        if (shouldSkipAnnotation(annotation))
         {
             return;
         }
-        if (deviceType == GraphicsDevice.TYPE_RASTER_SCREEN && annotation.isNoView())
-        {
-            return;
-        }
-        if (annotation.isHidden())
-        {
-            return;
-        }
-        if (annotation.isInvisible() && annotation instanceof PDAnnotationUnknown)
-        {
-            // "If set, do not display the annotation if it does not belong to one
-            // of the standard annotation types and no annotation handler is available."
-            return;
-        }
+
         //TODO support NoZoom, example can be found in p5 of PDFBOX-2348
-
-        if (isHiddenOCG(annotation.getOptionalContent()))
-        {
-            return;
-        }
-
         PDAppearanceDictionary appearance = annotation.getAppearance();
         if (appearance == null || appearance.getNormalAppearance() == null)
         {
@@ -1581,6 +1558,16 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         if (annotation.isNoRotate() && getCurrentPage().getRotation() != 0)
         {
+            appearance = annotation.getAppearance();
+            if (appearance != null && appearance.getNormalAppearance() != null &&
+                appearance.getNormalAppearance().isStream() &&
+                hasTransparency(appearance.getNormalAppearance().getAppearanceStream()))
+            {
+                // PDFBOX-4744: avoid appearances with transparency groups until we have fixed
+                // the rendering. A real solution should probably be
+                // in PDFStreamEngine.processAnnotation().
+                annotation.constructAppearances();
+            }
             PDRectangle rect = annotation.getRectangle();
             AffineTransform savedTransform = graphics.getTransform();
             // "The upper-left corner of the annotation remains at the same point in
@@ -1589,11 +1576,62 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     rect.getLowerLeftX(), rect.getUpperRightY());
             super.showAnnotation(annotation);
             graphics.setTransform(savedTransform);
+            annotation.setAppearance(appearance); // restore
         }
         else
         {
             super.showAnnotation(annotation);
         }
+    }
+
+    private boolean shouldSkipAnnotation(PDAnnotation annotation)
+    {
+        if (destination == RenderDestination.PRINT && !annotation.isPrinted())
+        {
+            return true;
+        }
+        if ((destination == RenderDestination.VIEW || destination == RenderDestination.EXPORT) &&
+                annotation.isNoView())
+        {
+            return true;
+        }
+        if (annotation.isHidden())
+        {
+            return true;
+        }
+        if (annotation.isInvisible() && annotation instanceof PDAnnotationUnknown)
+        {
+            // "If set, do not display the annotation if it does not belong to one
+            // of the standard annotation types and no annotation handler is available."
+            return true;
+        }
+        return isHiddenOCG(annotation.getOptionalContent());
+    }
+
+    private boolean hasTransparency(PDFormXObject form) throws IOException
+    {
+        if (form == null)
+        {
+            return false;
+        }
+        PDResources resources = form.getResources();
+        if (resources == null)
+        {
+            return false;
+        }
+        for (COSName name : resources.getXObjectNames())
+        {
+            PDXObject xObject = resources.getXObject(name);
+            if (xObject instanceof PDTransparencyGroup)
+            {
+                return true;
+            }
+            if (xObject instanceof PDFormXObject && hasTransparency((PDFormXObject) xObject))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -1956,13 +1994,23 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         Rectangle2D getBounds()
         {
-            // apply the underlying Graphics2D device's DPI transform and y-axis flip
-            Rectangle2D r = 
-                    new Rectangle2D.Double(
-                            minX - pageSize.getLowerLeftX() * xformScalingFactorX,
-                            (pageSize.getLowerLeftY() + pageSize.getHeight()) * xformScalingFactorY - minY - height,
-                            width,
-                            height);
+            Rectangle2D r;
+            if (flipTG)
+            {
+                // Fixes PDFBOX-5966 and PDFBOX-5251, but not pdfium 1317, which has similar PDF code.
+                // https://bugs.chromium.org/p/pdfium/issues/detail?id=1317
+                r = new Rectangle2D.Double(minX, minY, width, height);
+            }
+            else
+            {
+                // y-axis flip
+                r = new Rectangle2D.Double(
+                        minX - pageSize.getLowerLeftX() * xformScalingFactorX,
+                        (pageSize.getLowerLeftY() + pageSize.getHeight()) * xformScalingFactorY - minY - height,
+                        width,
+                        height);
+            }
+            // apply the underlying Graphics2D device's DPI transform
             // this adjusts the rectangle to the rotated image to put the soft mask at the correct position
             //TODO
             // 1. change transparencyGroup.getBounds() to getOrigin(), because size isn't used in SoftMask,
@@ -2045,11 +2093,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             nestedHiddenOCGCount++;
             return;
         }
-        if (tag == null || getResources() == null)
+        if (properties == null)
         {
             return;
         }
-        if (isHiddenOCG(getResources().getProperties(tag)))
+        if (isHiddenOCG(PDPropertyList.create(properties)))
         {
             nestedHiddenOCGCount = 1;
         }
@@ -2099,10 +2147,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private boolean isHiddenOCMD(PDOptionalContentMembershipDictionary ocmd)
     {
-        if (ocmd.getCOSObject().getCOSArray(COSName.VE) != null)
+        COSArray veArray = ocmd.getCOSObject().getCOSArray(COSName.VE);
+        if (veArray != null && !veArray.isEmpty())
         {
-            // support seems to be optional, and is approximated by /P and /OCGS
-            LOG.info("/VE entry ignored in Optional Content Membership Dictionary");
+            return isHiddenVisibilityExpression(veArray);
         }
         List<PDPropertyList> oCGs = ocmd.getOCGs();
         if (oCGs.isEmpty())
@@ -2134,6 +2182,109 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // visible if any of the entries in OCGs are ON
         // AnyOn is default
         return visibles.stream().noneMatch(v -> v);
+    }
+
+    private boolean isHiddenVisibilityExpression(COSArray veArray)
+    {
+        if (veArray.isEmpty())
+        {
+            return false;
+        }
+        String op = veArray.getName(0);
+        if (op == null)
+        {
+            return false;
+        }
+        switch (op)
+        {
+            case "And":
+                return isHiddenAndVisibilityExpression(veArray);
+            case "Or":
+                return isHiddenOrVisibilityExpression(veArray);
+            case "Not":
+                return isHiddenNotVisibilityExpression(veArray);
+            default:
+                return false;
+        }
+    }
+
+    private boolean isHiddenAndVisibilityExpression(COSArray veArray)
+    {
+        // hidden if at least one isn't visible
+        for (int i = 1; i < veArray.size(); ++i)
+        {
+            COSBase base = veArray.getObject(i);
+            if (base instanceof COSArray)
+            {
+                // Another VE
+                boolean isHidden = isHiddenVisibilityExpression((COSArray) base);
+                if (isHidden)
+                {
+                    return true;
+                }
+            }
+            else if (base instanceof COSDictionary)
+            {
+                // Another OCG
+                PDPropertyList prop = PDPropertyList.create((COSDictionary) base);
+                boolean isHidden = isHiddenOCG(prop);
+                if (isHidden)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isHiddenOrVisibilityExpression(COSArray veArray)
+    {
+        // hidden only if all are hidden
+        for (int i = 1; i < veArray.size(); ++i)
+        {
+            COSBase base = veArray.getObject(i);
+            if (base instanceof COSArray)
+            {
+                // Another VE
+                boolean isHidden = isHiddenVisibilityExpression((COSArray) base);
+                if (!isHidden)
+                {
+                    return false;
+                }
+            }
+            else if (base instanceof COSDictionary)
+            {
+                // Another OCG
+                PDPropertyList prop = PDPropertyList.create((COSDictionary) base);
+                boolean isHidden = isHiddenOCG(prop);
+                if (!isHidden)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean isHiddenNotVisibilityExpression(COSArray veArray)
+    {
+        if (veArray.size() != 2)
+        {
+            return false;
+        }
+        COSBase base = veArray.getObject(1);
+        if (base instanceof COSArray)
+        {
+            // Another VE
+            return !isHiddenVisibilityExpression((COSArray) base);
+        }
+        else if (base instanceof COSDictionary)
+        {
+            // Another OCG
+            PDPropertyList prop = PDPropertyList.create((COSDictionary) base);
+            return !isHiddenOCG(prop);
+        }
+        return false;
     }
 
     private LookupTable getInvLookupTable()

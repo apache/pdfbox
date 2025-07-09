@@ -24,7 +24,7 @@
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
     <version>4.0.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>pdfbox-examples</artifactId>
@@ -37,9 +37,27 @@
   </description>
   <inceptionYear>2002</inceptionYear>
 
+	<scm>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk/examples</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk/examples</developerConnection>
+		<url>https://svn.apache.org/viewvc/pdfbox/trunk/examples</url>
+	</scm>
+
   <properties>
-    <lucene.version>9.9.1</lucene.version>
+    <!-- can't update to 10, needs jdk21 -->
+    <lucene.version>9.12.0</lucene.version>
   </properties>
+
+  <!-- verapdf uses outdated version -->
+  <dependencyManagement>
+      <dependencies>
+          <dependency>
+              <groupId>com.fasterxml.jackson.core</groupId>
+              <artifactId>jackson-core</artifactId>
+              <version>2.19.1</version>
+          </dependency>
+      </dependencies>
+  </dependencyManagement>
 
   <dependencies>
       <dependency>
@@ -75,7 +93,7 @@
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
-      <version>1.10.14</version>
+      <version>1.10.15</version>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -98,23 +116,21 @@
     <dependency>
       <groupId>commons-net</groupId>
       <artifactId>commons-net</artifactId>
-      <version>3.11.0</version>
+      <version>3.11.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
-      <version>${log4j2.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>${log4j2.version}</version>
     </dependency>
     <dependency>
         <groupId>org.verapdf</groupId>
         <artifactId>validation-model</artifactId>
-        <version>1.26.1</version>
+        <version>1.28.1</version>
         <scope>test</scope>
     </dependency>
   </dependencies>

@@ -170,7 +170,7 @@ public abstract class PDAnnotation implements COSObjectable
     /**
      * Constructor.
      */
-    public PDAnnotation()
+    protected PDAnnotation()
     {
         dictionary = new COSDictionary();
         dictionary.setItem(COSName.TYPE, COSName.ANNOT);
@@ -181,7 +181,7 @@ public abstract class PDAnnotation implements COSObjectable
      * 
      * @param dict The annotations dictionary.
      */
-    public PDAnnotation(COSDictionary dict)
+    protected PDAnnotation(COSDictionary dict)
     {
         dictionary = dict;
         COSBase type = dict.getDictionaryObject(COSName.TYPE);
@@ -199,7 +199,8 @@ public abstract class PDAnnotation implements COSObjectable
      * {@inheritDoc}
      */
     @Override
-    public boolean equals (Object o) {
+    public boolean equals (Object o)
+    {
         if (o == this)
         {
             return true;

@@ -183,7 +183,7 @@ public class TSAClient
         }
         catch (IOException ex)
         {
-            LOG.error("Exception when writing to {}", this.url, ex);
+            LOG.error(() -> "Exception when writing to " + this.url, ex);
             throw ex;
         }
 
@@ -196,7 +196,7 @@ public class TSAClient
         }
         catch (IOException ex)
         {
-            LOG.error("Exception when reading from {}", this.url, ex);
+            LOG.error(() -> "Exception when reading from " + this.url, ex);
             throw ex;
         }
 

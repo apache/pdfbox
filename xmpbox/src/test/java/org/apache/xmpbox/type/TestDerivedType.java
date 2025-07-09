@@ -51,7 +51,7 @@ class TestDerivedType
     protected Constructor<? extends TextType> constructor = null;
 
     @BeforeEach
-    public void before() throws Exception
+    void before()
     {
         xmp = XMPMetadata.createXMPMetadata();
     }
@@ -75,7 +75,7 @@ class TestDerivedType
     }
 
     protected TextType instanciate(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName,
-            Object value) throws Exception
+            Object value) throws ReflectiveOperationException
     {
         Object[] initargs = { metadata, namespaceURI, prefix, propertyName, value };
         return constructor.newInstance(initargs);
@@ -83,7 +83,7 @@ class TestDerivedType
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void test1(Class<? extends TextType> clz, String type) throws Exception
+    void test1(Class<? extends TextType> clz, String type) throws ReflectiveOperationException
     {
         constructor = clz.getDeclaredConstructor(XMPMetadata.class, String.class, String.class, String.class, Object.class);
         TextType element = instanciate(xmp, null, PREFIX, NAME, VALUE);

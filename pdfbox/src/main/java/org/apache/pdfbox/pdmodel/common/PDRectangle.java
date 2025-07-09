@@ -147,6 +147,14 @@ public class PDRectangle implements COSObjectable
     public PDRectangle( COSArray array )
     {
         float[] values = Arrays.copyOf(array.toFloatArray(), 4);
+        // replace huge values, most likely those are invalid due to a malformed pdf
+        for (int i = 0; i < values.length; i++)
+        {
+            if (Math.abs(values[i]) > Integer.MAX_VALUE)
+            {
+                values[i] = values[i] > 0 ? Integer.MAX_VALUE : -Integer.MAX_VALUE;
+            }
+        }
         rectArray = new COSArray(List.of(
             // we have to start with the lower left corner
             new COSFloat( Math.min(values[0],values[2] )),

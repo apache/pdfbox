@@ -33,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -40,11 +41,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.apache.xmpbox.schema.XmpSchemaException;
 
 class TestValidatePermitedMetadata
 {
 
-    static Collection<Object[]> initializeParameters() throws Exception
+    static Collection<Object[]> initializeParameters() throws IOException
     {
         List<Object[]> params = new ArrayList<>();
         InputStream is =  TestValidatePermitedMetadata.class.getResourceAsStream("/permited_metadata.txt");
@@ -70,7 +72,8 @@ class TestValidatePermitedMetadata
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void checkExistence(String namespace, String preferred, String fieldname) throws Exception
+    void checkExistence(String namespace, String preferred, String fieldname)
+            throws XmpSchemaException, IllegalArgumentException, IllegalAccessException
     {
         // ensure schema exists
         XMPMetadata xmpmd = new XMPMetadata();

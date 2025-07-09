@@ -302,6 +302,7 @@ public class DomXmpParser
         // parse children elements as properties
         for (Element property : properties)
         {
+            nsFinder.push(property);
             String namespace = property.getNamespaceURI();
             PropertyType type = checkPropertyDefinition(xmp, DomHelper.getQName(property));
             // create the container
@@ -319,6 +320,7 @@ public class DomXmpParser
             ComplexPropertyContainer container = schema.getContainer();
             // create property
             createProperty(xmp, property, type, container);
+            nsFinder.pop();
         }
     }
 
@@ -606,6 +608,7 @@ public class DomXmpParser
         }
         // Instantiate abstract structured type with hint from first element
         Element first = elements.get(0);
+        nsFinder.push(first);
         PropertyType ctype = checkPropertyDefinition(xmp, DomHelper.getQName(first));
         if (ctype == null)
         {
@@ -615,8 +618,8 @@ public class DomXmpParser
         Types tt = ctype.type();
         AbstractStructuredType ast = instanciateStructured(tm, tt, descriptor.getLocalPart(), first.getNamespaceURI());
 
-        ast.setNamespace(descriptor.getNamespaceURI());
-        ast.setPrefix(descriptor.getPrefix());
+        ast.setNamespace(first.getNamespaceURI());
+        ast.setPrefix(first.getPrefix());
 
         PropertiesDescription pm;
         if (tt.isStructured())
@@ -689,6 +692,7 @@ public class DomXmpParser
             }
 
         }
+        nsFinder.pop();
         return ast;
     }
 
@@ -843,11 +847,11 @@ public class DomXmpParser
      */
     private void removeComments(Node root)
     {
-    	// will hold the nodes which are to be deleted
-    	List<Node> forDeletion = new ArrayList<>();
-    	
-    	NodeList nl = root.getChildNodes();
-    	
+        // will hold the nodes which are to be deleted
+        List<Node> forDeletion = new ArrayList<>();
+        
+        NodeList nl = root.getChildNodes();
+        
         if (nl.getLength()<=1) 
         {
             // There is only one node so we do not remove it
@@ -860,15 +864,15 @@ public class DomXmpParser
             if (node instanceof Comment)
             {
                 // comments to be deleted
-            	forDeletion.add(node);
+                forDeletion.add(node);
             }
             else if (node instanceof Text)
             {
-                if (node.getTextContent().trim().isEmpty())
+                if (node.getTextContent().isBlank())
                 {
-                	// TODO: verify why this is necessary
-                	// empty text nodes to be deleted
-                	forDeletion.add(node);
+                    // TODO: verify why this is necessary
+                    // empty text nodes to be deleted
+                    forDeletion.add(node);
                 }
             }
             else if (node instanceof Element)
@@ -947,6 +951,11 @@ public class DomXmpParser
                 if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(no.getNamespaceURI()))
                 {
                     map.put(no.getLocalName(), no.getValue());
+                }
+                else if (no.getNamespaceURI() != null && no.getPrefix() != null)
+                {
+                    // PDFBOX-5976
+                    map.put(no.getPrefix(), no.getNamespaceURI());
                 }
             }
             stack.push(map);

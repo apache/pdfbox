@@ -144,7 +144,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
             cmap = readCMap(toUnicode);
             if (cmap != null && !cmap.hasUnicodeMappings())
             {
-                LOG.warn("Invalid ToUnicode CMap in font {}", getName());
+                String name = getName();
+                LOG.warn("Invalid ToUnicode CMap in font {}", name);
                 String cmapName = cmap.getName() != null ? cmap.getName() : "";
                 String ordering = cmap.getOrdering() != null ? cmap.getOrdering() : "";
                 COSName encoding = dict.getCOSName(COSName.ENCODING);
@@ -165,7 +166,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         }
         catch (IOException ex)
         {
-            LOG.error("Could not read ToUnicode CMap in font {}", getName(), ex);
+            LOG.error(() -> "Could not read ToUnicode CMap in font " + getName(), ex);
         }
         return cmap;
     }
@@ -327,7 +328,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      */
     public final byte[] encode(String text) throws IOException
     {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream(Math.max(32, text.length()));
         int offset = 0;
         while (offset < text.length())
         {
@@ -335,7 +336,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
 
             // multi-byte encoding with 1 to 4 bytes
             byte[] bytes = encode(codePoint);
-            out.write(bytes);
+            out.writeBytes(bytes);
 
             offset += Character.charCount(codePoint);
         }
@@ -545,8 +546,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     }
 
     /**
-     * Determines the width of the space character.
-     * 
+     * Determines the width of the space character. This is very important for text extraction.
+     *
      * @return the width of the space character
      */
     public float getSpaceWidth()
@@ -565,7 +566,21 @@ public abstract class PDFont implements COSObjectable, PDFontLike
                 }
                 else
                 {
-                    fontWidthOfSpace = getWidth(32);
+                    try
+                    {
+                        // PDFBOX-5920: try with encoding, which gets the correct code
+                        fontWidthOfSpace = getStringWidth(" ");
+                    }
+                    catch (IllegalArgumentException | UnsupportedOperationException ex)
+                    {
+                        // Happens if space is not available in the font
+                        // or if encoding isn't implemented
+                        LOG.debug(ex.getMessage(), ex);
+                    }
+                    if (fontWidthOfSpace <= 0)
+                    {
+                        fontWidthOfSpace = getWidth(32);
+                    }
                 }
                 
                 // try to get it from the font itself
@@ -581,9 +596,10 @@ public abstract class PDFont implements COSObjectable, PDFontLike
             }
             catch (Exception e)
             {
-                LOG.error("Can't determine the width of the space character, assuming 250", e);
+                LOG.error("Can't determine the width of the space character for font {}, assuming 250", getName(),e);
                 fontWidthOfSpace = 250f;
             }
+            LOG.debug("Space width for font {} is {}", getName(), fontWidthOfSpace);
         }
         return fontWidthOfSpace;
     }

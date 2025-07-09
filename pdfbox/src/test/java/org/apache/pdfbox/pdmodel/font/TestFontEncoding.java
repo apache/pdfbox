@@ -48,7 +48,7 @@ class TestFontEncoding
      * Test the add method of a font encoding.
      */
     @Test
-    void testAdd() throws Exception
+    void testAdd()
     {
         // see PDFDBOX-3332
         int codeForSpace = WinAnsiEncoding.INSTANCE.getNameToCodeMap().get("space");
@@ -59,7 +59,7 @@ class TestFontEncoding
     }
 
     @Test
-    void testOverwrite() throws Exception
+    void testOverwrite()
     {
         // see PDFDBOX-3332
         COSDictionary dictEncodingDict = new COSDictionary();
@@ -83,27 +83,31 @@ class TestFontEncoding
     @Test
     void testPDFBox3884() throws IOException
     {
-        PDDocument doc = new PDDocument();
-        PDPage page = new PDPage();
-        doc.addPage(page);
-        PDPageContentStream cs = new PDPageContentStream(doc, page);
-        cs.setFont(new PDType1Font(FontName.HELVETICA), 20);
-        cs.beginText();
-        cs.newLineAtOffset(100, 700);
-        // first tilde is "asciitilde" (from the keyboard), 2nd tilde is "tilde"
-        // using ˜ would bring IllegalArgumentException prior to bugfix
-        cs.showText("~˜");
-        cs.endText();
-        cs.close();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        doc.save(baos);
-        doc.close();
+        ByteArrayOutputStream baos;
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            doc.addPage(page);
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+            {
+                cs.setFont(new PDType1Font(FontName.HELVETICA), 20);
+                cs.beginText();
+                cs.newLineAtOffset(100, 700);
+                // first tilde is "asciitilde" (from the keyboard), 2nd tilde is "tilde"
+                // using ˜ would bring IllegalArgumentException prior to bugfix
+                cs.showText("~˜");
+                cs.endText();
+            }
+            baos = new ByteArrayOutputStream();
+            doc.save(baos);
+        }
 
         // verify
-        doc = Loader.loadPDF(baos.toByteArray());
-        PDFTextStripper stripper = new PDFTextStripper();
-        String text = stripper.getText(doc);
-        assertEquals("~˜", text.trim());
-        doc.close();
+        try (PDDocument doc = Loader.loadPDF(baos.toByteArray()))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            String text = stripper.getText(doc);
+            assertEquals("~˜", text.trim());
+        }
     }
 }

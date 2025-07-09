@@ -80,8 +80,8 @@ public final class CreatePatternsPDF
                 
                 PDColor patternColor1 = new PDColor(patternName1, patternCS1);
                 
-                pcs.addRect(50, 500, 200, 200);
                 pcs.setNonStrokingColor(patternColor1);
+                pcs.addRect(50, 500, 200, 200);
                 pcs.fill();
                 
                 // Uncolored pattern - the color is passed later
@@ -111,8 +111,8 @@ public final class CreatePatternsPDF
                         patternName2,
                         patternCS2);
                 
-                pcs.addRect(300, 500, 100, 100);
                 pcs.setNonStrokingColor(patternColor2green);
+                pcs.addRect(300, 500, 100, 100);
                 pcs.fill();
                 
                 // same pattern again but with different color + different pattern start position
@@ -120,11 +120,11 @@ public final class CreatePatternsPDF
                         new float[]{0,0,1},
                         patternName2,
                         patternCS2);
-                pcs.addRect(455, 505, 100, 100);
                 pcs.setNonStrokingColor(patternColor2blue);
+                pcs.addRect(455, 505, 100, 100);
                 pcs.fill();
             }
-            doc.save("patterns.pdf");
+            doc.save("c:/users/tilman/downloads/patterns.pdf");
         }
     }
 }

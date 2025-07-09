@@ -95,7 +95,7 @@ class RandomAccessReadBufferTest
         assertEquals(-1, randomAccessSource.read(new byte[1], 0, 1));
 
         randomAccessSource.close();
-        Assertions.assertThrows(IOException.class, () -> randomAccessSource.read(),
+        Assertions.assertThrows(IOException.class, randomAccessSource::read,
                 "checkClosed should have thrown an IOException");
     }
 

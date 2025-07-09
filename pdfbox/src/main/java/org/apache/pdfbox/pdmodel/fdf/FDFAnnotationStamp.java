@@ -100,7 +100,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
         catch (XPathExpressionException e)
         {
             // should not happen
-            LOG.error("Error while evaluating XPath expression for appearance: {}", e.getMessage(), e);
+            LOG.error(() -> "Error while evaluating XPath expression for appearance: " + e.getMessage(), e);
             return;
         }
         byte[] decodedAppearanceXML;
@@ -115,7 +115,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
         }
         if (base64EncodedAppearance != null && !base64EncodedAppearance.isEmpty())
         {
-            LOG.debug("Decoded XML: {}", new String(decodedAppearanceXML));
+            LOG.debug("Decoded XML: {}", () -> new String(decodedAppearanceXML));
 
             Document stampAppearance = XMLUtil
                     .parse(new ByteArrayInputStream(decodedAppearanceXML));
@@ -148,14 +148,14 @@ public class FDFAnnotationStamp extends FDFAnnotation
         NodeList nodeList = appearanceXML.getChildNodes();
         String parentAttrKey = appearanceXML.getAttribute("KEY");
         LOG.debug("Appearance Root - tag: {}, name: {}, key: {}, children: {}",
-                appearanceXML.getTagName(), appearanceXML.getNodeName(), parentAttrKey,
-                nodeList.getLength());
+                appearanceXML::getTagName, appearanceXML::getNodeName, () -> parentAttrKey,
+                nodeList::getLength);
 
         // Currently only handles Appearance dictionary (AP key on the root)
         if (!"AP".equals(appearanceXML.getAttribute("KEY")))
         {
-            LOG.warn("{} => Not handling element: {} with key: {}", parentAttrKey,
-                    appearanceXML.getTagName(), appearanceXML.getAttribute("KEY"));
+            LOG.warn("{} => Not handling element: {} with key: {}", () -> parentAttrKey,
+                    appearanceXML::getTagName, () -> appearanceXML.getAttribute("KEY"));
             return dictionary;
         }
         for (int i = 0; i < nodeList.getLength(); i++)
@@ -164,16 +164,17 @@ public class FDFAnnotationStamp extends FDFAnnotation
             if (node instanceof Element)
             {
                 Element child = (Element) node;
-                if ("STREAM".equalsIgnoreCase(child.getTagName()))
+                String childTagName = child.getTagName();
+                if ("STREAM".equalsIgnoreCase(childTagName))
                 {
                     LOG.debug("{} => Process {} item in the dictionary after processing the {}",
-                            parentAttrKey, child.getAttribute("KEY"), child.getTagName());
+                            () -> parentAttrKey, () -> child.getAttribute("KEY"), () -> childTagName);
                     dictionary.setItem(child.getAttribute("KEY"), parseStreamElement(child));
-                    LOG.debug("{} => Set {}", parentAttrKey, child.getAttribute("KEY"));
+                    LOG.debug("{} => Set {}", () -> parentAttrKey, () -> child.getAttribute("KEY"));
                 }
                 else
                 {
-                    LOG.warn("{} => Not handling element: {}", parentAttrKey, child.getTagName());
+                    LOG.warn("{} => Not handling element: {}", parentAttrKey, childTagName);
                 }
             }
         }
@@ -196,77 +197,75 @@ public class FDFAnnotationStamp extends FDFAnnotation
                 Element child = (Element) node;
                 String childAttrKey = child.getAttribute("KEY");
                 String childAttrVal = child.getAttribute("VAL");
-                LOG.debug("{} => reading child: {} with key: {}", () -> parentAttrKey, () -> child.getTagName(),
-                        () -> childAttrKey);
-                if ("INT".equalsIgnoreCase(child.getTagName()))
+                String childTagName = child.getTagName();
+                LOG.debug("{} => reading child: {} with key: {}", parentAttrKey, childTagName, childAttrKey);
+                if (childTagName == null)
                 {
-                    if (!"Length".equals(childAttrKey))
-                    {
-                        stream.setInt(COSName.getPDFName(childAttrKey), Integer.parseInt(childAttrVal));
+                    LOG.warn("{} => Not handling child element: null", parentAttrKey);
+                    continue;
+                }
+                switch (childTagName.toUpperCase())
+                {
+                    case "INT":
+                        if (!"Length".equals(childAttrKey))
+                        {
+                            stream.setInt(COSName.getPDFName(childAttrKey), Integer.parseInt(childAttrVal));
+                            LOG.debug("{} => Set {}: {}", parentAttrKey, childAttrKey, childAttrVal);
+                        }
+                        break;
+                    case "FIXED":
+                        stream.setFloat(COSName.getPDFName(childAttrKey), Float.parseFloat(childAttrVal));
                         LOG.debug("{} => Set {}: {}", parentAttrKey, childAttrKey, childAttrVal);
-                    }
-                }
-                else if ("FIXED".equalsIgnoreCase(child.getTagName()))
-                {
-                    stream.setFloat(COSName.getPDFName(childAttrKey), Float.parseFloat(childAttrVal));
-                    LOG.debug("{} => Set {}: {}", parentAttrKey, childAttrKey, childAttrVal);
-                }
-                else if ("NAME".equalsIgnoreCase(child.getTagName()))
-                {
-                    stream.setName(COSName.getPDFName(childAttrKey), childAttrVal);
-                    LOG.debug("{} => Set {}: {}", parentAttrKey, childAttrKey, childAttrVal);
-                }
-                else if ("BOOL".equalsIgnoreCase(child.getTagName()))
-                {
-                    stream.setBoolean(COSName.getPDFName(childAttrKey), Boolean.parseBoolean(childAttrVal));
-                    LOG.debug("{} => Set {}", parentAttrKey, childAttrVal);
-                }
-                else if ("ARRAY".equalsIgnoreCase(child.getTagName()))
-                {
-                    stream.setItem(COSName.getPDFName(childAttrKey), parseArrayElement(child));
-                    LOG.debug("{} => Set {}", parentAttrKey, childAttrKey);
-                }
-                else if ("DICT".equalsIgnoreCase(child.getTagName()))
-                {
-                    stream.setItem(COSName.getPDFName(childAttrKey), parseDictElement(child));
-                    LOG.debug("{} => Set {}", parentAttrKey, childAttrKey);
-                }
-                else if ("STREAM".equalsIgnoreCase(child.getTagName()))
-                {
-                    stream.setItem(COSName.getPDFName(childAttrKey), parseStreamElement(child));
-                    LOG.debug("{} => Set {}", parentAttrKey, childAttrKey);
-                }
-                else if ("DATA".equalsIgnoreCase(child.getTagName()))
-                {
-                    LOG.debug("{} => Handling DATA with encoding: {}", parentAttrKey,
-                            child.getAttribute("ENCODING"));
-                    if ("HEX".equals(child.getAttribute("ENCODING")))
-                    {
-                        try (OutputStream os = stream.createRawOutputStream())
+                        break;
+                    case "NAME":
+                        stream.setName(COSName.getPDFName(childAttrKey), childAttrVal);
+                        LOG.debug("{} => Set {}: {}", parentAttrKey, childAttrKey, childAttrVal);
+                        break;
+                    case "BOOL":
+                        stream.setBoolean(COSName.getPDFName(childAttrKey), Boolean.parseBoolean(childAttrVal));
+                        LOG.debug("{} => Set {}", parentAttrKey, childAttrVal);
+                        break;
+                    case "ARRAY":
+                        stream.setItem(COSName.getPDFName(childAttrKey), parseArrayElement(child));
+                        LOG.debug("{} => Set {}", parentAttrKey, childAttrKey);
+                        break;
+                    case "DICT":
+                        stream.setItem(COSName.getPDFName(childAttrKey), parseDictElement(child));
+                        LOG.debug("{} => Set {}", parentAttrKey, childAttrKey);
+                        break;
+                    case "STREAM":
+                        stream.setItem(COSName.getPDFName(childAttrKey), parseStreamElement(child));
+                        LOG.debug("{} => Set {}", parentAttrKey, childAttrKey);
+                        break;
+                    case "DATA":
+                        String childEncodingAttr = child.getAttribute("ENCODING");
+                        LOG.debug("{} => Handling DATA with encoding: {}", parentAttrKey, childEncodingAttr);
+                        if ("HEX".equals(childEncodingAttr))
                         {
-                            os.write(Hex.decodeHex(child.getTextContent()));
-                            LOG.debug("{} => Data was streamed", parentAttrKey);
+                            try (OutputStream os = stream.createRawOutputStream())
+                            {
+                                os.write(Hex.decodeHex(child.getTextContent()));
+                                LOG.debug("{} => Data was streamed", parentAttrKey);
+                            }
                         }
-                    }
-                    else if ("ASCII".equals(child.getAttribute("ENCODING")))
-                    {
-                        try (OutputStream os = stream.createOutputStream())
+                        else if ("ASCII".equals(childEncodingAttr))
                         {
-                            // not sure about charset
-                            os.write(child.getTextContent().getBytes());
-                            LOG.debug("{} => Data was streamed", parentAttrKey);
+                            try (OutputStream os = stream.createOutputStream())
+                            {
+                                // not sure about charset
+                                os.write(child.getTextContent().getBytes());
+                                LOG.debug("{} => Data was streamed", parentAttrKey);
+                            }
                         }
-                    }
-                    else
-                    {
-                        LOG.warn("{} => Not handling element DATA encoding: {}", parentAttrKey,
-                                child.getAttribute("ENCODING"));
-                    }
-                }
-                else
-                {
-                    LOG.warn("{} => Not handling child element: {}", parentAttrKey,
-                            child.getTagName());
+                        else
+                        {
+                            LOG.warn("{} => Not handling element DATA encoding: {}", parentAttrKey,
+                                    childEncodingAttr);
+                        }
+                        break;
+                    default:
+                        LOG.warn("{} => Not handling child element: {}", parentAttrKey, childTagName);
+                        break;
                 }
             }
         }
@@ -276,7 +275,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
 
     private COSArray parseArrayElement(Element arrayEl) throws IOException
     {
-        LOG.debug("Parse {} Array", arrayEl.getAttribute("KEY"));
+        LOG.debug("Parse {} Array", () -> arrayEl.getAttribute("KEY"));
         COSArray array = new COSArray();
 
         NodeList nodeList = arrayEl.getChildNodes();
@@ -301,42 +300,44 @@ public class FDFAnnotationStamp extends FDFAnnotation
                 Element child = (Element) node;
                 String childAttrKey = child.getAttribute("KEY");
                 String childAttrVal = child.getAttribute("VAL");
-                LOG.debug("{} => reading child: {} with key: {}", parentAttrKey, child.getTagName(),
+                String childTagName = child.getTagName();
+                LOG.debug("{} => reading child: {} with key: {}", parentAttrKey, childTagName,
                         childAttrKey);
-                if ("INT".equalsIgnoreCase(child.getTagName()) || "FIXED".equalsIgnoreCase(child.getTagName()))
+                if (null == childTagName)
                 {
-                    LOG.debug("{} value({}): {}", parentAttrKey, i, childAttrVal);
-                    array.add(COSNumber.get(childAttrVal));
+                    LOG.warn("{} => Not handling child element: null", parentAttrKey);
+                    continue;
                 }
-                else if ("NAME".equalsIgnoreCase(child.getTagName()))
+                switch (childTagName.toUpperCase())
                 {
-                    LOG.debug("{} value({}): {}", parentAttrKey, i, childAttrVal);
-                    array.add(COSName.getPDFName(childAttrVal));
-                }
-                else if ("BOOL".equalsIgnoreCase(child.getTagName()))
-                {
-                    LOG.debug("{} value({}): {}", parentAttrKey, i, childAttrVal);
-                    array.add(COSBoolean.getBoolean(Boolean.parseBoolean(childAttrVal)));
-                }
-                else if ("DICT".equalsIgnoreCase(child.getTagName()))
-                {
-                    LOG.debug("{} value({}): {}", parentAttrKey, i, childAttrVal);
-                    array.add(parseDictElement(child));
-                }
-                else if ("STREAM".equalsIgnoreCase(child.getTagName()))
-                {
-                    LOG.debug("{} value({}): {}", parentAttrKey, i, childAttrVal);
-                    array.add(parseStreamElement(child));
-                }
-                else if ("ARRAY".equalsIgnoreCase(child.getTagName()))
-                {
-                    LOG.debug("{} value({}): {}", parentAttrKey, i, childAttrVal);
-                    array.add(parseArrayElement(child));
-                }
-                else
-                {
-                    LOG.warn("{} => Not handling child element: {}", parentAttrKey,
-                            child.getTagName());
+                    case "INT":
+                    case "FIXED":
+                        LOG.debug("{} value({}): {}", parentAttrKey, i, childAttrVal);
+                        array.add(COSNumber.get(childAttrVal));
+                        break;
+                    case "NAME":
+                        LOG.debug("{} value({}): {}", parentAttrKey, i, childAttrVal);
+                        array.add(COSName.getPDFName(childAttrVal));
+                        break;
+                    case "BOOL":
+                        LOG.debug("{} value({}): {}", parentAttrKey, i, childAttrVal);
+                        array.add(COSBoolean.getBoolean(Boolean.parseBoolean(childAttrVal)));
+                        break;
+                    case "DICT":
+                        LOG.debug("{} value({}): {}", parentAttrKey, i, childAttrVal);
+                        array.add(parseDictElement(child));
+                        break;
+                    case "STREAM":
+                        LOG.debug("{} value({}): {}", parentAttrKey, i, childAttrVal);
+                        array.add(parseStreamElement(child));
+                        break;
+                    case "ARRAY":
+                        LOG.debug("{} value({}): {}", parentAttrKey, i, childAttrVal);
+                        array.add(parseArrayElement(child));
+                        break;
+                    default:
+                        LOG.warn("{} => Not handling child element: {}", parentAttrKey, childTagName);
+                        break;
                 }
             }
         }
@@ -360,51 +361,51 @@ public class FDFAnnotationStamp extends FDFAnnotation
                 Element child = (Element) node;
                 String childAttrKey = child.getAttribute("KEY");
                 String childAttrVal = child.getAttribute("VAL");
+                String childTagName = child.getTagName();
 
-                if ("DICT".equals(child.getTagName()))
+                if (childTagName == null)
                 {
-                    LOG.debug("{} => Handling DICT element with key: {}", parentAttrKey,
-                            childAttrKey);
-                    dict.setItem(COSName.getPDFName(childAttrKey), parseDictElement(child));
-                    LOG.debug("{} => Set {}", parentAttrKey, childAttrKey);
+                    LOG.warn("{} => NOT handling child element: null", parentAttrKey);
+                    continue;
                 }
-                else if ("STREAM".equals(child.getTagName()))
+                switch (childTagName)
                 {
-                    LOG.debug("{} => Handling STREAM element with key: {}", parentAttrKey,
-                            childAttrKey);
-                    dict.setItem(COSName.getPDFName(childAttrKey), parseStreamElement(child));
-                }
-                else if ("NAME".equals(child.getTagName()))
-                {
-                    LOG.debug("{} => Handling NAME element with key: {}", parentAttrKey,
-                            childAttrKey);
-                    dict.setName(COSName.getPDFName(childAttrKey), childAttrVal);
-                    LOG.debug("{} => Set {}: {}", parentAttrKey, childAttrKey, childAttrVal);
-                }
-                else if ("INT".equalsIgnoreCase(child.getTagName()))
-                {
-                    dict.setInt(COSName.getPDFName(childAttrKey), Integer.parseInt(childAttrVal));
-                    LOG.debug("{} => Set {}: {}", parentAttrKey, childAttrKey, childAttrVal);
-                }
-                else if ("FIXED".equalsIgnoreCase(child.getTagName()))
-                {
-                    dict.setFloat(COSName.getPDFName(childAttrKey), Float.parseFloat(childAttrVal));
-                    LOG.debug("{} => Set {}: {}", parentAttrKey, childAttrKey, childAttrVal);
-                }
-                else if ("BOOL".equalsIgnoreCase(child.getTagName()))
-                {
-                    dict.setBoolean(COSName.getPDFName(childAttrKey), Boolean.parseBoolean(childAttrVal));
-                    LOG.debug("{} => Set {}", parentAttrKey, childAttrVal);
-                }
-                else if ("ARRAY".equalsIgnoreCase(child.getTagName()))
-                {
-                    dict.setItem(COSName.getPDFName(childAttrKey), parseArrayElement(child));
-                    LOG.debug("{} => Set {}", parentAttrKey, childAttrKey);
-                }
-                else
-                {
-                    LOG.warn("{} => NOT handling child element: {}", parentAttrKey,
-                            child.getTagName());
+                    case "DICT":
+                        LOG.debug("{} => Handling DICT element with key: {}", parentAttrKey,
+                                childAttrKey);
+                        dict.setItem(COSName.getPDFName(childAttrKey), parseDictElement(child));
+                        LOG.debug("{} => Set {}", parentAttrKey, childAttrKey);
+                        break;
+                    case "STREAM":
+                        LOG.debug("{} => Handling STREAM element with key: {}", parentAttrKey,
+                                childAttrKey);
+                        dict.setItem(COSName.getPDFName(childAttrKey), parseStreamElement(child));
+                        break;
+                    case "NAME":
+                        LOG.debug("{} => Handling NAME element with key: {}", parentAttrKey,
+                                childAttrKey);
+                        dict.setName(COSName.getPDFName(childAttrKey), childAttrVal);
+                        LOG.debug("{} => Set {}: {}", parentAttrKey, childAttrKey, childAttrVal);
+                        break;
+                    case "INT":
+                        dict.setInt(COSName.getPDFName(childAttrKey), Integer.parseInt(childAttrVal));
+                        LOG.debug("{} => Set {}: {}", parentAttrKey, childAttrKey, childAttrVal);
+                        break;
+                    case "FIXED":
+                        dict.setFloat(COSName.getPDFName(childAttrKey), Float.parseFloat(childAttrVal));
+                        LOG.debug("{} => Set {}: {}", parentAttrKey, childAttrKey, childAttrVal);
+                        break;
+                    case "BOOL":
+                        dict.setBoolean(COSName.getPDFName(childAttrKey), Boolean.parseBoolean(childAttrVal));
+                        LOG.debug("{} => Set {}", parentAttrKey, childAttrVal);
+                        break;
+                    case "ARRAY":
+                        dict.setItem(COSName.getPDFName(childAttrKey), parseArrayElement(child));
+                        LOG.debug("{} => Set {}", parentAttrKey, childAttrKey);
+                        break;
+                    default:
+                        LOG.warn("{} => NOT handling child element: {}", parentAttrKey, childTagName);
+                        break;
                 }
             }
         }

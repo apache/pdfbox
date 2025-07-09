@@ -167,8 +167,8 @@ public class PDNumberTreeNode implements COSObjectable
     }
 
     /**
-     * This will return a map of numbers.  The key will be a java.lang.Integer, the value will
-     * depend on where this class is being used.
+     * This will return a map of numbers on this level. The key will be a java.lang.Integer, the
+     * value will depend on where this class is being used.
      *
      * @return A map of COS objects.
      *
@@ -276,7 +276,7 @@ public class PDNumberTreeNode implements COSObjectable
     /**
      * Get the highest value for a key in the number map.
      *
-     * @return The highest value for a key in the map.
+     * @return The highest value for a key in the map or null if missing.
      */
     public Integer getUpperLimit()
     {
@@ -317,7 +317,7 @@ public class PDNumberTreeNode implements COSObjectable
     /**
      * Get the lowest value for a key in the number map.
      *
-     * @return The lowest value for a key in the map.
+     * @return The lowest value for a key in the map or null if missing.
      */
     public Integer getLowerLimit()
     {

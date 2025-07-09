@@ -32,7 +32,7 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility.AcroFormMergeMode;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -49,8 +49,8 @@ class MergeAcroFormsTest
     private static final File OUT_DIR = new File("target/test-output/merge/");
     private static final File TARGET_PDF_DIR = new File("target/pdfs");
 
-    @BeforeEach
-    public void setUp()
+    @BeforeAll
+    static void setUp()
     {
         OUT_DIR.mkdirs();
     }

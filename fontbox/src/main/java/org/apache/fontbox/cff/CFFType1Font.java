@@ -74,9 +74,7 @@ public class CFFType1Font extends CFFFont implements EncodedFont
     @Override
     public boolean hasGlyph(String name)
     {
-        int sid = getCharset().getSID(name);
-        int gid = getCharset().getGIDForSID(sid);
-        return gid != 0;
+        return nameToGID(name) != 0;
     }
 
     /**

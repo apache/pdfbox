@@ -121,13 +121,10 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
         {
             return -1;
         }
-        if (currentBufferPointer >= bufferBytes[CURRENT])
+        if (currentBufferPointer >= bufferBytes[CURRENT] && !fetch())
         {
-            if (!fetch())
-            {
-                isEOF = true;
-                return -1;
-            }
+            isEOF = true;
+            return -1;
         }
         position++;
         return buffers[CURRENT][currentBufferPointer++] & 0xFF;
@@ -195,10 +192,22 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
         {
             // move the current data to last to support rewind operations
             // right after refilling the current buffer
-            switchBuffers(CURRENT, LAST);
-            bufferBytes[CURRENT] = is.read(buffers[CURRENT]);
-            if (bufferBytes[CURRENT] < 0)
+            if (bufferBytes[LAST] == BUFFER_SIZE && bufferBytes[CURRENT] > 0 && bufferBytes[CURRENT] < BUFFER_SIZE)
             {
+                // Likely EOF, we're risking losing the previous (full) buffer and get an AIOOB
+                // Fill LAST with as much as possible data of LAST and CURRENT
+                System.arraycopy(buffers[LAST], bufferBytes[CURRENT], buffers[LAST], 0, BUFFER_SIZE - bufferBytes[CURRENT]);
+                System.arraycopy(buffers[CURRENT], 0, buffers[LAST], BUFFER_SIZE - bufferBytes[CURRENT], bufferBytes[CURRENT]);
+                bufferBytes[LAST] = BUFFER_SIZE;
+            }
+            else
+            {
+                switchBuffers(CURRENT, LAST);
+            }
+            bufferBytes[CURRENT] = is.read(buffers[CURRENT]);
+            if (bufferBytes[CURRENT] <= 0)
+            {
+                bufferBytes[CURRENT] = -1;
                 return false;
             }
             size += bufferBytes[CURRENT];
@@ -245,6 +254,7 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
             bufferBytes[LAST] = -1;
             currentBufferPointer = bufferBytes[CURRENT] - remainingBytesToRewind;
             position -= bytes;
+            isEOF = false;
         }
         else
         {

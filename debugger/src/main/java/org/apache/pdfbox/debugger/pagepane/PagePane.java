@@ -149,6 +149,10 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
     private void collectLinkLocation(PDAnnotationLink linkAnnotation) throws IOException
     {
+        if (linkAnnotation.getRectangle() == null)
+        {
+            return;
+        }
         PDAction action = linkAnnotation.getAction();
         if (action instanceof PDActionURI)
         {
@@ -209,7 +213,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             {
                 // check if the annotation widget is on this page
                 // (checking widget.getPage() also works, but it is sometimes null)
-                if (dictionarySet.contains(widget.getCOSObject()))
+                if (dictionarySet.contains(widget.getCOSObject()) && widget.getRectangle() != null)
                 {
                     rectMap.put(widget.getRectangle(), "Field name: " + field.getFullyQualifiedName());
                 }
@@ -540,8 +544,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             BufferedImage image = renderer.renderImage(pageIndex, scale, ImageTypeMenu.getImageType(), RenderDestinationMenu.getRenderDestination());
             long t1 = System.nanoTime();
 
-            long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
-            labelText = "Rendered in " + ms + " ms";
+            float s = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS) / 1000f;
+            labelText = "Rendered in " + s + " second" + (s > 1 ? "s" : "");
             statuslabel.setText(labelText);
 
             // debug overlays

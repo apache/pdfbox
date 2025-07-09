@@ -24,7 +24,7 @@ class EncodingTest
     @Test
     void testStandardEncoding()
     {
-    	StandardEncoding standardEncoding = StandardEncoding.INSTANCE;
+        StandardEncoding standardEncoding = StandardEncoding.INSTANCE;
         // check some randomly chosen mappings
         assertEquals(".notdef", standardEncoding.getName(0));
         assertEquals("space", standardEncoding.getName(32));
@@ -38,7 +38,7 @@ class EncodingTest
     @Test
     void testMacRomanEncoding()
     {
-    	MacRomanEncoding macRomanEncoding = MacRomanEncoding.INSTANCE;
+        MacRomanEncoding macRomanEncoding = MacRomanEncoding.INSTANCE;
         // check some randomly chosen mappings
         assertEquals(".notdef", macRomanEncoding.getName(0));
         assertEquals("space", macRomanEncoding.getName(32));

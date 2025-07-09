@@ -41,7 +41,7 @@ class PDChoiceTest
     private List<String> options;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         document = new PDDocument();
         acroForm = new PDAcroForm(document);

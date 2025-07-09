@@ -101,7 +101,7 @@ public class OpaquePDFRenderer extends PDFRenderer
     private static class OpaquePageDrawer extends PageDrawer
     {
 
-        public OpaquePageDrawer(PageDrawerParameters parameters) throws IOException
+        OpaquePageDrawer(PageDrawerParameters parameters) throws IOException
         {
             super(parameters);
             addOperator(new OpaqueDrawObject(this));
@@ -113,7 +113,7 @@ public class OpaquePDFRenderer extends PDFRenderer
     // but doesn't call showTransparencyGroup
     private static class OpaqueDrawObject extends GraphicsOperatorProcessor
     {
-        public OpaqueDrawObject(PDFGraphicsStreamEngine context)
+        OpaqueDrawObject(PDFGraphicsStreamEngine context)
         {
             super(context);
         }
@@ -177,7 +177,7 @@ public class OpaquePDFRenderer extends PDFRenderer
     {
         private static final Logger LOG = LogManager.getLogger(OpaqueSetGraphicsStateParameters.class);
 
-        public OpaqueSetGraphicsStateParameters(PDFStreamEngine context)
+        OpaqueSetGraphicsStateParameters(PDFStreamEngine context)
         {
             super(context);
         }

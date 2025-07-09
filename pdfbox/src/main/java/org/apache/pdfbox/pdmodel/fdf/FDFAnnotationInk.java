@@ -95,7 +95,7 @@ public class FDFAnnotationInk extends FDFAnnotation
                 if (node instanceof Element)
                 {
                     String gesture = node.getFirstChild().getNodeValue();
-                    String[] gestureValues = gesture.split(",|;");
+                    String[] gestureValues = gesture.split("[,;]");
                     float[] values = new float[gestureValues.length];
                     for (int j = 0; j < gestureValues.length; j++)
                     {

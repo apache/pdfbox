@@ -54,7 +54,7 @@ class AdobePDFTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testElementValue(String property, PropertyType type, String value) throws Exception
+    void testElementValue(String property, PropertyType type, String value) throws ReflectiveOperationException
     {
         XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetValue();
@@ -62,13 +62,13 @@ class AdobePDFTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void testElementProperty(String property, PropertyType type, String value) throws Exception
+    void testElementProperty(String property, PropertyType type, String value) throws ReflectiveOperationException
     {
         XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetProperty();
     }
 
-    static Stream<Arguments> initializeParameters() throws Exception
+    static Stream<Arguments> initializeParameters()
     {  
         return Stream.of(
             Arguments.of("Keywords", XMPSchemaTester.createPropertyType(Types.Text), "kw1 kw2 kw3"),
@@ -78,10 +78,10 @@ class AdobePDFTest
     }
 
     @Test
-    void testPDFAIdentification() throws Exception
+    void testPDFAIdentification()
     {
-        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
-        AdobePDFSchema schem = metadata.createAndAddAdobePDFSchema();
+        XMPMetadata metadata2 = XMPMetadata.createXMPMetadata();
+        AdobePDFSchema schem = metadata2.createAndAddAdobePDFSchema();
 
         String keywords = "keywords ihih";
         String pdfVersion = "1.4";
@@ -109,10 +109,10 @@ class AdobePDFTest
     }
 
     @Test
-    void testBadPDFAConformanceId() throws BadFieldValueException
+    void testBadPDFAConformanceId()
     {
-        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
-        PDFAIdentificationSchema pdfaid = metadata.createAndAddPDFAIdentificationSchema();
+        XMPMetadata metadata2 = XMPMetadata.createXMPMetadata();
+        PDFAIdentificationSchema pdfaid = metadata2.createAndAddPDFAIdentificationSchema();
         String conformance = "kiohiohiohiohio";
         assertThrows(BadFieldValueException.class, () -> {
             pdfaid.setConformance(conformance);

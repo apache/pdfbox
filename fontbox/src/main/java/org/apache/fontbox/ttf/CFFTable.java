@@ -20,6 +20,8 @@ package org.apache.fontbox.ttf;
 import java.io.IOException;
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFParser;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 
 /**
  * PostScript font program (compact font format).
@@ -54,6 +56,27 @@ public class CFFTable extends TTFTable
         cffFont = parser.parse(bytes, new CFFBytesource(ttf)).get(0);
 
         initialized = true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    void readHeaders(TrueTypeFont ttf, TTFDataStream data, FontHeaders outHeaders) throws IOException
+    {
+        try (RandomAccessRead subReader = data.createSubView(getLength()))
+        {
+            RandomAccessRead reader;
+            if (subReader != null)
+            {
+                reader = subReader;
+            }
+            else
+            {
+                assert false : "It is inefficient to read TTFDataStream into an array";
+                byte[] bytes = data.read((int)getLength());
+                reader = new RandomAccessReadBuffer(bytes);
+            }
+            new CFFParser().parseFirstSubFontROS(reader, outHeaders);
+        }
     }
 
     /**

@@ -213,8 +213,8 @@ class TestRadioButtons
 
             // compare the messages
             String expectedMessage = "value 'Invalid' is not a valid option for the field Checking/Savings, valid values are: [Checking, Savings] and Off";
-	        String actualMessage = exception.getMessage();
-	 
+            String actualMessage = exception.getMessage();
+     
             assertTrue(actualMessage.contains(expectedMessage));
 
             assertEquals("Off", field.getValue(), "no option shall be selected");
@@ -284,8 +284,8 @@ class TestRadioButtons
 
             // compare the messages
             String expectedMessage = "index '6' is not a valid index for the field Checking/Savings, valid indices are from 0 to 5";
-	        String actualMessage = exception.getMessage();
-	 
+            String actualMessage = exception.getMessage();
+     
             assertTrue(actualMessage.contains(expectedMessage));
 
             assertEquals("Off", field.getValue(), "no option shall be selected");
@@ -358,5 +358,44 @@ class TestRadioButtons
             assertEquals(4, field.getSelectedIndex(),
                     "the index shall be equals with the set value of 4");
         }
+    }
+
+    /**
+     * PDFBOX-5831 Numeric value for Opt entry
+     * 
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    @Test
+    void testPDFBox5831NumericValueForOpt() throws IOException, URISyntaxException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13069137/AU_Erklaerung_final.pdf";
+
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        {
+            PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
+            PDRadioButton field = (PDRadioButton) acroForm.getField("Formular1[0].Seite1[0].TF_P[0].Optionsfeldliste[0]");
+
+            field.setValue(0);
+            assertEquals("1", field.getValue());
+            assertEquals(COSName.getPDFName("0"), field.getCOSObject().getDictionaryObject(COSName.V));
+            assertEquals(0, field.getSelectedIndex());
+
+            field.setValue("1");
+            assertEquals("1", field.getValue());
+            assertEquals(COSName.getPDFName("0"), field.getCOSObject().getDictionaryObject(COSName.V));
+            assertEquals(0, field.getSelectedIndex());
+
+            field.setValue(1);
+            assertEquals("2", field.getValue());
+            assertEquals(COSName.getPDFName("1"), field.getCOSObject().getDictionaryObject(COSName.V));
+            assertEquals(1, field.getSelectedIndex());
+
+            field.setValue("2");
+            assertEquals("2", field.getValue());
+            assertEquals(COSName.getPDFName("1"), field.getCOSObject().getDictionaryObject(COSName.V));
+            assertEquals(1, field.getSelectedIndex());
+        }        
     }
 }

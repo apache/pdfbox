@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 public final class InstructionSequenceBuilder extends Parser.AbstractSyntaxHandler
 {
     private static final Predicate<String> MATCHES_INTEGER = Pattern.compile("[\\+\\-]?\\d+").asMatchPredicate();
-    private static final Predicate<String> MATCHES_REAL = Pattern.compile("[\\-]?\\d*\\.\\d*([Ee]\\-?\\d+)?").asMatchPredicate();
+    private static final Predicate<String> MATCHES_REAL = Pattern.compile("\\-?\\d*\\.\\d*([Ee]\\-?\\d+)?").asMatchPredicate();
 
     private final InstructionSequence mainSequence = new InstructionSequence();
     private final Stack<InstructionSequence> seqStack = new Stack<>();

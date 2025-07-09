@@ -41,7 +41,7 @@ public final class PrintDpiMenu extends MenuBase
         }
     }
 
-    private static final int[] DPIS = { 0, 100, 200, 300, 600, 1200 };
+    private static final int[] DPIS = { 0, 100, 200, 300, 600, 1200, -1 };
 
     private static PrintDpiMenu instance;
     private final JMenu menu;
@@ -51,11 +51,24 @@ public final class PrintDpiMenu extends MenuBase
      */
     private PrintDpiMenu()
     {
-        menu = new JMenu("Print dpi");
+        menu = new JMenu("Print rastering");
         ButtonGroup bg = new ButtonGroup();
         for (int dpi : DPIS)
         {
-            PrintDpiMenuItem printDpiMenuItem = new PrintDpiMenuItem(dpi == 0 ? "auto" : "" + dpi, dpi);
+            String text;
+            switch (dpi)
+            {
+                case 0:
+                    text = "off";
+                    break;
+                case -1:
+                    text = "printer dpi";
+                    break;
+                default:
+                    text = dpi + " dpi";
+                    break;
+            }
+            PrintDpiMenuItem printDpiMenuItem = new PrintDpiMenuItem(text, dpi);
             bg.add(printDpiMenuItem);
             menu.add(printDpiMenuItem);
         }

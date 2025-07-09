@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -40,7 +39,7 @@ class TestPDNameTreeNode
     private PDNameTreeNode<COSInteger> node24;
 
     @BeforeEach
-    protected void setUp() throws Exception
+    void setUp()
     {
         this.node5 = new PDIntegerNameTreeNode();
         Map<String, COSInteger> names = new TreeMap<>();
@@ -92,7 +91,7 @@ class TestPDNameTreeNode
     }
 
     @Test
-    void testUpperLimit() throws IOException
+    void testUpperLimit()
     {
         assertEquals("Astatine", this.node5.getUpperLimit());
         assertEquals("Astatine", this.node2.getUpperLimit());
@@ -104,7 +103,7 @@ class TestPDNameTreeNode
     }
 
     @Test
-    void testLowerLimit() throws IOException
+    void testLowerLimit()
     {
         assertEquals("Actinium", this.node5.getLowerLimit());
         assertEquals("Actinium", this.node2.getLowerLimit());

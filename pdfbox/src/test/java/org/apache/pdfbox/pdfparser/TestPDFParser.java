@@ -25,8 +25,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -348,4 +350,20 @@ class TestPDFParser
         }
     }
 
+    /**
+     * PDFBOX-5025: Test for "74191endobj"
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testPDFBox5025() throws IOException
+    {
+        try (PDDocument doc = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-5025.pdf")))
+        {
+            assertEquals(1, doc.getNumberOfPages());
+            PDFont font = doc.getPage(0).getResources().getFont(COSName.getPDFName("F1"));
+            int length1 = font.getFontDescriptor().getFontFile2().getCOSObject().getInt(COSName.LENGTH1);
+            assertEquals(74191, length1);
+        }   
+    }
 }

@@ -184,7 +184,7 @@ class TestListBox
             choice.setValue(exportValues);
         });
 
-	    assertEquals("The list box does not allow multiple selections.", exception.getMessage());      
+        assertEquals("The list box does not allow multiple selections.", exception.getMessage());      
             
         // ensure that the choice field does allow multiple selections
         choice.setMultiSelect(true);

@@ -347,7 +347,10 @@ public class COSWriterObjectStream
         {
             if (entry.getValue() != null)
             {
-                writeObject(output, entry.getKey(), false);
+                // PDFBOX-5927: topLevel true to avoid having a dictionary key as an indirect object
+                // if it already exists as such
+                writeObject(output, entry.getKey(), true);
+
                 writeObject(output, entry.getValue(), false);
             }
         }

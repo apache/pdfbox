@@ -31,10 +31,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
@@ -56,8 +58,10 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPopup;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 
 /**
@@ -78,9 +82,11 @@ public class Splitter
     private int startPage = Integer.MIN_VALUE;
     private int endPage = Integer.MAX_VALUE;
     private List<PDDocument> destinationDocuments;
-    private Map<COSDictionary, COSDictionary> pageDictMap;
+    private Map<COSDictionary, COSDictionary> pageDictMap; // map old page => new page for the current destination document
+    private List<Map<COSDictionary, COSDictionary>> pageDictMaps; // list of these maps for all destination documents
     private Map<COSDictionary, COSDictionary> structDictMap;
-    private Map<COSDictionary, COSDictionary> annotDictMap;
+    private List<Map<COSDictionary, COSDictionary>> annotDictMaps; // map old annotation => new annotation for the current destination document
+    private Map<COSDictionary, COSDictionary> annotDictMap; // list of these maps for all destination documents
     private Map<PDPageDestination,PDPage> destToFixMap;
     private Set<String> idSet;
     private Set<COSName> roleSet;
@@ -125,16 +131,19 @@ public class Splitter
         currentPageNumber = 0;
         destinationDocuments = new ArrayList<>();
         sourceDocument = document;
-        pageDictMap = new HashMap<>();
+        pageDictMaps = new ArrayList<>();
+        annotDictMaps = new ArrayList<>();
         destToFixMap = new HashMap<>();
-        annotDictMap = new HashMap<>();
         idSet = new HashSet<>();
         roleSet = new HashSet<>();
 
         processPages();
 
-        for (PDDocument destinationDocument : destinationDocuments)
+        for (int i = 0; i < destinationDocuments.size(); ++i)
         {
+            PDDocument destinationDocument = destinationDocuments.get(i);
+            pageDictMap = pageDictMaps.get(i);
+            annotDictMap = annotDictMaps.get(i);
             cloneStructureTree(destinationDocument);
             fixDestinations(destinationDocument);
         }
@@ -176,7 +185,8 @@ public class Splitter
     }
 
     /**
-     * Clone the structure tree from the source to the current destination document.
+     * Clone the structure tree from the source to the current destination document. This must be
+     * called after all pages are processed.
      *
      * @param destinationDocument
      * @throws IOException 
@@ -227,8 +237,11 @@ public class Splitter
         PDNumberTreeNode dstNumberTreeNode = new PDNumberTreeNode(PDParentTreeValue.class);
         dstNumberTreeNode.setNumbers(dstNumberTreeAsMap);
         dstStructureTreeRoot.setParentTree(dstNumberTreeNode);
-
-        dstStructureTreeRoot.setParentTreeNextKey(srcStructureTreeRoot.getParentTreeNextKey());
+        Integer upperLimit = dstNumberTreeNode.getUpperLimit();
+        if (upperLimit != null)
+        {
+            dstStructureTreeRoot.setParentTreeNextKey(upperLimit + 1);
+        }
         dstStructureTreeRoot.setClassMap(srcStructureTreeRoot.getClassMap());
         cloneRoleMap(srcStructureTreeRoot, dstStructureTreeRoot);
         cloneIDTree(srcStructureTreeRoot, dstStructureTreeRoot);
@@ -343,7 +356,7 @@ public class Splitter
     {
         PDPageTree dstPageTree;
 
-        public KCloner(PDPageTree dstPageTree)
+        KCloner(PDPageTree dstPageTree)
         {
             this.dstPageTree = dstPageTree;
         }
@@ -405,24 +418,40 @@ public class Splitter
             {
                 return dstDict;
             }
+            COSDictionary srcPageDict = srcDict.getCOSDictionary(COSName.PG);
             COSDictionary dstPageDict = null;
-            if (srcDict.containsKey(COSName.PG))
+            COSBase kid = srcDict.getDictionaryObject(COSName.K);
+            COSName type = srcDict.getCOSName(COSName.TYPE);
+            if (srcPageDict != null)
             {
-                COSDictionary srcPageDict = srcDict.getCOSDictionary(COSName.PG);
-                if (srcPageDict == null)
-                {
-                    return null;
-                }
                 dstPageDict = pageDictMap.get(srcPageDict);
-                if (dstPageDict == null)
+                if (dstPageDict != null)
                 {
-                    return null;
+                    PDPage dstPage = new PDPage(dstPageDict);
+                    if (dstPageTree.indexOf(dstPage) == -1)
+                    {
+                        return null;
+                    }
                 }
-                PDPage dstPage = new PDPage(dstPageDict);
-                if (dstPageTree.indexOf(dstPage) == -1)
+                else
                 {
-                    return null;
+                    // PDFBOX-6009: "wrong" /Pg entry
+                    // quit if MCIDs because these need a /Pg entry
+                    // or if MCR/OBJR dicts
+                    if (COSName.MCR.equals(type) || COSName.OBJR.equals(type) || hasMCIDs(kid))
+                    {
+                        return null;
+                    }
+                    // else keep this as an intermediate element for now
                 }
+            }
+
+            // special handling for MCR items ("marked-content reference dictionary")
+            if (COSName.MCR.equals(type) && dstPageDict == null && 
+                dstParent instanceof COSDictionary && ((COSDictionary) dstParent).getCOSDictionary(COSName.PG) == null)
+            {
+                // PAC: Pg entry of marked-content reference and of parent structure is null
+                return null;
             }
 
             // Create and fill clone
@@ -441,7 +470,6 @@ public class Splitter
 
             // special handling for OBJR items ("object reference dictionary")
             // see e.g. file 488300.pdf and Root/StructTreeRoot/K/K/[2]/K/[1]/K/[0]/Obj
-            COSName type = srcDict.getCOSName(COSName.TYPE);
             if (COSName.OBJR.equals(type))
             {
                 COSDictionary srcObj = srcDict.getCOSDictionary(COSName.OBJ);
@@ -451,17 +479,31 @@ public class Splitter
                     // replace annotation with clone
                     dstDict.setItem(COSName.OBJ, dstObj);
                 }
+                else if (srcObj != null) // 079177.pdf
+                {
+                    removePossibleOrphanAnnotation(srcObj, srcDict, currentPageDict, dstDict);
+                }
+                if (dstDict.size() == 1)
+                {
+                    return null;
+                }
+                if (dstPageDict == null &&
+                    dstParent instanceof COSDictionary && ((COSDictionary) dstParent).getCOSDictionary(COSName.PG) == null)
+                {
+                    // Pg entry of object reference dictionary and of parent structure is null
+                    return null;
+                }
             }
-            else
+
+            if (!COSName.OBJR.equals(type) && !COSName.MCR.equals(type))
             {
-                // /P not needed for OBJR items
+                // /P not needed for OBJR or MCR items
                 dstDict.setItem(COSName.P, dstParent);
             }
 
             dstDict.setItem(COSName.PG, dstPageDict);
-            COSBase kid = srcDict.getDictionaryObject(COSName.K);
             
-            // stack overflow here with 207658.pdf, too complex
+            // stack overflow here with 207658.pdf and 113484.pdf, too complex; works with -Xss50m
             COSBase cloneKid = createClone(kid, dstDict, dstPageDict != null ? dstPageDict : currentPageDict);
             if (cloneKid == null && kid != null)
             {
@@ -488,6 +530,55 @@ public class Splitter
                 roleSet.add(s);
             }
             return dstDict;
+        }
+
+        private boolean hasMCIDs(COSBase kid)
+        {
+            if (kid instanceof COSInteger)
+            {
+                return true;
+            }
+            if (kid instanceof COSArray)
+            {
+                COSArray ar = (COSArray) kid;
+                for (int i = 0; i < ar.size(); ++i)
+                {
+                    if (ar.getObject(i) instanceof COSInteger)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private void removePossibleOrphanAnnotation(COSDictionary srcObj, COSDictionary srcDict,
+                COSDictionary currentPageDict, COSDictionary dstDict)
+        {
+            // PDFBOX-5929: Check whether this is an "orphan" annotation that isn't in the page
+            COSBase objType = srcObj.getDictionaryObject(COSName.TYPE);
+            COSBase objSubtype = srcObj.getDictionaryObject(COSName.SUBTYPE);
+            if (COSName.ANNOT.equals(objType) || COSName.LINK.equals(objSubtype))
+            {
+                COSDictionary srcPageDict = srcDict.getCOSDictionary(COSName.PG);
+                if (srcPageDict == null)
+                {
+                    // /Pg entry is not always on this level
+                    srcPageDict = currentPageDict;
+                }
+                if (srcPageDict != null)
+                {
+                    COSArray annotationArray = srcPageDict.getCOSArray(COSName.ANNOTS);
+                    if (annotationArray == null || annotationArray.indexOfObject(srcObj) == -1)
+                    {
+                        // Ideally the entire OBJR entry should be removed.
+                        // Removing the OBJ entry is done to avoid potential page orphans
+                        // from the annotation destination.
+                        LOG.warn("An annotation OBJ that isn't in the page has been removed from the structure tree");
+                        dstDict.removeItem(COSName.OBJ);
+                    }
+                }
+            }
         }
     }
 
@@ -616,6 +707,10 @@ public class Splitter
         {
             currentDestinationDocument = createNewDocument();
             destinationDocuments.add(currentDestinationDocument);
+            pageDictMap = new HashMap<>();
+            pageDictMaps.add(pageDictMap);
+            annotDictMap = new HashMap<>();
+            annotDictMaps.add(annotDictMap);
         }
     }
 
@@ -678,14 +773,12 @@ public class Splitter
             }
             document.setDocumentInformation(new PDDocumentInformation(destDocumentInformationDictionary));
         }
-        document.getDocumentCatalog().setViewerPreferences(
-                getSourceDocument().getDocumentCatalog().getViewerPreferences());
-        document.getDocumentCatalog().setLanguage(
-                getSourceDocument().getDocumentCatalog().getLanguage());
-        document.getDocumentCatalog().setMarkInfo(
-                getSourceDocument().getDocumentCatalog().getMarkInfo());
-        document.getDocumentCatalog().setMetadata(
-                getSourceDocument().getDocumentCatalog().getMetadata());
+        PDDocumentCatalog destCatalog = document.getDocumentCatalog();
+        PDDocumentCatalog sourceCatalog = getSourceDocument().getDocumentCatalog();
+        destCatalog.setViewerPreferences(sourceCatalog.getViewerPreferences());
+        destCatalog.setLanguage(sourceCatalog.getLanguage());
+        destCatalog.setMarkInfo(sourceCatalog.getMarkInfo());
+        destCatalog.setMetadata(sourceCatalog.getMetadata());
         return document;
     }
 
@@ -772,6 +865,14 @@ public class Splitter
                         }
                     }
                 }
+                if (srcDestination instanceof PDNamedDestination)
+                {
+                    srcDestination = sourceDocument.getDocumentCatalog().
+                            findNamedDestinationPage((PDNamedDestination) srcDestination);
+                    // we do not use the named destination anymore because names get modified, e.g.
+                    // 0xAD becomes 0, see file 410609.pdf where the name no longer matches with the
+                    // entry in the new name tree; plus the original solution was 40 additional loc
+                }
                 if (srcDestination instanceof PDPageDestination)
                 {
                     // preserve links to pages within the split result:
@@ -806,6 +907,12 @@ public class Splitter
                         }
                     }
                 }
+            }
+            if (annotationClone instanceof PDAnnotationWidget &&
+                annotationClone.getCOSObject().containsKey(COSName.PARENT))
+            {
+                // remove non-terminal field /Parent reference, because this may lead to orphan pages
+                annotationClone.getCOSObject().removeItem(COSName.PARENT);
             }
             if (annotation.getPage() != null)
             {
@@ -850,24 +957,8 @@ public class Splitter
                     continue;
                 }
                 COSDictionary clonedMarkupDict = annotDictMap.get(annotationMarkup.getCOSObject());
-                if (clonedMarkupDict != null)
-                {
-                    annotation.getCOSObject().setItem(COSName.PARENT, clonedMarkupDict);
-                }
-                else
-                {
-                    // orphan markup (not in annotation list); clone it and fix references 
-                    clonedMarkupDict = new COSDictionary(annotationMarkup.getCOSObject());
-                    annotDictMap.put(annotationMarkup.getCOSObject(), clonedMarkupDict);
-                    PDAnnotationMarkup annotationMarkupClone =
-                            (PDAnnotationMarkup) PDAnnotation.createAnnotation(clonedMarkupDict);
-                    annotationMarkupClone.setPopup((PDAnnotationPopup) annotation);
-                    ((PDAnnotationPopup) annotation).setParent(annotationMarkupClone);
-                    if (annotationMarkupClone.getPage() != null)
-                    {
-                        annotationMarkupClone.setPage(imported);
-                    }
-                }
+                // clonedMarkupDict will be null if markup annotation is an orphan (not in annotation list)
+                annotation.getCOSObject().setItem(COSName.PARENT, clonedMarkupDict);
             }
         }
         imported.setAnnotations(clonedAnnotations);

@@ -49,7 +49,7 @@ class MultilineFieldsTest
     private PDAcroForm acroForm;
 
     @BeforeEach
-    public void setUp() throws IOException
+    void setUp() throws IOException
     {
         document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
         acroForm = document.getDocumentCatalog().getAcroForm();
@@ -162,15 +162,15 @@ class MultilineFieldsTest
 
     private float getFontSizeFromAppearanceStream(PDField field) throws IOException
     {
-    	PDAnnotationWidget widget = field.getWidgets().get(0);
+        PDAnnotationWidget widget = field.getWidgets().get(0);
         PDFStreamParser parser = new PDFStreamParser(widget.getNormalAppearanceStream());
-    	
-    	Object token = parser.parseNextToken();
-    	    	
-    	while (token != null)
-    	{
+        
+        Object token = parser.parseNextToken();
+                
+        while (token != null)
+        {
             if (token instanceof COSName && ((COSName) token).getName().equals("Helv"))
-    		{
+            {
                 token = parser.parseNextToken();
                 if (token instanceof COSNumber)
                 {
@@ -184,17 +184,17 @@ class MultilineFieldsTest
 
     private List<String> getTextLinesFromAppearanceStream(PDField field) throws IOException
     {
-    	PDAnnotationWidget widget = field.getWidgets().get(0);
+        PDAnnotationWidget widget = field.getWidgets().get(0);
         PDFStreamParser parser = new PDFStreamParser(widget.getNormalAppearanceStream());
-    	
+        
         Object token = parser.parseNextToken();
         
         List<String> lines = new ArrayList<>();
-    	    	
-    	while (token != null)
-    	{
+                
+        while (token != null)
+        {
             if (token instanceof COSString)
-    		{
+            {
                 lines.add(((COSString) token).getString());
             }
             token = parser.parseNextToken();
@@ -204,7 +204,7 @@ class MultilineFieldsTest
 
     
     @AfterEach
-    public void tearDown() throws IOException
+    void tearDown() throws IOException
     {
         document.close();
     }

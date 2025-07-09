@@ -21,6 +21,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -112,22 +113,26 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
         List<Vertex> vlist = new ArrayList<>();
         long maxSrcCoord = (long) Math.pow(2, getBitsPerCoordinate()) - 1;
         long maxSrcColor = (long) Math.pow(2, getBitsPerComponent()) - 1;
-        COSStream cosStream = (COSStream) dict;
 
-        try (ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.createInputStream()))
+        // MemoryCacheImageInputStream doesn't close the wrapped stream
+        try (InputStream imageStream = ((COSStream) dict).createInputStream())
         {
-            boolean eof = false;
-            while (!eof)
+            try (ImageInputStream mciis = new MemoryCacheImageInputStream(imageStream))
             {
-                Vertex p;
-                try
+                boolean eof = false;
+                while (!eof)
                 {
-                    p = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, matrix, xform);
-                    vlist.add(p);
-                }
-                catch (EOFException ex)
-                {
-                    eof = true;
+                    Vertex p;
+                    try
+                    {
+                        p = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange,
+                                matrix, xform);
+                        vlist.add(p);
+                    }
+                    catch (EOFException ex)
+                    {
+                        eof = true;
+                    }
                 }
             }
         }

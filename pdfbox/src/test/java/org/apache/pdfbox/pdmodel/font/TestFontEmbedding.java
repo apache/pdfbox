@@ -35,6 +35,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
@@ -656,7 +657,7 @@ class TestFontEmbedding
             }
             catch (IllegalStateException e)
             {
-                assertEquals("could not find the glyphId for the character: あ", e.getMessage());
+                assertEquals("could not find the glyphId for the character: あ, codePoint: 12354 (0x3042)", e.getMessage());
                 return;
             }
 
@@ -685,11 +686,62 @@ class TestFontEmbedding
             }
             catch (IllegalStateException e)
             {
-                assertEquals("could not find the glyphId for the character: 𩸽", e.getMessage());
+                assertEquals("could not find the glyphId for the character: 𩸽, codePoint: 171581 (0x29E3D)", e.getMessage());
                 return;
             }
 
             fail();
+        }
+    }
+
+    /**
+     * PDFBOX-5230: Zero-width characters should be invisible.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testEmbeddedFontWithZeroWidthChars() throws IOException
+    {
+        String text = "AAA\u200CBBB";
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            document.addPage(page);
+            InputStream input = PDFont.class.getResourceAsStream(
+                    "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
+            PDType0Font font = PDType0Font.load(document, input);
+            try (PDPageContentStream stream = new PDPageContentStream(document, page))
+            {
+                stream.beginText();
+                stream.setFont(font, 20);
+                stream.newLineAtOffset(50, 600);
+                stream.showText(text);
+                stream.endText();
+            }
+            document.save(baos);
+        }
+        try (PDDocument document = Loader.loadPDF(baos.toByteArray()))
+        {
+            // verify that the text still contains zero-width characters
+            PDFTextStripper stripper = new PDFTextStripper();
+            String extractedText = stripper.getText(document).trim();
+            assertEquals(text, extractedText);
+            assertEquals(7, extractedText.length());
+            assertEquals('\u200C', extractedText.charAt(3));
+
+            // verify that the zero-width characters are invisible
+            PDPage page = document.getPage(0);
+            PDResources resources = page.getResources();
+            Iterable< COSName > fontNames = resources.getFontNames();
+            COSName fontName = fontNames.iterator().next();
+            PDType0Font font = (PDType0Font) resources.getFont(fontName);
+            byte[] encoded = font.encode('\u200C');
+            int code = ((encoded[0] & 0xFF) << 8) | (encoded[1] & 0xFF);
+            assertEquals(0, font.getWidth(code));
+            assertEquals(0, font.getWidthFromFont(code));
+            assertTrue(font.getPath(code).getBounds2D().isEmpty());
+            assertFalse(font.isDamaged());
         }
     }
 }

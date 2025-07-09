@@ -30,8 +30,12 @@ import org.apache.fontbox.cff.CharStringCommand.Type2KeyWord;
 public class Type2CharStringParser
 {
     // 1-byte commands
-    private static final int CALLSUBR = 10;
-    private static final int CALLGSUBR = 29;
+    private static final int CALLSUBR = CharStringCommand.CALLSUBR.getValue();
+    private static final int CALLGSUBR = CharStringCommand.CALLGSUBR.getValue();
+
+    // not yet supported commands
+    private static final int HINTMASK = CharStringCommand.HINTMASK.getValue();
+    private static final int CNTRMASK = CharStringCommand.CNTRMASK.getValue();
 
     private final String fontName;
 
@@ -79,7 +83,18 @@ public class Type2CharStringParser
             {
                 processCallGSubr(globalSubrIndex, localSubrIndex, glyphData);
             }
-            else if ((b0 >= 0 && b0 <= 27) || (b0 >= 29 && b0 <= 31))
+            else if (b0 == HINTMASK || b0 == CNTRMASK)
+            {
+                glyphData.vstemCount += countNumbers(glyphData.sequence) / 2;
+                int maskLength = getMaskLength(glyphData.hstemCount, glyphData.vstemCount);
+                // drop the following bytes representing the mask as long as we don't support HINTMASK and CNTRMASK
+                for (int i = 0; i < maskLength; i++)
+                {
+                    input.readUnsignedByte();
+                }
+                glyphData.sequence.add(CharStringCommand.getInstance(b0));
+            }
+            else if ((b0 >= 0 && b0 <= 18) || (b0 >= 21 && b0 <= 27) || (b0 >= 29 && b0 <= 31))
             {
                 glyphData.sequence.add(readCommand(b0, input, glyphData));
             }
@@ -163,18 +178,6 @@ public class Type2CharStringParser
             return CharStringCommand.getInstance(b0);
         case 12:
             return CharStringCommand.getInstance(b0, input.readUnsignedByte());
-        case 19:
-        case 20:
-            glyphData.vstemCount += countNumbers(glyphData.sequence) / 2;
-            int[] value = new int[1 + getMaskLength(glyphData.hstemCount, glyphData.vstemCount)];
-            value[0] = b0;
-
-            for (int i = 1; i < value.length; i++)
-            {
-                value[i] = input.readUnsignedByte();
-            }
-
-            return CharStringCommand.getInstance(value);
         default:
             return CharStringCommand.getInstance(b0);
         }

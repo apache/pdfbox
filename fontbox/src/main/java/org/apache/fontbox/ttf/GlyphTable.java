@@ -80,7 +80,10 @@ public class GlyphTable extends TTFTable
         // we don't actually read the complete table here because it can contain tens of thousands of glyphs
         // cache the relevant part of the font data so that the data stream can be closed if it is no longer needed
         byte[] dataBytes = data.read((int) getLength());
-        this.data = new RandomAccessReadDataStream(new RandomAccessReadBuffer(dataBytes));
+        try (RandomAccessReadBuffer read = new RandomAccessReadBuffer(dataBytes))
+        {
+            this.data = new RandomAccessReadDataStream(read);
+        }
 
         // PDFBOX-5460: read hmtx table early to avoid deadlock if getGlyph() locks "data"
         // and then locks TrueTypeFont to read this table, while another thread
@@ -135,11 +138,12 @@ public class GlyphTable extends TTFTable
             // read a single glyph
             long[] offsets = loca.getOffsets();
 
-            if (offsets[gid] == offsets[gid + 1])
+            if (offsets[gid] == offsets[gid + 1] || offsets[gid] == data.getOriginalDataSize())
             {
                 // no outline
                 // PDFBOX-5135: can't return null, must return an empty glyph because
                 // sometimes this is used in a composite glyph.
+                // PDFBOX-5917: offset points to end of the stream
                 glyph = new GlyphData();
                 glyph.initEmptyData();
             }

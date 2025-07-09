@@ -64,6 +64,16 @@ public class HeaderTable extends TTFTable
         super();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    void readHeaders(TrueTypeFont ttf, TTFDataStream data, FontHeaders outHeaders) throws IOException
+    {
+        // 44 == 4 + 4 + 4 + 4 + 2 + 2 + 2*8 + 4*2, see read()
+        data.seek(data.getCurrentPosition() + 44);
+        macStyle = data.readUnsignedShort();
+        outHeaders.setHeaderMacStyle(macStyle);
+    }
+
     /**
      * This will read the required data from the stream.
      *

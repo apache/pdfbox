@@ -54,10 +54,10 @@ class TestPDFunctionType4
 
     /**
      * Checks the {@link PDFunctionType4}.
-     * @throws Exception if an error occurs
+     * @throws IOException if an error occurs
      */
     @Test
-    void testFunctionSimple() throws Exception
+    void testFunctionSimple() throws IOException
     {
         String functionText = "{ add }";
         //Simply adds the two arguments and returns the result
@@ -87,10 +87,10 @@ class TestPDFunctionType4
 
     /**
      * Checks the handling of the argument order for a {@link PDFunctionType4}.
-     * @throws Exception if an error occurs
+     * @throws IOException if an error occurs
      */
     @Test
-    void testFunctionArgumentOrder() throws Exception
+    void testFunctionArgumentOrder() throws IOException
     {
         String functionText = "{ pop }";
         // pops an argument (2nd) and returns the next argument (1st)

@@ -96,7 +96,7 @@ class RandomAccessReadViewTest
             assertEquals(-1, randomAccessReadView.read(new byte[1], 0, 1));
             randomAccessReadView.close();
         }
-        Assertions.assertThrows(IOException.class, () -> randomAccessReadView.read(),
+        Assertions.assertThrows(IOException.class, randomAccessReadView::read,
                 "checkClosed should have thrown an IOException");
     }
 

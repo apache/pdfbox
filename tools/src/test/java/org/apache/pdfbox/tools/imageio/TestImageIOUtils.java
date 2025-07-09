@@ -30,7 +30,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -293,10 +292,10 @@ class TestImageIOUtils
     /**
      * Test to validate image rendering of file set.
      *
-     * @throws Exception when there is an exception
+     * @throws IOException when there is an exception
      */
     @Test
-    void testRenderImage() throws Exception
+    void testRenderImage() throws IOException
     {
         String inDir = "src/test/resources/input/ImageIOUtil";
         String outDir = "target/test-output/ImageIOUtil/";
@@ -372,7 +371,7 @@ class TestImageIOUtils
      * @throws IOException if something goes wrong
      */
     private void checkBmpResolution(String filename, int expectedResolution)
-            throws FileNotFoundException, IOException
+            throws IOException
     {
         // BMP format explained here:
         // http://www.javaworld.com/article/2077561/learn-java/java-tip-60--saving-bitmap-files-in-java.html

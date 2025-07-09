@@ -21,8 +21,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -516,6 +518,8 @@ public class CmapSubtable implements CmapLookup
             LOG.warn("subtable has no glyphs");
             return;
         }
+        Set<Integer> logged = new HashSet<>();
+        boolean maxLoggingReached = false;
         for (int i = 0; i <= maxSubHeaderIndex; ++i)
         {
             SubHeader sh = subHeaders[i];
@@ -547,8 +551,17 @@ public class CmapSubtable implements CmapLookup
                 
                 if (p >= numGlyphs)
                 {
-                    LOG.warn("glyphId {} for charcode {} ignored, numGlyphs is {}", p, charCode,
-                            numGlyphs);
+                    if (!maxLoggingReached && !logged.contains(p))
+                    {
+                        LOG.warn("glyphId {} for charcode {} ignored, numGlyphs is {}", p, charCode,
+                                numGlyphs);
+                        logged.add(p);
+                        if (logged.size() > 10)
+                        {
+                            LOG.warn("too many bad glyphIds, more won't be reported for this table");
+                            maxLoggingReached = true;
+                        }
+                    }
                     continue;
                 }
                 

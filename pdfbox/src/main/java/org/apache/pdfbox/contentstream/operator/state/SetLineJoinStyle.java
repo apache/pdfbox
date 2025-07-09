@@ -47,6 +47,10 @@ public class SetLineJoinStyle extends OperatorProcessor
         {
             throw new MissingOperandException(operator, arguments);
         }
+        if (!checkArrayTypesClass(arguments, COSNumber.class))
+        {
+            return;
+        }
         int lineJoinStyle = ((COSNumber)arguments.get( 0 )).intValue();
         getContext().getGraphicsState().setLineJoin(lineJoinStyle);
     }

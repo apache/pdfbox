@@ -104,7 +104,7 @@ public abstract class FDFAnnotation implements COSObjectable
     /**
      * Default constructor.
      */
-    public FDFAnnotation()
+    protected FDFAnnotation()
     {
         annot = new COSDictionary();
         annot.setItem(COSName.TYPE, COSName.ANNOT);
@@ -115,7 +115,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @param a The FDF annotation.
      */
-    public FDFAnnotation(COSDictionary a)
+    protected FDFAnnotation(COSDictionary a)
     {
         annot = a;
     }
@@ -127,7 +127,7 @@ public abstract class FDFAnnotation implements COSObjectable
      *
      * @throws IOException If there is an error extracting data from the element.
      */
-    public FDFAnnotation(Element element) throws IOException
+    protected FDFAnnotation(Element element) throws IOException
     {
         this();
 
@@ -967,16 +967,16 @@ public abstract class FDFAnnotation implements COSObjectable
             }
             else if (child instanceof CDATASection)
             {
-            	sb.append("<![CDATA[").append(((CDATASection) child).getData()).append("]]>");
+                sb.append("<![CDATA[").append(((CDATASection) child).getData()).append("]]>");
             }
             else if (child instanceof Text)
             {
-            	String cdata = ((Text) child).getData();
-            	if (cdata!=null)
-            	{
-            		cdata = cdata.replace("&", "&amp;").replace("<", "&lt;");
-            	}
-            	sb.append(cdata);
+                String cdata = ((Text) child).getData();
+                if (cdata!=null)
+                {
+                    cdata = cdata.replace("&", "&amp;").replace("<", "&lt;");
+                }
+                sb.append(cdata);
             }
         }
         if (root)
@@ -992,7 +992,7 @@ public abstract class FDFAnnotation implements COSObjectable
             String attributeNodeValue = attribute.getNodeValue();
             if (attributeNodeValue!=null)
             {
-            	attributeNodeValue = attributeNodeValue.replace("\"", "&quot;");
+                attributeNodeValue = attributeNodeValue.replace("\"", "&quot;");
             }
             builder.append(String.format(" %s=\"%s\"", attribute.getNodeName(),
                     attributeNodeValue));

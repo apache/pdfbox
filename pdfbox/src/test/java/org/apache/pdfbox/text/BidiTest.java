@@ -59,7 +59,7 @@ class BidiTest
     private PDFTextStripper stripper;
 
     @BeforeEach
-    public void setUp() throws IOException
+    void setUp() throws IOException
     {
         Files.createDirectories(OUT_DIR.toPath());
         document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
@@ -82,7 +82,7 @@ class BidiTest
     }
 
     @AfterEach
-    public void tearDown() throws IOException
+    void tearDown() throws IOException
     {
         document.close();
     }
@@ -94,7 +94,7 @@ class BidiTest
      * @param outDir The directory to store the output in
      * @param bLogResult Whether to log the extracted text
      * @param bSort Whether or not the extracted text is sorted
-     * @throws Exception when there is an exception
+     * @throws IOException when there is an exception
      */
     private void doTestFile(File inFile, File outDir, boolean bLogResult, boolean bSort)
     throws IOException
@@ -153,12 +153,12 @@ class BidiTest
             while (true)
             {
                 String expectedLine = expectedReader.readLine();
-                while( expectedLine != null && expectedLine.trim().length() == 0 )
+                while (expectedLine != null && expectedLine.isBlank())
                 {
                     expectedLine = expectedReader.readLine();
                 }
                 String actualLine = actualReader.readLine();
-                while( actualLine != null && actualLine.trim().length() == 0 )
+                while (actualLine != null && actualLine.isBlank())
                 {
                     actualLine = actualReader.readLine();
                 }
@@ -238,8 +238,8 @@ class BidiTest
         }
         else
         {
-            equals = (expected == null && actual != null && actual.trim().isEmpty())
-                    || (actual == null && expected != null && expected.trim().isEmpty());
+            equals = (expected == null && actual != null && actual.isBlank())
+                    || (actual == null && expected != null && expected.isBlank());
         }
         return equals;
     }

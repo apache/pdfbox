@@ -70,7 +70,7 @@ public final class PDFontFactory
         private final COSName type;
         private final COSName subtype;
 
-        public FontType(COSName type, String subtypeString)
+        FontType(COSName type, String subtypeString)
         {
             this.type = type;
             if (cidType0Types.contains(subtypeString))
@@ -87,13 +87,13 @@ public final class PDFontFactory
             }
         }
 
-        public FontType(COSName type, COSName subtype)
+        FontType(COSName type, COSName subtype)
         {
             this.type = type;
             this.subtype = subtype;
         }
 
-        public FontType(COSName type)
+        FontType(COSName type)
         {
             this(type, (COSName) null);
         }
@@ -282,7 +282,7 @@ public final class PDFontFactory
     private static boolean isPfbFile(byte[] header)
     {
         // all PFB fonts start with 0x80 followed by either 0x01 or 0x02
-        return header[0] == 0x80 && (header[1] == 0x01 || header[1] == 0x02);
+        return header[0] == (byte) 0x80 && (header[1] == 0x01 || header[1] == 0x02);
     }
 
     private static boolean isCFFFile(byte[] header)

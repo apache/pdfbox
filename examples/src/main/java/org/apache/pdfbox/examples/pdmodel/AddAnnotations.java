@@ -26,6 +26,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
@@ -258,7 +259,8 @@ public final class AddAnnotations
             freeTextAnnotation.setRectangle(position);
             freeTextAnnotation.setTitlePopup("Sophia Lorem");
             freeTextAnnotation.setSubject("Lorem ipsum");
-            freeTextAnnotation.setContents("Lorem ipsum dolor sit amet, consetetur sadipscing elitr,"
+            freeTextAnnotation.setContents("uppercase Δ, lowercase δ\n"
+                    + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr,"
                     + " sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam "
                     + "erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea "
                     + "rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum "
@@ -267,8 +269,8 @@ public final class AddAnnotations
                     + "erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea "
                     + "rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum "
                     + "dolor sit amet.");
-            // Text and border in blue RGB color, "Helv" font, 20 point
-            freeTextAnnotation.setDefaultAppearance("0 0 1 rg /Helv 20 Tf");
+            // Text and border in blue RGB color, "Liberation Sans" font, 20 point
+            freeTextAnnotation.setDefaultAppearance("0 0 1 rg /LibSans 20 Tf");
             // Quadding does not have any effect?!
             freeTextAnnotation.setQ(PDVariableText.QUADDING_RIGHT);
             freeTextAnnotation.setIntent(PDAnnotationFreeText.IT_FREE_TEXT_CALLOUT);
@@ -309,6 +311,12 @@ public final class AddAnnotations
             }
             dr.put(COSName.HELV, new PDType1Font(FontName.HELVETICA));
             // If you want to use a specific font, add it here but make sure it is not subset
+
+            // add the "Liberation Sans" font to the default resources so we can use greek
+            PDType0Font libSansFont = PDType0Font.load(document, 
+                    AddAnnotations.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"), 
+                    false);
+            dr.put(COSName.getPDFName("LibSans"), libSansFont);
 
             // Create the appearance streams.
             // Adobe Reader will always display annotations without appearance streams nicely,

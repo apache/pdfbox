@@ -23,7 +23,6 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.pdfbox.util.Matrix;
 
@@ -36,8 +35,12 @@ import org.apache.pdfbox.util.Matrix;
  */
 abstract class TriangleBasedShadingContext extends ShadingContext
 {
-    // map of pixels within triangles to their RGB color
-    private Map<Point, Integer> pixelTable;
+    // array of pixels within triangles to their RGB color
+    private int[][] pixelTableArray;
+
+    // offset to be used for the array index
+    private int xOffset = 0;
+    private int yOffset = 0;
 
     /**
      * Constructor.
@@ -59,20 +62,22 @@ abstract class TriangleBasedShadingContext extends ShadingContext
      */
     protected final void createPixelTable(Rectangle deviceBounds) throws IOException
     {
-        pixelTable = calcPixelTable(deviceBounds);
+        xOffset = -deviceBounds.x;
+        yOffset = -deviceBounds.y;
+        pixelTableArray = calcPixelTableArray(deviceBounds);
     }
 
     /**
-     * Calculate every point and its color and store them in a Hash table.
+     * Calculate every point and its color and store them in a two-dimensional array.
      *
-     * @return a Hash table which contains all the points' positions and colors of one image
+     * @return an array which contains all the points' positions and colors of one image
      */
-    abstract Map<Point, Integer> calcPixelTable(Rectangle deviceBounds) throws IOException;
+    abstract int[][] calcPixelTableArray(Rectangle deviceBounds) throws IOException;
 
     /**
      * Get the points from the triangles, calculate their color and add point-color mappings.
      */
-    protected void calcPixelTable(List<ShadedTriangle> triangleList, Map<Point, Integer> map,
+    protected void calcPixelTable(List<ShadedTriangle> triangleList, int[][] array,
             Rectangle deviceBounds) throws IOException
     {
         for (ShadedTriangle tri : triangleList)
@@ -80,11 +85,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext
             int degree = tri.getDeg();
             if (degree == 2)
             {
-                Line line = tri.getLine();
-                for (Point p : line.linePoints)
-                {
-                    map.put(p, evalFunctionAndConvertToRGB(line.calcColor(p)));
-                }
+                addLinePoints(tri.getLine(), array);
             }
             else
             {
@@ -98,39 +99,58 @@ abstract class TriangleBasedShadingContext extends ShadingContext
                 {
                     for (int y = boundary[2]; y <= boundary[3]; y++)
                     {
-                        Point p = new IntPoint(x, y);
+                        Point p = new Point(x, y);
                         if (tri.contains(p))
                         {
-                            map.put(p, evalFunctionAndConvertToRGB(tri.calcColor(p)));
+                            addValueToArray(p, evalFunctionAndConvertToRGB(tri.calcColor(p)),
+                                    array);
                         }
                     }
                 }
-
                 // "fatten" triangle by drawing the borders with Bresenham's line algorithm
                 // Inspiration: Raph Levien in http://bugs.ghostscript.com/show_bug.cgi?id=219588
-                Point p0 = new IntPoint((int) Math.round(tri.corner[0].getX()),
+                Point p0 = new Point((int) Math.round(tri.corner[0].getX()),
                                      (int) Math.round(tri.corner[0].getY()));
-                Point p1 = new IntPoint((int) Math.round(tri.corner[1].getX()),
+                Point p1 = new Point((int) Math.round(tri.corner[1].getX()),
                                      (int) Math.round(tri.corner[1].getY()));
-                Point p2 = new IntPoint((int) Math.round(tri.corner[2].getX()),
+                Point p2 = new Point((int) Math.round(tri.corner[2].getX()),
                                      (int) Math.round(tri.corner[2].getY()));
-                Line l1 = new Line(p0, p1, tri.color[0], tri.color[1]);
-                Line l2 = new Line(p1, p2, tri.color[1], tri.color[2]);
-                Line l3 = new Line(p2, p0, tri.color[2], tri.color[0]);
-                for (Point p : l1.linePoints)
-                {
-                    map.put(p, evalFunctionAndConvertToRGB(l1.calcColor(p)));
-                }
-                for (Point p : l2.linePoints)
-                {
-                    map.put(p, evalFunctionAndConvertToRGB(l2.calcColor(p)));
-                }
-                for (Point p : l3.linePoints)
-                {
-                    map.put(p, evalFunctionAndConvertToRGB(l3.calcColor(p)));
-                }
+                addLinePoints(new Line(p0, p1, tri.color[0], tri.color[1]), array);
+                addLinePoints(new Line(p1, p2, tri.color[1], tri.color[2]), array);
+                addLinePoints(new Line(p2, p0, tri.color[2], tri.color[0]), array);
             }
         }
+    }
+
+    private void addLinePoints(Line line, int[][] array) throws IOException
+    {
+        for (Point p : line.linePoints)
+        {
+            addValueToArray(p, evalFunctionAndConvertToRGB(line.calcColor(p)), array);
+        }
+    }
+
+    private void addValueToArray(Point p, int value, int[][] array)
+    {
+        int xIndex = p.x + xOffset;
+        int yIndex = p.y + yOffset;
+        if (xIndex < 0 || yIndex < 0 || xIndex >= array.length || yIndex >= array[0].length)
+        {
+            return;
+        }
+        array[xIndex][yIndex] = value;
+    }
+
+    private int getValueFromArray(int x, int y)
+    {
+        int xIndex = x + xOffset;
+        int yIndex = y + yOffset;
+        if (xIndex < 0 || yIndex < 0 || xIndex >= pixelTableArray.length
+                || yIndex >= pixelTableArray[0].length)
+        {
+            return -1;
+        }
+        return pixelTableArray[xIndex][yIndex];
     }
 
     /**
@@ -162,28 +182,17 @@ abstract class TriangleBasedShadingContext extends ShadingContext
             {
                 for (int col = 0; col < w; col++)
                 {
-                    Point p = new IntPoint(x + col, y + row);
-                    int value;
-                    Integer v = pixelTable.get(p);
-                    if (v != null)
+                    int value = getValueFromArray(x + col, y + row);
+                    if (value >= 0)
                     {
-                        value = v;
+                        int index = (row * w + col) * 4;
+                        data[index] = value & 255;
+                        value >>= 8;
+                        data[index + 1] = value & 255;
+                        value >>= 8;
+                        data[index + 2] = value & 255;
+                        data[index + 3] = 255;
                     }
-                    else
-                    {
-                        if (getBackground() == null)
-                        {
-                            continue;
-                        }
-                        value = getRgbBackground();
-                    }
-                    int index = (row * w + col) * 4;
-                    data[index] = value & 255;
-                    value >>= 8;
-                    data[index + 1] = value & 255;
-                    value >>= 8;
-                    data[index + 2] = value & 255;
-                    data[index + 3] = 255;
                 }
             }
         }

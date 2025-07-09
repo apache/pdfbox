@@ -16,6 +16,12 @@
  */
 package org.apache.pdfbox.pdfwriter;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -28,14 +34,14 @@ import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
-import org.junit.jupiter.api.Test;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.io.File;
-import java.util.List;
-import java.util.Map;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * This test attempts to save different documents compressed, without causing errors, it also checks, whether the PDF is
@@ -46,38 +52,32 @@ import java.util.Map;
  */
 class COSDocumentCompressionTest
 {
+    private static final File INDIR = new File("src/test/resources/input/compression/");
+    private static final File OUTDIR = new File("target/test-output/compression/");
 
-    static final File inDir = new File("src/test/resources/input/compression/");
-    static final File outDir = new File("target/test-output/compression/");
-
-    public COSDocumentCompressionTest()
+    @BeforeAll
+    static void init()
     {
-        outDir.mkdirs();
+        OUTDIR.mkdirs();
     }
 
     /**
      * Compress a document, that contains acroform fields and touch the expected fields.
      *
-     * @throws Exception Shall be thrown, when compressing the document failed.
+     * @throws IOException Shall be thrown, when compressing the document failed.
      */
     @Test
-    void testCompressAcroformDoc() throws Exception
+    void testCompressAcroformDoc() throws IOException
     {
-        File source = new File(inDir, "acroform.pdf");
-        File target = new File(outDir, "acroform.pdf");
+        File source = new File(INDIR, "acroform.pdf");
+        File target = new File(OUTDIR, "acroform.pdf");
 
-        PDDocument document = Loader.loadPDF(source);
-        try
+        try (PDDocument document = Loader.loadPDF(source))
         {
             document.save(target);
         }
-        finally
-        {
-            document.close();
-        }
 
-        document = Loader.loadPDF(target);
-        try
+        try (PDDocument document = Loader.loadPDF(target))
         {
             assertEquals(1, document.getNumberOfPages(),
                     "The number of pages should not have changed, during compression.");
@@ -124,35 +124,25 @@ class COSDocumentCompressionTest
             assertEquals("Signature", annotations.get(12).getCOSObject().getNameAsString(COSName.T),
                     "The 13. annotation should have been a Signature.");
         }
-        finally
-        {
-            document.close();
-        }
     }
 
     /**
      * Compress a document, that contains an attachment and touch the expected attachment.
      *
-     * @throws Exception Shall be thrown, when compressing the document failed.
+     * @throws IOException Shall be thrown, when compressing the document failed.
      */
     @Test
-    void testCompressAttachmentsDoc() throws Exception
+    void testCompressAttachmentsDoc() throws IOException
     {
-        File source = new File(inDir, "attachment.pdf");
-        File target = new File(outDir, "attachment.pdf");
+        File source = new File(INDIR, "attachment.pdf");
+        File target = new File(OUTDIR, "attachment.pdf");
 
-        PDDocument document = Loader.loadPDF(source);
-        try
+        try (PDDocument document = Loader.loadPDF(source))
         {
             document.save(target);
         }
-        finally
-        {
-            document.close();
-        }
 
-        document = Loader.loadPDF(target);
-        try
+        try (PDDocument document = Loader.loadPDF(target))
         {
             assertEquals(2, document.getNumberOfPages(),
                     "The number of pages should not have changed, during compression.");
@@ -166,60 +156,50 @@ class COSDocumentCompressionTest
             assertEquals(14997, attachment.getEmbeddedFile().getLength(),
                     "The attachments length is not as expected.");
         }
-        finally
-        {
-            document.close();
-        }
     }
 
     /**
      * Compress and encrypt the given document, without causing an exception to be thrown.
      *
-     * @throws Exception Shall be thrown, when compressing/encrypting the document failed.
+     * @throws IOException Shall be thrown, when compressing/encrypting the document failed.
      */
     @Test
-    void testCompressEncryptedDoc() throws Exception
+    void testCompressEncryptedDoc() throws IOException
     {
-        File source = new File(inDir, "unencrypted.pdf");
-        File target = new File(outDir, "encrypted.pdf");
+        File source = new File(INDIR, "unencrypted.pdf");
+        File target = new File(OUTDIR, "encrypted.pdf");
 
-        PDDocument document = Loader.loadPDF(source, "user");
-        try
+        try (PDDocument document = Loader.loadPDF(source, "user"))
         {
             document.protect(
                     new StandardProtectionPolicy("owner", "user", new AccessPermission(0)));
             document.save(target);
         }
-        finally
-        {
-            document.close();
-        }
 
-        document = Loader.loadPDF(target, "user");
-        // If this didn't fail, the encryption dictionary should be present and working.
-        assertEquals(2, document.getNumberOfPages());
-        document.close();
+        try (PDDocument document = Loader.loadPDF(target, "user"))
+        {
+            // If this didn't fail, the encryption dictionary should be present and working.
+            assertEquals(2, document.getNumberOfPages());
+        }
     }
 
     /**
      * Adds a page to an existing document, compresses it and touches the resulting page content stream.
      *
-     * @throws Exception Shall be thrown, if compressing the document failed.
+     * @throws IOException Shall be thrown, if compressing the document failed.
      */
     @Test
-    void testAlteredDoc() throws Exception
+    void testAlteredDoc() throws IOException
     {
-        File source = new File(inDir, "unencrypted.pdf");
-        File target = new File(outDir, "altered.pdf");
+        File source = new File(INDIR, "unencrypted.pdf");
+        File target = new File(OUTDIR, "altered.pdf");
 
-        PDDocument document = Loader.loadPDF(source);
-        try
+        try (PDDocument document = Loader.loadPDF(source))
         {
             PDPage page = new PDPage(new PDRectangle(100, 100));
             document.addPage(page);
-            PDPageContentStream contentStream = new PDPageContentStream(document, page);
 
-            try
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
             {
                 contentStream.beginText();
                 contentStream.newLineAtOffset(20, 80);
@@ -227,24 +207,11 @@ class COSDocumentCompressionTest
                 contentStream.showText("Test");
                 contentStream.endText();
             }
-            finally
-            {
-                contentStream.close();
-            }
 
             document.save(target);
         }
-        catch (Throwable t)
-        {
-            t.printStackTrace();
-        }
-        finally
-        {
-            document.close();
-        }
 
-        document = Loader.loadPDF(target);
-        try
+        try (PDDocument document = Loader.loadPDF(target))
         {
             assertEquals(3, document.getNumberOfPages(),
                     "The number of pages should not have changed, during compression.");
@@ -252,10 +219,27 @@ class COSDocumentCompressionTest
             assertEquals(43, page.getContentStreams().next().getLength(),
                     "The stream length of the new page is not as expected.");
         }
-        finally
-        {
-            document.close();
-        }
     }
 
+    /**
+     * Check that the bug from PDFBOX-5927 is fixed. This one caused a dictionary key to be written
+     * as an indirect object in an object stream.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox5927() throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PDDocument doc = Loader.loadPDF(new File("target/pdfs","PDFBOX-5927.pdf")))
+        {
+            doc.save(baos);
+        }
+        try (PDDocument doc = Loader.loadPDF(baos.toByteArray()))
+        {
+            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            PDCheckBox cb = (PDCheckBox) acroForm.getField("chkPrivacy1");
+            assertTrue(cb.isChecked());
+        }
+    }
 }
