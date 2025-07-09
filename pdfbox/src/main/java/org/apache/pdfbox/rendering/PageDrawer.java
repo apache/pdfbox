@@ -960,6 +960,22 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         // the clipping path will not be updated until the succeeding painting operator is called
         clipWindingRule = windingRule;
+        if (clipWindingRule != -1)
+        {
+            linePath.setWindingRule(clipWindingRule);
+
+            if (!linePath.getPathIterator(null).isDone())
+            {
+                // PDFBOX-4949 / PDF.js 12306: don't clip if "W n" only
+                getGraphicsState().intersectClippingPath(adjustClip(linePath));
+            }
+
+            // PDFBOX-3836: lastClip needs to be reset, because after intersection it is still the same 
+            // object, thus setClip() would believe that it is cached.
+            lastClips = null;
+
+            clipWindingRule = -1;
+        }
     }
 
     @Override
@@ -995,22 +1011,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void endPath()
     {
-        if (clipWindingRule != -1)
-        {
-            linePath.setWindingRule(clipWindingRule);
-
-            if (!linePath.getPathIterator(null).isDone())
-            {
-                // PDFBOX-4949 / PDF.js 12306: don't clip if "W n" only
-                getGraphicsState().intersectClippingPath(adjustClip(linePath));
-            }
-
-            // PDFBOX-3836: lastClip needs to be reset, because after intersection it is still the same 
-            // object, thus setClip() would believe that it is cached.
-            lastClips = null;
-
-            clipWindingRule = -1;
-        }
         linePath.reset();
     }
     
