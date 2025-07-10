@@ -260,7 +260,7 @@ public final class OpenTypeScript
                 return o1[0] < o2[0] ? -1 : o1[0] == o2[0] ? 0 : 1;
             };
         });
-        LineNumberReader rd = new LineNumberReader(new InputStreamReader(inputStream));
+        LineNumberReader rd = new LineNumberReader(new InputStreamReader(inputStream, "US-ASCII"));
         int[] lastRange = { Integer.MIN_VALUE, Integer.MIN_VALUE };
         String lastScript = null;
         do

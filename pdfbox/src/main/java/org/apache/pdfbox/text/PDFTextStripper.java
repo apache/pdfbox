@@ -2013,7 +2013,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      */
     private static void parseBidiFile(InputStream inputStream) throws IOException
     {
-        LineNumberReader rd = new LineNumberReader(new InputStreamReader(inputStream));
+        LineNumberReader rd = new LineNumberReader(new InputStreamReader(inputStream, "US-ASCII"));
 
         do
         {
