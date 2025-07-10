@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -181,7 +182,8 @@ public class PfbParser
                 continue;
             }
             byte[] ar = barrList.get(i);
-            if (i == typeList.size() - 1 && ar.length < 600 && new String(ar).contains("cleartomark"))
+            if (i == typeList.size() - 1 && ar.length < 600 &&
+                    new String(ar, StandardCharsets.US_ASCII).contains("cleartomark"))
             {
                 cleartomarkSegment = ar;
                 continue;
