@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.logging.Log;
@@ -363,7 +364,7 @@ public class PDFStreamParser extends BaseParser
             {
                 // usually, the operator here is Q, sometimes EMC (PDFBOX-2376), S (PDFBOX-3784),
                 // or a number (PDFBOX-5957)
-                s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx);
+                s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx, StandardCharsets.US_ASCII);
                 if (!"Q".equals(s) && !"EMC".equals(s) && !"S".equals(s) &&
                     !s.matches("^\\d*\\.?\\d*$"))
                 {
@@ -378,7 +379,7 @@ public class PDFStreamParser extends BaseParser
                 if (endOpIdx == -1)
                 {
                     endOpIdx = MAX_BIN_CHAR_TEST_LENGTH;
-                    s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx);
+                    s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx, StandardCharsets.US_ASCII);
                 }
                 // look for token of 3 chars max or a number
                 if (endOpIdx - startOpIdx > 3 && !s.matches("^\\d*\\.?\\d*$"))
