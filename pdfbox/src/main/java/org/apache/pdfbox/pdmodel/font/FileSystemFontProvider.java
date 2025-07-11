@@ -413,7 +413,7 @@ final class FileSystemFontProvider extends FontProvider
         {
             File file = getDiskCacheFile();
 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file)))
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8)))
             {
                 for (FSFontInfo fontInfo : fontInfoList)
                 {
@@ -515,7 +515,7 @@ final class FileSystemFontProvider extends FontProvider
 
         if (fileExists)
         {
-            try (BufferedReader reader = new BufferedReader(new FileReader(diskCacheFile)))
+            try (BufferedReader reader = new BufferedReader(new FileReader(diskCacheFile, StandardCharsets.UTF_8)))
             {
                 // consequent lines usually share the same font file (e.g. "Courier", "Courier-Bold", "Courier-Oblique").
                 // unused if SKIP_CHECKSUMS
