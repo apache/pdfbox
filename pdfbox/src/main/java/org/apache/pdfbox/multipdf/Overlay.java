@@ -114,7 +114,6 @@ public class Overlay implements Closeable
      */
     public PDDocument overlay(Map<Integer, String> specificPageOverlayMap) throws IOException
     {
-        System.out.println("specificPageOverlayMap: " + specificPageOverlayMap);
         Map<String, LayoutPage> layouts = new HashMap<>();
         String path;
         loadPDFs();
@@ -131,7 +130,6 @@ public class Overlay implements Closeable
             }
             specificPageOverlayLayoutPageMap.put(e.getKey(), layoutPage);
         }
-        System.out.println("specificPageOverlayLayoutPageMap: " + specificPageOverlayLayoutPageMap);
         processPages(inputPDFDocument);
         return inputPDFDocument;
     }
@@ -398,12 +396,10 @@ public class Overlay implements Closeable
         int numberOfPages = pageTree.getCount();
         for (PDPage page : pageTree)
         {
-            System.out.println("processing page: " + pageTree.indexOf(page));
             pageCounter++;
             LayoutPage layoutPage = getLayoutPage(pageCounter, numberOfPages);
             if (layoutPage == null)
             {
-                System.out.println("layoutPage null");
                 continue;
             }
             COSDictionary pageDictionary = page.getCOSObject();
@@ -429,7 +425,6 @@ public class Overlay implements Closeable
                 default:
                     throw new IOException("Unknown type of position:" + position);
             }
-            System.out.println("processing page: " + pageTree.indexOf(page) + ", done");
             pageDictionary.setItem(COSName.CONTENTS, newContentArray);
         }
     }
