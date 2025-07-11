@@ -20,10 +20,11 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.security.AccessControlException;
 import java.util.ArrayList;
@@ -437,7 +438,8 @@ final class FileSystemFontProvider extends FontProvider
             try
             {
                 File file = getDiskCacheFile();
-                writer = new BufferedWriter(new FileWriter(file));
+                writer = new BufferedWriter(
+                        new OutputStreamWriter(new FileOutputStream(file), Charsets.UTF_8));
             }
             catch (SecurityException e)
             {
@@ -546,7 +548,8 @@ final class FileSystemFontProvider extends FontProvider
             BufferedReader reader = null;
             try
             {
-                reader = new BufferedReader(new FileReader(diskCacheFile));
+                reader = new BufferedReader(
+                        new InputStreamReader(new FileInputStream(diskCacheFile), Charsets.UTF_8));
                 String line;
                 while ((line = reader.readLine()) != null)
                 {
