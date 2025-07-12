@@ -337,7 +337,7 @@ public class PDFStreamParser extends BaseParser
         int endOpIdx = -1;
         String s = "";
 
-        LOG.debug("String after EI: '{}'", () -> new String(binCharTestArr));
+        LOG.debug("String after EI: '{}'", () -> new String(binCharTestArr, StandardCharsets.US_ASCII));
 
         if (readBytes > 0)
         {
