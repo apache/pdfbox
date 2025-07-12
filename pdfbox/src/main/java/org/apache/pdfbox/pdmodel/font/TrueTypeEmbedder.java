@@ -42,6 +42,7 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.util.Charsets;
 
 /**
  * Common functionality for embedding TrueType fonts.
@@ -95,7 +96,7 @@ abstract class TrueTypeEmbedder implements Subsetter
             InputStream is = ttf.getOriginalData();
             byte[] b = new byte[4];
             is.mark(b.length);
-            if (is.read(b) == b.length && new String(b).equals("ttcf"))
+            if (is.read(b) == b.length && new String(b, Charsets.US_ASCII).equals("ttcf"))
             {
                 is.close();
                 throw new IOException("Full embedding of TrueType font collections not supported");
