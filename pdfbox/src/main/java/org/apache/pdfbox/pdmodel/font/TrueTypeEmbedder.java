@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -87,7 +88,7 @@ abstract class TrueTypeEmbedder implements Subsetter
             InputStream is = ttf.getOriginalData();
             byte[] b = new byte[4];
             is.mark(b.length);
-            if (is.read(b) == b.length && new String(b).equals("ttcf"))
+            if (is.read(b) == b.length && new String(b, StandardCharsets.US_ASCII).equals("ttcf"))
             {
                 is.close();
                 throw new IOException("Full embedding of TrueType font collections not supported");
