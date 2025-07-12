@@ -384,6 +384,69 @@ public final class PDImageXObject extends PDXObject implements PDImage
     }
 
     /**
+     * Create a PDImageXObject from an image byte array. This overloaded version allows providing 
+     * a custom factory to handle specific image formats, such as BMP and GIF, or to act as a 
+     * fallback strategy when the default converters (e.g., for PNG or TIFF) fail.
+     *
+     * @param document the document that shall use this PDImageXObject.
+     * @param byteArray bytes from an image file.
+     * @param name name of image file for exception messages, can be null.
+     * @param defaultFactory optional factory used to handle BMP, GIF, or fallback cases 
+     *                       (e.g., for PNG or TIFF). If {@code null}, this method delegates to
+     *                       {@link #createFromByteArray(PDDocument, byte[], String)}.
+     * @return a PDImageXObject.
+     * @throws IOException if there is an error when reading the file or creating the
+     * PDImageXObject.
+     * @throws IllegalArgumentException if the image type is not supported.
+     */
+    public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray, String name, DefaultFactory defaultFactory) throws IOException
+    {
+        if (defaultFactory == null) {
+            return createFromByteArray(document, byteArray, name);
+        }
+        
+        FileType fileType = FileTypeDetector.detectFileType(byteArray);
+        if (fileType == null)
+        {
+            throw new IllegalArgumentException("Image type not supported: " + name);
+        }
+
+        if (fileType == FileType.JPEG)
+        {
+            return JPEGFactory.createFromByteArray(document, byteArray);
+        }
+        if (fileType == FileType.PNG)
+        {
+            // Try to directly convert the image without recoding it.
+            PDImageXObject image = PNGConverter.convertPNGImage(document, byteArray);
+            if (image != null)
+            {
+                return image;
+            }
+        }
+        if (fileType == FileType.TIFF)
+        {
+            try
+            {
+                return CCITTFactory.createFromByteArray(document, byteArray);
+            }
+            catch (IOException ex)
+            {
+                LOG.debug("Reading as TIFF failed, setting fileType to PNG", ex);
+                // Plan B: try reading with ImageIO
+                // common exception:
+                // First image in tiff is not CCITT T4 or T6 compressed
+                fileType = FileType.PNG;
+            }
+        }
+        if (fileType == FileType.BMP || fileType == FileType.GIF || fileType == FileType.PNG)
+        {
+            return defaultFactory.createFromByteArray(document, byteArray);
+        }
+        throw new IllegalArgumentException("Image type " + fileType + " not supported: " + name);
+    }
+
+    /**
      * Returns the metadata associated with this XObject, or null if there is none.
      * @return the metadata associated with this object.
      */
