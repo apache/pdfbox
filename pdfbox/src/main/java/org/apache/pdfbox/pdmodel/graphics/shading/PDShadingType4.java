@@ -174,7 +174,8 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
                             lastIndex = list.size() - 1;
                             if (lastIndex < 0)
                             {
-                                LOG.error("broken data stream: {}", list.size());
+                                LOG.error("broken data stream: {}, aborting", list.size());
+                                eof = true;
                             }
                             else
                             {
