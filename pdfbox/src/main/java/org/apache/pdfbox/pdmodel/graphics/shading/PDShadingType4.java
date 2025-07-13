@@ -166,9 +166,9 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
                                     colRange, matrix, xform);
                             ps = new Point2D[] { p0.point, p1.point, p2.point };
                             cs = new float[][] { p0.color, p1.color, p2.color };
-                                list.add(new ShadedTriangle(ps, cs));
-                                flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
-                                break;
+                            list.add(new ShadedTriangle(ps, cs));
+                            flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
+                            break;
                         case 1:
                         case 2:
                             lastIndex = list.size() - 1;
