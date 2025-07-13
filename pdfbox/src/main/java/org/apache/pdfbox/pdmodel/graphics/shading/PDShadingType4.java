@@ -192,7 +192,8 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
                             }
                             break;
                         default:
-                            LOG.warn("bad flag: {}", flag);
+                            LOG.warn("bad flag {}, aborting", flag);
+                            eof = true;
                             break;
                         }
                     }

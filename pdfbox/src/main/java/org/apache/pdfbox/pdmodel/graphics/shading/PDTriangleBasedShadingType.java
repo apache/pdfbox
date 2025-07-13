@@ -197,6 +197,10 @@ abstract class PDTriangleBasedShadingType extends PDShading
                                 PDRange rangeX, PDRange rangeY, PDRange[] colRangeTab,
                                 Matrix matrix, AffineTransform xform) throws IOException
     {
+        if (bitsPerCoordinate <= 0 || numberOfColorComponents <= 0 || bitsPerColorComponent <= 0)
+        {
+            throw new IOException("nothing to read, check bitsPerCoordinate, numberOfColorComponents and bitsPerColorComponent");
+        }
         float[] colorComponentTab = new float[numberOfColorComponents];
         long x = input.readBits(bitsPerCoordinate);
         long y = input.readBits(bitsPerCoordinate);
