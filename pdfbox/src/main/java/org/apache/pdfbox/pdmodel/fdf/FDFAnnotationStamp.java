@@ -256,8 +256,16 @@ public class FDFAnnotationStamp extends FDFAnnotation
                         {
                             try (OutputStream os = stream.createOutputStream())
                             {
-                                // not sure about charset
-                                os.write(child.getTextContent().getBytes());
+                                String encoding = child.getOwnerDocument().getXmlEncoding();
+                                if (encoding == null)
+                                {
+                                    encoding = child.getOwnerDocument().getInputEncoding();
+                                }
+                                if (encoding == null)
+                                {
+                                    encoding = "UTF-8";
+                                }
+                                os.write(child.getTextContent().getBytes(encoding));
                                 LOG.debug(parentAttrKey + " => Data was streamed");
                             }
                         }
