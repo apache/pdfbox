@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.fdf;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
@@ -115,7 +116,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
         }
         if (base64EncodedAppearance != null && !base64EncodedAppearance.isEmpty())
         {
-            LOG.debug("Decoded XML: " + new String(decodedAppearanceXML));
+            LOG.debug("Decoded XML: " + new String(decodedAppearanceXML, StandardCharsets.UTF_8));
 
             Document stampAppearance = XMLUtil
                     .parse(new ByteArrayInputStream(decodedAppearanceXML));
