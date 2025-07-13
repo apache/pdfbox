@@ -23,6 +23,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -308,7 +309,7 @@ public final class ExtractText  implements Callable<Integer>
     {
         if (toConsole)
         {
-            return new PrintWriter(SYSOUT)
+            return new PrintWriter(SYSOUT, true, Charset.forName(encoding))
             {
                 @Override
                 public void close()
