@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.imageio.ImageIO;
 import org.apache.fontbox.util.BoundingBox;
@@ -235,7 +236,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
         setStartPage(page + 1);
         setEndPage(page + 1);
 
-        Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
+        Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream(), StandardCharsets.US_ASCII);
         writeText(document, dummy);
         
         // beads in green

@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.pdfbox.Loader;
@@ -66,7 +67,7 @@ public class PrintTextLocations extends PDFTextStripper
                 stripper.setStartPage( 1 );
                 stripper.setEndPage( document.getNumberOfPages() );
 
-                Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
+                Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream(), StandardCharsets.US_ASCII);
                 stripper.writeText(document, dummy);
             }
         }
