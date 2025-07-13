@@ -47,6 +47,7 @@ import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
+import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 
@@ -254,7 +255,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
         setStartPage(page + 1);
         setEndPage(page + 1);
 
-        Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
+        Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream(), Charsets.US_ASCII);
         writeText(document, dummy);
         
         // beads in green

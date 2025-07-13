@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
+import org.apache.pdfbox.util.Charsets;
 
 /**
  * This is an example on how to get some x/y coordinates of text.
@@ -67,7 +68,7 @@ public class PrintTextLocations extends PDFTextStripper
                 stripper.setStartPage( 1 );
                 stripper.setEndPage( document.getNumberOfPages() );
 
-                Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
+                Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream(), Charsets.US_ASCII);
                 stripper.writeText(document, dummy);
             }
             finally
