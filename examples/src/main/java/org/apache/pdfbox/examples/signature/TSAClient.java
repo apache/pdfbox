@@ -172,8 +172,8 @@ public class TSAClient
                 contentEncoding = StandardCharsets.UTF_8.name();
             }
             connection.setRequestProperty("Authorization", 
-                    "Basic " + new String(Base64.getEncoder().encode((username + ":" + password).
-                            getBytes(contentEncoding))));
+                    "Basic " + Base64.getEncoder().encodeToString(
+                            (username + ":" + password).getBytes(contentEncoding)));
         }
 
         // read response
