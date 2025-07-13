@@ -28,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -95,7 +96,7 @@ final class DebugTextOverlay
             setStartPage(pageIndex + 1);
             setEndPage(pageIndex + 1);
 
-            Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
+            Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream(), StandardCharsets.US_ASCII);
             writeText(document, dummy);
 
             if (DebugTextOverlay.this.showTextStripperBeads)
