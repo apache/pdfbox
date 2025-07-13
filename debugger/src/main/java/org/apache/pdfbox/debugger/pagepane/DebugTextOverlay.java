@@ -24,10 +24,8 @@ import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -95,8 +93,7 @@ final class DebugTextOverlay
             setStartPage(pageIndex + 1);
             setEndPage(pageIndex + 1);
 
-            Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
-            writeText(document, dummy);
+            writeText(document, OutputStreamWriter.nullWriter());
 
             if (DebugTextOverlay.this.showTextStripperBeads)
             {
