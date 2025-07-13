@@ -34,6 +34,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Hex;
 
 import org.w3c.dom.Document;
@@ -116,7 +117,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
         }
         if (base64EncodedAppearance != null && !base64EncodedAppearance.isEmpty())
         {
-            LOG.debug("Decoded XML: " + new String(decodedAppearanceXML));
+            LOG.debug("Decoded XML: " + new String(decodedAppearanceXML, Charsets.UTF_8));
 
             Document stampAppearance = org.apache.pdfbox.util.XMLUtil
                     .parse(new ByteArrayInputStream(decodedAppearanceXML));
