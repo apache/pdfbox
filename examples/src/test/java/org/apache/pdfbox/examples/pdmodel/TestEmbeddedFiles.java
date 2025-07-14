@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.util.Charsets;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class TestEmbeddedFiles
         InputStream is = new FileInputStream(embeddedFile);
         byte[] bytes = IOUtils.toByteArray(is);
         is.close();
-        String content = new String(bytes);
+        String content = new String(bytes, Charsets.US_ASCII);
         Assert.assertEquals("This is the contents of the embedded file", content);
         new File(embeddedFile).delete();
         new File(outputFile).delete();
