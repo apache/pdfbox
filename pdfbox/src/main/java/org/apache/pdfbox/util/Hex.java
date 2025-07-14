@@ -236,7 +236,7 @@ public final class Hex
                 else
                 {
                     String hexByte = s.substring(i, i + 2);
-                    LOG.error("Can't parse " + hexByte + ", aborting decode");
+                    LOG.error("Can't parse {}, aborting decode", hexByte);
                 }
                 i += 2;
             }
