@@ -47,6 +47,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
+import org.apache.pdfbox.util.Charsets;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
@@ -344,7 +345,7 @@ public final class CertificateVerifier
             }
             ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
             ASN1OctetString uri = (ASN1OctetString) location.getBaseObject();
-            String urlString = new String(uri.getOctets());
+            String urlString = new String(uri.getOctets(), Charsets.UTF_8);
             InputStream in = null;
             try
             {
@@ -458,7 +459,7 @@ public final class CertificateVerifier
                         && location.getTagNo() == GeneralName.uniformResourceIdentifier)
                 {
                     ASN1OctetString url = (ASN1OctetString) location.getBaseObject();
-                    String ocspURL = new String(url.getOctets());
+                    String ocspURL = new String(url.getOctets(), Charsets.UTF_8);
                     LOG.info("OCSP URL: " + ocspURL);
                     return ocspURL;
                 }

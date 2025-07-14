@@ -24,6 +24,7 @@ import java.util.Enumeration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.examples.signature.validation.CertInformationCollector.CertSignatureInformation;
+import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1OctetString;
@@ -86,12 +87,12 @@ public class CertInformationHelper
                     && location.getTagNo() == GeneralName.uniformResourceIdentifier)
             {
                 ASN1OctetString url = (ASN1OctetString) location.getBaseObject();
-                certInfo.setOcspUrl(new String(url.getOctets()));
+                certInfo.setOcspUrl(new String(url.getOctets(), Charsets.UTF_8));
             }
             else if (X509ObjectIdentifiers.id_ad_caIssuers.equals(oid))
             {
                 ASN1OctetString uri = (ASN1OctetString) location.getBaseObject();
-                certInfo.setIssuerUrl(new String(uri.getOctets()));
+                certInfo.setIssuerUrl(new String(uri.getOctets(), Charsets.UTF_8));
             }
         }
     }
@@ -152,7 +153,7 @@ public class CertInformationHelper
         if (taggedObject.getBaseObject() instanceof ASN1OctetString)
         {
             ASN1OctetString uri = (ASN1OctetString) taggedObject.getBaseObject();
-            String url = new String(uri.getOctets());
+            String url = new String(uri.getOctets(), Charsets.UTF_8);
 
             // return first http(s)-Url for crl
             if (url.startsWith("http"))
