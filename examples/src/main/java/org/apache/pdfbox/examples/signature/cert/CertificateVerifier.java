@@ -22,6 +22,7 @@ package org.apache.pdfbox.examples.signature.cert;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 import java.security.cert.CertPathBuilder;
@@ -327,7 +328,7 @@ public final class CertificateVerifier
             }
             ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
             ASN1OctetString uri = (ASN1OctetString) location.getBaseObject();
-            String urlString = new String(uri.getOctets());
+            String urlString = new String(uri.getOctets(), StandardCharsets.UTF_8);
             LOG.info("CA issuers URL: {}", urlString);
             try (InputStream in = SigUtils.openURL(urlString))
             {
@@ -432,7 +433,7 @@ public final class CertificateVerifier
                         && location.getTagNo() == GeneralName.uniformResourceIdentifier)
                 {
                     ASN1OctetString url = (ASN1OctetString) location.getBaseObject();
-                    String ocspURL = new String(url.getOctets());
+                    String ocspURL = new String(url.getOctets(), StandardCharsets.UTF_8);
                     LOG.info("OCSP URL: {}", ocspURL);
                     return ocspURL;
                 }
