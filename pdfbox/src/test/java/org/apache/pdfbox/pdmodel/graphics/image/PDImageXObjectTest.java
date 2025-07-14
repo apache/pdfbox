@@ -130,29 +130,16 @@ class PDImageXObjectTest
     }
 
     /**
-     * Test of createFromByteArray method with DefaultFactory parameter, of class PDImageXObject.
+     * Test of createFromByteArray method with CustomFactory parameter, of class PDImageXObject.
      * @throws java.io.IOException
      * @throws java.net.URISyntaxException
      */
     @Test
-    void testCreateFromByteArrayWithDefaultFactory() throws IOException, URISyntaxException
+    void testCreateFromByteArrayWithCustomFactory() throws IOException, URISyntaxException
     {
-        testCompareCreatedFromByteArrayWithCreatedByDefaultFactory("gif.gif");
-        testCompareCreatedFromByteArrayWithCreatedByDefaultFactory("gif-1bit-transparent.gif");
-        testCompareCreatedFromByteArrayWithCreatedByDefaultFactory("lzw.tif");
-    }
-
-    /**
-     * Test of createFromByteArray method with null DefaultFactory parameter, of class PDImageXObject.
-     * @throws java.io.IOException
-     * @throws java.net.URISyntaxException
-     */
-    @Test
-    void testCreateFromByteArrayWithNullDefaultFactory() throws IOException, URISyntaxException
-    {
-        testCompareCreatedFromByteArrayWithCreatedByNullDefaultFactory("gif.gif");
-        testCompareCreatedFromByteArrayWithCreatedByNullDefaultFactory("gif-1bit-transparent.gif");
-        testCompareCreatedFromByteArrayWithCreatedByNullDefaultFactory("lzw.tif");
+        testCompareCreatedFromByteArrayWithCreatedByCustomFactory("gif.gif");
+        testCompareCreatedFromByteArrayWithCreatedByCustomFactory("gif-1bit-transparent.gif");
+        testCompareCreatedFromByteArrayWithCreatedByCustomFactory("lzw.tif");
     }
 
     private void testCompareCreatedFileByExtensionWithCreatedByLosslessFactory(String filename)
@@ -348,7 +335,7 @@ class PDImageXObjectTest
         }
     }
 
-    private void testCompareCreatedFromByteArrayWithCreatedByDefaultFactory(String filename)
+    private void testCompareCreatedFromByteArrayWithCreatedByCustomFactory(String filename)
             throws IOException, URISyntaxException
     {
         try (PDDocument doc = new PDDocument())
@@ -357,34 +344,12 @@ class PDImageXObjectTest
             InputStream in = new FileInputStream(file);
             byte[] byteArray = in.readAllBytes();
             
-            DefaultFactory defaultFactory = this::alphaFlattenedJPEGFactory;
+            CustomFactory customFactory = this::alphaFlattenedJPEGFactory;
             
-            PDImageXObject image = PDImageXObject.createFromByteArray(doc, byteArray, filename, defaultFactory);
+            PDImageXObject image = PDImageXObject.createFromByteArray(doc, byteArray, filename, customFactory);
             
             PDImageXObject expectedImage = alphaFlattenedJPEGFactory(doc, byteArray);
             
-            assertEquals(expectedImage.getSuffix(), image.getSuffix());
-            checkIdentARGB(image.getImage(), expectedImage.getImage());
-        }
-    }
-
-    private void testCompareCreatedFromByteArrayWithCreatedByNullDefaultFactory(String filename)
-        throws IOException, URISyntaxException
-    {
-        try (PDDocument doc = new PDDocument())
-        {
-            File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-            InputStream in = new FileInputStream(file);
-            byte[] byteArray = in.readAllBytes();
-
-            DefaultFactory defaultFactory = null;
-
-            PDImageXObject image = PDImageXObject.createFromByteArray(doc, byteArray, filename, defaultFactory);
-
-            ByteArrayInputStream bais = new ByteArrayInputStream(byteArray);
-            BufferedImage bim = ImageIO.read(bais);
-            PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
-
             assertEquals(expectedImage.getSuffix(), image.getSuffix());
             checkIdentARGB(image.getImage(), expectedImage.getImage());
         }

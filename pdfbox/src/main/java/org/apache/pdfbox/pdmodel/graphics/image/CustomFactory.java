@@ -5,6 +5,6 @@ import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 @FunctionalInterface
-public interface DefaultFactory {
+public interface CustomFactory {
 	PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray) throws IOException;
 }

@@ -340,47 +340,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray, String name) throws IOException
     {
-        FileType fileType = FileTypeDetector.detectFileType(byteArray);
-        if (fileType == null)
-        {
-            throw new IllegalArgumentException("Image type not supported: " + name);
-        }
-
-        if (fileType == FileType.JPEG)
-        {
-            return JPEGFactory.createFromByteArray(document, byteArray);
-        }
-        if (fileType == FileType.PNG)
-        {
-            // Try to directly convert the image without recoding it.
-            PDImageXObject image = PNGConverter.convertPNGImage(document, byteArray);
-            if (image != null)
-            {
-                return image;
-            }
-        }
-        if (fileType == FileType.TIFF)
-        {
-            try
-            {
-                return CCITTFactory.createFromByteArray(document, byteArray);
-            }
-            catch (IOException ex)
-            {
-                LOG.debug("Reading as TIFF failed, setting fileType to PNG", ex);
-                // Plan B: try reading with ImageIO
-                // common exception:
-                // First image in tiff is not CCITT T4 or T6 compressed
-                fileType = FileType.PNG;
-            }
-        }
-        if (fileType == FileType.BMP || fileType == FileType.GIF || fileType == FileType.PNG)
-        {
-            ByteArrayInputStream bais = new ByteArrayInputStream(byteArray);
-            BufferedImage bim = ImageIO.read(bais);
-            return LosslessFactory.createFromImage(document, bim);
-        }
-        throw new IllegalArgumentException("Image type " + fileType + " not supported: " + name);
+        return createFromByteArray(document, byteArray, name, null);
     }
 
     /**
@@ -391,7 +351,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * @param document the document that shall use this PDImageXObject.
      * @param byteArray bytes from an image file.
      * @param name name of image file for exception messages, can be null.
-     * @param defaultFactory optional factory used to handle BMP, GIF, or fallback cases 
+     * @param customFactory optional factory used to handle BMP, GIF, or fallback cases 
      *                       (e.g., for PNG or TIFF). If {@code null}, this method delegates to
      *                       {@link #createFromByteArray(PDDocument, byte[], String)}.
      * @return a PDImageXObject.
@@ -399,12 +359,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * PDImageXObject.
      * @throws IllegalArgumentException if the image type is not supported.
      */
-    public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray, String name, DefaultFactory defaultFactory) throws IOException
+    public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray, String name, CustomFactory customFactory) throws IOException
     {
-        if (defaultFactory == null) {
-            return createFromByteArray(document, byteArray, name);
-        }
-        
         FileType fileType = FileTypeDetector.detectFileType(byteArray);
         if (fileType == null)
         {
@@ -441,7 +397,14 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
         if (fileType == FileType.BMP || fileType == FileType.GIF || fileType == FileType.PNG)
         {
-            return defaultFactory.createFromByteArray(document, byteArray);
+            if (customFactory != null)
+            {
+                return customFactory.createFromByteArray(document, byteArray);
+            }
+            
+            ByteArrayInputStream bais = new ByteArrayInputStream(byteArray);
+            BufferedImage bim = ImageIO.read(bais);
+            return LosslessFactory.createFromImage(document, bim);
         }
         throw new IllegalArgumentException("Image type " + fileType + " not supported: " + name);
     }
