@@ -16,10 +16,16 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -123,6 +129,19 @@ class PDImageXObjectTest
         testCompareCreatedFromByteArrayWithCreatedByLosslessFactory("png_indexed_8bit_alpha.png");
         testCompareCreatedFromByteArrayWithCreatedByLosslessFactory("png.png");
         testCompareCreatedFromByteArrayWithCreatedByLosslessFactory("lzw.tif");
+    }
+
+    /**
+     * Test of createFromByteArray method with CustomFactory parameter, of class PDImageXObject.
+     * @throws java.io.IOException
+     * @throws java.net.URISyntaxException
+     */
+    @Test
+    void testCreateFromByteArrayWithCustomFactory() throws IOException, URISyntaxException
+    {
+        testCompareCreatedFromByteArrayWithCreatedByCustomFactory("gif.gif");
+        testCompareCreatedFromByteArrayWithCreatedByCustomFactory("gif-1bit-transparent.gif");
+        testCompareCreatedFromByteArrayWithCreatedByCustomFactory("lzw.tif");
     }
 
     private void testCompareCreatedFileByExtensionWithCreatedByLosslessFactory(String filename)
@@ -318,6 +337,26 @@ class PDImageXObjectTest
         }
     }
 
+    private void testCompareCreatedFromByteArrayWithCreatedByCustomFactory(String filename)
+            throws IOException, URISyntaxException
+    {
+        try (PDDocument doc = new PDDocument())
+        {
+            File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
+            InputStream in = new FileInputStream(file);
+            byte[] byteArray = in.readAllBytes();
+            
+            CustomFactory customFactory = this::alphaFlattenedJPEGFactory;
+            
+            PDImageXObject image = PDImageXObject.createFromByteArray(doc, byteArray, filename, customFactory);
+            
+            PDImageXObject expectedImage = alphaFlattenedJPEGFactory(doc, byteArray);
+            
+            assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            checkIdentARGB(image.getImage(), expectedImage.getImage());
+        }
+    }
+
     private void checkIdentARGB(BufferedImage expectedImage, BufferedImage actualImage)
     {
         String errMsg = "";
@@ -337,5 +376,32 @@ class PDImageXObjectTest
                 assertEquals(expectedImage.getRGB(x, y), actualImage.getRGB(x, y), errMsg);
             }
         }
-    }    
+    }
+
+    private PDImageXObject alphaFlattenedJPEGFactory(PDDocument document, byte[] byteArray) throws IOException
+    {
+        ByteArrayInputStream bais = new ByteArrayInputStream(byteArray);
+        BufferedImage bim = ImageIO.read(bais);
+
+        if (bim.isAlphaPremultiplied()) {
+            ColorModel colorModel = bim.getColorModel();
+            WritableRaster raster = bim.copyData(null);
+            bim = new BufferedImage(colorModel, raster, false, null);
+        }
+
+        BufferedImage flattened = new BufferedImage(
+            bim.getWidth(),
+            bim.getHeight(),
+            BufferedImage.TYPE_INT_RGB
+        );
+
+        Graphics2D g = flattened.createGraphics();
+        g.setComposite(AlphaComposite.SrcOver);
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, flattened.getWidth(), flattened.getHeight());
+        g.drawImage(bim, 0, 0, null);
+        g.dispose();
+
+        return JPEGFactory.createFromImage(document, flattened);
+    }
 }
