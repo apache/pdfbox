@@ -57,6 +57,8 @@
             <artifactId>fontbox</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- may throw NoClassDefError with PDFs that use public key encryption if bouncycastle not included -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk18on</artifactId>
@@ -71,6 +73,7 @@
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
+
         <dependency>
 	      <groupId>org.junit.jupiter</groupId>
 	      <artifactId>junit-jupiter</artifactId>
