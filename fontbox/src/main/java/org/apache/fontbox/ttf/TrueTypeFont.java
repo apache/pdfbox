@@ -593,6 +593,12 @@ public class TrueTypeFont implements FontBoxFont, Closeable
         }
         if (cmap == null)
         {
+            // PDFBOX-6015
+            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
+                                         CmapTable.ENCODING_UNICODE_1_1);
+        }
+        if (cmap == null)
+        {
             if (isStrict)
             {
                 throw new IOException("The TrueType font does not contain a Unicode cmap");
