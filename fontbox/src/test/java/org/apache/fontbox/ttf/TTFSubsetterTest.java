@@ -367,4 +367,25 @@ class TTFSubsetterTest
             assertEquals(0, subset.getWidth("uni200C"), "ZWNJ width should be zero");
         }
     }
+
+    /**
+     * PDFBOX-6015: test font with 0/1 cmap.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testPDFBox6015() throws IOException
+    {
+        try (TrueTypeFont ttf = new TTFParser()
+                .parse(new RandomAccessReadBufferedFile("target/fonts/Keyboard.ttf")))
+        {
+            CmapLookup unicodeCmapLookup = ttf.getUnicodeCmapLookup();
+            assertEquals(185, unicodeCmapLookup.getGlyphId('a'));
+            assertEquals(210, unicodeCmapLookup.getGlyphId('z'));
+            assertEquals(159, unicodeCmapLookup.getGlyphId('A'));
+            assertEquals(184, unicodeCmapLookup.getGlyphId('Z'));
+            assertEquals(49, unicodeCmapLookup.getGlyphId('0'));
+            assertEquals(58, unicodeCmapLookup.getGlyphId('9'));
+        }
+    }
 }
