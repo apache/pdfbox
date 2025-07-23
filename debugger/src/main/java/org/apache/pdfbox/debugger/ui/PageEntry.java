@@ -77,6 +77,10 @@ public class PageEntry
             }
             COSArray kids = (COSArray) base;
             int idx = kids.indexOfObject(node);
+            if (idx == -1)
+            {
+                break;
+            }
             sb.append("/Kids/[").append(idx).append("]");
             node = parent;
         }
