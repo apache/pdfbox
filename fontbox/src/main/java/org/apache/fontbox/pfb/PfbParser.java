@@ -127,7 +127,7 @@ public class PfbParser
         List<Integer> typeList = new ArrayList<>(3);
         List<byte[]> barrList = new ArrayList<>(3);
         ByteArrayInputStream in = new ByteArrayInputStream(pfb);
-        int total = 0;
+        long total = 0;
         do
         {
             int r = in.read();
@@ -174,8 +174,13 @@ public class PfbParser
         // We now have ASCII and binary segments. Lets arrange these so that the ASCII segments
         // come first, then the binary segments, then the last ASCII segment if it is
         // 0000... cleartomark
-        
-        pfbdata = new byte[total];
+
+        if (total > pfb.length)
+        {
+            // PDFBOX-6044: avoid potential OOM
+            throw new IOException("total record size " + total + " would be larger than the input");
+        }
+        pfbdata = new byte[(int) total];
         byte[] cleartomarkSegment = null;
         int dstPos = 0;
         
