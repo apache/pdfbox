@@ -178,7 +178,7 @@ public class PfbParser
             if (size > pfb.length)
             {
                 // PDFBOX-6044: avoid potential OOM
-                throw new IOException("record size " + size + "would be larger than the input");
+                throw new IOException("record size " + size + " would be larger than the input");
             }
             byte[] ar = new byte[size];
             int got = in.read(ar);
