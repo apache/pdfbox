@@ -193,7 +193,7 @@ class TestCreateSignature
 
         // https://stackoverflow.com/questions/4442192/
         NTPUDPClient timeClient = new NTPUDPClient();
-        InetAddress inetAddress = InetAddress.getByName("time.nist.gov");
+        InetAddress inetAddress = InetAddress.getByName("pool.ntp.org");
         timeClient.setDefaultTimeout(Duration.ofMillis(5000));
         TimeInfo timeInfo;
         long returnTime;
