@@ -502,6 +502,10 @@ class Type1Lexer
      */
     private Token readCharString(int length) throws IOException
     {
+        if (length > buffer.array().length)
+        {
+            throw new IOException("String length " + length + " is larger than input");
+        }
         try
         {
 	        buffer.get(); // space
