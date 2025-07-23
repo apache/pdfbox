@@ -33,10 +33,6 @@ import org.junit.jupiter.api.Test;
 class Type1LexerTest
 {
 
-    Type1LexerTest()
-    {
-    }
-
     /**
      * PDFBOX-5155: test real numbers.
      */
@@ -132,6 +128,21 @@ class Type1LexerTest
         Assertions.assertArrayEquals(new byte[] {'1', '2', '3'}, tokens.get(1).getData());
         Assertions.assertEquals(Token.NAME, tokens.get(2).getKind());
         Assertions.assertEquals("ND", tokens.get(2).getText());
+    }
+
+    /**
+     * PDFBOX-6043: test for detection of illegal string length.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void TestPDFBOX6043() throws IOException
+    {
+        String s = "999 RD";
+        Type1Lexer t1l = new Type1Lexer(s.getBytes(StandardCharsets.US_ASCII));
+        IOException ex =
+                Assertions.assertThrows(IOException.class, () -> readTokens(t1l));
+        Assertions.assertEquals("String length 999 is larger than input", ex.getMessage());
     }
 
     private List<Token> readTokens(Type1Lexer t1l) throws IOException
