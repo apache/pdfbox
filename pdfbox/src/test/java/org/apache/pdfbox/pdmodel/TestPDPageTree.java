@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 
@@ -82,5 +83,17 @@ public class TestPDPageTree
     {
         doc = PDDocument.load(TestPDPageTree.class.getResourceAsStream("with_outline.pdf"));
         assertEquals(-1, doc.getPages().indexOf(new PDPage()));
+    }
+
+    /**
+     * PDFBOX-6040: avoid loop in getInheritableAttribute().
+     *
+     * @throws IOException 
+     */
+    @Test
+    public void testNodeLoop() throws IOException
+    {
+        doc = PDDocument.load(TestPDPageTree.class.getResourceAsStream("PDFBOX-6040-nodeloop.pdf"));
+        assertNull(doc.getPage(0).getResources());
     }
 }
