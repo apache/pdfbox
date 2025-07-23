@@ -107,6 +107,17 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      */
     public static COSBase getInheritableAttribute(COSDictionary node, COSName key)
     {
+        return getInheritableAttribute(node, key, new HashSet<>());
+    }
+
+    private static COSBase getInheritableAttribute(COSDictionary node, COSName key, Set<COSDictionary> visited)
+    {
+        if (visited.contains(node))
+        {
+            return null;
+        }
+        visited.add(node);
+
         COSBase value = node.getDictionaryObject(key);
         if (value != null)
         {
@@ -115,7 +126,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         COSDictionary parent = node.getCOSDictionary(COSName.PARENT, COSName.P);
         if (parent != null && COSName.PAGES.equals(parent.getCOSName(COSName.TYPE)))
         {
-            return getInheritableAttribute(parent, key);
+            return getInheritableAttribute(parent, key, visited);
         }
 
         return null;
