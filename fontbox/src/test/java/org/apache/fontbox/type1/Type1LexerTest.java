@@ -135,6 +135,28 @@ public class Type1LexerTest
         Assert.assertEquals("ND", tokens.get(2).getText());
     }
 
+    /**
+     * PDFBOX-6043: test for detection of illegal string length.
+     *
+     * @throws IOException 
+     */
+    @Test
+    public void TestPDFBOX6043() throws IOException
+    {
+        String s = "999 RD";
+        Type1Lexer t1l = new Type1Lexer(s.getBytes(Charsets.US_ASCII));
+        try
+        {
+            readTokens(t1l);
+        }
+        catch (IOException ex)
+        {
+            Assert.assertEquals("String length 999 is larger than input", ex.getMessage());
+            return;
+        }
+        Assert.fail();
+    }
+
     private List<Token> readTokens(Type1Lexer t1l) throws IOException
     {
         Token nextToken;
