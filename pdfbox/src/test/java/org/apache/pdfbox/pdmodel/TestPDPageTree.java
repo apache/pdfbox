@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 
@@ -130,5 +131,18 @@ class TestPDPageTree
             assertEquals(2, (document.getPages().indexOf(pageThree)),
                     "Page three should be placed at index 2.");
         }
+    }
+
+    /**
+     * PDFBOX-6040: avoid loop in getInheritableAttribute().
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testNodeLoop() throws IOException
+    {
+        doc = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
+                TestPDPageTree.class.getResourceAsStream("PDFBOX-6040-nodeloop.pdf")));
+        assertNull(doc.getPage(0).getResources());
     }
 }
