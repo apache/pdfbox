@@ -83,6 +83,11 @@ public class PDFXrefStreamParser
         {
             throw new IOException("Incorrect /W array in XRef: " + Arrays.toString(w));
         }
+        if (w[0] + w[1] + w[2] > 20)
+        {
+            // PDFBOX-6037
+            throw new IOException("Incorrect /W array in XRef: " + Arrays.toString(w));
+        }
 
         COSArray indexArray = stream.getCOSArray(COSName.INDEX);
         if (indexArray == null)
