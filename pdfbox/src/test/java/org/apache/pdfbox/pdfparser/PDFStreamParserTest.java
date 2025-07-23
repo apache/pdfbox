@@ -87,6 +87,23 @@ public class PDFStreamParserTest extends TestCase
         testInlineImage2ops("ID\n12EI5EI          Q   ", "12EI5", "Q");
     }
 
+    /**
+     * PDFBOX-6038: test that nested BI is detected.
+     */
+    public void testNestedBI()
+    {
+        try
+        {
+            testInlineImage2ops("BI/IB/IB BI/ BI", "", "");
+        }
+        catch (IOException ex)
+        {
+            assertEquals("Nested '" + OperatorName.BEGIN_INLINE_IMAGE + "' operator not allowed", ex.getMessage());
+            return;
+        }
+        fail("Should have thrown");        
+    }
+
     // checks whether there are two operators, one inline image and the named operator
     private void testInlineImage2ops(String s, String imageDataString, String opName) throws IOException
     {

@@ -52,6 +52,7 @@ public class PDFStreamParser extends BaseParser
     
     private static final int MAX_BIN_CHAR_TEST_LENGTH = 10;
     private final byte[] binCharTestArr = new byte[MAX_BIN_CHAR_TEST_LENGTH];
+    private int inlineImageDepth = 0;
     
     /**
      * Constructor.
@@ -275,6 +276,12 @@ public class PDFStreamParser extends BaseParser
                 Operator beginImageOP = Operator.getOperator(nextOperator);
                 if (nextOperator.equals(OperatorName.BEGIN_INLINE_IMAGE))
                 {
+                    inlineImageDepth++;
+                    if (inlineImageDepth > 1)
+                    {
+                        // PDFBOX-6038
+                        throw new IOException("Nested '" + OperatorName.BEGIN_INLINE_IMAGE + "' operator not allowed");
+                    }
                     COSDictionary imageParams = new COSDictionary();
                     beginImageOP.setImageParameters(imageParams);
                     Object nextToken = null;
@@ -288,6 +295,7 @@ public class PDFStreamParser extends BaseParser
                             break;
                         }
                         imageParams.setItem((COSName) nextToken, (COSBase) value);
+                        inlineImageDepth--;
                     }
                     // final token will be the image data, maybe??
                     if (nextToken instanceof Operator)
