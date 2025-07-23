@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Tests for PDFStreamParser.
@@ -87,6 +88,17 @@ class PDFStreamParserTest
         testInlineImage2ops("ID\n12EI5EI        Q   ", "12EI5", "Q");
         testInlineImage2ops("ID\n12EI5EI         Q   ", "12EI5", "Q");
         testInlineImage2ops("ID\n12EI5EI          Q   ", "12EI5", "Q");
+    }
+
+    /**
+     * PDFBOX-6038: test that nested BI is detected.
+     */
+    @Test
+    void testNestedBI()
+    {
+        IOException ex =
+                assertThrows(IOException.class, () -> testInlineImage2ops("BI/IB/IB BI/ BI", "", ""));
+        assertEquals("Nested '" + OperatorName.BEGIN_INLINE_IMAGE + "' operator not allowed", ex.getMessage());
     }
 
     // checks whether there are two operators, one inline image and the named operator
