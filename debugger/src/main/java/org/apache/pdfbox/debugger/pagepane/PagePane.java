@@ -214,7 +214,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                 // (checking widget.getPage() also works, but it is sometimes null)
                 if (dictionarySet.contains(widget.getCOSObject()) && widget.getRectangle() != null)
                 {
-                    rectMap.put(widget.getRectangle(), "Field name: " + field.getFullyQualifiedName());
+                    rectMap.put(widget.getRectangle(), "Field name: " + field.getFullyQualifiedName() + ", value: " + field.getValueAsString());
                 }
             }
         }
