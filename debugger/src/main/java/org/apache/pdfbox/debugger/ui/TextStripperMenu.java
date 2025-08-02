@@ -26,8 +26,8 @@ import javax.swing.JMenu;
 public class TextStripperMenu extends MenuBase
 {
     private static TextStripperMenu instance;
-    private static JCheckBoxMenuItem sortOptionMenuItem;
-    private static JCheckBoxMenuItem ignoreSpacesOptionMenuItem;
+    private static final JCheckBoxMenuItem SORTOPTIONMENUITEM = new JCheckBoxMenuItem("sort");
+    private static final JCheckBoxMenuItem IGNORESPACESOPTIONMENUITEM = new JCheckBoxMenuItem("ignore spaces");
 
     /**
      * Constructor.
@@ -35,13 +35,8 @@ public class TextStripperMenu extends MenuBase
     private TextStripperMenu()
     {
         JMenu menu = new JMenu("Text extraction options");
-
-        sortOptionMenuItem = new JCheckBoxMenuItem("sort");        
-        menu.add(sortOptionMenuItem);
-
-        ignoreSpacesOptionMenuItem = new JCheckBoxMenuItem("ignore spaces");        
-        menu.add(ignoreSpacesOptionMenuItem);
-
+        menu.add(SORTOPTIONMENUITEM);
+        menu.add(IGNORESPACESOPTIONMENUITEM);
         setMenu(menu);
     }
 
@@ -61,11 +56,11 @@ public class TextStripperMenu extends MenuBase
 
     public static boolean isSorted()
     {
-        return sortOptionMenuItem.isSelected();
+        return SORTOPTIONMENUITEM.isSelected();
     }
 
     public static boolean isIgnoreSpaces()
     {
-        return ignoreSpacesOptionMenuItem.isSelected();
+        return IGNORESPACESOPTIONMENUITEM.isSelected();
     }
 }
