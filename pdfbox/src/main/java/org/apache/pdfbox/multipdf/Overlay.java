@@ -566,8 +566,9 @@ public class Overlay implements Closeable
 
     /**
      * Calculate the transform to be used when positioning the overlay. The default implementation
-     * centers on the destination. Override this method to do your own, e.g. move to a corner, or
-     * rotate.
+     * centers on the destination and assumes (0,0) to be the lower left (This will be changed in
+     * 4.0, see PDFBOX-6048 why). Override this method to do your own, e.g. move to a corner,
+     * rotate, or zoom.
      *
      * @param page The page that will get the overlay.
      * @param overlayMediaBox The overlay media box.
