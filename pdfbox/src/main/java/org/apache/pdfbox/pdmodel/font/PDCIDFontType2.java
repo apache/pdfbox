@@ -337,7 +337,7 @@ public class PDCIDFontType2 extends PDCIDFont
     {
         // todo: really we want the BBox, (for text extraction:)
         return (ttf.getHorizontalHeader().getAscender() + -ttf.getHorizontalHeader().getDescender())
-                / ttf.getUnitsPerEm(); // todo: shouldn't this be the yMax/yMin?
+                / (float) ttf.getUnitsPerEm(); // todo: shouldn't this be the yMax/yMin?
     }
 
     @Override
