@@ -31,6 +31,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
@@ -54,6 +56,8 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
  */
 public class Overlay implements Closeable
 {
+    private static final Logger LOG = LogManager.getLogger(Overlay.class);
+
     /**
      * Possible location of the overlaid pages: foreground or background.
      */
@@ -565,8 +569,9 @@ public class Overlay implements Closeable
 
     /**
      * Calculate the transform to be used when positioning the overlay. The default implementation
-     * centers on the destination. Override this method to do your own, e.g. move to a corner, or
-     * rotate.
+     * centers on the destination, and this is calculated from the lower left of the media box of
+     * the destination (this has been changed from 3.0 and 2.0, see PDFBOX-6048 for details).
+     * Override this method to do your own, e.g. move to a corner, rotate, or zoom.
      *
      * @param page The page that will get the overlay.
      * @param overlayMediaBox The overlay media box.
@@ -576,8 +581,9 @@ public class Overlay implements Closeable
     {
         AffineTransform at = new AffineTransform();
         PDRectangle pageMediaBox = page.getMediaBox();
-        float hShift = (pageMediaBox.getWidth() - overlayMediaBox.getWidth()) / 2.0f;
-        float vShift = (pageMediaBox.getHeight() - overlayMediaBox.getHeight()) / 2.0f;
+        float hShift = pageMediaBox.getLowerLeftX() + (pageMediaBox.getWidth() - overlayMediaBox.getWidth()) / 2.0f;
+        float vShift = pageMediaBox.getLowerLeftY() + (pageMediaBox.getHeight() - overlayMediaBox.getHeight()) / 2.0f;
+        LOG.debug("Overlay position: ({},{})", hShift, vShift);
         at.translate(hShift, vShift);
         return at;
     }
