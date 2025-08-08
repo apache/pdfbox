@@ -463,8 +463,9 @@ public class Overlay implements Closeable
             resources = new PDResources();
             page.setResources(resources);
         }
-        COSName xObjectId = createOverlayXObject(page, layoutPage, cloner);
-        array.add(createOverlayStream(page, layoutPage, xObjectId));
+        PDFormXObject overlayFormXObject = createOverlayFormXObject(layoutPage, cloner);
+        COSName formXObjectId = resources.add(overlayFormXObject, "OL");
+        array.add(createOverlayStream(page, layoutPage, formXObjectId));
     }
 
     private LayoutPage getLayoutPage(int pageNumber, int numberOfPages)
@@ -502,7 +503,7 @@ public class Overlay implements Closeable
         return layoutPage;
     }
 
-    private COSName createOverlayXObject(PDPage page, LayoutPage layoutPage, PDFCloneUtility cloner)
+    private PDFormXObject createOverlayFormXObject(LayoutPage layoutPage, PDFCloneUtility cloner)
             throws IOException
     {
         PDFormXObject xobjForm = new PDFormXObject(layoutPage.overlayContentStream);
@@ -529,8 +530,7 @@ public class Overlay implements Closeable
                 break;
         }
         xobjForm.setMatrix(at);
-        PDResources resources = page.getResources();
-        return resources.add(xobjForm, "OL");
+        return xobjForm;
     }
 
     private COSStream createOverlayStream(PDPage page, LayoutPage layoutPage, COSName xObjectId)
