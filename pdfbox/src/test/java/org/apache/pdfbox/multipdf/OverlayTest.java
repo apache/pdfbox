@@ -75,9 +75,6 @@ class OverlayTest
             for (int p = 0; p < 4; ++p)
             {
                 doc.importPage(baseDocument.getPage(0));
-                
-                //TODO remove this after PDFBOX-5489 is fixed?
-                doc.getDocument().setHighestXRefObjectNumber(baseDocument.getDocument().getHighestXRefObjectNumber());
             }
             doc.save(new File(OUT_DIR, "OverlayTestBaseRot0_4Pages.pdf"));
         }
