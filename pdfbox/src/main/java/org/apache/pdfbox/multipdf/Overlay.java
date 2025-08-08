@@ -266,7 +266,7 @@ public class Overlay implements Closeable
         }
         if (allPagesOverlay != null)
         {
-            specificPageOverlayLayoutPageMap = getLayoutPages(allPagesOverlay);
+            specificPageOverlayLayoutPageMap = createPageOverlayLayoutPageMap(allPagesOverlay);
             useAllOverlayPages = true;
             numberOfOverlayPages = specificPageOverlayLayoutPageMap.size();
         }
@@ -283,14 +283,14 @@ public class Overlay implements Closeable
     private static final class LayoutPage
     {
         private final PDRectangle overlayMediaBox;
-        private final COSStream overlayContentStream;
+        private final COSStream overlayCOSStream;
         private final COSDictionary overlayResources;
         private final short overlayRotation;
 
         private LayoutPage(PDRectangle mediaBox, COSStream contentStream, COSDictionary resources, short rotation)
         {
             overlayMediaBox = mediaBox;
-            overlayContentStream = contentStream;
+            overlayCOSStream = contentStream;
             overlayResources = resources;
             overlayRotation = rotation;
         }
@@ -326,7 +326,7 @@ public class Overlay implements Closeable
                 resources.getCOSObject(), (short) page.getRotation());
     }
     
-    private Map<Integer,LayoutPage> getLayoutPages(PDDocument doc) throws IOException
+    private Map<Integer,LayoutPage> createPageOverlayLayoutPageMap(PDDocument doc) throws IOException
     {
         int i = 0;
         Map<Integer, LayoutPage> layoutPages = new HashMap<>();
@@ -503,7 +503,7 @@ public class Overlay implements Closeable
     private PDFormXObject createOverlayFormXObject(LayoutPage layoutPage, PDFCloneUtility cloner)
             throws IOException
     {
-        PDFormXObject xobjForm = new PDFormXObject(layoutPage.overlayContentStream);
+        PDFormXObject xobjForm = new PDFormXObject(layoutPage.overlayCOSStream);
         xobjForm.setResources(new PDResources(
                 cloner.cloneForNewDocument(layoutPage.overlayResources)));
         xobjForm.setFormType(1);
