@@ -122,7 +122,7 @@ public class Overlay implements Closeable
             if (layoutPage == null)
             {
                 PDDocument doc = loadPDF(path);
-                layoutPage = getLayoutPage(doc);
+                layoutPage = createLayoutPageFromDocument(doc);
                 layouts.put(path, layoutPage);
                 openDocumentsSet.add(doc);
             }
@@ -154,7 +154,7 @@ public class Overlay implements Closeable
             PDDocument doc = e.getValue();
             if (doc != null)
             {
-                specificPageOverlayLayoutPageMap.put(e.getKey(), getLayoutPage(doc));
+                specificPageOverlayLayoutPageMap.put(e.getKey(), createLayoutPageFromDocument(doc));
             }
         }
         processPages(inputPDFDocument);
@@ -219,7 +219,7 @@ public class Overlay implements Closeable
         }
         if (defaultOverlay != null)
         {
-            defaultOverlayPage = getLayoutPage(defaultOverlay);
+            defaultOverlayPage = createLayoutPageFromDocument(defaultOverlay);
         }
         // first page overlay PDF
         if (firstPageOverlayFilename != null)
@@ -228,7 +228,7 @@ public class Overlay implements Closeable
         }
         if (firstPageOverlay != null)
         {
-            firstPageOverlayPage = getLayoutPage(firstPageOverlay);
+            firstPageOverlayPage = createLayoutPageFromDocument(firstPageOverlay);
         }
         // last page overlay PDF
         if (lastPageOverlayFilename != null)
@@ -237,7 +237,7 @@ public class Overlay implements Closeable
         }
         if (lastPageOverlay != null)
         {
-            lastPageOverlayPage = getLayoutPage(lastPageOverlay);
+            lastPageOverlayPage = createLayoutPageFromDocument(lastPageOverlay);
         }
         // odd pages overlay PDF
         if (oddPageOverlayFilename != null)
@@ -246,7 +246,7 @@ public class Overlay implements Closeable
         }
         if (oddPageOverlay != null)
         {
-            oddPageOverlayPage = getLayoutPage(oddPageOverlay);
+            oddPageOverlayPage = createLayoutPageFromDocument(oddPageOverlay);
         }
         // even pages overlay PDF
         if (evenPageOverlayFilename != null)
@@ -255,7 +255,7 @@ public class Overlay implements Closeable
         }
         if (evenPageOverlay != null)
         {
-            evenPageOverlayPage = getLayoutPage(evenPageOverlay);
+            evenPageOverlayPage = createLayoutPageFromDocument(evenPageOverlay);
         }
         // all pages overlay PDF
         if (allPagesOverlayFilename != null)
@@ -301,7 +301,7 @@ public class Overlay implements Closeable
      * @return
      * @throws IOException 
      */
-    private LayoutPage getLayoutPage(PDDocument doc) throws IOException
+    private LayoutPage createLayoutPageFromDocument(PDDocument doc) throws IOException
     {
         return createLayoutPage(doc.getPage(0));
     }
