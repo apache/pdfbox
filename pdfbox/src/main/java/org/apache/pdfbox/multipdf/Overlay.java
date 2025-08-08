@@ -78,22 +78,22 @@ public class Overlay implements Closeable
     private PDDocument inputPDFDocument = null;
 
     private String defaultOverlayFilename = null;
-    private PDDocument defaultOverlay = null;
+    private PDDocument defaultOverlayDocument = null;
 
     private String firstPageOverlayFilename = null;
-    private PDDocument firstPageOverlay = null;
+    private PDDocument firstPageOverlayDocument = null;
 
     private String lastPageOverlayFilename = null;
-    private PDDocument lastPageOverlay = null;
+    private PDDocument lastPageOverlayDocument = null;
     
     private String allPagesOverlayFilename = null;
-    private PDDocument allPagesOverlay = null;
+    private PDDocument allPagesOverlayDocument = null;
     
     private String oddPageOverlayFilename = null;
-    private PDDocument oddPageOverlay = null;
+    private PDDocument oddPageOverlayDocument = null;
     
     private String evenPageOverlayFilename = null;
-    private PDDocument evenPageOverlay = null;
+    private PDDocument evenPageOverlayDocument = null;
 
     private int numberOfOverlayPages = 0;
     private boolean useAllOverlayPages = false;
@@ -171,29 +171,29 @@ public class Overlay implements Closeable
     @Override
     public void close() throws IOException
     {
-        if (defaultOverlay != null)
+        if (defaultOverlayDocument != null)
         {
-            defaultOverlay.close();
+            defaultOverlayDocument.close();
         }
-        if (firstPageOverlay != null)
+        if (firstPageOverlayDocument != null)
         {
-            firstPageOverlay.close();
+            firstPageOverlayDocument.close();
         }
-        if (lastPageOverlay != null)
+        if (lastPageOverlayDocument != null)
         {
-            lastPageOverlay.close();
+            lastPageOverlayDocument.close();
         }
-        if (allPagesOverlay != null)
+        if (allPagesOverlayDocument != null)
         {
-            allPagesOverlay.close();
+            allPagesOverlayDocument.close();
         }
-        if (oddPageOverlay != null)
+        if (oddPageOverlayDocument != null)
         {
-            oddPageOverlay.close();
+            oddPageOverlayDocument.close();
         }
-        if (evenPageOverlay != null)
+        if (evenPageOverlayDocument != null)
         {
-            evenPageOverlay.close();
+            evenPageOverlayDocument.close();
         }
         for (PDDocument doc : openDocumentsSet)
         {
@@ -217,56 +217,56 @@ public class Overlay implements Closeable
         // default overlay PDF
         if (defaultOverlayFilename != null)
         {
-            defaultOverlay = loadPDF(defaultOverlayFilename);
+            defaultOverlayDocument = loadPDF(defaultOverlayFilename);
         }
-        if (defaultOverlay != null)
+        if (defaultOverlayDocument != null)
         {
-            defaultOverlayPage = createLayoutPageFromDocument(defaultOverlay);
+            defaultOverlayPage = createLayoutPageFromDocument(defaultOverlayDocument);
         }
         // first page overlay PDF
         if (firstPageOverlayFilename != null)
         {
-            firstPageOverlay = loadPDF(firstPageOverlayFilename);
+            firstPageOverlayDocument = loadPDF(firstPageOverlayFilename);
         }
-        if (firstPageOverlay != null)
+        if (firstPageOverlayDocument != null)
         {
-            firstPageOverlayPage = createLayoutPageFromDocument(firstPageOverlay);
+            firstPageOverlayPage = createLayoutPageFromDocument(firstPageOverlayDocument);
         }
         // last page overlay PDF
         if (lastPageOverlayFilename != null)
         {
-            lastPageOverlay = loadPDF(lastPageOverlayFilename);
+            lastPageOverlayDocument = loadPDF(lastPageOverlayFilename);
         }
-        if (lastPageOverlay != null)
+        if (lastPageOverlayDocument != null)
         {
-            lastPageOverlayPage = createLayoutPageFromDocument(lastPageOverlay);
+            lastPageOverlayPage = createLayoutPageFromDocument(lastPageOverlayDocument);
         }
         // odd pages overlay PDF
         if (oddPageOverlayFilename != null)
         {
-            oddPageOverlay = loadPDF(oddPageOverlayFilename);
+            oddPageOverlayDocument = loadPDF(oddPageOverlayFilename);
         }
-        if (oddPageOverlay != null)
+        if (oddPageOverlayDocument != null)
         {
-            oddPageOverlayPage = createLayoutPageFromDocument(oddPageOverlay);
+            oddPageOverlayPage = createLayoutPageFromDocument(oddPageOverlayDocument);
         }
         // even pages overlay PDF
         if (evenPageOverlayFilename != null)
         {
-            evenPageOverlay = loadPDF(evenPageOverlayFilename);
+            evenPageOverlayDocument = loadPDF(evenPageOverlayFilename);
         }
-        if (evenPageOverlay != null)
+        if (evenPageOverlayDocument != null)
         {
-            evenPageOverlayPage = createLayoutPageFromDocument(evenPageOverlay);
+            evenPageOverlayPage = createLayoutPageFromDocument(evenPageOverlayDocument);
         }
         // all pages overlay PDF
         if (allPagesOverlayFilename != null)
         {
-            allPagesOverlay = loadPDF(allPagesOverlayFilename);
+            allPagesOverlayDocument = loadPDF(allPagesOverlayFilename);
         }
-        if (allPagesOverlay != null)
+        if (allPagesOverlayDocument != null)
         {
-            specificPageOverlayLayoutPageMap = createPageOverlayLayoutPageMap(allPagesOverlay);
+            specificPageOverlayLayoutPageMap = createPageOverlayLayoutPageMap(allPagesOverlayDocument);
             useAllOverlayPages = true;
             numberOfOverlayPages = specificPageOverlayLayoutPageMap.size();
         }
@@ -673,7 +673,7 @@ public class Overlay implements Closeable
      */
     public void setDefaultOverlayPDF(PDDocument defaultOverlayPDF)
     {
-        defaultOverlay = defaultOverlayPDF;
+        defaultOverlayDocument = defaultOverlayPDF;
     }
 
     /**
@@ -704,7 +704,7 @@ public class Overlay implements Closeable
      */
     public void setFirstPageOverlayPDF(PDDocument firstPageOverlayPDF)
     {
-        firstPageOverlay = firstPageOverlayPDF;
+        firstPageOverlayDocument = firstPageOverlayPDF;
     }
 
     /**
@@ -725,7 +725,7 @@ public class Overlay implements Closeable
      */
     public void setLastPageOverlayPDF(PDDocument lastPageOverlayPDF)
     {
-        lastPageOverlay = lastPageOverlayPDF;
+        lastPageOverlayDocument = lastPageOverlayPDF;
     }
 
     /**
@@ -747,7 +747,7 @@ public class Overlay implements Closeable
      */
     public void setAllPagesOverlayPDF(PDDocument allPagesOverlayPDF)
     {
-        allPagesOverlay = allPagesOverlayPDF;
+        allPagesOverlayDocument = allPagesOverlayPDF;
     }
 
     /**
@@ -768,7 +768,7 @@ public class Overlay implements Closeable
      */
     public void setOddPageOverlayPDF(PDDocument oddPageOverlayPDF)
     {
-        oddPageOverlay = oddPageOverlayPDF;
+        oddPageOverlayDocument = oddPageOverlayPDF;
     }
 
     /**
@@ -789,6 +789,6 @@ public class Overlay implements Closeable
      */
     public void setEvenPageOverlayPDF(PDDocument evenPageOverlayPDF)
     {
-        evenPageOverlay = evenPageOverlayPDF;
+        evenPageOverlayDocument = evenPageOverlayPDF;
     }
 }
