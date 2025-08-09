@@ -67,6 +67,7 @@ public class Overlay implements Closeable
     }
 
     private LayoutPage defaultOverlayPage;
+    private final Map<Integer,LayoutPage> rotatedDefaultOverlayPagesMap = new HashMap<>();
     private LayoutPage firstPageOverlayPage;
     private LayoutPage lastPageOverlayPage;
     private LayoutPage oddPageOverlayPage;
@@ -100,6 +101,7 @@ public class Overlay implements Closeable
 
     private int numberOfOverlayPages = 0;
     private boolean useAllOverlayPages = false;
+    private boolean adjustRotation = false;
 
     /**
      * This will add overlays to a document.
@@ -204,6 +206,7 @@ public class Overlay implements Closeable
         }
         openDocumentsSet.clear();
         specificPageOverlayLayoutPageMap.clear();
+        rotatedDefaultOverlayPagesMap.clear();
     }
 
     private void loadPDFs() throws IOException
@@ -288,9 +291,9 @@ public class Overlay implements Closeable
         private final PDRectangle overlayMediaBox;
         private final COSStream overlayCOSStream;
         private final COSDictionary overlayResources;
-        private final short overlayRotation;
+        private int overlayRotation;
 
-        private LayoutPage(PDRectangle mediaBox, COSStream contentStream, COSDictionary resources, short rotation)
+        private LayoutPage(PDRectangle mediaBox, COSStream contentStream, COSDictionary resources, int rotation)
         {
             overlayMediaBox = mediaBox;
             overlayCOSStream = contentStream;
@@ -326,7 +329,7 @@ public class Overlay implements Closeable
             resources = new PDResources();
         }
         return new LayoutPage(page.getMediaBox(), createCombinedContentStream(contents),
-                resources.getCOSObject(), (short) page.getRotation());
+                resources.getCOSObject(), page.getRotation());
     }
     
     private Map<Integer,LayoutPage> createPageOverlayLayoutPageMap(PDDocument doc) throws IOException
@@ -468,7 +471,7 @@ public class Overlay implements Closeable
         array.add(createOverlayStream(page, layoutPage, formXObjectId));
     }
 
-    private LayoutPage getLayoutPage(int pageNumber, int numberOfPages)
+    private LayoutPage getLayoutPage(int pageNumber, int numberOfPages) throws IOException
     {
         LayoutPage layoutPage = null;
         if (!useAllOverlayPages && specificPageOverlayLayoutPageMap.containsKey(pageNumber))
@@ -494,6 +497,27 @@ public class Overlay implements Closeable
         else if (defaultOverlayPage != null)
         {
             layoutPage = defaultOverlayPage;
+
+            if (adjustRotation)
+            {
+                // PDFBOX-6049: consider the rotation of the document page
+                // Note that this segment is only the second best solution to the problem. The best
+                // would be to make appropriate transforms in calculateAffineTransform()                
+                PDPage page = inputPDFDocument.getPage(pageNumber - 1);
+                if (page.getRotation() != 0)
+                {
+                    LayoutPage rotatedLayoutPage = rotatedDefaultOverlayPagesMap.get(page.getRotation());
+                    if (rotatedLayoutPage == null)
+                    {
+                        // createLayoutPage must be called because we can't reuse the COSStream
+                        rotatedLayoutPage = createLayoutPage(defaultOverlayDocument.getPage(0));
+                        int newRotation = (rotatedLayoutPage.overlayRotation - page.getRotation() + 360) % 360;
+                        rotatedLayoutPage.overlayRotation = newRotation;
+                        rotatedDefaultOverlayPagesMap.put(page.getRotation(), rotatedLayoutPage);
+                    }
+                    return rotatedLayoutPage;
+                }
+            }
         }
         else if (useAllOverlayPages)
         {
@@ -516,15 +540,15 @@ public class Overlay implements Closeable
         {
             case 90:
                 at.translate(0, layoutPage.overlayMediaBox.getWidth());
-                at.rotate(Math.toRadians(-90));
+                at.quadrantRotate(3); // 270
                 break;
             case 180:
                 at.translate(layoutPage.overlayMediaBox.getWidth(), layoutPage.overlayMediaBox.getHeight());
-                at.rotate(Math.toRadians(-180));
+                at.quadrantRotate(2); // 180
                 break;
             case 270:
                 at.translate(layoutPage.overlayMediaBox.getHeight(), 0);
-                at.rotate(Math.toRadians(-270));
+                at.quadrantRotate(1); // 90
                 break;
             default:
                 break;
@@ -794,5 +818,24 @@ public class Overlay implements Closeable
     public void setEvenPageOverlayPDF(PDDocument evenPageOverlayPDF)
     {
         evenPageOverlayDocument = evenPageOverlayPDF;
+    }
+
+    /**
+     * This sets whether the overlay is to be rotated according to the rotation of the pages of the
+     * source document. This may look weird if the content of the document is also rotated. So it's
+     * really a users decision to activate this option if the overlay appears rotated in some pages
+     * of the result document and this isn't wanted.
+     * <p>
+     * This setting will only apply to usage of the default overlay, because it is assumed that when
+     * using specific overlays for specific pages, it is known in advance what kind of input there
+     * is.
+     *
+     * @param adjustRotation if true, the overlay will always look the same when the result file is
+     * displayed on the screen. If false (default) then it will be rotated if the page is rotated.
+     */
+    public void setAdjustRotation(boolean adjustRotation)
+    {
+        this.adjustRotation = adjustRotation;
+
     }
 }
