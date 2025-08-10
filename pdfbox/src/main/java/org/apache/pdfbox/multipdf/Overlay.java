@@ -506,16 +506,7 @@ public class Overlay implements Closeable
                 PDPage page = inputPDFDocument.getPage(pageNumber - 1);
                 if (page.getRotation() != 0)
                 {
-                    LayoutPage rotatedLayoutPage = rotatedDefaultOverlayPagesMap.get(page.getRotation());
-                    if (rotatedLayoutPage == null)
-                    {
-                        // createLayoutPage must be called because we can't reuse the COSStream
-                        rotatedLayoutPage = createLayoutPage(defaultOverlayDocument.getPage(0));
-                        int newRotation = (rotatedLayoutPage.overlayRotation - page.getRotation() + 360) % 360;
-                        rotatedLayoutPage.overlayRotation = newRotation;
-                        rotatedDefaultOverlayPagesMap.put(page.getRotation(), rotatedLayoutPage);
-                    }
-                    return rotatedLayoutPage;
+                    return createAdjustedLayoutPage(page);
                 }
             }
         }
@@ -525,6 +516,20 @@ public class Overlay implements Closeable
             layoutPage = specificPageOverlayLayoutPageMap.get(usePageNum);
         }
         return layoutPage;
+    }
+
+    private LayoutPage createAdjustedLayoutPage(PDPage page) throws IOException
+    {
+        LayoutPage rotatedLayoutPage = rotatedDefaultOverlayPagesMap.get(page.getRotation());
+        if (rotatedLayoutPage == null)
+        {
+            // createLayoutPage must be called because we can't reuse the COSStream
+            rotatedLayoutPage = createLayoutPage(defaultOverlayDocument.getPage(0));
+            int newRotation = (rotatedLayoutPage.overlayRotation - page.getRotation() + 360) % 360;
+            rotatedLayoutPage.overlayRotation = newRotation;
+            rotatedDefaultOverlayPagesMap.put(page.getRotation(), rotatedLayoutPage);
+        }
+        return rotatedLayoutPage;
     }
 
     private PDFormXObject createOverlayFormXObject(LayoutPage layoutPage, PDFCloneUtility cloner)
@@ -836,6 +841,5 @@ public class Overlay implements Closeable
     public void setAdjustRotation(boolean adjustRotation)
     {
         this.adjustRotation = adjustRotation;
-
     }
 }
