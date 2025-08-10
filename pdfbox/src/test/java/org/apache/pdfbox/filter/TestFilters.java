@@ -124,8 +124,10 @@ public class TestFilters extends TestCase
      */
     public void testPDFBOX4517() throws IOException
     {
-        PDDocument.load(new File("target/pdfs/PDFBOX-4517-cryptfilter.pdf"),
+        PDDocument doc = PDDocument.load(new File("target/pdfs/PDFBOX-4517-cryptfilter.pdf"),
                 "userpassword1234");
+        assertEquals(1, doc.getNumberOfPages());
+        doc.close();
     }
 
     /**
