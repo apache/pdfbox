@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import junit.framework.TestCase;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
@@ -29,6 +30,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
 
 /**
@@ -52,7 +54,12 @@ public class PDFCloneUtilityTest extends TestCase
         srcDoc.addPage(pdPage);
         new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, true).close();
         new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, true).close();
-        new PDFCloneUtility(dstDoc).cloneForNewDocument(pdPage.getCOSObject());
+        COSDictionary clonedPageDictionary = (COSDictionary) new PDFCloneUtility(dstDoc).cloneForNewDocument(pdPage.getCOSObject());
+        PDPage clonedPage = new PDPage(clonedPageDictionary);
+        Iterator<PDStream> contentStreams = clonedPage.getContentStreams();
+        assertNotNull(contentStreams.next());
+        assertNotNull(contentStreams.next());
+        assertFalse(contentStreams.hasNext());
         srcDoc.close();
         dstDoc.close();
     }
@@ -99,10 +106,19 @@ public class PDFCloneUtilityTest extends TestCase
 
         // save and reload PDF, so that one can see that the files are legit
         dstDoc.save(TESTDIR + CLONEDST);
-        PDDocument.load(new File(TESTDIR + CLONESRC)).close();
-        PDDocument.load(new File(TESTDIR + CLONESRC), (String)null).close();
-        PDDocument.load(new File(TESTDIR + CLONEDST)).close();
-        PDDocument.load(new File(TESTDIR + CLONEDST), (String)null).close();
+        dstDoc.close();
+        PDDocument doc1 = PDDocument.load(new File(TESTDIR + CLONESRC));
+        assertEquals(1, doc1.getNumberOfPages());
+        doc1.close();
+        PDDocument doc2 = PDDocument.load(new File(TESTDIR + CLONESRC), (String) null);
+        assertEquals(1, doc2.getNumberOfPages());
+        doc2.close();
+        PDDocument doc3 = PDDocument.load(new File(TESTDIR + CLONEDST));
+        assertEquals(1, doc3.getNumberOfPages());
+        doc3.close();
+        PDDocument doc4 = PDDocument.load(new File(TESTDIR + CLONEDST), (String) null);
+        assertEquals(1, doc4.getNumberOfPages());
+        doc4.close();
     }
 
     /**
