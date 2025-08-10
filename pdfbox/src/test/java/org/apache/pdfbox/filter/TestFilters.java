@@ -28,8 +28,10 @@ import java.util.Random;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
@@ -129,8 +131,11 @@ class TestFilters
     @Test
     void testPDFBOX4517() throws IOException
     {
-        Loader.loadPDF(new File("target/pdfs/PDFBOX-4517-cryptfilter.pdf"),
-                "userpassword1234");
+        try (PDDocument doc = Loader.loadPDF(new File("target/pdfs/PDFBOX-4517-cryptfilter.pdf"),
+                "userpassword1234"))
+        {
+            assertEquals(1, doc.getNumberOfPages());
+        }
     }
 
     /**
