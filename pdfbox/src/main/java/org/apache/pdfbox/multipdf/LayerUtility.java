@@ -195,16 +195,16 @@ public class LayerUtility
         case 90:
             at.scale(viewBox.getWidth() / viewBox.getHeight(), viewBox.getHeight() / viewBox.getWidth());
             at.translate(0, viewBox.getWidth());
-            at.rotate(-Math.PI / 2.0);
+            at.quadrantRotate(3); // 270
             break;
         case 180:
             at.translate(viewBox.getWidth(), viewBox.getHeight());
-            at.rotate(-Math.PI);
+            at.quadrantRotate(2); // 180
             break;
         case 270:
             at.scale(viewBox.getWidth() / viewBox.getHeight(), viewBox.getHeight() / viewBox.getWidth());
             at.translate(viewBox.getHeight(), 0);
-            at.rotate(-Math.PI * 1.5);
+            at.quadrantRotate(1); // 90
             break;
         default:
             //no additional transformations necessary
