@@ -599,9 +599,9 @@ public class Overlay implements Closeable
 
     /**
      * Calculate the transform to be used when positioning the overlay. The default implementation
-     * centers on the destination, and this is calculated from the lower left of the media box of
-     * the destination (this has been changed from 3.0 and 2.0, see PDFBOX-6048 for details).
-     * Override this method to do your own, e.g. move to a corner, rotate, or zoom.
+     * centers on the destination and assumes (0,0) to be the lower left (This will be changed in
+     * 4.0, see PDFBOX-6048 why). Override this method to do your own, e.g. move to a corner,
+     * rotate, or zoom.
      *
      * @param page The page that will get the overlay.
      * @param overlayMediaBox The overlay media box.
@@ -611,8 +611,8 @@ public class Overlay implements Closeable
     {
         AffineTransform at = new AffineTransform();
         PDRectangle pageMediaBox = page.getMediaBox();
-        float hShift = pageMediaBox.getLowerLeftX() + (pageMediaBox.getWidth() - overlayMediaBox.getWidth()) / 2.0f;
-        float vShift = pageMediaBox.getLowerLeftY() + (pageMediaBox.getHeight() - overlayMediaBox.getHeight()) / 2.0f;
+        float hShift = (pageMediaBox.getWidth() - overlayMediaBox.getWidth()) / 2.0f;
+        float vShift = (pageMediaBox.getHeight() - overlayMediaBox.getHeight()) / 2.0f;
         if (LOG.isDebugEnabled())
         {
             LOG.debug("Overlay position: (" + hShift + "," + vShift + ")");
