@@ -285,9 +285,9 @@ public class Overlay implements Closeable
         private final PDRectangle overlayMediaBox;
         private final COSStream overlayCOSStream;
         private final COSDictionary overlayResources;
-        private final short overlayRotation;
+        private final int overlayRotation;
 
-        private LayoutPage(PDRectangle mediaBox, COSStream contentStream, COSDictionary resources, short rotation)
+        private LayoutPage(PDRectangle mediaBox, COSStream contentStream, COSDictionary resources, int rotation)
         {
             overlayMediaBox = mediaBox;
             overlayCOSStream = contentStream;
@@ -323,7 +323,7 @@ public class Overlay implements Closeable
             resources = new PDResources();
         }
         return new LayoutPage(page.getMediaBox(), createCombinedContentStream(contents),
-                resources.getCOSObject(), (short) page.getRotation());
+                resources.getCOSObject(), page.getRotation());
     }
     
     private Map<Integer,LayoutPage> createPageOverlayLayoutPageMap(PDDocument doc) throws IOException
@@ -513,15 +513,15 @@ public class Overlay implements Closeable
         {
             case 90:
                 at.translate(0, layoutPage.overlayMediaBox.getWidth());
-                at.rotate(Math.toRadians(-90));
+                at.quadrantRotate(3); // 270
                 break;
             case 180:
                 at.translate(layoutPage.overlayMediaBox.getWidth(), layoutPage.overlayMediaBox.getHeight());
-                at.rotate(Math.toRadians(-180));
+                at.quadrantRotate(2); // 180
                 break;
             case 270:
                 at.translate(layoutPage.overlayMediaBox.getHeight(), 0);
-                at.rotate(Math.toRadians(-270));
+                at.quadrantRotate(1); // 90
                 break;
             default:
                 break;
