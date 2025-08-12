@@ -45,6 +45,7 @@ public final class OverlayPDF
     private static final String LAST = "-last";
     private static final String PAGE = "-page";
     private static final String USEALLPAGES = "-useAllPages";
+    private static final String ADJUSTROTATION = "-adjustRotation";
 
     private OverlayPDF()
     {
@@ -122,10 +123,14 @@ public final class OverlayPDF
                 specificPageOverlayFile.put(Integer.parseInt(args[i + 1].trim()), args[i + 2].trim());
                 i += 2;
             } 
+            else if (arg.equals(ADJUSTROTATION))
+            {
+                overlayer.setAdjustRotation(true);
+            }
             else if (overlayer.getDefaultOverlayFile() == null) 
             {
                 overlayer.setDefaultOverlayFile(arg);
-            } 
+            }
             else 
             {
                 usage();
