@@ -60,6 +60,9 @@ public final class OverlayPDF implements Callable<Integer>
     @Option(names = "-useAllPages", description = "overlay file used for overlay, all pages are used by simply repeating them")
     private File useAllPages;
 
+    @Option(names = "-adjustRotation", description = "adjust rotation for rotated source pages (applies only if default overlay file is used)")
+    private boolean adjustRotation = false;
+
     @Option(names = "-page", description = "overlay file used for the given page number, may occur more than once")    
     Map<Integer, String> specificPageOverlayFile = new HashMap<>();
 
@@ -140,6 +143,7 @@ public final class OverlayPDF implements Callable<Integer>
         {
             overlayer.setInputFile(infile.getAbsolutePath());
         }
+        overlayer.setAdjustRotation(adjustRotation);
 
 
         try (PDDocument result = overlayer.overlay(specificPageOverlayFile))
