@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,6 +109,25 @@ class OverlayTest
                                         new File(OUT_DIR, "Overlayed-with-rot270.pdf"));
             }
         }
+        new File(OUT_DIR, "OverlayTestBaseRot0_4Pages.pdf").delete();
+    }
+
+    @Test
+    void testOverlayOnRotatedSourcePages() throws IOException
+    {
+        try (Overlay overlay = new Overlay())
+        {
+            overlay.setInputFile(IN_DIR + "/PDFBOX-6049-Source.pdf");
+            overlay.setDefaultOverlayFile(IN_DIR + "/PDFBOX-6049-Overlay.pdf");
+            overlay.setOverlayPosition(Overlay.Position.FOREGROUND);
+            overlay.setAdjustRotation(true);
+            try (PDDocument resultDoc = overlay.overlay(Collections.emptyMap()))
+            {
+                resultDoc.save(OUT_DIR + "/PDFBOX-6049-Result.pdf");
+            }
+            checkIdenticalRendering(new File(IN_DIR + "/PDFBOX-6049-ExpectedResult.pdf"), new File(OUT_DIR, "PDFBOX-6049-Result.pdf"));
+            new File(OUT_DIR, "PDFBOX-6049-Result.pdf").delete();
+        }
     }
 
     private void testRotatedOverlay(int rotation) throws IOException
@@ -136,28 +156,26 @@ class OverlayTest
 
     private void checkIdenticalRendering(File modelFile, File resultFile) throws IOException
     {
-        BufferedImage modelImage;
-        try (PDDocument modelDocument = Loader.loadPDF(modelFile))
+        try (PDDocument modelDocument = Loader.loadPDF(modelFile);
+             PDDocument resultDocument = Loader.loadPDF(resultFile))
         {
-            modelImage = new PDFRenderer(modelDocument).renderImage(0);
+            assertEquals(modelDocument.getNumberOfPages(), resultDocument.getNumberOfPages());
+            for (int page = 0; page < modelDocument.getNumberOfPages(); ++page)
+            {
+                BufferedImage modelImage = new PDFRenderer(modelDocument).renderImage(page);
+                BufferedImage resultImage = new PDFRenderer(resultDocument).renderImage(page);
+
+                // compare images
+                assertEquals(modelImage.getWidth(), resultImage.getWidth());
+                assertEquals(modelImage.getHeight(), resultImage.getHeight());
+                assertEquals(modelImage.getType(), resultImage.getType());
+
+                DataBufferInt modelDataBuffer = (DataBufferInt) modelImage.getRaster().getDataBuffer();
+                DataBufferInt resultDataBuffer = (DataBufferInt) resultImage.getRaster().getDataBuffer();
+
+                assertArrayEquals(modelDataBuffer.getData(), resultDataBuffer.getData());
+            }
         }
-
-        BufferedImage resultImage;
-        try (PDDocument resultDocument = Loader.loadPDF(resultFile))
-        {
-            resultImage = new PDFRenderer(resultDocument).renderImage(0);
-        }
-
-        // compare images
-        assertEquals(modelImage.getWidth(), resultImage.getWidth());
-        assertEquals(modelImage.getHeight(), resultImage.getHeight());
-        assertEquals(modelImage.getType(), resultImage.getType());
-
-        DataBufferInt modelDataBuffer = (DataBufferInt) modelImage.getRaster().getDataBuffer();
-        DataBufferInt resultDataBuffer = (DataBufferInt) resultImage.getRaster().getDataBuffer();
-
-        assertArrayEquals(modelDataBuffer.getData(), resultDataBuffer.getData());
-
         resultFile.delete();
     }
     
