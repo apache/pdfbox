@@ -170,7 +170,7 @@ class TestTextStripper
                 if( expectedArray[expectedIndex] != actualArray[actualIndex] )
                 {
                     equals = false;
-                    LOG.warn("Lines differ at index expected: {}-{ } actual: {}-{}", expectedIndex,
+                    LOG.warn("Lines differ at index expected: {}-{} actual: {}-{}", expectedIndex,
                             (int) expectedArray[expectedIndex], actualIndex,
                             (int) actualArray[actualIndex]);
                     break;
