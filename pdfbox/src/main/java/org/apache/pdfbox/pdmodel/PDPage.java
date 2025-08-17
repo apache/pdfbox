@@ -238,7 +238,7 @@ public class PDPage implements COSObjectable, PDContentStream
         {
             COSBase filter = contentStream.getFilters();
             // for now only streams using a flate filter are supported
-            if (filter instanceof COSName && ((COSName) filter).equals(COSName.FLATE_DECODE))
+            if (filter instanceof COSName && filter.equals(COSName.FLATE_DECODE))
             {
                 try
                 {
