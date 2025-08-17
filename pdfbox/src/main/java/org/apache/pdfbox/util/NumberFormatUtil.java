@@ -132,7 +132,7 @@ public class NumberFormatUtil
         int offset = startOffset;
         long remaining = number;
 
-        while (remaining > Integer.MAX_VALUE && (!omitTrailingZeros || remaining > 0))
+        while (remaining > Integer.MAX_VALUE && !omitTrailingZeros)
         {
             long digit = remaining / POWER_OF_TENS[exp];
             remaining -= (digit * POWER_OF_TENS[exp]);
