@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel;
 import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.Collections;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -148,14 +149,14 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      */
     private List<COSDictionary> getKids(COSDictionary node)
     {
-        List<COSDictionary> result = new ArrayList<>();
-
         COSArray kids = node.getCOSArray(COSName.KIDS);
         if (kids == null)
         {
             // probably a malformed PDF
-            return result;
+            return Collections.emptyList();
         }
+
+        List<COSDictionary> result = new ArrayList<>();
 
         for (int i = 0, size = kids.size(); i < size; i++)
         {
