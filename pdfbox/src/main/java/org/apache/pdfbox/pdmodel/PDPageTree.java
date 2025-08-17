@@ -156,9 +156,10 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
             return Collections.emptyList();
         }
 
-        List<COSDictionary> result = new ArrayList<>();
+        int size = kids.size();
+        List<COSDictionary> result = new ArrayList<>(size);
 
-        for (int i = 0, size = kids.size(); i < size; i++)
+        for (int i = 0; i < size; i++)
         {
             COSBase base = kids.getObject(i);
             if (base instanceof COSDictionary)
