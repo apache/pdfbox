@@ -234,23 +234,19 @@ public class PDPage implements COSObjectable, PDContentStream
     {
         // return a stream based reader if there is just one stream
         COSStream contentStream = page.getCOSStream(COSName.CONTENTS);
-        if (contentStream != null)
+        if (contentStream != null && COSName.FLATE_DECODE.equals(contentStream.getFilters()))
         {
-            COSBase filter = contentStream.getFilters();
             // for now only streams using a flate filter are supported
-            if (filter instanceof COSName && ((COSName) filter).equals(COSName.FLATE_DECODE))
+            try
             {
-                try
-                {
-                    FlateFilterDecoderStream decoderStream = new FlateFilterDecoderStream(
-                            contentStream.createRawInputStream());
-                    return new NonSeekableRandomAccessReadInputStream(decoderStream);
-                }
-                catch (IOException exception)
-                {
-                    LOG.warn("skipped malformed content stream");
-                    return new RandomAccessReadBuffer(DELIMITER);
-                }
+                FlateFilterDecoderStream decoderStream = new FlateFilterDecoderStream(
+                        contentStream.createRawInputStream());
+                return new NonSeekableRandomAccessReadInputStream(decoderStream);
+            }
+            catch (IOException exception)
+            {
+                LOG.warn("skipped malformed content stream");
+                return new RandomAccessReadBuffer(DELIMITER);
             }
         }
         return getContentsForRandomAccess();
