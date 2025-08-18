@@ -505,9 +505,10 @@ public class Overlay implements Closeable
                 // Note that this segment is only the second best solution to the problem. The best
                 // would be to make appropriate transforms in calculateAffineTransform()                
                 PDPage page = inputPDFDocument.getPage(pageNumber - 1);
-                if (page.getRotation() != 0)
+                int rotation = page.getRotation();
+                if (rotation != 0)
                 {
-                    return createAdjustedLayoutPage(page);
+                    return createAdjustedLayoutPage(rotation);
                 }
             }
         }
@@ -519,16 +520,16 @@ public class Overlay implements Closeable
         return layoutPage;
     }
 
-    private LayoutPage createAdjustedLayoutPage(PDPage page) throws IOException
+    private LayoutPage createAdjustedLayoutPage(int rotation) throws IOException
     {
-        LayoutPage rotatedLayoutPage = rotatedDefaultOverlayPagesMap.get(page.getRotation());
+        LayoutPage rotatedLayoutPage = rotatedDefaultOverlayPagesMap.get(rotation);
         if (rotatedLayoutPage == null)
         {
             // createLayoutPage must be called because we can't reuse the COSStream
             rotatedLayoutPage = createLayoutPage(defaultOverlayDocument.getPage(0));
-            int newRotation = (rotatedLayoutPage.overlayRotation - page.getRotation() + 360) % 360;
+            int newRotation = (rotatedLayoutPage.overlayRotation - rotation + 360) % 360;
             rotatedLayoutPage.overlayRotation = newRotation;
-            rotatedDefaultOverlayPagesMap.put(page.getRotation(), rotatedLayoutPage);
+            rotatedDefaultOverlayPagesMap.put(rotation, rotatedLayoutPage);
         }
         return rotatedLayoutPage;
     }
