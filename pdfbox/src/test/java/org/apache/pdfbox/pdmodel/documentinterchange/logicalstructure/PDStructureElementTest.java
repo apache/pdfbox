@@ -31,8 +31,9 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -125,7 +126,7 @@ class PDStructureElementTest
                     {
                         String className = classNames.getObject(i);
                         classSet.add(className);
-                        Assertions.assertTrue(classMap.containsKey(className), "'" + className + "' not in ClassMap " + classMap);
+                        assertTrue(classMap.containsKey(className), "'" + className + "' not in ClassMap " + classMap);
                     }
                 }
             }
@@ -135,4 +136,32 @@ class PDStructureElementTest
             }
         }
     }    
+
+    
+    @Test
+    void testSimple()
+    {
+        PDStructureElement structureElement = new PDStructureElement("S", null);
+        assertEquals(PDStructureElement.TYPE, structureElement.getType());
+        assertEquals("S", structureElement.getStructureType());
+        assertNull(structureElement.getParent());
+        structureElement.setStructureType("T");
+        assertEquals("T", structureElement.getStructureType());
+        structureElement.setElementIdentifier("Ident");
+        assertEquals("Ident", structureElement.getElementIdentifier());
+        structureElement.setRevisionNumber(33);
+        assertEquals(33, structureElement.getRevisionNumber());
+        structureElement.incrementRevisionNumber();
+        assertEquals(34, structureElement.getRevisionNumber());
+        structureElement.setTitle("Title");
+        assertEquals("Title", structureElement.getTitle());
+        structureElement.setLanguage("Klingon");
+        assertEquals("Klingon", structureElement.getLanguage());
+        structureElement.setAlternateDescription("Alto");
+        assertEquals("Alto", structureElement.getAlternateDescription());
+        structureElement.setActualText("Actual");
+        assertEquals("Actual", structureElement.getActualText());
+        structureElement.setExpandedForm("ExpF");
+        assertEquals("ExpF", structureElement.getExpandedForm());
+    }
 }
