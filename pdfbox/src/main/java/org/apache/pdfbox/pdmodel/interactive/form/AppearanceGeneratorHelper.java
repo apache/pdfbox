@@ -495,13 +495,16 @@ class AppearanceGeneratorHelper
             }
             float padding = Math.max(1f, borderWidth);
             PDRectangle clipRect = applyPadding(bbox, padding);
+            float clipRectLowerLeftY = clipRect.getLowerLeftY();
+            float clipRectHeight = clipRect.getHeight();
+
             PDRectangle contentRect = applyPadding(clipRect, padding);
             
             contents.saveGraphicsState();
             
             // Acrobat always adds a clipping path
-            contents.addRect(clipRect.getLowerLeftX(), clipRect.getLowerLeftY(),
-                    clipRect.getWidth(), clipRect.getHeight());
+            contents.addRect(clipRect.getLowerLeftX(), clipRectLowerLeftY,
+                             clipRect.getWidth(), clipRectHeight);
             contents.clip();
             
             // get the font
@@ -571,21 +574,22 @@ class AppearanceGeneratorHelper
             else
             {
                 // Adobe shows the text 'shifted up' in case the caps don't fit into the clipping area
-                if (fontCapAtSize > clipRect.getHeight())
+                if (fontCapAtSize > clipRectHeight)
                 {
-                    y = clipRect.getLowerLeftY() + -fontDescentAtSize;
+                    y = clipRectLowerLeftY + -fontDescentAtSize;
                 }
                 else
                 {
                     // calculate the position based on the content rectangle
-                    y = clipRect.getLowerLeftY() + (clipRect.getHeight() - fontCapAtSize) / 2;
-                    
+                    y = clipRectLowerLeftY + (clipRectHeight - fontCapAtSize) / 2;
+
                     // check to ensure that ascents and descents fit
-                    if (y - clipRect.getLowerLeftY() < -fontDescentAtSize) {
-                        
-                        float fontDescentBased = -fontDescentAtSize + contentRect.getLowerLeftY();
-                        float fontCapBased = contentRect.getHeight() - contentRect.getLowerLeftY() - fontCapAtSize;
-                        
+                    if (y - clipRectLowerLeftY < -fontDescentAtSize)
+                    {
+                        float contentRectLowerLeftY = contentRect.getLowerLeftY();
+                        float fontDescentBased = -fontDescentAtSize + contentRectLowerLeftY;
+                        float fontCapBased = contentRect.getHeight() - contentRectLowerLeftY - fontCapAtSize;
+
                         y = Math.min(fontDescentBased, Math.max(y, fontCapBased));
                     }
                 }
