@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -755,14 +756,25 @@ public class PDFMergerUtilityTest extends TestCase
 
         createSimpleFile(inFile1);
         createSimpleFile(inFile2);
+        
+        // Unrelated: increase test coverage by testing inputStream
+        InputStream is1 = new FileInputStream(inFile1);
+        InputStream is2 = new FileInputStream(inFile1);
 
         OutputStream out = new FileOutputStream(outFile);
         PDFMergerUtility merger = new PDFMergerUtility();
         merger.setDestinationStream(out);
-        merger.addSource(inFile1);
-        merger.addSource(inFile2);
+        assertEquals(out, merger.getDestinationStream());
+        merger.addSource(is1);
+        merger.addSource(is2);
         merger.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+        is1.close();
+        is2.close();
         out.close();
+
+        PDDocument doc = PDDocument.load(outFile);
+        assertEquals(2, doc.getNumberOfPages());
+        doc.close();
 
         assertTrue(inFile1.delete());
         assertTrue(inFile2.delete());
