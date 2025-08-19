@@ -28,6 +28,9 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
@@ -60,8 +63,8 @@ public class PDStructureElementTest
         {
             cnt += attributes.size();
         }
-        Assert.assertEquals(111, cnt); // this one was 105 before PDFBOX-4197 was fixed
-        Assert.assertEquals(0, classSet.size());
+        assertEquals(111, cnt); // this one was 105 before PDFBOX-4197 was fixed
+        assertEquals(0, classSet.size());
     }
 
     /**
@@ -81,14 +84,14 @@ public class PDStructureElementTest
         doc.close();
 
         // collect attributes and check their count.
-        Assert.assertEquals(72, attributeSet.size());
+        assertEquals(72, attributeSet.size());
         int cnt = 0;
         for (Revisions<PDAttributeObject> attributes : attributeSet)
         {
             cnt += attributes.size();
         }
-        Assert.assertEquals(45, cnt);
-        Assert.assertEquals(10, classSet.size());
+        assertEquals(45, cnt);
+        assertEquals(10, classSet.size());
     }
 
     // Each element can be an array, a dictionary or a number.
@@ -125,7 +128,7 @@ public class PDStructureElementTest
                     {
                         String className = classNames.getObject(i);
                         classSet.add(className);
-                        Assert.assertTrue("'" + className + "' not in ClassMap " + classMap, classMap.containsKey(className));
+                        assertTrue("'" + className + "' not in ClassMap " + classMap, classMap.containsKey(className));
                     }
                 }
             }
@@ -135,4 +138,32 @@ public class PDStructureElementTest
             }
         }
     }    
+
+    
+    @Test
+    public void testSimple()
+    {
+        PDStructureElement structureElement = new PDStructureElement("S", null);
+        assertEquals(PDStructureElement.TYPE, structureElement.getType());
+        assertEquals("S", structureElement.getStructureType());
+        assertNull(structureElement.getParent());
+        structureElement.setStructureType("T");
+        assertEquals("T", structureElement.getStructureType());
+        structureElement.setElementIdentifier("Ident");
+        assertEquals("Ident", structureElement.getElementIdentifier());
+        structureElement.setRevisionNumber(33);
+        assertEquals(33, structureElement.getRevisionNumber());
+        structureElement.incrementRevisionNumber();
+        assertEquals(34, structureElement.getRevisionNumber());
+        structureElement.setTitle("Title");
+        assertEquals("Title", structureElement.getTitle());
+        structureElement.setLanguage("Klingon");
+        assertEquals("Klingon", structureElement.getLanguage());
+        structureElement.setAlternateDescription("Alto");
+        assertEquals("Alto", structureElement.getAlternateDescription());
+        structureElement.setActualText("Actual");
+        assertEquals("Actual", structureElement.getActualText());
+        structureElement.setExpandedForm("ExpF");
+        assertEquals("ExpF", structureElement.getExpandedForm());
+    }
 }
