@@ -36,6 +36,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -779,15 +781,24 @@ class PDFMergerUtilityTest
         createSimpleFile(inFile1);
         createSimpleFile(inFile2);
 
-        try (OutputStream out = new FileOutputStream(outFile))
+        try (OutputStream out = new FileOutputStream(outFile);
+             // Unrelated: increase test coverage by testing RandomAccessRead
+             RandomAccessRead rar1 = new RandomAccessReadBufferedFile(inFile1);
+             RandomAccessRead rar2 = new RandomAccessReadBufferedFile(inFile2))
         {
             PDFMergerUtility merger = new PDFMergerUtility();
             merger.setDestinationStream(out);
+            assertEquals(out, merger.getDestinationStream());
 
-            merger.addSource(inFile1);
-            merger.addSource(inFile2);
+            merger.addSource(rar1);
+            merger.addSource(rar2);
 
             merger.mergeDocuments(IOUtils.createMemoryOnlyStreamCache());
+        }
+
+        try (PDDocument doc = Loader.loadPDF(outFile))
+        {
+            assertEquals(2, doc.getNumberOfPages());
         }
 
         Files.delete(inFile1.toPath());
