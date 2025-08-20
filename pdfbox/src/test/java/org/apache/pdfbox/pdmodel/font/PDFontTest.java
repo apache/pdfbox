@@ -408,7 +408,9 @@ public class PDFontTest
     }
 
     /**
-     * PDFBOX-5115: U+00AD (soft hyphen) should work with WinAnsiEncoding. 
+     * PDFBOX-5115: U+00AD (soft hyphen) should work with WinAnsiEncoding.
+     * 
+     * @throws IOException
      */
     @Test
     public void testSoftHyphen() throws IOException
@@ -499,5 +501,32 @@ public class PDFontTest
                 font.getStringWidth("The quick brown fox jumps over the lazy dog."), 0.001f);
         Assert.assertEquals(278.0f, font.getSpaceWidth(), 0.001f);
         document.close();
+    }
+
+    @Test
+    public void testSymbol() throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage();
+        PDPageContentStream contentStream = new PDPageContentStream(doc, page);
+        contentStream.beginText();
+        contentStream.setFont(PDType1Font.SYMBOL, 10);
+        contentStream.newLineAtOffset(10, 700);
+        // Note that the Alpha is the greek alpha, but the Omega is the Ohm symbol
+        // (Tested on Windows)
+        contentStream.showText("\u0391 \u2126");
+        contentStream.endText();
+        contentStream.close();
+        doc.addPage(page);
+        doc.save(baos);
+        doc.close();
+
+        doc = PDDocument.load(baos.toByteArray());
+        PDFTextStripper stripper = new PDFTextStripper();
+        String text = stripper.getText(doc);
+        Assert.assertEquals("\u0391 \u2126", text.trim());
+        doc.close();
     }
 }
