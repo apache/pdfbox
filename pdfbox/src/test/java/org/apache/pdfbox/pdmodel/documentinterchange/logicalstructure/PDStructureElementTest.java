@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.pdfbox.cos.COSArray;
@@ -27,10 +28,12 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.Assert;
+import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 
 /**
@@ -57,7 +60,7 @@ public class PDStructureElementTest
         doc.close();
 
         // collect attributes and check their count.
-        Assert.assertEquals(117, attributeSet.size());
+        assertEquals(117, attributeSet.size());
         int cnt = 0;
         for (Revisions<PDAttributeObject> attributes : attributeSet)
         {
@@ -155,6 +158,15 @@ public class PDStructureElementTest
         assertEquals(33, structureElement.getRevisionNumber());
         structureElement.incrementRevisionNumber();
         assertEquals(34, structureElement.getRevisionNumber());
+        try
+        {
+            structureElement.setRevisionNumber(-1);
+            fail("Should have thrown IllegalArgumentException");
+        }
+        catch (IllegalArgumentException ex)
+        {
+            // ok
+        }
         structureElement.setTitle("Title");
         assertEquals("Title", structureElement.getTitle());
         structureElement.setLanguage("Klingon");
@@ -165,5 +177,41 @@ public class PDStructureElementTest
         assertEquals("Actual", structureElement.getActualText());
         structureElement.setExpandedForm("ExpF");
         assertEquals("ExpF", structureElement.getExpandedForm());
+        try
+        {
+            structureElement.appendKid(-1);
+            fail("Should have thrown IllegalArgumentException");
+        }
+        catch (IllegalArgumentException ex)
+        {
+            // ok
+        }
+        structureElement.appendKid(0);
+        PDMarkedContentReference mcr1 = new PDMarkedContentReference();
+        mcr1.setMCID(1);
+        structureElement.appendKid(mcr1);
+        PDMarkedContentReference mcr2 = new PDMarkedContentReference();
+        mcr2.setMCID(2);
+        PDMarkedContent mc2 = PDMarkedContent.create(COSName.S, mcr2.getCOSObject());
+        structureElement.appendKid(mc2);
+        PDMarkedContentReference mcrSubZero = new PDMarkedContentReference();
+        mcrSubZero.setMCID(-1); //TODO should fail
+        PDMarkedContent mcSubZero = PDMarkedContent.create(COSName.S, mcrSubZero.getCOSObject());
+        try
+        {
+            structureElement.appendKid(mcSubZero);
+            fail("Should have thrown IllegalArgumentException");
+        }
+        catch (IllegalArgumentException ex)
+        {
+            // ok
+        }
+        List<Object> kids = structureElement.getKids();
+        assertEquals(3, kids.size());
+        assertEquals(0, kids.get(0));
+        mcr1 = (PDMarkedContentReference) kids.get(1);
+        assertEquals(PDMarkedContentReference.TYPE, mcr1.getCOSObject().getNameAsString(COSName.TYPE));
+        assertEquals(1, mcr1.getMCID());
+        assertEquals(2, kids.get(2));
     }
 }
