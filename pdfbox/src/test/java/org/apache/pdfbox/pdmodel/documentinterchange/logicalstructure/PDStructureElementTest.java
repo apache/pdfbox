@@ -195,7 +195,16 @@ public class PDStructureElementTest
         PDMarkedContent mc2 = PDMarkedContent.create(COSName.S, mcr2.getCOSObject());
         structureElement.appendKid(mc2);
         PDMarkedContentReference mcrSubZero = new PDMarkedContentReference();
-        mcrSubZero.setMCID(-1); //TODO should fail
+        try
+        {
+            mcrSubZero.setMCID(-1);
+            fail("Should have thrown IllegalArgumentException");
+        }
+        catch (IllegalArgumentException ex)
+        {
+            // ok
+        }
+        mcrSubZero.getCOSObject().setInt(COSName.MCID, -1);
         PDMarkedContent mcSubZero = PDMarkedContent.create(COSName.S, mcrSubZero.getCOSObject());
         try
         {
