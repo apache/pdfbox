@@ -20,6 +20,7 @@ package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,8 +32,11 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
@@ -153,6 +157,7 @@ class PDStructureElementTest
         assertEquals(33, structureElement.getRevisionNumber());
         structureElement.incrementRevisionNumber();
         assertEquals(34, structureElement.getRevisionNumber());
+        assertThrows(IllegalArgumentException.class, () -> structureElement.setRevisionNumber(-1));
         structureElement.setTitle("Title");
         assertEquals("Title", structureElement.getTitle());
         structureElement.setLanguage("Klingon");
@@ -163,5 +168,25 @@ class PDStructureElementTest
         assertEquals("Actual", structureElement.getActualText());
         structureElement.setExpandedForm("ExpF");
         assertEquals("ExpF", structureElement.getExpandedForm());
+        assertThrows(IllegalArgumentException.class, () -> structureElement.appendKid(-1));
+        structureElement.appendKid(0);
+        PDMarkedContentReference mcr1 = new PDMarkedContentReference();
+        mcr1.setMCID(1);
+        structureElement.appendKid(mcr1);
+        PDMarkedContentReference mcr2 = new PDMarkedContentReference();
+        mcr2.setMCID(2);
+        PDMarkedContent mc2 = PDMarkedContent.create(COSName.S, mcr2.getCOSObject());
+        structureElement.appendKid(mc2);
+        PDMarkedContentReference mcrSubZero = new PDMarkedContentReference();
+        mcrSubZero.setMCID(-1); //TODO should fail
+        PDMarkedContent mcSubZero = PDMarkedContent.create(COSName.S, mcrSubZero.getCOSObject());
+        assertThrows(IllegalArgumentException.class, () -> structureElement.appendKid(mcSubZero));
+        List<Object> kids = structureElement.getKids();
+        assertEquals(3, kids.size());
+        assertEquals(0, kids.get(0));
+        mcr1 = (PDMarkedContentReference) kids.get(1);
+        assertEquals(PDMarkedContentReference.TYPE, mcr1.getCOSObject().getNameAsString(COSName.TYPE));
+        assertEquals(1, mcr1.getMCID());
+        assertEquals(2, kids.get(2));
     }
 }
