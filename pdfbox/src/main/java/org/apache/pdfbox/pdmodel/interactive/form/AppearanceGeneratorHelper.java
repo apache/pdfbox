@@ -859,18 +859,19 @@ class AppearanceGeneratorHelper {
                 // Acrobat defaults to 12 for multiline text with size 0
                 return DEFAULT_FONT_SIZE;
             } else {
-                float yScalingFactor = FONTSCALE * font.getFontMatrix().getScaleY();
-                float xScalingFactor = FONTSCALE * font.getFontMatrix().getScaleX();
+                Matrix fontMatrix = font.getFontMatrix();
+                float yScalingFactor = FONTSCALE * fontMatrix.getScaleY();
+                float xScalingFactor = FONTSCALE * fontMatrix.getScaleX();
 
                 // fit width
-                float width = font.getStringWidth(value) * font.getFontMatrix().getScaleX();
+                float width = font.getStringWidth(value) * fontMatrix.getScaleX();
                 float widthBasedFontSize = contentRect.getWidth() / width * xScalingFactor;
 
                 // fit height
                 float height = (font.getFontDescriptor().getCapHeight() + -font.getFontDescriptor().getDescent())
-                        * font.getFontMatrix().getScaleY();
+                        * fontMatrix.getScaleY();
                 if (height <= 0) {
-                    height = font.getBoundingBox().getHeight() * font.getFontMatrix().getScaleY();
+                    height = font.getBoundingBox().getHeight() * fontMatrix.getScaleY();
                 }
 
                 float heightBasedFontSize = contentRect.getHeight() / height * yScalingFactor;
