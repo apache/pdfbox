@@ -1104,51 +1104,6 @@ public abstract class BaseParser
                     "expected='" + ec + "' actual='" + c + "' at offset " + source.getPosition());
         }
     }
-    
-    /**
-     * This will read the next string from the stream up to a certain length.
-     *
-     * @param length The length to stop reading at.
-     *
-     * @return The string that was read from the stream of length 0 to length.
-     *
-     * @throws IOException If there is an error reading from the stream.
-     */
-    protected String readString( int length ) throws IOException
-    {
-        skipSpaces();
-
-        int c = source.read();
-
-        //average string size is around 2 and the normal string buffer size is
-        //about 16 so lets save some space.
-        StringBuilder buffer = new StringBuilder(length);
-        while( !isWhitespace(c) && !isClosing(c) && c != -1 && buffer.length() < length &&
-                c != '[' &&
-                c != '<' &&
-                c != '(' &&
-                c != '/' )
-        {
-            buffer.append( (char)c );
-            c = source.read();
-        }
-        if (c != -1)
-        {
-            source.rewind(1);
-        }
-        return buffer.toString();
-    }
-
-    /**
-     * This will tell if the next character is a closing brace( close of PDF array ).
-     *
-     * @param c The character to check against end of line
-     * @return true if the next byte is ']', false otherwise.
-     */
-    protected static boolean isClosing(int c)
-    {
-        return c == ']';
-    }
 
     /**
      * This will read bytes until the first end of line marker occurs.
