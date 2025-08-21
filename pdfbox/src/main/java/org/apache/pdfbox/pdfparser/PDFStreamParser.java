@@ -423,7 +423,6 @@ public class PDFStreamParser extends BaseParser
         while(
             nextChar != -1 && // EOF
             !isWhitespace(nextChar) &&
-            !isClosing(nextChar) &&
             nextChar != '[' &&
             nextChar != '<' &&
             nextChar != '(' &&
