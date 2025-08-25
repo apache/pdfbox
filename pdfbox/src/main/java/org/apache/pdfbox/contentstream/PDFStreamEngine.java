@@ -952,7 +952,7 @@ public abstract class PDFStreamEngine
      *
      * @param operator The unknown operator.
      * @param operands The list of operands.
-     * @param exception the excpetion which occured when processing the operator
+     * @param exception the exception which occurred when processing the operator
      * 
      * @throws IOException if there is an error processing the operator exception
      */
