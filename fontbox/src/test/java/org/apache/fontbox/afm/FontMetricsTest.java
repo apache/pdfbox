@@ -143,7 +143,7 @@ class FontMetricsTest
             fontMetrics.setMetricSets(3);
             fail("An IllegalArgumentException should have been thrown");
         }
-        catch (IllegalArgumentException excpetion)
+        catch (IllegalArgumentException exception)
         {
             // do nothing
         }
