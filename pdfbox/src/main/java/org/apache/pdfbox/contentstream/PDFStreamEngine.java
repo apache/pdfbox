@@ -198,14 +198,15 @@ public abstract class PDFStreamEngine
     protected void processSoftMask(PDTransparencyGroup group) throws IOException
     {
         saveGraphicsState();
-        Matrix softMaskCTM = getGraphicsState().getSoftMask().getInitialTransformationMatrix();
-        getGraphicsState().setCurrentTransformationMatrix(softMaskCTM);
-        getGraphicsState().setTextMatrix(new Matrix());
-        getGraphicsState().setTextLineMatrix(new Matrix());
-        getGraphicsState().setNonStrokingColorSpace(PDDeviceGray.INSTANCE);
-        getGraphicsState().setNonStrokingColor(PDDeviceGray.INSTANCE.getInitialColor());
-        getGraphicsState().setStrokingColorSpace(PDDeviceGray.INSTANCE);
-        getGraphicsState().setStrokingColor(PDDeviceGray.INSTANCE.getInitialColor());
+        PDGraphicsState graphicsState = getGraphicsState();
+        Matrix softMaskCTM = graphicsState.getSoftMask().getInitialTransformationMatrix();
+        graphicsState.setCurrentTransformationMatrix(softMaskCTM);
+        graphicsState.setTextMatrix(new Matrix());
+        graphicsState.setTextLineMatrix(new Matrix());
+        graphicsState.setNonStrokingColorSpace(PDDeviceGray.INSTANCE);
+        graphicsState.setNonStrokingColor(PDDeviceGray.INSTANCE.getInitialColor());
+        graphicsState.setStrokingColorSpace(PDDeviceGray.INSTANCE);
+        graphicsState.setStrokingColor(PDDeviceGray.INSTANCE.getInitialColor());
         try
         {
             processTransparencyGroup(group);
