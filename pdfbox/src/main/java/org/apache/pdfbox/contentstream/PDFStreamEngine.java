@@ -287,17 +287,18 @@ public abstract class PDFStreamEngine
 
         PDResources parent = pushResources(charProc);
         Deque<PDGraphicsState> savedStack = saveGraphicsStack();
+        PDGraphicsState graphicsState = getGraphicsState();
 
         // replace the CTM with the TRM
-        getGraphicsState().setCurrentTransformationMatrix(textRenderingMatrix);
+        graphicsState.setCurrentTransformationMatrix(textRenderingMatrix);
 
         // transform the CTM using the stream's matrix (this is the FontMatrix)
         textRenderingMatrix.concatenate(charProc.getMatrix());
 
         // note: we don't clip to the BBox as it is often wrong, see PDFBOX-1917
 
-        getGraphicsState().setTextMatrix(new Matrix());
-        getGraphicsState().setTextLineMatrix(new Matrix());
+        graphicsState.setTextMatrix(new Matrix());
+        graphicsState.setTextLineMatrix(new Matrix());
 
         try
         {
