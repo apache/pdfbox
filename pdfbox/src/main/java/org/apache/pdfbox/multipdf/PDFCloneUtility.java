@@ -211,9 +211,10 @@ public class PDFCloneUtility
         if (sourceBase instanceof COSArray && targetBase instanceof COSArray)
         {
             COSArray array = (COSArray) sourceBase;
+            COSArray targetBaseArray = (COSArray) targetBase;
             for (int i = 0; i < array.size(); i++)
             {
-                ((COSArray) targetBase).add(cloneForNewDocument(array.get(i)));
+                targetBaseArray.add(cloneForNewDocument(array.get(i)));
             }
         }
         else if (sourceBase instanceof COSDictionary && targetBase instanceof COSDictionary)
