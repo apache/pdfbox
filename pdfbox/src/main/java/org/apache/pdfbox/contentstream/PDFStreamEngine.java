@@ -759,7 +759,7 @@ public abstract class PDFStreamEngine
                 0, fontSize,                     // 0
                 0, textState.getRise());         // 1
 
-        Matrix textMatrix = getGraphicsState().getTextMatrix();
+        Matrix textMatrix = state.getTextMatrix();
 
         // read the stream until it is empty
         InputStream in = new ByteArrayInputStream(string);
