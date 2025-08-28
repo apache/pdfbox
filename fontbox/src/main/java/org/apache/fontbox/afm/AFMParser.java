@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import org.apache.fontbox.util.BoundingBox;
@@ -310,7 +311,7 @@ public class AFMParser
      */
     public FontMetrics parse() throws IOException
     {
-        return parseFontMetric(false);
+        return parse(false);
     }
 
     /**
@@ -324,8 +325,16 @@ public class AFMParser
      */
     public FontMetrics parse(boolean reducedDataset) throws IOException
     {
-        return parseFontMetric(reducedDataset);
+        try
+        {
+            return parseFontMetric(reducedDataset);
+        }
+        catch (NoSuchElementException ex)
+        {
+            throw new IOException(ex);
+        }
     }
+
     /**
      * This will parse a font metrics item.
      *
