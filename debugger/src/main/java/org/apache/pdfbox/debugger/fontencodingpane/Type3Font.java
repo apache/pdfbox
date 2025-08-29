@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.swing.JPanel;
 
 import org.apache.fontbox.util.BoundingBox;
+import static org.apache.pdfbox.debugger.fontencodingpane.SimpleFont.getEncodingName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -193,11 +194,6 @@ class Type3Font extends FontPane
             // for debug you can save the PDF here
             return new PDFRenderer(doc).renderImage(0);
         }
-    }
-
-    private String getEncodingName(PDType3Font font)
-    {
-        return font.getEncoding().getClass().getSimpleName() + " / " +  font.getEncoding().getEncodingName();
     }
 
     @Override
