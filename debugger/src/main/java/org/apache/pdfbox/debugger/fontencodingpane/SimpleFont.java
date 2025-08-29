@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 
@@ -102,9 +103,13 @@ class SimpleFont extends FontPane
         return glyphs;
     }
 
-    private String getEncodingName(PDSimpleFont font)
+    static String getEncodingName(PDSimpleFont font)
     {
-        return font.getEncoding().getClass().getSimpleName() + " / " +  font.getEncoding().getEncodingName();
+        if (font.getEncoding() == null)
+        {
+            return "(null)";
+        }
+        return font.getClass().getSimpleName() + " / " + font.getEncoding().getEncodingName();
     }
 
     @Override
