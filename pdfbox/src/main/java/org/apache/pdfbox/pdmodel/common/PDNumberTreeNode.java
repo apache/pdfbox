@@ -91,7 +91,7 @@ public class PDNumberTreeNode implements COSObjectable
         COSArray kids = node.getCOSArray(COSName.KIDS);
         if( kids != null )
         {
-            List<PDNumberTreeNode> pdObjects = new ArrayList<>();
+            List<PDNumberTreeNode> pdObjects = new ArrayList<>(kids.size());
             for( int i=0; i<kids.size(); i++ )
             {
                 pdObjects.add( createChildNode( (COSDictionary)kids.getObject(i) ) );
