@@ -441,8 +441,10 @@ public class PDFunctionType0 extends PDFunction
         {
             PDRange domain = getDomainForInput(i);
             PDRange encodeValues = getEncodeForParameter(i);
-            input[i] = clipToRange(input[i], domain.getMin(), domain.getMax());
-            input[i] = interpolate(input[i], domain.getMin(), domain.getMax(), 
+            float min = domain.getMin();
+            float max = domain.getMax();
+            input[i] = clipToRange(input[i], min, max);
+            input[i] = interpolate(input[i], min, max,
                     encodeValues.getMin(), encodeValues.getMax());
             input[i] = clipToRange(input[i], 0, sizeValues[i] - 1);
             inputPrev[i] = (int) Math.floor(input[i]);
