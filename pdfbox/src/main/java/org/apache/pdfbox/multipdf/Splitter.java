@@ -658,13 +658,17 @@ public class Splitter
      * This will set the end page.
      *
      * @param end the 1-based end page
-     * @throws IllegalArgumentException if the end page is smaller than one.
+     * @throws IllegalArgumentException if the end page is smaller than one or than the start page.
      */
     public void setEndPage(int end)
     {
         if(end <= 0)
         {
             throw new IllegalArgumentException("End page is smaller than one");
+        }
+        if (end < startPage)
+        {
+            throw new IllegalArgumentException("End page is smaller than startPage");
         }
         endPage = end;
     }
