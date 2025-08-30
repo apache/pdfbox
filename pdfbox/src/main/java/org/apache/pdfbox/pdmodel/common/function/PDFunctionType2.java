@@ -23,6 +23,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import java.io.IOException;
 import java.util.Objects;
+import org.apache.pdfbox.cos.COSDictionary;
 
 /**
  * This class represents a Type 2 (exponential interpolation) function in a PDF
@@ -55,13 +56,14 @@ public class PDFunctionType2 extends PDFunction
     {
         super(function);
 
-        c0 = Objects.requireNonNullElseGet(getCOSObject().getCOSArray(COSName.C0), COSArray::new);
+        COSDictionary cosObject = getCOSObject();
+        c0 = Objects.requireNonNullElseGet(cosObject.getCOSArray(COSName.C0), COSArray::new);
         if (c0.isEmpty())
         {
             c0.add(COSFloat.ZERO);
         }
 
-        c1 = Objects.requireNonNullElseGet(getCOSObject().getCOSArray(COSName.C1), COSArray::new);
+        c1 = Objects.requireNonNullElseGet(cosObject.getCOSArray(COSName.C1), COSArray::new);
         if (c1.isEmpty())
         {
             c1.add(COSFloat.ONE);
