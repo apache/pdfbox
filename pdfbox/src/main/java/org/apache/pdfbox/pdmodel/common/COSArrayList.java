@@ -120,7 +120,7 @@ public class COSArrayList<E> implements List<E>
     {
         array = new COSArray();
         array.add( item );
-        actual = new ArrayList<E>();
+        actual = new ArrayList<E>(1);
         actual.add( actualObject );
 
         parentDict = dictionary;
