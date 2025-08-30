@@ -336,8 +336,9 @@ public class Overlay implements Closeable
     private Map<Integer,LayoutPage> createPageOverlayLayoutPageMap(PDDocument doc) throws IOException
     {
         int i = 0;
-        Map<Integer, LayoutPage> layoutPages = new HashMap<>();
-        for (PDPage page : doc.getPages())
+        PDPageTree pageTree = doc.getPages();
+        Map<Integer, LayoutPage> layoutPages = new HashMap<>(pageTree.getCount());
+        for (PDPage page : pageTree)
         {
             layoutPages.put(i, createLayoutPage(page));
             i++;
