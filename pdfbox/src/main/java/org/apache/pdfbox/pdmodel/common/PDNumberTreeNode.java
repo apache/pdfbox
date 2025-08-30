@@ -180,12 +180,13 @@ public class PDNumberTreeNode implements COSObjectable
         if (numBase instanceof COSArray)
         {
             COSArray numbersArray = (COSArray) numBase;
-            indices = new HashMap<Integer, COSObjectable>();
-            if (numbersArray.size() % 2 != 0)
+            int size = numbersArray.size();
+            indices = new HashMap<Integer, COSObjectable>(size / 2);
+            if (size % 2 != 0)
             {
-                LOG.warn("Numbers array has odd size: " + numbersArray.size());
+                LOG.warn("Numbers array has odd size: " + size);
             }
-            for (int i = 0; i + 1 < numbersArray.size(); i += 2)
+            for (int i = 0; i + 1 < size; i += 2)
             {
                 COSBase base = numbersArray.getObject(i);
                 if (!(base instanceof COSInteger))
