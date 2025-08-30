@@ -74,7 +74,7 @@ public class Operators
     private static final Operator POP = new StackOperators.Pop();
     private static final Operator ROLL = new StackOperators.Roll();
 
-    private final Map<String, Operator> operators = new java.util.HashMap<>();
+    private final Map<String, Operator> operators = new java.util.HashMap<>(42);
 
     /**
      * Creates a new Operators object with the default set of operators.
