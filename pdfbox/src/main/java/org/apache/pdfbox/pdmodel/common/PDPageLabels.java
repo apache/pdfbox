@@ -100,7 +100,7 @@ public class PDPageLabels implements COSObjectable
     private void findLabels(PDNumberTreeNode node) throws IOException 
     {
         List<PDNumberTreeNode> kids = node.getKids();
-        if (node.getKids() != null) 
+        if (kids != null)
         {
             for (PDNumberTreeNode kid : kids) 
             {
