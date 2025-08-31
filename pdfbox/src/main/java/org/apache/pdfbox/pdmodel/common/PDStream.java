@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -254,6 +255,10 @@ public class PDStream implements COSObjectable
      */
     public InputStream createInputStream(List<String> stopFilters) throws IOException
     {
+        if (stopFilters == null)
+        {
+            stopFilters = Collections.emptyList();
+        }
         InputStream is = stream.createRawInputStream();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         List<COSName> filters = getFilters();
@@ -262,7 +267,7 @@ public class PDStream implements COSObjectable
             for (int i = 0; i < filters.size(); i++)
             {
                 COSName nextFilter = filters.get(i);
-                if ((stopFilters != null) && stopFilters.contains(nextFilter.getName()))
+                if (stopFilters.contains(nextFilter.getName()))
                 {
                     break;
                 }
