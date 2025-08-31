@@ -19,8 +19,11 @@ package org.apache.pdfbox.contentstream.operator.graphics;
 import java.io.IOException;
 import java.util.List;
 import java.awt.geom.Point2D;
-import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -33,6 +36,8 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
  */
 public final class CurveToReplicateFinalPoint extends GraphicsOperatorProcessor
 {
+    private static final Log LOG = LogFactory.getLog(CurveToReplicateFinalPoint.class);
+
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
@@ -49,12 +54,22 @@ public final class CurveToReplicateFinalPoint extends GraphicsOperatorProcessor
         COSNumber x3 = (COSNumber)operands.get(2);
         COSNumber y3 = (COSNumber)operands.get(3);
 
+        Point2D currentPoint = context.getCurrentPoint();
+
         Point2D.Float point1 = context.transformedPoint(x1.floatValue(), y1.floatValue());
         Point2D.Float point3 = context.transformedPoint(x3.floatValue(), y3.floatValue());
 
-        context.curveTo(point1.x, point1.y,
-                        point3.x, point3.y,
-                        point3.x, point3.y);
+        if (currentPoint == null)
+        {
+            LOG.warn("curveTo (" + point3.x + "," + point3.y + ") without initial MoveTo");
+            context.moveTo(point3.x, point3.y);
+        }
+        else
+        {
+            context.curveTo(point1.x, point1.y,
+                            point3.x, point3.y,
+                            point3.x, point3.y);
+        }
     }
 
     @Override
