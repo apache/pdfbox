@@ -199,12 +199,16 @@ public class PDStream implements COSObjectable
      */
     public InputStream createInputStream(List<String> stopFilters) throws IOException
     {
+        if (stopFilters == null)
+        {
+            stopFilters = Collections.emptyList();
+        }
         InputStream is = stream.createRawInputStream();
         List<Filter> someFilters = new ArrayList<>();
         List<COSName> filters = getFilters();
         for (COSName nextFilter : filters)
         {
-            if (stopFilters != null && stopFilters.contains(nextFilter.getName()))
+            if (stopFilters.contains(nextFilter.getName()))
             {
                 break;
             }
