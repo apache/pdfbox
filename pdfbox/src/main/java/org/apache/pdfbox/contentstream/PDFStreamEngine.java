@@ -78,7 +78,7 @@ public abstract class PDFStreamEngine
 {
     private static final Log LOG = LogFactory.getLog(PDFStreamEngine.class);
 
-    private final Map<String, OperatorProcessor> operators = new HashMap<String, OperatorProcessor>(80);
+    private final Map<String, OperatorProcessor> operators = new HashMap<String, OperatorProcessor>();
 
     private Deque<PDGraphicsState> graphicsStack = new ArrayDeque<PDGraphicsState>();
 

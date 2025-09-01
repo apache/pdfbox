@@ -181,7 +181,7 @@ public class PDNumberTreeNode implements COSObjectable
         {
             COSArray numbersArray = (COSArray) numBase;
             int size = numbersArray.size();
-            indices = new HashMap<Integer, COSObjectable>(size / 2);
+            indices = new HashMap<Integer, COSObjectable>();
             if (size % 2 != 0)
             {
                 LOG.warn("Numbers array has odd size: " + size);

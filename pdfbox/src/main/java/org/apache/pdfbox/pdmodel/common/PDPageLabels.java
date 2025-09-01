@@ -208,7 +208,7 @@ public class PDPageLabels implements COSObjectable
     public Map<String, Integer> getPageIndicesByLabels()
     {
         int numberOfPages = doc.getNumberOfPages();
-        final Map<String, Integer> labelMap = new HashMap<String, Integer>(numberOfPages);
+        final Map<String, Integer> labelMap = new HashMap<String, Integer>();
         computeLabels(new LabelHandler()
         {
             @Override
