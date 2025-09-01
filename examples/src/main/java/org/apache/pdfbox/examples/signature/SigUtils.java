@@ -182,8 +182,12 @@ public class SigUtils
 
         // Catalog
         COSDictionary catalogDict = doc.getDocumentCatalog().getCOSObject();
-        COSDictionary permsDict = new COSDictionary();
-        catalogDict.setItem(COSName.PERMS, permsDict);
+        COSDictionary permsDict = catalogDict.getCOSDictionary(COSName.PERMS);
+        if (permsDict == null)
+        {
+            permsDict = new COSDictionary();
+            catalogDict.setItem(COSName.PERMS, permsDict);
+        }
         permsDict.setItem(COSName.DOCMDP, signature);
         catalogDict.setNeedToBeUpdated(true);
         permsDict.setNeedToBeUpdated(true);
