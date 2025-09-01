@@ -765,7 +765,8 @@ public class COSWriter implements ICOSVisitor, Closeable
             throw new IOException("Can't write new byteRange '" + byteRange + 
                     "' not enough space: byteRange.length(): " + byteRange.length() + 
                     ", byteRangeLength: " + byteRangeLength +
-                    ", byteRangeOffset: " + byteRangeOffset);
+                    ", byteRangeOffset: " + byteRangeOffset +
+                    ", inLength: " + inLength);
         }
 
         // copy the new incremental data into a buffer (e.g. signature dict, trailer)
@@ -1154,10 +1155,15 @@ public class COSWriter implements ICOSVisitor, Closeable
                     COSBase base3 = byteRange.get(3);
                     if (base2 instanceof COSInteger && base3 instanceof COSInteger)
                     {
+                        // PDFBOX-5521 avoid hitting "old" signatures
                         long br2 = ((COSInteger) base2).longValue();
                         long br3 = ((COSInteger) base3).longValue();
                         if (br2 + br3 > incrementalInput.length())
                         {
+                            if (LOG.isDebugEnabled())
+                            {
+                                LOG.debug("reachedSignature at offset " + getStandardOutput().getPos() + ", byteRange: " + byteRange);
+                            }
                             reachedSignature = true;
                         }
                     }
