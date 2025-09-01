@@ -41,6 +41,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -84,6 +87,8 @@ import org.apache.pdfbox.util.Hex;
  */
 public class COSWriter implements ICOSVisitor
 {
+    private static final Logger LOG = LogManager.getLogger(COSWriter.class);
+
     /**
      * The dictionary open token.
      */
@@ -881,7 +886,8 @@ public class COSWriter implements ICOSVisitor
             throw new IOException("Can't write new byteRange '" + byteRange + 
                     "' not enough space: byteRange.length(): " + byteRange.length() + 
                     ", byteRangeLength: " + byteRangeLength +
-                    ", byteRangeOffset: " + byteRangeOffset);
+                    ", byteRangeOffset: " + byteRangeOffset +
+                    ", inLength: " + inLength);
         }
 
         // copy the new incremental data into a buffer (e.g. signature dict, trailer)
@@ -1278,10 +1284,12 @@ public class COSWriter implements ICOSVisitor
                     COSBase base3 = byteRange.get(3);
                     if (base2 instanceof COSInteger && base3 instanceof COSInteger)
                     {
+                        // PDFBOX-5521 avoid hitting "old" signatures
                         long br2 = ((COSInteger) base2).longValue();
                         long br3 = ((COSInteger) base3).longValue();
                         if (br2 + br3 > incrementalInput.length())
                         {
+                            LOG.debug("reachedSignature at offset {}, byteRange: {}", getStandardOutput().getPos(), byteRange);
                             reachedSignature = true;
                         }
                     }
