@@ -79,7 +79,7 @@ public abstract class PDFStreamEngine
 {
     private static final Logger LOG = LogManager.getLogger(PDFStreamEngine.class);
 
-    private final Map<String, OperatorProcessor> operators = new HashMap<>(80);
+    private final Map<String, OperatorProcessor> operators = new HashMap<>();
 
     private Deque<PDGraphicsState> graphicsStack = new ArrayDeque<>();
 
