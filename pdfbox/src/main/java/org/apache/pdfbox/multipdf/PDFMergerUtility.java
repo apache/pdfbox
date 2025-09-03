@@ -542,7 +542,7 @@ public class PDFMergerUtility
         mergeAcroForm(cloner, destCatalog, srcCatalog);
 
         COSArray destThreads = destCatalog.getCOSObject().getCOSArray(COSName.THREADS);
-        COSArray srcThreads = (COSArray) cloner.cloneForNewDocument(destCatalog.getCOSObject().getDictionaryObject(
+        COSArray srcThreads = cloner.cloneForNewDocument(destCatalog.getCOSObject().getCOSArray(
                 COSName.THREADS));
         if (destThreads == null)
         {
@@ -649,9 +649,9 @@ public class PDFMergerUtility
             }
             else
             {
-                destNums = (COSArray) destLabels.getDictionaryObject(COSName.NUMS);
+                destNums = destLabels.getCOSArray(COSName.NUMS);
             }
-            COSArray srcNums = (COSArray) srcLabels.getDictionaryObject(COSName.NUMS);
+            COSArray srcNums = srcLabels.getCOSArray(COSName.NUMS);
             if (srcNums != null)
             {
                 int startSize = destNums.size();
