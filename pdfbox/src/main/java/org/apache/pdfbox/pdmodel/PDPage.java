@@ -532,7 +532,7 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public List<PDThreadBead> getThreadBeads()
     {
-        COSArray beads = (COSArray) page.getDictionaryObject(COSName.B);
+        COSArray beads = page.getCOSArray(COSName.B);
         if (beads == null)
         {
             beads = new COSArray();

@@ -115,7 +115,7 @@ public class PDObjectStream extends PDStream
     public PDObjectStream getExtends()
     {
         PDObjectStream retval = null;
-        COSStream stream = (COSStream)getCOSObject().getDictionaryObject( COSName.EXTENDS );
+        COSStream stream = getCOSObject().getCOSStream(COSName.EXTENDS);
         if( stream != null )
         {
             retval = new PDObjectStream( stream );

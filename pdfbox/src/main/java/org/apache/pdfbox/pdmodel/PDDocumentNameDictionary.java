@@ -84,13 +84,13 @@ public class PDDocumentNameDictionary implements COSObjectable
     {
         PDDestinationNameTreeNode dests = null;
 
-        COSDictionary dic = (COSDictionary)nameDictionary.getDictionaryObject( COSName.DESTS );
+        COSDictionary dic = nameDictionary.getCOSDictionary(COSName.DESTS );
 
         //The document catalog also contains the Dests entry sometimes
         //so check there as well.
         if( dic == null )
         {
-            dic = (COSDictionary)catalog.getCOSObject().getDictionaryObject( COSName.DESTS );
+            dic = catalog.getCOSObject().getCOSDictionary( COSName.DESTS );
         }
 
         if( dic != null )
@@ -127,7 +127,7 @@ public class PDDocumentNameDictionary implements COSObjectable
     {
         PDEmbeddedFilesNameTreeNode retval = null;
 
-        COSDictionary dic = (COSDictionary)nameDictionary.getDictionaryObject( COSName.EMBEDDED_FILES );
+        COSDictionary dic = nameDictionary.getCOSDictionary(COSName.EMBEDDED_FILES);
 
         if( dic != null )
         {
@@ -158,7 +158,7 @@ public class PDDocumentNameDictionary implements COSObjectable
     {
         PDJavascriptNameTreeNode retval = null;
 
-        COSDictionary dic = (COSDictionary) nameDictionary.getDictionaryObject(COSName.JAVA_SCRIPT);
+        COSDictionary dic = nameDictionary.getCOSDictionary(COSName.JAVA_SCRIPT);
 
         if( dic != null )
         {

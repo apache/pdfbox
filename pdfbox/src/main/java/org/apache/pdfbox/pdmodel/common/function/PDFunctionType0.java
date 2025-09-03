@@ -96,7 +96,7 @@ public class PDFunctionType0 extends PDFunction
     {
         if (size == null)
         {
-            size = (COSArray) getCOSObject().getDictionaryObject(COSName.SIZE);
+            size = getCOSObject().getCOSArray(COSName.SIZE);
         }
         return size;
     }
@@ -145,7 +145,7 @@ public class PDFunctionType0 extends PDFunction
     {
         if (encode == null)
         {
-            encode = (COSArray) getCOSObject().getDictionaryObject(COSName.ENCODE);
+            encode = getCOSObject().getCOSArray(COSName.ENCODE);
             // the default value is [0 (size[0]-1) 0 (size[1]-1) ...]
             if (encode == null)
             {
@@ -171,7 +171,7 @@ public class PDFunctionType0 extends PDFunction
     {
         if (decode == null)
         {
-            decode = (COSArray) getCOSObject().getDictionaryObject(COSName.DECODE);
+            decode = getCOSObject().getCOSArray(COSName.DECODE);
             // if decode is null, the default values are the range values
             if (decode == null)
             {

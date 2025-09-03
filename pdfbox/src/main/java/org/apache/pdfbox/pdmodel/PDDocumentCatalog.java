@@ -165,7 +165,7 @@ public class PDDocumentCatalog implements COSObjectable
     public PDPageTree getPages()
     {
         // todo: cache me?
-        return new PDPageTree((COSDictionary)root.getDictionaryObject(COSName.PAGES), document);
+        return new PDPageTree(root.getCOSDictionary(COSName.PAGES), document);
     }
 
     /**
@@ -217,7 +217,7 @@ public class PDDocumentCatalog implements COSObjectable
      */
     public List<PDThread> getThreads()
     {
-        COSArray array = (COSArray)root.getDictionaryObject(COSName.THREADS);
+        COSArray array = root.getCOSArray(COSName.THREADS);
         if (array == null)
         {
             array = new COSArray();
@@ -304,7 +304,7 @@ public class PDDocumentCatalog implements COSObjectable
      */
     public PDDocumentCatalogAdditionalActions getActions()
     {
-        COSDictionary addAction = (COSDictionary) root.getDictionaryObject(COSName.AA);
+        COSDictionary addAction = root.getCOSDictionary(COSName.AA);
         if (addAction == null)
         {
             addAction = new COSDictionary();
@@ -328,7 +328,7 @@ public class PDDocumentCatalog implements COSObjectable
      */
     public PDDocumentNameDictionary getNames()
     {
-        COSDictionary names = (COSDictionary) root.getDictionaryObject(COSName.NAMES);
+        COSDictionary names = root.getCOSDictionary(COSName.NAMES);
         return names == null ? null : new PDDocumentNameDictionary(this, names);
     }
 
@@ -338,7 +338,7 @@ public class PDDocumentCatalog implements COSObjectable
     public PDDocumentNameDestinationDictionary getDests()
     {
         PDDocumentNameDestinationDictionary nameDic = null;
-        COSDictionary dests = (COSDictionary) root.getDictionaryObject(COSName.DESTS);
+        COSDictionary dests = root.getCOSDictionary(COSName.DESTS);
         if (dests != null)
         {
             nameDic = new PDDocumentNameDestinationDictionary(dests);
@@ -396,7 +396,7 @@ public class PDDocumentCatalog implements COSObjectable
      */
     public PDMarkInfo getMarkInfo()
     {
-        COSDictionary dic = (COSDictionary)root.getDictionaryObject(COSName.MARK_INFO);
+        COSDictionary dic = root.getCOSDictionary(COSName.MARK_INFO);
         return dic == null ? null : new PDMarkInfo(dic);
     }
 
@@ -418,7 +418,7 @@ public class PDDocumentCatalog implements COSObjectable
     public List<PDOutputIntent> getOutputIntents()
     {
         List<PDOutputIntent> retval = new ArrayList<PDOutputIntent>();
-        COSArray array = (COSArray)root.getDictionaryObject(COSName.OUTPUT_INTENTS);
+        COSArray array = root.getCOSArray(COSName.OUTPUT_INTENTS);
         if (array != null)
         {
             for (COSBase cosBase : array)
@@ -442,7 +442,7 @@ public class PDDocumentCatalog implements COSObjectable
      */
     public void addOutputIntent(PDOutputIntent outputIntent)
     {
-        COSArray array = (COSArray)root.getDictionaryObject(COSName.OUTPUT_INTENTS);
+        COSArray array = root.getCOSArray(COSName.OUTPUT_INTENTS);
         if (array == null)
         {
             array = new COSArray();
@@ -541,7 +541,7 @@ public class PDDocumentCatalog implements COSObjectable
      */
     public PDURIDictionary getURI()
     {
-        COSDictionary uri = (COSDictionary)root.getDictionaryObject(COSName.URI);
+        COSDictionary uri = root.getCOSDictionary(COSName.URI);
         return uri == null ? null : new PDURIDictionary(uri);
     }
 
@@ -624,7 +624,7 @@ public class PDDocumentCatalog implements COSObjectable
      */
     public PDPageLabels getPageLabels() throws IOException
     {
-        COSDictionary dict = (COSDictionary) root.getDictionaryObject(COSName.PAGE_LABELS);
+        COSDictionary dict = root.getCOSDictionary(COSName.PAGE_LABELS);
         return dict == null ? null : new PDPageLabels(document, dict);
     }
 
@@ -645,7 +645,7 @@ public class PDDocumentCatalog implements COSObjectable
      */
     public PDOptionalContentProperties getOCProperties()
     {
-        COSDictionary dict = (COSDictionary)root.getDictionaryObject(COSName.OCPROPERTIES);
+        COSDictionary dict = root.getCOSDictionary(COSName.OCPROPERTIES);
         return dict == null ? null : new PDOptionalContentProperties(dict);
     }
 

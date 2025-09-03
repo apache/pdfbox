@@ -520,7 +520,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         // todo: re-balance tree? (or at least group new pages into tree nodes of e.g. 20)
 
         // add to parent's kids
-        COSArray kids = (COSArray)root.getDictionaryObject(COSName.KIDS);
+        COSArray kids = root.getCOSArray(COSName.KIDS);
         kids.add(node);
 
         // update ancestor counts
@@ -546,8 +546,8 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     public void insertBefore(PDPage newPage, PDPage nextPage)
     {
         COSDictionary nextPageDict = nextPage.getCOSObject();
-        COSDictionary parentDict = (COSDictionary) nextPageDict.getDictionaryObject(COSName.PARENT);
-        COSArray kids = (COSArray) parentDict.getDictionaryObject(COSName.KIDS);
+        COSDictionary parentDict = nextPageDict.getCOSDictionary(COSName.PARENT);
+        COSArray kids = parentDict.getCOSArray(COSName.KIDS);
         boolean found = false;
         for (int i = 0; i < kids.size(); ++i)
         {
@@ -578,8 +578,8 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     public void insertAfter(PDPage newPage, PDPage prevPage)
     {
         COSDictionary prevPageDict = prevPage.getCOSObject();
-        COSDictionary parentDict = (COSDictionary) prevPageDict.getDictionaryObject(COSName.PARENT);
-        COSArray kids = (COSArray) parentDict.getDictionaryObject(COSName.KIDS);
+        COSDictionary parentDict = prevPageDict.getCOSDictionary(COSName.PARENT);
+        COSArray kids = parentDict.getCOSArray(COSName.KIDS);
         boolean found = false;
         for (int i = 0; i < kids.size(); ++i)
         {
@@ -605,7 +605,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         {
             int cnt = parentDict.getInt(COSName.COUNT);
             parentDict.setInt(COSName.COUNT, cnt + 1);
-            parentDict = (COSDictionary) parentDict.getDictionaryObject(COSName.PARENT);
+            parentDict = parentDict.getCOSDictionary(COSName.PARENT);
         }
         while (parentDict != null);
     }

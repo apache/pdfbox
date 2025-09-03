@@ -1085,7 +1085,7 @@ public class PDFDebugger extends JFrame
         {
             if (stream.containsKey(COSName.RESOURCES))
             {
-                resourcesDic = (COSDictionary) stream.getDictionaryObject(COSName.RESOURCES);
+                resourcesDic = stream.getCOSDictionary(COSName.RESOURCES);
             }
             isContentStream = true;
         }

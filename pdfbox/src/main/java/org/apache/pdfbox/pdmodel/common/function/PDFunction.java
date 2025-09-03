@@ -282,7 +282,7 @@ public abstract class PDFunction implements COSObjectable
     {
         if (range == null) 
         {
-            range = (COSArray) getCOSObject().getDictionaryObject(COSName.RANGE);
+            range = getCOSObject().getCOSArray(COSName.RANGE);
         }
         return range;
     }
@@ -296,7 +296,7 @@ public abstract class PDFunction implements COSObjectable
     {
         if (domain == null)
         {
-            domain = (COSArray) getCOSObject().getDictionaryObject(COSName.DOMAIN);
+            domain = getCOSObject().getCOSArray(COSName.DOMAIN);
         }
         return domain;
     }
