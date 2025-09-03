@@ -70,7 +70,7 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      */
     public PDAction getK()
     {
-        COSDictionary k = (COSDictionary) actions.getDictionaryObject(COSName.K);
+        COSDictionary k = actions.getCOSDictionary(COSName.K);
         PDAction retval = null;
         if( k != null )
         {
@@ -101,7 +101,7 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      */
     public PDAction getF()
     {
-        COSDictionary f = (COSDictionary) actions.getDictionaryObject(COSName.F);
+        COSDictionary f = actions.getCOSDictionary(COSName.F);
         PDAction retval = null;
         if( f != null )
         {
@@ -132,7 +132,7 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      */
     public PDAction getV()
     {
-        COSDictionary v = (COSDictionary) actions.getDictionaryObject(COSName.V);
+        COSDictionary v = actions.getCOSDictionary(COSName.V);
         PDAction retval = null;
         if( v != null )
         {
@@ -165,7 +165,7 @@ public class PDFormFieldAdditionalActions implements COSObjectable
      */
     public PDAction getC()
     {
-        COSDictionary c = (COSDictionary) actions.getDictionaryObject(COSName.C);
+        COSDictionary c = actions.getCOSDictionary(COSName.C);
         PDAction retval = null;
         if( c != null )
         {

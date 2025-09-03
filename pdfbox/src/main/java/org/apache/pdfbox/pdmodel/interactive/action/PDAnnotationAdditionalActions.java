@@ -125,7 +125,7 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     public PDAction getD()
     {
-        COSDictionary d = (COSDictionary)actions.getDictionaryObject( COSName.D );
+        COSDictionary d = actions.getCOSDictionary(COSName.D );
         PDAction retval = null;
         if( d != null )
         {

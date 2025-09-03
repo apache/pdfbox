@@ -241,7 +241,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public PDRectangle getRectangle()
     {
-        COSArray rectArray = (COSArray) dictionary.getDictionaryObject(COSName.RECT);
+        COSArray rectArray = dictionary.getCOSArray(COSName.RECT);
         PDRectangle rectangle = null;
         if (rectArray != null)
         {

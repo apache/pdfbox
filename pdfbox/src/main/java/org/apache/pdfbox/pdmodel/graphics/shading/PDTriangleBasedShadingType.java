@@ -130,7 +130,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
     {
         if (decode == null)
         {
-            decode = (COSArray) getCOSObject().getDictionaryObject(COSName.DECODE);
+            decode = getCOSObject().getCOSArray(COSName.DECODE);
         }
         return decode;
     }

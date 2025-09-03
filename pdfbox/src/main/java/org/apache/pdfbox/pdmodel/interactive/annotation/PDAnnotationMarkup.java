@@ -156,7 +156,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public PDAnnotationPopup getPopup()
     {
-        COSDictionary popup = (COSDictionary) getCOSObject().getDictionaryObject(COSName.POPUP);
+        COSDictionary popup = getCOSObject().getCOSDictionary(COSName.POPUP);
         if (popup != null)
         {
             return new PDAnnotationPopup(popup);
@@ -457,7 +457,7 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public PDBorderEffectDictionary getBorderEffect()
     {
-        COSDictionary be = (COSDictionary) getCOSObject().getDictionaryObject(COSName.BE);
+        COSDictionary be = getCOSObject().getCOSDictionary(COSName.BE);
         if (be != null)
         {
             return new PDBorderEffectDictionary(be);

@@ -57,7 +57,7 @@ public class PDShadingType2 extends PDShading
     {
         if (extend == null)
         {
-            extend = (COSArray) getCOSObject().getDictionaryObject(COSName.EXTEND);
+            extend = getCOSObject().getCOSArray(COSName.EXTEND);
         }
         return extend;
     }
@@ -82,7 +82,7 @@ public class PDShadingType2 extends PDShading
     {
         if (domain == null)
         {
-            domain = (COSArray) getCOSObject().getDictionaryObject(COSName.DOMAIN);
+            domain = getCOSObject().getCOSArray(COSName.DOMAIN);
         }
         return domain;
     }
@@ -107,7 +107,7 @@ public class PDShadingType2 extends PDShading
     {
         if (coords == null)
         {
-            coords = (COSArray) getCOSObject().getDictionaryObject(COSName.COORDS);
+            coords = getCOSObject().getCOSArray(COSName.COORDS);
         }
         return coords;
     }

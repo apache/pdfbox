@@ -154,7 +154,7 @@ public abstract class PDShading implements COSObjectable
     {
         if (background == null)
         {
-            background = (COSArray) dictionary.getDictionaryObject(COSName.BACKGROUND);
+            background = dictionary.getCOSArray(COSName.BACKGROUND);
         }
         return background;
     }
@@ -170,7 +170,7 @@ public abstract class PDShading implements COSObjectable
     {
         if (bBox == null)
         {
-            COSArray array = (COSArray) dictionary.getDictionaryObject(COSName.BBOX);
+            COSArray array = dictionary.getCOSArray(COSName.BBOX);
             if (array != null)
             {
                 bBox = new PDRectangle(array);
