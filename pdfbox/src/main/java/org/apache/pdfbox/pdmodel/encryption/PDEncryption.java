@@ -577,7 +577,7 @@ public class PDEncryption implements COSObjectable
      */
     public COSName getStreamFilterName() 
     {
-        COSName stmF = (COSName) dictionary.getDictionaryObject( COSName.STM_F );
+        COSName stmF = dictionary.getCOSName(COSName.STM_F );
         if (stmF == null)
         {
             stmF = COSName.IDENTITY;
@@ -603,7 +603,7 @@ public class PDEncryption implements COSObjectable
      */
     public COSName getStringFilterName() 
     {
-        COSName strF = (COSName) dictionary.getDictionaryObject( COSName.STR_F );
+        COSName strF = dictionary.getCOSName(COSName.STR_F);
         if (strF == null)
         {
             strF = COSName.IDENTITY;

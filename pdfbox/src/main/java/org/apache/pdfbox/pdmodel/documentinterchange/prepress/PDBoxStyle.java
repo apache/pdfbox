@@ -81,7 +81,7 @@ public class PDBoxStyle implements COSObjectable
      */
     public PDColor getGuidelineColor()
     {
-        COSArray colorValues = (COSArray) dictionary.getDictionaryObject(COSName.C);
+        COSArray colorValues = dictionary.getCOSArray(COSName.C);
         if( colorValues == null )
         {
             colorValues = new COSArray();
@@ -163,7 +163,7 @@ public class PDBoxStyle implements COSObjectable
     public PDLineDashPattern getLineDashPattern()
     {
         PDLineDashPattern pattern;
-        COSArray d = (COSArray) dictionary.getDictionaryObject(COSName.D);
+        COSArray d = dictionary.getCOSArray(COSName.D);
         if( d == null )
         {
             d = new COSArray();

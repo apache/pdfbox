@@ -840,11 +840,10 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      */
     public PDRectangle getBBox()
     {
-        COSArray array =
-            (COSArray) this.getCOSObject().getDictionaryObject(BBOX);
-        if (array != null)
+        COSBase base = this.getCOSObject().getDictionaryObject(BBOX);
+        if (base instanceof COSArray)
         {
-            return new PDRectangle(array);
+            return new PDRectangle((COSArray) base);
         }
         return null;
     }

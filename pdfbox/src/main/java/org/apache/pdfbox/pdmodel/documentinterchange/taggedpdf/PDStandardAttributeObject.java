@@ -383,10 +383,10 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      */
     protected PDGamma getColor(String name)
     {
-        COSArray c = (COSArray) this.getCOSObject().getDictionaryObject(name);
-        if (c != null)
+        COSBase base = this.getCOSObject().getDictionaryObject(name);
+        if (base instanceof COSArray)
         {
-            return new PDGamma(c);
+            return new PDGamma((COSArray) base);
         }
         return null;
     }
@@ -399,12 +399,12 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      */
     protected Object getColorOrFourColors(String name)
     {
-        COSArray array =
-            (COSArray) this.getCOSObject().getDictionaryObject(name);
-        if (array == null)
+        COSBase base = this.getCOSObject().getDictionaryObject(name);
+        if (!(base instanceof COSArray))
         {
             return null;
         }
+        COSArray array = (COSArray) base;
         if (array.size() == 3)
         {
             // only one colour
