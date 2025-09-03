@@ -33,7 +33,7 @@ final class CryptFilter extends Filter
     public DecodeResult decode(InputStream encoded, OutputStream decoded,
                                          COSDictionary parameters, int index) throws IOException
     {
-        COSName encryptionName = (COSName) parameters.getDictionaryObject(COSName.NAME);
+        COSName encryptionName = parameters.getCOSName(COSName.NAME);
         if(encryptionName == null || encryptionName.equals(COSName.IDENTITY)) 
         {
             // currently the only supported implementation is the Identity crypt filter
@@ -48,7 +48,7 @@ final class CryptFilter extends Filter
     protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
-        COSName encryptionName = (COSName) parameters.getDictionaryObject(COSName.NAME);
+        COSName encryptionName = parameters.getCOSName(COSName.NAME);
         if(encryptionName == null || encryptionName.equals(COSName.IDENTITY))
         {
             // currently the only supported implementation is the Identity crypt filter
