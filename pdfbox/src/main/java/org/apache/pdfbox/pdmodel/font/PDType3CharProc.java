@@ -26,7 +26,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
@@ -93,7 +92,7 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
             // PDFBOX-5294
             LOG.warn("Using resources dictionary found in charproc entry");
             LOG.warn("This should have been in the font or in the page dictionary");
-            return new PDResources((COSDictionary) charStream.getDictionaryObject(COSName.RESOURCES));
+            return new PDResources(charStream.getCOSDictionary(COSName.RESOURCES));
         }
         return font.getResources();
     }
