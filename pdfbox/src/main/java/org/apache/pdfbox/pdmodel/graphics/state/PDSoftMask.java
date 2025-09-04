@@ -173,7 +173,7 @@ public final class PDSoftMask implements COSObjectable
     {
         if (backdropColor == null)
         {
-            backdropColor = (COSArray) getCOSObject().getDictionaryObject(COSName.BC);
+            backdropColor = getCOSObject().getCOSArray(COSName.BC);
         }
         return backdropColor;
     }
