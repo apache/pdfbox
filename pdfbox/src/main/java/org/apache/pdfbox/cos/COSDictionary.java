@@ -105,8 +105,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         {
             Object nextValue = entry.getValue();
             if (nextValue.equals(value)
-                    || (nextValue instanceof COSObject && ((COSObject) nextValue).getObject()
-                            .equals(value)))
+                    || (nextValue instanceof COSObject && !((COSObject) nextValue).isObjectNull() &&
+                            ((COSObject) nextValue).getObject().equals(value)))
             {
                 return entry.getKey();
             }
