@@ -153,8 +153,7 @@ public abstract class PDVariableText extends PDTerminalField
      */
     public String getDefaultStyleString()
     {
-        COSString defaultStyleString = (COSString) getCOSObject().getDictionaryObject(COSName.DS);
-        return defaultStyleString.getString();
+        return getCOSObject().getString(COSName.DS);
     }
 
     /**

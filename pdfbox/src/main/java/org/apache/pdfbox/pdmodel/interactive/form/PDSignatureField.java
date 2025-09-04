@@ -196,7 +196,7 @@ public class PDSignatureField extends PDTerminalField
      */
     public PDSeedValue getSeedValue()
     {
-        COSDictionary dict = (COSDictionary) getCOSObject().getDictionaryObject(COSName.SV);
+        COSDictionary dict = getCOSObject().getCOSDictionary(COSName.SV);
         PDSeedValue sv = null;
         if (dict != null)
         {

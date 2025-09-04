@@ -55,7 +55,7 @@ public final class PDFieldFactory
         // a field name (other than annotations)
         if (field.containsKey(COSName.KIDS))
         {
-            COSArray kids = (COSArray) field.getDictionaryObject(COSName.KIDS);
+            COSArray kids = field.getCOSArray(COSName.KIDS);
             if (kids != null && kids.size() > 0)
             {
                 for (int i = 0; i < kids.size(); i++)

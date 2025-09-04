@@ -224,7 +224,7 @@ public abstract class PDField implements COSObjectable
      */
     public PDFormFieldAdditionalActions getActions()
     {
-        COSDictionary aa = (COSDictionary) dictionary.getDictionaryObject(COSName.AA);
+        COSDictionary aa = dictionary.getCOSDictionary(COSName.AA);
         if (aa != null)
         {
             return new PDFormFieldAdditionalActions(aa);
@@ -336,7 +336,7 @@ public abstract class PDField implements COSObjectable
     PDField findKid(String[] name, int nameIndex)
     {
         PDField retval = null;
-        COSArray kids = (COSArray) dictionary.getDictionaryObject(COSName.KIDS);
+        COSArray kids = dictionary.getCOSArray(COSName.KIDS);
         if (kids != null)
         {
             for (int i = 0; retval == null && i < kids.size(); i++)

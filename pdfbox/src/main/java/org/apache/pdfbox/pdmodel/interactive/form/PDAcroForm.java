@@ -36,7 +36,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -615,13 +614,7 @@ public final class PDAcroForm implements COSObjectable
      */
     public int getQ()
     {
-        int retval = 0;
-        COSNumber number = (COSNumber)dictionary.getDictionaryObject(COSName.Q);
-        if (number != null)
-        {
-            retval = number.intValue();
-        }
-        return retval;
+        return dictionary.getInt(COSName.Q, 0);
     }
 
     /**
@@ -875,12 +868,12 @@ public final class PDAcroForm implements COSObjectable
             if (field.getParent() == null)
             {
                 // if the field has no parent, assume it is at root level list, remove it from there
-                array = (COSArray) dictionary.getDictionaryObject(COSName.FIELDS);
+                array = dictionary.getCOSArray(COSName.FIELDS);
             }
             else
             {
                 // if the field has a parent, then remove from the list there
-                array = (COSArray) field.getParent().getCOSObject().getDictionaryObject(COSName.KIDS);
+                array = field.getParent().getCOSObject().getCOSArray(COSName.KIDS);
             }
             array.removeObject(field.getCOSObject());
         }

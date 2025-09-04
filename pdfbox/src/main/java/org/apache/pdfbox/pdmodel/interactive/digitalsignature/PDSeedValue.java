@@ -272,7 +272,7 @@ public class PDSeedValue implements COSObjectable
     public List<String> getSubFilter()
     {
         List<String> retval = null;
-        COSArray fields = (COSArray)dictionary.getDictionaryObject(COSName.SUB_FILTER);
+        COSArray fields = dictionary.getCOSArray(COSName.SUB_FILTER);
 
         if (fields != null)
         {
@@ -312,7 +312,7 @@ public class PDSeedValue implements COSObjectable
     public List<String> getDigestMethod()
     {
         List<String> retval = null;
-        COSArray fields = (COSArray)dictionary.getDictionaryObject(COSName.DIGEST_METHOD);
+        COSArray fields = dictionary.getCOSArray(COSName.DIGEST_METHOD);
 
         if (fields != null)
         {
@@ -401,7 +401,7 @@ public class PDSeedValue implements COSObjectable
     public List<String> getReasons()
     {
         List<String> retval = null;
-        COSArray fields = (COSArray)dictionary.getDictionaryObject(COSName.REASONS);
+        COSArray fields = dictionary.getCOSArray(COSName.REASONS);
 
         if (fields != null)
         {
@@ -562,7 +562,7 @@ public class PDSeedValue implements COSObjectable
     public List<String> getLegalAttestation()
     {
         List<String> retval = null;
-        COSArray fields = (COSArray)dictionary.getDictionaryObject(COSName.LEGAL_ATTESTATION);
+        COSArray fields = dictionary.getCOSArray(COSName.LEGAL_ATTESTATION);
 
         if (fields != null)
         {

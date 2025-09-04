@@ -177,7 +177,7 @@ public class PDOptionalContentProperties implements COSObjectable
         ocgs.add(ocg.getCOSObject());
 
         //By default, add new group to the "Order" entry so it appears in the user interface
-        COSArray order = (COSArray)getD().getDictionaryObject(COSName.ORDER);
+        COSArray order = getD().getCOSArray(COSName.ORDER);
         if (order == null)
         {
             order = new COSArray();
