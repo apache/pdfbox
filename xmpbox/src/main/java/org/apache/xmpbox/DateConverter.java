@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -103,9 +104,17 @@ public final class DateConverter
                 if (Pattern.matches("^\\d{4}-\\d{2}-\\d{2}T.*", date))
                 {
                     // Assuming ISO860 date string
-                    return fromISO8601(date);
+                    try
+                    {
+                        return fromISO8601(date, "yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX][zzz]");
+                    }
+                    catch (DateTimeParseException e)
+                    {
+                        // PDFBOX-6062: support nanoseconds
+                        return fromISO8601(date, "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS][XXX][zzz]");
+                    }
                 }
-                else if (date.startsWith("D:"))
+                if (date.startsWith("D:"))
                 {
                     date = date.substring(2);
                 }
@@ -337,9 +346,9 @@ public final class DateConverter
      * @param dateString
      * @return the Calendar instance.
      */
-    private static Calendar fromISO8601(String dateString)
+    private static Calendar fromISO8601(String dateString, String pattern)
     {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX][zzz]");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
 
         // Pattern to test for a time zone string
         Pattern timeZonePattern = Pattern.compile(
