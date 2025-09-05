@@ -58,6 +58,9 @@ class DateConverterTest
         convDate = DateConverter.toCalendar("D:2015-02-02");
         assertEquals(2015, convDate.get(Calendar.YEAR));
 
+        convDate = DateConverter.toCalendar("2025-09-03T15:43:47.989082+00:00");
+        assertEquals(989, convDate.get(Calendar.MILLISECOND));
+
         assertThrows(IOException.class, () -> DateConverter.toCalendar("123"));
 
         // Test missing seconds
