@@ -81,16 +81,8 @@ public class FDFAnnotationLine extends FDFAnnotation
             throw new IOException("Error: missing attribute 'end'");
         }
         String line = startCoords + "," + endCoords;
-        String[] lineValues = line.split(",");
-        if (lineValues.length != 4)
-        {
-            throw new IOException("Error: wrong amount of line coordinates");
-        }
-        float[] values = new float[4];
-        for (int i = 0; i < 4; i++)
-        {
-            values[i] = Float.parseFloat(lineValues[i]);
-        }
+        float[] values = parseRectangleAttributes(
+                line, "Error: wrong amount of line coordinates");
         setLine(values);
 
         String leaderLine = element.getAttribute("leaderLength");
