@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -210,12 +211,12 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public Map<String, Object> getClassMap()
     {
-        Map<String, Object> classMap = new HashMap<>();
         COSDictionary classMapDictionary = this.getCOSObject().getCOSDictionary(COSName.CLASS_MAP);
         if (classMapDictionary == null)
         {
-            return classMap;
+            return Collections.emptyMap();
         }
+        Map<String, Object> classMap = new HashMap<>();
         classMapDictionary.forEach((name, base) ->
         {
             if (base instanceof COSObject)
