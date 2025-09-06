@@ -193,22 +193,23 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public Iterator<PDStream> getContentStreams()
     {
-        List<PDStream> streams = new ArrayList<>();
         COSBase base = page.getDictionaryObject(COSName.CONTENTS);
         if (base instanceof COSStream)
         {
-            streams.add(new PDStream((COSStream) base));
+            return Collections.singletonList(new PDStream((COSStream) base)).iterator();
         }
         else if (base instanceof COSArray)
         {
             COSArray array = (COSArray)base;
+            List<PDStream> streams = new ArrayList<>(array.size());
             for (int i = 0; i < array.size(); i++)
             {
                 COSStream stream = (COSStream) array.getObject(i);
                 streams.add(new PDStream(stream));
             }
+            return streams.iterator();
         }
-        return streams.iterator();
+        return Collections.emptyIterator();
     }
     
     /**
@@ -276,7 +277,7 @@ public class PDPage implements COSObjectable, PDContentStream
                     .filter(COSStream.class::isInstance) //
                     .map(b -> (COSStream) b) //
                     .collect(Collectors.toList());
-            List<RandomAccessRead> inputStreams = new ArrayList<>();
+            List<RandomAccessRead> inputStreams = new ArrayList<>(streams.size() * 2);
             streams.forEach(stream ->
             {
                 try
@@ -832,7 +833,7 @@ public class PDPage implements COSObjectable, PDContentStream
         {
             return null;
         }
-        List<PDViewportDictionary> viewports = new ArrayList<>();
+        List<PDViewportDictionary> viewports = new ArrayList<>(array.size());
         for (int i = 0; i < array.size(); ++i)
         {
             COSBase base2 = array.getObject(i);
