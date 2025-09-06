@@ -21,6 +21,7 @@ import java.text.AttributedString;
 import java.text.BreakIterator;
 import java.text.AttributedCharacterIterator.Attribute;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -158,6 +159,10 @@ public class PlainText
          */
         public List<Line> getLines(PDFont font, float fontSize, float width) throws IOException
         {
+            if (width <= 0)
+            {
+                return Collections.emptyList();
+            }
             BreakIterator iterator = BreakIterator.getLineInstance();
             iterator.setText(textContent);
 
