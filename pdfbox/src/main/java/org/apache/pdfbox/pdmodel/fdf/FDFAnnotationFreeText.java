@@ -124,11 +124,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
         if (callout != null && !callout.isEmpty())
         {
             String[] calloutValues = callout.split(",");
-            float[] values = new float[calloutValues.length];
-            for (int i = 0; i < calloutValues.length; i++)
-            {
-                values[i] = Float.parseFloat(calloutValues[i]);
-            }
+            float[] values = parseFloats(calloutValues);
             setCallout(values);
         }
     }

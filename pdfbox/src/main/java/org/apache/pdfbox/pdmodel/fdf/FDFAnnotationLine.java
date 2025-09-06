@@ -86,11 +86,7 @@ public class FDFAnnotationLine extends FDFAnnotation
         {
             throw new IOException("Error: wrong amount of line coordinates");
         }
-        float[] values = new float[4];
-        for (int i = 0; i < 4; i++)
-        {
-            values[i] = Float.parseFloat(lineValues[i]);
-        }
+        float[] values = parseFloats(lineValues);
         setLine(values);
 
         String leaderLine = element.getAttribute("leaderLength");

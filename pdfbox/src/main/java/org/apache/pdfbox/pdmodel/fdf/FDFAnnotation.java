@@ -313,6 +313,17 @@ public abstract class FDFAnnotation implements COSObjectable
         }
     }
 
+    protected float[] parseFloats(String[] srcValues)
+    {
+        float[] values = new float[srcValues.length];
+        for (int i = 0; i < srcValues.length; i++)
+        {
+            values[i] = Float.parseFloat(srcValues[i]);
+        }
+
+        return values;
+    }
+
     /**
      * Create the correct FDFAnnotation.
      *
