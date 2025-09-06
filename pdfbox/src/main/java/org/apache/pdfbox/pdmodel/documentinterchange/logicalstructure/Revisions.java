@@ -28,32 +28,16 @@ import java.util.StringJoiner;
  */
 public class Revisions<T>
 {
-    private List<T> objects;
-    private List<Integer> revisionNumbers;
+    private final List<T> objects;
+    private final List<Integer> revisionNumbers;
 
     /**
      * Constructor.
      */
     public Revisions()
     {
-    }
-
-    private List<T> getObjects()
-    {
-        if (this.objects == null)
-        {
-            this.objects = new ArrayList<>();
-        }
-        return this.objects;
-    }
-
-    private List<Integer> getRevisionNumbers()
-    {
-        if (this.revisionNumbers == null)
-        {
-            this.revisionNumbers = new ArrayList<>();
-        }
-        return this.revisionNumbers;
+        objects = new ArrayList<>();
+        revisionNumbers = new ArrayList<>();
     }
 
     /**
@@ -65,7 +49,7 @@ public class Revisions<T>
      */
     public T getObject(int index)
     {
-        return this.getObjects().get(index);
+        return objects.get(index);
     }
 
     /**
@@ -77,7 +61,7 @@ public class Revisions<T>
      */
     public int getRevisionNumber(int index)
     {
-        return this.getRevisionNumbers().get(index);
+        return revisionNumbers.get(index);
     }
 
     /**
@@ -88,8 +72,8 @@ public class Revisions<T>
      */
     public void addObject(T object, int revisionNumber)
     {
-        this.getObjects().add(object);
-        this.getRevisionNumbers().add(revisionNumber);
+        objects.add(object);
+        revisionNumbers.add(revisionNumber);
     }
 
     /**
@@ -100,10 +84,10 @@ public class Revisions<T>
      */
     protected void setRevisionNumber(T object, int revisionNumber)
     {
-        int index = this.getObjects().indexOf(object);
+        int index = objects.indexOf(object);
         if (index > -1)
         {
-            this.getRevisionNumbers().set(index, revisionNumber);
+            revisionNumbers.set(index, revisionNumber);
         }
     }
 
@@ -114,7 +98,7 @@ public class Revisions<T>
      */
     public int size()
     {
-        return this.getObjects().size();
+        return objects.size();
     }
 
     /**
@@ -124,9 +108,9 @@ public class Revisions<T>
     public String toString()
     {
         StringJoiner sj = new StringJoiner("; ", "{", "}");
-        for (int i = 0; i < this.getObjects().size(); i++)
+        for (int i = 0; i < objects.size(); i++)
         {
-            sj.add("object=" + this.getObjects().get(i) + ", revisionNumber=" + this.getRevisionNumber(i));
+            sj.add("object=" + objects.get(i) + ", revisionNumber=" + this.getRevisionNumber(i));
         }
         return sj.toString();
     }
