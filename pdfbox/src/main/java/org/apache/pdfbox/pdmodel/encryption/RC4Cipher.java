@@ -95,6 +95,14 @@ class RC4Cipher
         data[ secondIndex ] = tmp;
     }
 
+    private int encrypt(byte aByte) {
+        b = (b + 1) % 256;
+        c = (salt[b] + c) % 256;
+        swap( salt, b, c );
+        int saltIndex = (salt[b] + salt[c]) % 256;
+        return aByte ^ (byte)salt[saltIndex];
+    }
+
     /**
      * This will encrypt and write the next byte.
      *
@@ -105,11 +113,7 @@ class RC4Cipher
      */
     public void write( byte aByte, OutputStream output ) throws IOException
     {
-        b = (b + 1) % 256;
-        c = (salt[b] + c) % 256;
-        swap( salt, b, c );
-        int saltIndex = (salt[b] + salt[c]) % 256;
-        output.write(aByte ^ (byte)salt[saltIndex]);
+        output.write(encrypt(aByte));
     }
 
     /**
@@ -122,10 +126,7 @@ class RC4Cipher
      */
     public void write( byte[] data, OutputStream output ) throws IOException
     {
-        for (byte aData : data)
-        {
-            write(aData, output);
-        }
+        write(data, 0, data.length, output);
     }
 
     /**
@@ -142,7 +143,7 @@ class RC4Cipher
         int amountRead;
         while( (amountRead = data.read( buffer )) != -1 )
         {
-            write( buffer, 0, amountRead, output );
+            write( buffer, 0, amountRead, output, buffer);
         }
     }
 
@@ -158,9 +159,16 @@ class RC4Cipher
      */
     public void write( byte[] data, int offset, int len, OutputStream output) throws IOException
     {
-        for( int i = offset; i < offset + len; i++ )
+        write(data, offset, len, output, new byte[len]);
+    }
+
+    private void write(byte[] data, int offset, int len, OutputStream output, byte[] buffer) throws IOException
+    {
+        for (int i = 0, j = offset; i < len; ++i, ++j)
         {
-            write( data[i], output );
+            buffer[i] = (byte)encrypt(data[j]);
         }
+
+        output.write(buffer, 0, len);
     }
 }
