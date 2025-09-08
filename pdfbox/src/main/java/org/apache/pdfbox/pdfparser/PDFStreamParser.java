@@ -49,6 +49,7 @@ public class PDFStreamParser extends BaseParser
     private static final int MAX_BIN_CHAR_TEST_LENGTH = 10;
     private final byte[] binCharTestArr = new byte[MAX_BIN_CHAR_TEST_LENGTH];
     private int inlineImageDepth = 0;
+    private long inlineOffset = 0;
     
     /**
      * Constructor.
@@ -241,7 +242,12 @@ public class PDFStreamParser extends BaseParser
                     if (inlineImageDepth > 1)
                     {
                         // PDFBOX-6038
-                        throw new IOException("Nested '" + OperatorName.BEGIN_INLINE_IMAGE + "' operator not allowed");
+                        throw new IOException("Nested '" + OperatorName.BEGIN_INLINE_IMAGE +
+                                "' operator not allowed at offset " + source.getPosition() + ", first: " + inlineOffset);
+                    }
+                    else
+                    {
+                        inlineOffset = source.getPosition();
                     }
                     COSDictionary imageParams = new COSDictionary();
                     beginImageOP.setImageParameters( imageParams );
@@ -268,6 +274,11 @@ public class PDFStreamParser extends BaseParser
                         }
                         beginImageOP.setImageData(imageData.getImageData());
                         inlineImageDepth--;
+                    }
+                    else
+                    {
+                        LOG.warn("nextToken {} at position {}, expected {}?!", 
+                                nextToken, source.getPosition(), OperatorName.BEGIN_INLINE_IMAGE_DATA);
                     }
                 }
                 return beginImageOP;
@@ -379,7 +390,7 @@ public class PDFStreamParser extends BaseParser
                 if (!"Q".equals(s) && !"EMC".equals(s) && !"S".equals(s) &&
                     !s.matches("^\\d*\\.?\\d*$"))
                 {
-                    // operator is not Q, not EMC, not S, nur a number -> assume binary data
+                    // operator is not Q, not EMC, not S, nor a number -> assume binary data
                     noBinData = false;
                 }
             }
