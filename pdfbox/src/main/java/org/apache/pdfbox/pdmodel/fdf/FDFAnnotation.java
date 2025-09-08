@@ -199,16 +199,8 @@ public abstract class FDFAnnotation implements COSObjectable
         {
             throw new IOException("Error: missing attribute 'rect'");
         }
-        String[] rectValues = rect.split(",");
-        if (rectValues.length != 4)
-        {
-            throw new IOException("Error: wrong amount of numbers in attribute 'rect'");
-        }
-        float[] values = new float[4];
-        for (int i = 0; i < 4; i++)
-        {
-            values[i] = Float.parseFloat(rectValues[i]);
-        }
+        float[] values = parseRectangleAttributes(
+                rect, "Error: wrong amount of numbers in attribute 'rect'");
         COSArray array = new COSArray();
         array.setFloatArray(values);
         setRectangle(new PDRectangle(array));
@@ -320,6 +312,37 @@ public abstract class FDFAnnotation implements COSObjectable
             }
             setBorderStyle(borderStyle);
         }
+    }
+
+    final float[] parseRectangleAttributes(String rect, String errorMessage) throws IOException
+    {
+        String[] rectValues = rect.split(",");
+        if (rectValues.length != 4)
+        {
+            throw new IOException(errorMessage);
+        }
+        float[] values = new float[4];
+        values[0] = Float.parseFloat(rectValues[0]);
+        values[1] = Float.parseFloat(rectValues[1]);
+        values[2] = Float.parseFloat(rectValues[2]);
+        values[3] = Float.parseFloat(rectValues[3]);
+        return values;
+    }
+
+    final PDRectangle createRectangleFromAttributes(String rect, String errorMessage) throws IOException
+    {
+        String[] rectValues = rect.split(",");
+        if (rectValues.length != 4)
+        {
+            throw new IOException(errorMessage);
+        }
+        PDRectangle rectangle = new PDRectangle();
+        rectangle.setLowerLeftX(Float.parseFloat(rectValues[0]));
+        rectangle.setLowerLeftY(Float.parseFloat(rectValues[1]));
+        rectangle.setUpperRightX(Float.parseFloat(rectValues[2]));
+        rectangle.setUpperRightY(Float.parseFloat(rectValues[3]));
+
+        return rectangle;
     }
 
     /**
