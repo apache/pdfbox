@@ -98,7 +98,7 @@ public class PDFStreamParserTest extends TestCase
         }
         catch (IOException ex)
         {
-            assertEquals("Nested '" + OperatorName.BEGIN_INLINE_IMAGE + "' operator not allowed", ex.getMessage());
+            assertEquals("Nested '" + OperatorName.BEGIN_INLINE_IMAGE + "' operator not allowed at offset 15, first: 11", ex.getMessage());
             return;
         }
         fail("Should have thrown");        
