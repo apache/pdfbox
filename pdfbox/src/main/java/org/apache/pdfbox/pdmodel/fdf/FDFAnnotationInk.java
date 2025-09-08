@@ -143,7 +143,7 @@ public class FDFAnnotationInk extends FDFAnnotation
         COSArray array = (COSArray) annot.getDictionaryObject(COSName.INKLIST);
         if (array != null)
         {
-            List<float[]> retval = new ArrayList<float[]>();
+            List<float[]> retval = new ArrayList<float[]>(array.size());
             for (COSBase entry : array)
             {
                 retval.add(((COSArray) entry).toFloatArray());

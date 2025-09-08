@@ -334,10 +334,10 @@ public class FDFDictionary implements COSObjectable
     public List<FDFField> getFields()
     {
         List<FDFField> retval = null;
-        COSArray fieldArray = (COSArray) fdf.getDictionaryObject(COSName.FIELDS);
+        COSArray fieldArray = fdf.getCOSArray(COSName.FIELDS);
         if (fieldArray != null)
         {
-            List<FDFField> fields = new ArrayList<FDFField>();
+            List<FDFField> fields = new ArrayList<FDFField>(fieldArray.size());
             for (int i = 0; i < fieldArray.size(); i++)
             {
                 fields.add(new FDFField((COSDictionary) fieldArray.getObject(i)));
@@ -385,10 +385,10 @@ public class FDFDictionary implements COSObjectable
     public List<FDFPage> getPages()
     {
         List<FDFPage> retval = null;
-        COSArray pageArray = (COSArray) fdf.getDictionaryObject(COSName.PAGES);
+        COSArray pageArray = fdf.getCOSArray(COSName.PAGES);
         if (pageArray != null)
         {
-            List<FDFPage> pages = new ArrayList<FDFPage>();
+            List<FDFPage> pages = new ArrayList<FDFPage>(pageArray.size());
             for (int i = 0; i < pageArray.size(); i++)
             {
                 pages.add(new FDFPage((COSDictionary) pageArray.get(i)));
@@ -446,10 +446,10 @@ public class FDFDictionary implements COSObjectable
     public List<FDFAnnotation> getAnnotations() throws IOException
     {
         List<FDFAnnotation> retval = null;
-        COSArray annotArray = (COSArray) fdf.getDictionaryObject(COSName.ANNOTS);
+        COSArray annotArray = fdf.getCOSArray(COSName.ANNOTS);
         if (annotArray != null)
         {
-            List<FDFAnnotation> annots = new ArrayList<FDFAnnotation>();
+            List<FDFAnnotation> annots = new ArrayList<FDFAnnotation>(annotArray.size());
             for (int i = 0; i < annotArray.size(); i++)
             {
                 annots.add(FDFAnnotation.create((COSDictionary) annotArray.getObject(i)));
@@ -521,10 +521,10 @@ public class FDFDictionary implements COSObjectable
     public List<PDFileSpecification> getEmbeddedFDFs() throws IOException
     {
         List<PDFileSpecification> retval = null;
-        COSArray embeddedArray = (COSArray) fdf.getDictionaryObject(COSName.EMBEDDED_FDFS);
+        COSArray embeddedArray = fdf.getCOSArray(COSName.EMBEDDED_FDFS);
         if (embeddedArray != null)
         {
-            List<PDFileSpecification> embedded = new ArrayList<PDFileSpecification>();
+            List<PDFileSpecification> embedded = new ArrayList<PDFileSpecification>(embeddedArray.size());
             for (int i = 0; i < embeddedArray.size(); i++)
             {
                 embedded.add(PDFileSpecification.createFS(embeddedArray.get(i)));
