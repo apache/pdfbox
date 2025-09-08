@@ -100,7 +100,7 @@ class PDFStreamParserTest
     {
         IOException ex =
                 assertThrows(IOException.class, () -> testInlineImage2ops("BI/IB/IB BI/ BI", "", ""));
-        assertEquals("Nested '" + OperatorName.BEGIN_INLINE_IMAGE + "' operator not allowed", ex.getMessage());
+        assertEquals("Nested '" + OperatorName.BEGIN_INLINE_IMAGE + "' operator not allowed at offset 11, first: 2", ex.getMessage());
     }
 
     // checks whether there are two operators, one inline image and the named operator
