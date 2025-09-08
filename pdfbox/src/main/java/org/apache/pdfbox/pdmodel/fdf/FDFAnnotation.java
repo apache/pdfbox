@@ -305,7 +305,7 @@ public abstract class FDFAnnotation implements COSObjectable
         }
     }
 
-    float[] parseRectangleAttributes(String rect, String errorMessage) throws IOException
+    final float[] parseRectangleAttributes(String rect, String errorMessage) throws IOException
     {
         String[] rectValues = rect.split(",");
         if (rectValues.length != 4)
@@ -320,7 +320,7 @@ public abstract class FDFAnnotation implements COSObjectable
         return values;
     }
 
-    PDRectangle createRectangleFromAttributes(String rect, String errorMessage) throws IOException
+    final PDRectangle createRectangleFromAttributes(String rect, String errorMessage) throws IOException
     {
         String[] rectValues = rect.split(",");
         if (rectValues.length != 4)
