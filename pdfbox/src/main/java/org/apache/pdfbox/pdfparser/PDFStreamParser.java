@@ -270,7 +270,7 @@ public class PDFStreamParser extends BaseParser
                         if (imageData.getImageData() == null || imageData.getImageData().length == 0)
                         {
                             LOG.warn("empty inline image at stream offset {}",
-                                    source.getPosition());
+                                    (source.isClosed() ? "EOF" : source.getPosition()));
                         }
                         beginImageOP.setImageData(imageData.getImageData());
                         inlineImageDepth--;
@@ -278,7 +278,8 @@ public class PDFStreamParser extends BaseParser
                     else
                     {
                         LOG.warn("nextToken {} at position {}, expected {}?!", 
-                                nextToken, source.getPosition(), OperatorName.BEGIN_INLINE_IMAGE_DATA);
+                                nextToken, (source.isClosed() ? "EOF" : source.getPosition()), 
+                                OperatorName.BEGIN_INLINE_IMAGE_DATA);
                     }
                 }
                 return beginImageOP;
