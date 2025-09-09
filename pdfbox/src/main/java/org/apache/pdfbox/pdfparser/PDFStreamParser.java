@@ -269,14 +269,16 @@ public class PDFStreamParser extends BaseParser
                         Operator imageData = (Operator) nextToken;
                         if (imageData.getImageData() == null || imageData.getImageData().length == 0)
                         {
-                            LOG.warn("empty inline image at stream offset " + source.getPosition());
+                            LOG.warn("empty inline image at stream offset " +
+                                    (source.isClosed() ? "EOF" : source.getPosition()));
                         }
                         beginImageOP.setImageData(imageData.getImageData());
                         inlineImageDepth--;
                     }
                     else
                     {
-                        LOG.warn("nextToken " + nextToken + " at position " + source.getPosition() +
+                        LOG.warn("nextToken " + nextToken + " at position " +
+                                (source.isClosed() ? "EOF" : source.getPosition()) +
                                 ", expected " + OperatorName.BEGIN_INLINE_IMAGE_DATA + "?!");
                     }
                 }
