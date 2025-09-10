@@ -68,11 +68,7 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
         {
             throw new IOException("Error: too little numbers in attribute 'coords'");
         }
-        float[] values = new float[coordsValues.length];
-        for (int i = 0; i < coordsValues.length; i++)
-        {
-            values[i] = Float.parseFloat(coordsValues[i]);
-        }
+        float[] values = parseFloats(coordsValues);
         setCoords(values);
     }
 
