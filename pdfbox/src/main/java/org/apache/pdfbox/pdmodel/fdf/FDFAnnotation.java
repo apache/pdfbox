@@ -322,6 +322,16 @@ public abstract class FDFAnnotation implements COSObjectable
         return values;
     }
 
+    final float[] parseFloats(String[] srcValues)
+    {
+        float[] values = new float[srcValues.length];
+        for (int i = 0; i < srcValues.length; i++)
+        {
+            values[i] = Float.parseFloat(srcValues[i]);
+        }
+        return values;
+    }
+
     final PDRectangle createRectangleFromAttributes(String rect, String errorMessage) throws IOException
     {
         String[] rectValues = rect.split(",");
