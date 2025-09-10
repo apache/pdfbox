@@ -91,11 +91,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
                 throw new IOException("Error: missing element 'vertices'");
             }
             String[] verticesValues = vertices.split("[,;]");
-            float[] values = new float[verticesValues.length];
-            for (int i = 0; i < verticesValues.length; i++)
-            {
-                values[i] = Float.parseFloat(verticesValues[i]);
-            }
+            float[] values = parseFloats(verticesValues);
             setVertices(values);
         }
         catch (XPathExpressionException e)
