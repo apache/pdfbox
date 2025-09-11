@@ -161,6 +161,13 @@ public class GlyphSubstitutionTable extends TTFTable
         {
             scriptTags[i] = data.readString(4);
             scriptOffsets[i] = data.readUnsignedShort();
+            if (scriptOffsets[i] < data.getCurrentPosition() - offset)
+            {
+                // can't be before the current position
+                LOG.error("scriptOffsets[{}]: {} implausible: data.getCurrentPosition() - offset = {}", 
+                        i, scriptOffsets[i], data.getCurrentPosition() - offset);
+                return Collections.unmodifiableMap(resultScriptList);
+            }
         }
         for (int i = 0; i < scriptCount; i++)
         {
@@ -180,15 +187,22 @@ public class GlyphSubstitutionTable extends TTFTable
         for (int i = 0; i < langSysCount; i++)
         {
             langSysTags[i] = data.readString(4);
-            if (i > 0 && langSysTags[i].compareTo(langSysTags[i-1]) <= 0)
+            langSysOffsets[i] = data.readUnsignedShort();
+            if (langSysOffsets[i] < data.getCurrentPosition() - offset)
+            {
+                // can't be before the current position
+                LOG.error("langSysOffsets[{}]: {} implausible: data.getCurrentPosition() - offset = {}", 
+                        i, langSysOffsets[i], data.getCurrentPosition() - offset);
+                return new ScriptTable(null, new LinkedHashMap<>());
+            }
+            if (i > 0 && langSysTags[i].compareTo(langSysTags[i-1]) < 0)
             {
                 // PDFBOX-4489: catch corrupt file
                 // https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#slTbl_sRec
-                LOG.error("LangSysRecords not alphabetically sorted by LangSys tag: {} <= {}",
+                LOG.error("LangSysRecords not alphabetically sorted by LangSys tag: {} < {}",
                         langSysTags[i], langSysTags[i - 1]);
                 return new ScriptTable(null, new LinkedHashMap<>());
             }
-            langSysOffsets[i] = data.readUnsignedShort();
         }
 
         LangSysTable defaultLangSysTable = null;
@@ -350,10 +364,12 @@ public class GlyphSubstitutionTable extends TTFTable
             {
                 LOG.error("subTableOffsets[{}] is 0 at offset {}", i,
                         data.getCurrentPosition() - 2);
+                return new LookupTable(lookupType, lookupFlag, 0, new LookupSubTable[0]);
             }
-            else if (offset + subTableOffsets[i] > data.getOriginalDataSize())
+            if (offset + subTableOffsets[i] > data.getOriginalDataSize())
             {
                 LOG.error("{} > {}", offset + subTableOffsets[i], data.getOriginalDataSize());
+                return new LookupTable(lookupType, lookupFlag, 0, new LookupSubTable[0]);
             }
         }
 
