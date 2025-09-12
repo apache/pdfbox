@@ -297,6 +297,8 @@ public class GlyphSubstitutionTable extends TTFTable
             lookups[i] = data.readUnsignedShort();
             if (lookups[i] == 0)
             {
+                // no early return here and in the other one; if we do, the file from PDFBOX-6066
+                // no longer renders properly.
                 LOG.error("lookups[{}] is 0 at offset {}", i, data.getCurrentPosition() - 2);
             }
             else if (offset + lookups[i] > data.getOriginalDataSize())
