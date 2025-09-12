@@ -750,7 +750,8 @@ class PDFMergerUtilityTest
                     }
                 }
                 // actual count may be larger if last element is null, e.g. PDFBOX-4408
-                assertTrue(set.last() <= array.size() - 1);
+                // set can be empty, see last page of pdf_32000_2008.pdf
+                assertTrue(set.isEmpty() || set.last() <= array.size() - 1);
             }
             for (PDAnnotation ann : page.getAnnotations())
             {
@@ -875,6 +876,34 @@ class PDFMergerUtilityTest
         assertNotNull(structureTreeRoot.getK());
         checkElement(pageTree, structureTreeRoot.getK(), structureTreeRoot.getCOSObject());
         checkForIDTreeOrphans(pageTree, structureTreeRoot);
+        checkParentTreeAgainstK(structureTreeRoot);
+    }
+
+    private void checkParentTreeAgainstK(PDStructureTreeRoot structureTreeRoot) throws IOException
+    {
+        // check that elements in the /ParentTree are in the /K tree
+        ElementCounter elementCounter = new ElementCounter();
+        elementCounter.walk(structureTreeRoot.getK());
+        Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot.getParentTree());
+        for (Map.Entry<Integer, COSObjectable> entry : numberTreeAsMap.entrySet())
+        {
+            PDParentTreeValue val = (PDParentTreeValue) entry.getValue(); // array or dictionary
+            COSBase base = val.getCOSObject();
+            if (base instanceof COSArray)
+            {
+                COSArray array = (COSArray) base;
+                for (int i = 0; i < array.size(); ++i)
+                {
+                    COSBase arrayElement = array.getObject(i);
+                    if (arrayElement instanceof COSDictionary)
+                    {
+                        assertTrue(elementCounter.set.contains(arrayElement),
+                                "Element " + entry.getKey() + ":" + i + " from /ParentTree missing in /K ");
+                    }
+                }
+            }
+            // can't check this COSDictionary; ElementsCounter only counts those with a /Pg entry
+        }
     }
 
     private void checkForIDTreeOrphans(PDPageTree pageTree, PDStructureTreeRoot structureTreeRoot)
