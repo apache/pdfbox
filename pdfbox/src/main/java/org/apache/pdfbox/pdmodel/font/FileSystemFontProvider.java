@@ -121,7 +121,7 @@ final class FileSystemFontProvider extends FontProvider
         /**
          * {@inheritDoc}
          * <p>
-         * The method returns null if there is there was an error opening the font.
+         * The method returns null if there was an error opening the font.
          * 
          */
         @Override
