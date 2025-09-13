@@ -935,6 +935,27 @@ public class PDFMergerUtilityTest extends TestCase
                     ++cnt;
                     set.add(kdict);
                 }
+                else if (kdict.containsKey(COSName.K))
+                {
+                    // at least 1 kid with dict with /Pg and /MCR
+                    // happens with confidential file from PDFBOX-6009
+                    COSArray kidArray = kdict.getCOSArray(COSName.K);
+                    if (kidArray != null)
+                    {
+                        for (int i = 0; i < kidArray.size(); ++i)
+                        {
+                            COSBase base2 = kidArray.getObject(i);
+                            if (base2 instanceof COSDictionary &&
+                                    ((COSDictionary) base2).containsKey(COSName.PG) &&
+                                    ((COSDictionary) base2).containsKey(COSName.MCID))
+                            {
+                                ++cnt;
+                                set.add(kdict);
+                                break;
+                            }
+                        }
+                    }
+                }
                 if (kdict.containsKey(COSName.K))
                 {
                     walk(kdict.getDictionaryObject(COSName.K));
