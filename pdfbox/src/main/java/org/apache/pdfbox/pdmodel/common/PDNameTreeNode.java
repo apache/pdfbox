@@ -121,7 +121,7 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
             for( int i=0; i<kids.size(); i++ )
             {
                 COSBase base = kids.getObject(i);
-                PDNameTreeNode childNode;
+                PDNameTreeNode<T> childNode;
                 if (base instanceof COSDictionary)
                 {
                     childNode = createChildNode((COSDictionary) base);
