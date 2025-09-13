@@ -964,7 +964,7 @@ class PDFMergerUtilityTest
                 }
                 else if (kdict.containsKey(COSName.K))
                 {
-                    // at least 1 kid with dict with /Pg and /MCR
+                    // at least 1 kid with dict with /Pg, /MCID and type /MCR
                     // happens with confidential file from PDFBOX-6009
                     COSArray kidArray = kdict.getCOSArray(COSName.K);
                     if (kidArray != null)
