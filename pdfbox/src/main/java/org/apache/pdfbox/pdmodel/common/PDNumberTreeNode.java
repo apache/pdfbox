@@ -94,7 +94,18 @@ public class PDNumberTreeNode implements COSObjectable
             List<PDNumberTreeNode> pdObjects = new ArrayList<PDNumberTreeNode>(kids.size());
             for( int i=0; i<kids.size(); i++ )
             {
-                pdObjects.add( createChildNode( (COSDictionary)kids.getObject(i) ) );
+                COSBase base = kids.getObject(i);
+                PDNumberTreeNode childNode;
+                if (base instanceof COSDictionary)
+                {
+                    childNode = createChildNode((COSDictionary) base);
+                }
+                else
+                {
+                    LOG.warn("Bad child node at position " + i);
+                    childNode = new PDNumberTreeNode(valueType);
+                }
+                pdObjects.add(childNode);
             }
             retval = new COSArrayList<PDNumberTreeNode>(pdObjects,kids);
         }
