@@ -37,6 +37,8 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
+import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDLayoutAttributeObject;
+import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDTableAttributeObject;
 
 import org.junit.jupiter.api.Test;
 
@@ -87,6 +89,27 @@ class PDStructureElementTest
         {
             PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
             checkElement(structureTreeRoot.getK(), attributeSet, structureTreeRoot.getClassMap(), classSet);
+        }
+        for (Revisions<PDAttributeObject> r : attributeSet)
+        {
+            // check a few that we know
+            if (r.size() >= 2)
+            {
+                // e.g. in Root/StructTreeRoot/K/[2]/K/[14]/K/[5]/K/[0]/K/[2]/A
+                // and     Root/StructTreeRoot/K/[2]/K/[14]/K/[5]/K/[2]/K/[0]/A
+                // and     Root/StructTreeRoot/K/[2]/K/[14]/K/[5]/K/[2]/K/[2]/A
+                PDTableAttributeObject obj0 = (PDTableAttributeObject) r.getObject(0);
+                assertEquals("Table", obj0.getOwner());
+                assertEquals(2, obj0.getColSpan());
+                PDLayoutAttributeObject obj1 = (PDLayoutAttributeObject) r.getObject(1);
+                assertEquals("Layout", obj1.getOwner());
+                assertTrue(((Float) obj1.getWidth()) == 166.375f || ((Float) obj1.getWidth()) == 246.75f);
+                assertTrue(((Float) obj1.getHeight()) == 14f || ((Float) obj1.getHeight()) == 17f);
+                assertEquals("Start", obj1.getInlineAlign());
+                assertTrue("After".equals(obj1.getBlockAlign()) || "Before".equals(obj1.getBlockAlign()));
+                assertEquals(0, r.getRevisionNumber(0));
+                assertEquals(0, r.getRevisionNumber(1));
+            }
         }
 
         // collect attributes and check their count.
