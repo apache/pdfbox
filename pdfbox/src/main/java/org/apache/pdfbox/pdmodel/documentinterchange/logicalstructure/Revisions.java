@@ -27,32 +27,16 @@ import java.util.List;
  */
 public class Revisions<T>
 {
-    private List<T> objects;
-    private List<Integer> revisionNumbers;
+    private final List<T> objects;
+    private final List<Integer> revisionNumbers;
 
     /**
      * Constructor.
      */
     public Revisions()
     {
-    }
-
-    private List<T> getObjects()
-    {
-        if (this.objects == null)
-        {
-            this.objects = new ArrayList<T>();
-        }
-        return this.objects;
-    }
-
-    private List<Integer> getRevisionNumbers()
-    {
-        if (this.revisionNumbers == null)
-        {
-            this.revisionNumbers = new ArrayList<Integer>();
-        }
-        return this.revisionNumbers;
+        objects = new ArrayList<T>();
+        revisionNumbers = new ArrayList<Integer>();
     }
 
     /**
@@ -64,7 +48,7 @@ public class Revisions<T>
      */
     public T getObject(int index)
     {
-        return this.getObjects().get(index);
+        return objects.get(index);
     }
 
     /**
@@ -76,7 +60,7 @@ public class Revisions<T>
      */
     public int getRevisionNumber(int index)
     {
-        return this.getRevisionNumbers().get(index);
+        return revisionNumbers.get(index);
     }
 
     /**
@@ -87,8 +71,8 @@ public class Revisions<T>
      */
     public void addObject(T object, int revisionNumber)
     {
-        this.getObjects().add(object);
-        this.getRevisionNumbers().add(revisionNumber);
+        objects.add(object);
+        revisionNumbers.add(revisionNumber);
     }
 
     /**
@@ -99,10 +83,10 @@ public class Revisions<T>
      */
     protected void setRevisionNumber(T object, int revisionNumber)
     {
-        int index = this.getObjects().indexOf(object);
+        int index = objects.indexOf(object);
         if (index > -1)
         {
-            this.getRevisionNumbers().set(index, revisionNumber);
+            revisionNumbers.set(index, revisionNumber);
         }
     }
 
@@ -113,7 +97,7 @@ public class Revisions<T>
      */
     public int size()
     {
-        return this.getObjects().size();
+        return objects.size();
     }
 
     /**
@@ -123,14 +107,14 @@ public class Revisions<T>
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < this.getObjects().size(); i++)
+        for (int i = 0; i < objects.size(); i++)
         {
             if (i > 0)
             {
                 sb.append("; ");
             }
-            sb.append("object=").append(this.getObjects().get(i))
-                .append(", revisionNumber=").append(this.getRevisionNumber(i));
+            sb.append("object=").append(objects.get(i))
+                .append(", revisionNumber=").append(getRevisionNumber(i));
         }
         return sb.toString();
     }
