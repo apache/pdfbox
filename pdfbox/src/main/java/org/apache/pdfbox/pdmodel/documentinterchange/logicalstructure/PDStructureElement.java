@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -170,16 +169,11 @@ public class PDStructureElement extends PDStructureNode
         COSBase a = this.getCOSObject().getDictionaryObject(COSName.A);
         if (a instanceof COSArray)
         {
-            COSArray aa = (COSArray) a;
-            Iterator<COSBase> it = aa.iterator();
+            COSArray array = (COSArray) a;
             PDAttributeObject ao = null;
-            while (it.hasNext())
+            for (int i = 0; i < array.size(); ++i)
             {
-                COSBase item = it.next();
-                if (item instanceof COSObject)
-                {
-                    item = ((COSObject) item).getObject();
-                }
+                COSBase item = array.getObject(i);
                 if (item instanceof COSDictionary)
                 {
                     ao = PDAttributeObject.create((COSDictionary) item);
@@ -188,6 +182,8 @@ public class PDStructureElement extends PDStructureNode
                 }
                 else if (item instanceof COSInteger)
                 {
+                    // Read "14.7.5.3 Attribute Revision Numbers"
+                    // This is additional to the /R entry
                     attributes.setRevisionNumber(ao, ((COSNumber) item).intValue());
                 }
             }
@@ -345,15 +341,10 @@ public class PDStructureElement extends PDStructureNode
         if (c instanceof COSArray)
         {
             COSArray array = (COSArray) c;
-            Iterator<COSBase> it = array.iterator();
             String className = null;
-            while (it.hasNext())
+            for (int i = 0; i < array.size(); ++i)
             {
-                COSBase item = it.next();
-                if (item instanceof COSObject)
-                {
-                    item = ((COSObject) item).getObject();
-                }
+                COSBase item = array.getObject(i);
                 if (item instanceof COSName)
                 {
                     className = ((COSName) item).getName();
@@ -361,7 +352,9 @@ public class PDStructureElement extends PDStructureNode
                 }
                 else if (item instanceof COSInteger)
                 {
-                    classNames.setRevisionNumber(className, ((COSInteger) item).intValue());
+                    // Read "14.7.5.3 Attribute Revision Numbers"
+                    // This is additional to the /R entry
+                    classNames.setRevisionNumber(className, ((COSNumber) item).intValue());
                 }
             }
         }
