@@ -96,8 +96,6 @@ public class PDStructureElementTest
                 // e.g. in Root/StructTreeRoot/K/[2]/K/[14]/K/[5]/K/[0]/K/[2]/A
                 // and     Root/StructTreeRoot/K/[2]/K/[14]/K/[5]/K/[2]/K/[0]/A
                 // and     Root/StructTreeRoot/K/[2]/K/[14]/K/[5]/K/[2]/K/[2]/A
-                System.out.println(r);
-                System.out.println(r.getObject(0).getClass());
                 PDTableAttributeObject obj0 = (PDTableAttributeObject) r.getObject(0);
                 assertEquals("Table", obj0.getOwner());
                 assertEquals(2, obj0.getColSpan());
