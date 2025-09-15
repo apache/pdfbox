@@ -468,10 +468,11 @@ final class FontMapperImpl implements FontMapper
      */
     private FontInfo getFont(FontFormat format, String postScriptName)
     {
+        int index = postScriptName.indexOf('+');
         // strip subset tag (happens when we substitute a corrupt embedded font, see PDFBOX-2642)
-        if (postScriptName.contains("+"))
+        if (index > -1)
         {
-            postScriptName = postScriptName.substring(postScriptName.indexOf('+') + 1);
+            postScriptName = postScriptName.substring(index + 1);
         }
         
         // look up the PostScript name
