@@ -123,22 +123,23 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public Iterator<PDStream> getContentStreams()
     {
-        List<PDStream> streams = new ArrayList<PDStream>();
         COSBase base = page.getDictionaryObject(COSName.CONTENTS);
         if (base instanceof COSStream)
         {
-            streams.add(new PDStream((COSStream) base));
+            return Collections.singletonList(new PDStream((COSStream) base)).iterator();
         }
         else if (base instanceof COSArray)
         {
             COSArray array = (COSArray)base;
+            List<PDStream> streams = new ArrayList<PDStream>(array.size());
             for (int i = 0; i < array.size(); i++)
             {
                 COSStream stream = (COSStream) array.getObject(i);
                 streams.add(new PDStream(stream));
             }
+            return streams.iterator();
         }
-        return streams.iterator();
+        return Collections.emptyIterator();
     }
     
     /**
