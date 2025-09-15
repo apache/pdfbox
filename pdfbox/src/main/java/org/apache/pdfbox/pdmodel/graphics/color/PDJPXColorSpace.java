@@ -76,7 +76,7 @@ public final class PDJPXColorSpace extends PDColorSpace
     @Override
     public float[] toRGB(float[] value)
     {
-        throw new UnsupportedOperationException("JPX color spaces don't support drawing");
+        return awtColorSpace.toRGB(value);
     }
 
     @Override
