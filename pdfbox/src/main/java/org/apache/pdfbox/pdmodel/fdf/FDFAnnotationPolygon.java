@@ -158,16 +158,6 @@ public class FDFAnnotationPolygon extends FDFAnnotation
      */
     public Color getInteriorColor()
     {
-        Color retval = null;
-        COSArray array = (COSArray) annot.getDictionaryObject(COSName.IC);
-        if (array != null)
-        {
-            float[] rgb = array.toFloatArray();
-            if (rgb.length >= 3)
-            {
-                retval = new Color(rgb[0], rgb[1], rgb[2]);
-            }
-        }
-        return retval;
+        return getColor(COSName.IC);
     }
 }
