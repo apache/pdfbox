@@ -481,8 +481,13 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public Color getColor()
     {
+        return getColor(COSName.C);
+    }
+
+    final Color getColor(COSName colorName)
+    {
         Color retval = null;
-        COSArray array = annot.getCOSArray(COSName.C);
+        COSArray array = annot.getCOSArray(colorName);
         if (array != null)
         {
             float[] rgb = array.toFloatArray();
