@@ -1582,6 +1582,10 @@ public class PDDocument implements Closeable
      *
      * @param pageIndex the 0-based page index
      * @return the page at the given index.
+     * 
+     * @throws IllegalStateException if the requested index isn't found or doesn't point to a valid
+     * page dictionary.
+     * @throws IndexOutOfBoundsException if the requested index is higher than the page count.
      */
     public PDPage getPage(int pageIndex) // todo: REPLACE most calls to this method with BELOW method
     {
