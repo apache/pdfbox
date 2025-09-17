@@ -858,6 +858,31 @@ public class TestCreateSignature
         doc.close();
     }
 
+    /** 
+     * PDFBOX-5521: Check that UR3 signature doesn't interfere.
+     * 
+     * @throws IOException
+     * @throws GeneralSecurityException
+     * @throws CMSException
+     * @throws OperatorCreationException
+     * @throws TSPException
+     * @throws CertificateVerificationException 
+     */
+    @Test
+    public void testPDFBox5521()
+            throws IOException, GeneralSecurityException, CMSException,
+            OperatorCreationException, TSPException, CertificateVerificationException
+    {
+        // sign PDF
+        CreateSignature signing = new CreateSignature(keyStore, password.toCharArray());
+        signing.setExternalSigning(externallySign);
+
+        final String fileNameSigned = getOutputFileName("PDFBOX-5521-santander_freistellungsauftrag.pdf_signed{0}.pdf");
+        final File file = new File("target/pdfs", "PDFBOX-5521-santander_freistellungsauftrag.pdf");
+        signing.signDetached(file, new File(outDir + fileNameSigned));
+        checkSignature(file, new File(outDir, fileNameSigned), false);
+    }
+
     private void checkLTV(File outFile)
             throws IOException, GeneralSecurityException, OCSPException, OperatorCreationException,
             CMSException
