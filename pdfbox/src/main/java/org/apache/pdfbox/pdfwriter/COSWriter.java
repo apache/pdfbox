@@ -1281,17 +1281,16 @@ public class COSWriter implements ICOSVisitor
                 if (byteRange != null && byteRange.size() == 4)
                 {
                     COSBase base2 = byteRange.get(2);
-                    COSBase base3 = byteRange.get(3);
-                    if (base2 instanceof COSInteger && base3 instanceof COSInteger)
+                    if (base2 instanceof COSInteger)
                     {
                         // PDFBOX-5521 avoid hitting "old" signatures
                         long br2 = ((COSInteger) base2).longValue();
-                        long br3 = ((COSInteger) base3).longValue();
-                        if (br2 + br3 > incrementalInput.length())
+                        if (br2 > incrementalInput.length())
                         {
                             if (LOG.isDebugEnabled())
                             {
-                                LOG.debug("reachedSignature at offset " + getStandardOutput().getPos() + ", byteRange: " + byteRange);
+                                LOG.debug("reachedSignature at offset " + getStandardOutput().getPos() +
+                                        ", byteRange: " + byteRange + ", input length: " + incrementalInput.length());
                             }
                             reachedSignature = true;
                         }
