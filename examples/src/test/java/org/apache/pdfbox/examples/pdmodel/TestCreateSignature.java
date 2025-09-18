@@ -949,6 +949,15 @@ class TestCreateSignature
         final File file = new File("target/pdfs", "PDFBOX-5521-santander_freistellungsauftrag.pdf");
         signing.signDetached(file, new File(OUT_DIR + fileNameSigned));
         checkSignature(file, new File(OUT_DIR, fileNameSigned), false);
+
+        // PDFBOX-6071: file that has a /ByteRange longer than the file
+        byte[] ba = Files.readAllBytes(file.toPath());
+        ba[2434] = '9'; // change /ByteRange from [ 0 2490 14292 2385472] to [ 0 2490 14292 2985472]
+        final File file2 = new File("target/pdfs", "PDFBOX-6071-santander_freistellungsauftrag.pdf");
+        Files.write(file2.toPath(), ba);
+        final String fileNameSigned2 = getOutputFileName("PDFBOX-6071-santander_freistellungsauftrag.pdf_signed{0}.pdf", externallySign);
+        signing.signDetached(file2, new File(OUT_DIR + fileNameSigned2));
+        checkSignature(file2, new File(OUT_DIR, fileNameSigned2), false);
     }
 
     private void checkLTV(File outFile)
