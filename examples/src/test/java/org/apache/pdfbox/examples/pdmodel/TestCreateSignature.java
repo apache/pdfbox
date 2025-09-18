@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.MessageDigest;
@@ -881,6 +882,19 @@ public class TestCreateSignature
         final File file = new File("target/pdfs", "PDFBOX-5521-santander_freistellungsauftrag.pdf");
         signing.signDetached(file, new File(outDir + fileNameSigned));
         checkSignature(file, new File(outDir, fileNameSigned), false);
+
+        // PDFBOX-6071: file that has a /ByteRange longer than the file
+        InputStream is = new FileInputStream(file);
+        byte[] ba = IOUtils.toByteArray(is);
+        is.close();
+        ba[2434] = '9'; // change /ByteRange from [ 0 2490 14292 2385472] to [ 0 2490 14292 2985472]
+        final File file2 = new File("target/pdfs", "PDFBOX-6071-santander_freistellungsauftrag.pdf");
+        OutputStream os = new FileOutputStream(file2);
+        os.write(ba);
+        os.close();
+        final String fileNameSigned2 = getOutputFileName("PDFBOX-6071-santander_freistellungsauftrag.pdf_signed{0}.pdf");
+        signing.signDetached(file2, new File(outDir + fileNameSigned2));
+        checkSignature(file2, new File(outDir, fileNameSigned2), false);
     }
 
     private void checkLTV(File outFile)
