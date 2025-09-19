@@ -44,7 +44,7 @@ class RC4Cipher
      *
      * @param key The RC4 key used during encryption.
      */
-    public void setKey( byte[] key )
+    void setKey( byte[] key )
     {
         b = 0;
         c = 0;
@@ -95,26 +95,13 @@ class RC4Cipher
         data[ secondIndex ] = tmp;
     }
 
-    private int encrypt(byte aByte)
+    private byte encrypt(byte aByte)
     {
         b = (b + 1) % 256;
         c = (salt[b] + c) % 256;
         swap(salt, b, c);
         int saltIndex = (salt[b] + salt[c]) % 256;
-        return aByte ^ (byte) salt[saltIndex];
-    }
-
-    /**
-     * This will encrypt and write the next byte.
-     *
-     * @param aByte The byte to encrypt.
-     * @param output The stream to write to.
-     *
-     * @throws IOException If there is an error writing to the output stream.
-     */
-    public void write( byte aByte, OutputStream output ) throws IOException
-    {
-        output.write(encrypt(aByte));
+        return (byte) (aByte ^ (byte) salt[saltIndex]);
     }
 
     /**
@@ -125,9 +112,9 @@ class RC4Cipher
      *
      * @throws IOException If there is an error writing to the output stream.
      */
-    public void write( byte[] data, OutputStream output ) throws IOException
+    void write(byte[] data, OutputStream output) throws IOException
     {
-        write(data, 0, data.length, output);
+        write(data, 0, data.length, output, new byte[data.length]);
     }
 
     /**
@@ -138,7 +125,7 @@ class RC4Cipher
      *
      * @throws IOException If there is an error writing to the output stream.
      */
-    public void write( InputStream data, OutputStream output ) throws IOException
+    void write(InputStream data, OutputStream output) throws IOException
     {
         byte[] buffer = new byte[1024];
         int amountRead;
@@ -151,23 +138,19 @@ class RC4Cipher
     /**
      * This will encrypt and write the data.
      *
-     * @param data The data to encrypt.
+     * @param data The data to encrypt, may be overwritten.
      * @param offset The offset into the array to start reading data from.
      * @param len The number of bytes to attempt to read.
      * @param output The stream to write to.
+     * @param buffer The buffer to use, it can be altered and be identical to the data to encrypt.
      *
      * @throws IOException If there is an error writing to the output stream.
      */
-    public void write( byte[] data, int offset, int len, OutputStream output) throws IOException
-    {
-        write(data, offset, len, output, new byte[len]);
-    }
-
     private void write(byte[] data, int offset, int len, OutputStream output, byte[] buffer) throws IOException
     {
         for (int i = 0, j = offset; i < len; ++i, ++j)
         {
-            buffer[i] = (byte) encrypt(data[j]);
+            buffer[i] = encrypt(data[j]);
         }
 
         output.write(buffer, 0, len);
