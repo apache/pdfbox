@@ -111,7 +111,10 @@ class RC4Cipher
      * @param output The stream to write to.
      *
      * @throws IOException If there is an error writing to the output stream.
+     * 
+     * @deprecated This method will be removed in 4.0.
      */
+    @Deprecated
     public void write( byte aByte, OutputStream output ) throws IOException
     {
         output.write(encrypt(aByte));
@@ -127,7 +130,7 @@ class RC4Cipher
      */
     public void write( byte[] data, OutputStream output ) throws IOException
     {
-        write(data, 0, data.length, output);
+        write(data, 0, data.length, output, new byte[data.length]);
     }
 
     /**
@@ -157,12 +160,26 @@ class RC4Cipher
      * @param output The stream to write to.
      *
      * @throws IOException If there is an error writing to the output stream.
+     * 
+     * @deprecated This method will be removed in 4.0.
      */
+    @Deprecated
     public void write( byte[] data, int offset, int len, OutputStream output) throws IOException
     {
         write(data, offset, len, output, new byte[len]);
     }
 
+    /**
+     * This will encrypt and write the data.
+     *
+     * @param data The data to encrypt, may be overwritten.
+     * @param offset The offset into the array to start reading data from.
+     * @param len The number of bytes to attempt to read.
+     * @param output The stream to write to.
+     * @param buffer The buffer to use, it can be altered and be identical to the data to encrypt.
+     *
+     * @throws IOException If there is an error writing to the output stream.
+     */
     private void write(byte[] data, int offset, int len, OutputStream output, byte[] buffer) throws IOException
     {
         for (int i = 0, j = offset; i < len; ++i, ++j)
