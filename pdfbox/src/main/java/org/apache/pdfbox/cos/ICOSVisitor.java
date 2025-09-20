@@ -104,4 +104,12 @@ public interface ICOSVisitor
      * @throws IOException If there is an error while visiting this object.
      */
     void visitFromString(COSString obj) throws IOException;
+
+    /**
+     * Notification of visit to object.
+     *
+     * @param obj The Object that is being visited.
+     * @throws IOException If there is an error while visiting this object.
+     */
+    void visitFromObject(COSObject obj) throws IOException;
 }

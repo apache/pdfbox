@@ -1447,6 +1447,20 @@ public class COSWriter implements ICOSVisitor
         }
     }
 
+    @Override
+    public void visitFromObject(COSObject obj) throws IOException
+    {
+        COSBase base = obj.getObject();
+        if (base == null)
+        {
+            visitFromNull(COSNull.NULL);
+        }
+        else
+        {
+            base.accept(this);
+        }
+    }
+
     /**
      * This will write the pdf document.
      *
