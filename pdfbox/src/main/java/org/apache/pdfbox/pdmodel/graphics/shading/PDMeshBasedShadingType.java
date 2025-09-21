@@ -203,10 +203,11 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
 
         try
         {
+            int bitsPerCoordinate = getBitsPerCoordinate();
             for (int i = pStart; i < controlPoints; i++)
             {
-                long x = input.readBits(getBitsPerCoordinate());
-                long y = input.readBits(getBitsPerCoordinate());
+                long x = input.readBits(bitsPerCoordinate);
+                long y = input.readBits(bitsPerCoordinate);
                 float px = interpolate(x, maxSrcCoord, rangeX.getMin(), rangeX.getMax());
                 float py = interpolate(y, maxSrcCoord, rangeY.getMin(), rangeY.getMax());
                 Point2D p = matrix.transformPoint(px, py);
@@ -217,7 +218,7 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
             {
                 for (int j = 0; j < numberOfColorComponents; j++)
                 {
-                    long c = input.readBits(getBitsPerComponent());
+                    long c = input.readBits(bitsPerCoordinate);
                     color[i][j] = interpolate(c, maxSrcColor, colRange[j].getMin(),
                             colRange[j].getMax());
                 }
