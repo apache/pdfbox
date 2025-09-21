@@ -43,7 +43,7 @@ public abstract class FontInfo
     /**
      * Returns the CIDSystemInfo associated with the font, if present.
      * 
-     * @return the CIDSystemInof of the font if any
+     * @return the CIDSystemInfo of the font if any
      */
     public abstract CIDSystemInfo getCIDSystemInfo();
 
