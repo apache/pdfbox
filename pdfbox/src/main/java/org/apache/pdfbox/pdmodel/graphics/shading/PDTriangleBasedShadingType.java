@@ -89,7 +89,10 @@ abstract class PDTriangleBasedShadingType extends PDShading
         if (bitsPerCoordinate == -1)
         {
             bitsPerCoordinate = getCOSObject().getInt(COSName.BITS_PER_COORDINATE, -1);
-            LOG.debug("bitsPerCoordinate: " + (Math.pow(2, bitsPerCoordinate) - 1));
+            if (LOG.isDebugEnabled())
+            {
+                LOG.debug("bitsPerCoordinate: " + (Math.pow(2, bitsPerCoordinate) - 1));
+            }
         }
         return bitsPerCoordinate;
     }
