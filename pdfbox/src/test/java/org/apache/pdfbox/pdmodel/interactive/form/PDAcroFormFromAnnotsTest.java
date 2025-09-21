@@ -266,7 +266,6 @@ class PDAcroFormFromAnnotsTest
                     try
                     {
                         PDFont font = acroFormResources.getFont(fontName);
-                        font.getFontDescriptor().getFontName();
                         fontNames.put(fontName.getName(), font.getName());
                     }
                     catch (IOException ioe)
