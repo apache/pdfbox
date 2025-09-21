@@ -279,7 +279,7 @@ public class PDAcroFormFromAnnotsTest
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
         String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13014447/merge-test-na-acrobat.pdf";
 
-        // will build the expected font respurce names and font decriptor names using the acrobat source document
+        // will build the expected font resource names and font decriptor names using the acrobat source document
         Map<String, String> fontNames = new HashMap<String, String>();
 
         PDDocument testPdf = null;
@@ -296,8 +296,8 @@ public class PDAcroFormFromAnnotsTest
                     try
                     {
                         PDFont font = acroFormResources.getFont(fontName);
-                        font.getFontDescriptor().getFontName();
-                        fontNames.put(fontName.getName(), font.getName());
+                        String pdfBoxFontName = font.getFontDescriptor().getFontName();
+                        fontNames.put(fontName.getName(), pdfBoxFontName);
                     }
                     catch (IOException ioe)
                     {
