@@ -234,12 +234,13 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         if (daString.startsWith("/") && daString.length() > 1)
         {
             COSName fontName = COSName.getPDFName(daString.substring(1, daString.indexOf(' ')));
+            String fullyQualifiedName = field.getFullyQualifiedName();
             try
             {
                 if (defaultResources.getFont(fontName) == null)
                 {
                     LOG.debug("trying to add missing font resource for field {}",
-                            field.getFullyQualifiedName());
+                            fullyQualifiedName);
                     FontMapper mapper = FontMappers.instance();
                     FontMapping<TrueTypeFont> fontMapping = mapper.getTrueTypeFont(fontName.getName() , null);
                     if (fontMapping != null)
@@ -252,14 +253,14 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
                     else
                     {
                         LOG.debug("no suitable font found for field {} for font name {}",
-                                field.getFullyQualifiedName(), fontName.getName());
+                                fullyQualifiedName, fontName.getName());
                     }
                 }
             }
             catch (IOException ioe)
             {
                 LOG.debug("unable to handle font resources for field {}: {}",
-                        field.getFullyQualifiedName(), ioe.getMessage());
+                        fullyQualifiedName, ioe.getMessage());
             }
         }
     }
