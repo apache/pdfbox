@@ -217,11 +217,12 @@ abstract class PDMeshBasedShadingType extends PDShadingType4
                 xform.transform(p, p);
                 points[i] = p;
             }
+            int bitsPerComponent = getBitsPerComponent();
             for (int i = cStart; i < 4; i++)
             {
                 for (int j = 0; j < numberOfColorComponents; j++)
                 {
-                    long c = input.readBits(bitsPerCoordinate);
+                    long c = input.readBits(bitsPerComponent);
                     color[i][j] = interpolate(c, maxSrcColor, colRange[j].getMin(),
                             colRange[j].getMax());
                 }
