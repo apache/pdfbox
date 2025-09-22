@@ -308,6 +308,8 @@
                   <version>12.1.5</version>
                   <configuration>
                       <failBuildOnCVSS>0</failBuildOnCVSS>
+                      <!-- alternatively: use ossIndexUsername and ossIndexPassword for mail-address and token -->
+                      <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
                       <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
                       <skipSystemScope>true</skipSystemScope>
                   </configuration>
