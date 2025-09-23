@@ -42,9 +42,13 @@ class AnnotationBorder
         if (borderStyle == null)
         {
             COSArray border = annotation.getBorder();
-            if (border.size() >= 3 && border.getObject(2) instanceof COSNumber)
+            if (border.size() >= 3)
             {
-                ab.width = ((COSNumber) border.getObject(2)).floatValue();
+                COSBase base = border.getObject(2);
+                if (base instanceof COSNumber)
+                {
+                    ab.width = ((COSNumber) base).floatValue();
+                }
             }
             if (border.size() > 3)
             {
@@ -58,11 +62,12 @@ class AnnotationBorder
         else
         {
             ab.width = borderStyle.getWidth();
-            if (borderStyle.getStyle().equals(PDBorderStyleDictionary.STYLE_DASHED))
+            String style = borderStyle.getStyle();
+            if (style.equals(PDBorderStyleDictionary.STYLE_DASHED))
             {
                 ab.dashArray = borderStyle.getDashStyle().getDashArray();
             }
-            if (borderStyle.getStyle().equals(PDBorderStyleDictionary.STYLE_UNDERLINE))
+            if (style.equals(PDBorderStyleDictionary.STYLE_UNDERLINE))
             {
                 ab.underline = true;
             }
