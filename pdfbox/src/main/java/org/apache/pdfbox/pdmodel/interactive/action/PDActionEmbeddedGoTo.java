@@ -128,9 +128,10 @@ public class PDActionEmbeddedGoTo extends PDAction
      */
     public OpenMode getOpenInNewWindow()
     {
-        if (getCOSObject().getDictionaryObject(COSName.NEW_WINDOW) instanceof COSBoolean)
+        COSBase dictionaryObject = getCOSObject().getDictionaryObject(COSName.NEW_WINDOW);
+        if (dictionaryObject instanceof COSBoolean)
         {
-            COSBoolean b = (COSBoolean) getCOSObject().getDictionaryObject(COSName.NEW_WINDOW);
+            COSBoolean b = (COSBoolean) dictionaryObject;
             return b.getValue() ? OpenMode.NEW_WINDOW : OpenMode.SAME_WINDOW;
         }
         return OpenMode.USER_PREFERENCE;
