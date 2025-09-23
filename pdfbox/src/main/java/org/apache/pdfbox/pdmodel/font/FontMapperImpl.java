@@ -672,10 +672,11 @@ final class FontMapperImpl implements FontMapper
      */
     private boolean isCharSetMatch(PDCIDSystemInfo cidSystemInfo, FontInfo info)
     {
+        String ordering = cidSystemInfo.getOrdering();
         if (info.getCIDSystemInfo() != null)
         {
             return info.getCIDSystemInfo().getRegistry().equals(cidSystemInfo.getRegistry()) &&
-                   info.getCIDSystemInfo().getOrdering().equals(cidSystemInfo.getOrdering());
+                   info.getCIDSystemInfo().getOrdering().equals(ordering);
         }
         else
         {
@@ -692,24 +693,24 @@ final class FontMapperImpl implements FontMapper
                 // PDFBOX-4793 and PDF.js 10699: This font has only Korean, but has bits 17-21 set.
                 codePageRange &= ~(JIS_JAPAN | CHINESE_SIMPLIFIED | CHINESE_TRADITIONAL);
             }
-            if (cidSystemInfo.getOrdering().equals("GB1") &&
+            if (ordering.equals("GB1") &&
                     (codePageRange & CHINESE_SIMPLIFIED) == CHINESE_SIMPLIFIED)
             {
                 return true;
             }
-            else if (cidSystemInfo.getOrdering().equals("CNS1") && 
+            else if (ordering.equals("CNS1") &&
                     (codePageRange & CHINESE_TRADITIONAL) == CHINESE_TRADITIONAL)
             {
                 return true;
             }
-            else if (cidSystemInfo.getOrdering().equals("Japan1") &&
+            else if (ordering.equals("Japan1") &&
                     (codePageRange & JIS_JAPAN) == JIS_JAPAN)
             {
                 return true;
             }
             else
             {
-                return cidSystemInfo.getOrdering().equals("Korea1") &&
+                return ordering.equals("Korea1") &&
                         ((codePageRange & KOREAN_WANSUNG) == KOREAN_WANSUNG ||
                          (codePageRange & KOREAN_JOHAB) == KOREAN_JOHAB);
             }
