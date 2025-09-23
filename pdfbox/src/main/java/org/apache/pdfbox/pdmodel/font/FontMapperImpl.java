@@ -673,6 +673,10 @@ final class FontMapperImpl implements FontMapper
     private boolean isCharSetMatch(PDCIDSystemInfo cidSystemInfo, FontInfo info)
     {
         String ordering = cidSystemInfo.getOrdering();
+        if (ordering == null)
+        {
+            return false;
+        }
         if (info.getCIDSystemInfo() != null)
         {
             return info.getCIDSystemInfo().getRegistry().equals(cidSystemInfo.getRegistry()) &&
