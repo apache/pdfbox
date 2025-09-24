@@ -529,13 +529,13 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         float[] rectDifferences = annotation.getRectDifferences();
         if (rectDifferences.length == 0)
         {
-            borderBox = getPaddedRectangle(getRectangle(), lineWidth / 2);
+            PDRectangle rect = getRectangle();
+            borderBox = getPaddedRectangle(rect, lineWidth / 2);
             // the differences rectangle
             annotation.setRectDifferences(lineWidth / 2);
-            annotation.setRectangle(addRectDifferences(getRectangle(), annotation.getRectDifferences()));
+            annotation.setRectangle(addRectDifferences(rect, annotation.getRectDifferences()));
             // when the normal appearance stream was generated BBox and Matrix have been set to the
             // values of the original /Rect. As the /Rect was changed that needs to be adjusted too.
-            PDRectangle rect = getRectangle();
             PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
             AffineTransform transform =
                     AffineTransform.getTranslateInstance(-rect.getLowerLeftX(), -rect.getLowerLeftY());
