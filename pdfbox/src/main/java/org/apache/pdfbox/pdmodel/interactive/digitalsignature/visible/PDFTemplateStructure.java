@@ -394,7 +394,7 @@ public class PDFTemplateStructure
     /**
      * Sets inner form resource
      * 
-     * @param innerFormResources the rsesources of the inner form
+     * @param innerFormResources the resources of the inner form
      */
     public void setInnerFormResources(PDResources innerFormResources)
     {
