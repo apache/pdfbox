@@ -172,19 +172,19 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
                     {
                         acroFormResources.put(fontName, widgetResources.getFont(fontName));
                         LOG.debug("added font resource to AcroForm from widget for font name {}",
-                                fontName.getName());
+                                () -> fontName.getName());
                     }
                 }
                 catch (IOException ioe)
                 {
                     LOG.debug("unable to add font to AcroForm for font name {}",
-                            fontName.getName());
+                            () -> fontName.getName());
                 }
             }
             else
             {
                 LOG.debug("font resource for widget was a subsetted font - ignored: {}",
-                        fontName.getName());
+                        () -> fontName.getName());
             }
         });
     }
@@ -239,17 +239,20 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
                 if (defaultResources.getFont(fontName) == null)
                 {
                     LOG.debug("trying to add missing font resource for field {}",
-                            field.getFullyQualifiedName());
+                            () -> field.getFullyQualifiedName());
                     FontMapper mapper = FontMappers.instance();
                     FontMapping<TrueTypeFont> fontMapping = mapper.getTrueTypeFont(fontName.getName() , null);
                     if (fontMapping != null)
                     {
                         PDType0Font pdFont = PDType0Font.load(document, fontMapping.getFont(), false);
-                        LOG.debug("looked up font for {} - found {}", fontName.getName(),
-                                fontMapping.getFont().getName());
+                        if (LOG.isDebugEnabled())
+                        {
+                            LOG.debug("looked up font for {} - found {}", fontName.getName(),
+                                    fontMapping.getFont().getName());
+                        }
                         defaultResources.put(fontName, pdFont);
                     }
-                    else
+                    else if (LOG.isDebugEnabled())
                     {
                         LOG.debug("no suitable font found for field {} for font name {}",
                                 field.getFullyQualifiedName(), fontName.getName());
@@ -258,8 +261,11 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
             }
             catch (IOException ioe)
             {
-                LOG.debug("unable to handle font resources for field {}: {}",
-                        field.getFullyQualifiedName(), ioe.getMessage());
+                if (LOG.isDebugEnabled())
+                {
+                    LOG.debug("unable to handle font resources for field {}: {}",
+                            field.getFullyQualifiedName(), ioe.getMessage());
+                }
             }
         }
     }
