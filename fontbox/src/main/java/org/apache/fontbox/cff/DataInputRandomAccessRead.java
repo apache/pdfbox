@@ -109,7 +109,7 @@ public class DataInputRandomAccessRead implements DataInput
      * Read one single unsigned byte from the buffer.
      *
      * @return the unsigned byte as int.
-     * @throws IOException when there are no bytes to reador when the underlying buffer has been
+     * @throws IOException when there are no bytes to read or when the underlying buffer has been
      * already closed.
      */
     @Override
