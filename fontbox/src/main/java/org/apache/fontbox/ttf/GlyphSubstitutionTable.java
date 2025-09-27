@@ -799,9 +799,17 @@ public class GlyphSubstitutionTable extends TTFTable
     private int applyFeature(FeatureRecord featureRecord, int gid)
     {
         int lookupResult = gid;
+        LookupTable[] lookups = lookupListTable.getLookups();
         for (int lookupListIndex : featureRecord.getFeatureTable().getLookupListIndices())
         {
-            LookupTable lookupTable = lookupListTable.getLookups()[lookupListIndex];
+            if (lookupListIndex < 0 || lookupListIndex >= lookups.length)
+            {
+                LOG.warn("Skipping GSUB feature '" + featureRecord.getFeatureTag() + 
+                        "' with invalid lookupListIndex " + lookupListIndex + 
+                        " (len: " + lookups.length + ")");
+                continue;
+            }
+            LookupTable lookupTable = lookups[lookupListIndex];
             if (lookupTable.getLookupType() != 1)
             {
                 LOG.warn("Skipping GSUB feature '" + featureRecord.getFeatureTag()
