@@ -156,11 +156,11 @@ public interface PDFTemplateBuilder
     /**
      * Creates appearance dictionary
      * 
-     * @param holderForml form object to be used for the appearance stream
+     * @param holderForm form object to be used for the appearance stream
      * @param signatureField the signature field the appearance stream is added to
      * @throws IOException if the appearance stream could not be created
      */
-    void createAppearanceDictionary(PDFormXObject holderForml,
+    void createAppearanceDictionary(PDFormXObject holderForm,
             PDSignatureField signatureField) throws IOException;
 
     /**
