@@ -233,13 +233,13 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
-    public void createAppearanceDictionary(PDFormXObject holderForml,
-                                           PDSignatureField signatureField) throws IOException
+    public void createAppearanceDictionary(PDFormXObject holderForm, PDSignatureField signatureField)
+            throws IOException
     {
         PDAppearanceDictionary appearance = new PDAppearanceDictionary();
         appearance.getCOSObject().setDirect(true);
 
-        PDAppearanceStream appearanceStream = new PDAppearanceStream(holderForml.getCOSObject());
+        PDAppearanceStream appearanceStream = new PDAppearanceStream(holderForm.getCOSObject());
 
         appearance.setNormalAppearance(appearanceStream);
         signatureField.getWidgets().get(0).setAppearance(appearance);
@@ -357,7 +357,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
                                         COSName imageName, COSName innerFormName,
                                         PDVisibleSignDesigner properties) throws IOException
     {
-        // TOD remove unsed parameter from interface??
+        // TODO remove unused parameter from interface??
 
         // Use width and height of BBox as values for transformation matrix.
         int width = (int) this.getStructure().getFormatterRectangle().getWidth();
