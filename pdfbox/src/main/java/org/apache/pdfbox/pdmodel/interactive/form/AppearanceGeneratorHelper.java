@@ -678,11 +678,11 @@ class AppearanceGeneratorHelper {
         int quadding = field.getQ();
         int numChars = Math.min(value.length(), maxLen);
 
-        float combWidth = appearanceStream.getBBox().getWidth() / maxLen;
+        PDRectangle bBox = appearanceStream.getBBox();
+        float combWidth = bBox.getWidth() / maxLen;
         float ascentAtFontSize = font.getFontDescriptor().getAscent() / FONTSCALE * fontSize;
 
-        float baselineOffset = appearanceStream.getBBox().getLowerLeftY() +  
-                (appearanceStream.getBBox().getHeight() - ascentAtFontSize)/2;
+        float baselineOffset = bBox.getLowerLeftY() + (bBox.getHeight() - ascentAtFontSize) / 2;
 
         float prevCharWidth = 0f;
 
