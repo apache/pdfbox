@@ -122,6 +122,7 @@ public class GlyphSubstitutionTable extends TTFTable
             lookupListTable = new LookupListTable(0, new LookupTable[0]);
         }
 
+        // PDFBOX-5729: for debugging only
         LookupTable[] lookupTable = lookupListTable.getLookups();
         for (FeatureRecord rec : featureListTable.getFeatureRecords())
         {
@@ -130,7 +131,14 @@ public class GlyphSubstitutionTable extends TTFTable
             int[] indices = tab.getLookupListIndices();
             for (int i = 0; i < indices.length; ++i)
             {
-                int lookupType = lookupTable[indices[i]].getLookupType();
+                int idx = indices[i];
+                if (idx < 0 || idx >= lookupTable.length)
+                {
+                    LOG.debug("LookupListIndex {}:{} for tag '{}' invalid, lookupTable length is {}", 
+                            i, idx, tag, lookupTable.length);
+                    break;
+                }
+                int lookupType = lookupTable[idx].getLookupType();
 
                 LookupSubTable[] lst = lookupTable[indices[i]].getSubTables();
                 if (lst.length == 0 || lst[0] == null)
@@ -812,9 +820,16 @@ public class GlyphSubstitutionTable extends TTFTable
     private int applyFeature(FeatureRecord featureRecord, int gid)
     {
         int lookupResult = gid;
+        LookupTable[] lookups = lookupListTable.getLookups();
         for (int lookupListIndex : featureRecord.getFeatureTable().getLookupListIndices())
         {
-            LookupTable lookupTable = lookupListTable.getLookups()[lookupListIndex];
+            if (lookupListIndex < 0 || lookupListIndex >= lookups.length)
+            {
+                LOG.warn("Skipping GSUB feature '{}' with invalid lookupListIndex {} (len: {})", 
+                        featureRecord.getFeatureTag(), lookupListIndex, lookups.length);
+                continue;
+            }
+            LookupTable lookupTable = lookups[lookupListIndex];
             if (lookupTable.getLookupType() != 1)
             {
                 LOG.warn(
