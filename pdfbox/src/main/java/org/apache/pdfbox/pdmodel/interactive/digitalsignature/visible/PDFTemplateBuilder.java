@@ -176,12 +176,12 @@ public interface PDFTemplateBuilder
     /**
      * Creates appearance dictionary
      * 
-     * @param holderForml holder XObject
+     * @param holderForm holder XObject
      * @param signatureField the signature field
      * @throws IOException if something went wrong
      */
-    void createAppearanceDictionary(PDFormXObject holderForml,
-            PDSignatureField signatureField) throws IOException;
+    void createAppearanceDictionary(PDFormXObject holderForm, PDSignatureField signatureField)
+            throws IOException;
 
     /**
      * 

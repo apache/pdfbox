@@ -265,13 +265,13 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
-    public void createAppearanceDictionary(PDFormXObject holderForml,
-                                           PDSignatureField signatureField) throws IOException
+    public void createAppearanceDictionary(PDFormXObject holderForm, PDSignatureField signatureField)
+            throws IOException
     {
         PDAppearanceDictionary appearance = new PDAppearanceDictionary();
         appearance.getCOSObject().setDirect(true);
 
-        PDAppearanceStream appearanceStream = new PDAppearanceStream(holderForml.getCOSObject());
+        PDAppearanceStream appearanceStream = new PDAppearanceStream(holderForm.getCOSObject());
 
         appearance.setNormalAppearance(appearanceStream);
         signatureField.getWidgets().get(0).setAppearance(appearance);
