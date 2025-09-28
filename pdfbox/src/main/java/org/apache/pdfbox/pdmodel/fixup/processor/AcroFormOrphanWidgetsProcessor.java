@@ -172,19 +172,19 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
                     {
                         acroFormResources.put(fontName, widgetResources.getFont(fontName));
                         LOG.debug("added font resource to AcroForm from widget for font name {}",
-                                () -> fontName.getName());
+                                fontName::getName);
                     }
                 }
                 catch (IOException ioe)
                 {
                     LOG.debug("unable to add font to AcroForm for font name {}",
-                            () -> fontName.getName());
+                            fontName::getName);
                 }
             }
             else
             {
                 LOG.debug("font resource for widget was a subsetted font - ignored: {}",
-                        () -> fontName.getName());
+                        fontName::getName);
             }
         });
     }
@@ -239,7 +239,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
                 if (defaultResources.getFont(fontName) == null)
                 {
                     LOG.debug("trying to add missing font resource for field {}",
-                            () -> field.getFullyQualifiedName());
+                            field::getFullyQualifiedName);
                     FontMapper mapper = FontMappers.instance();
                     FontMapping<TrueTypeFont> fontMapping = mapper.getTrueTypeFont(fontName.getName() , null);
                     if (fontMapping != null)
