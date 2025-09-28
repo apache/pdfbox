@@ -307,10 +307,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
 
         if (length1 - offset != 0 && offset > 0)
         {
-            if (LOG.isWarnEnabled())
-            {
-                LOG.warn("Ignored invalid Length1 {} for Type 1 font {}", length1, getName());
-            }
+            LOG.warn("Ignored invalid Length1 {} for Type 1 font {}", () -> length1, () -> getName());
             return offset;
         }
 
