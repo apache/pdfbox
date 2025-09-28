@@ -25,6 +25,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.util.Matrix;
 
@@ -57,8 +58,9 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
         {
             contentStream = getNormalAppearanceAsContentStream();
 
-            contentStream.setStrokingColor(getColor());
-            contentStream.setNonStrokingColor(getColor());
+            PDColor color = getColor();
+            contentStream.setStrokingColor(color);
+            contentStream.setNonStrokingColor(color);
 
             setOpacity(contentStream, annotation.getConstantOpacity());
 
