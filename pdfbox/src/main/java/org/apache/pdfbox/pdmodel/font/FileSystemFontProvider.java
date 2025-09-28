@@ -771,11 +771,8 @@ final class FileSystemFontProvider extends FontProvider
                         usWeightClass, sFamilyClass, ulCodePageRange1, ulCodePageRange2,
                         macStyle, panose, this, hash, file.lastModified()));
 
-                if (LOG.isTraceEnabled())
-                {
-                    LOG.trace("{}: '{}' / '{}' / '{}'", format.name(), name,
-                            fontHeaders.getFontFamily(), fontHeaders.getFontSubFamily());
-                }
+                LOG.trace("{}: '{}' / '{}' / '{}'", format::name, () -> name,
+                        fontHeaders::getFontFamily, fontHeaders::getFontSubFamily);
             }
             else
             {
