@@ -58,7 +58,9 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
             setOpacity(contentStream, annotation.getConstantOpacity());
 
             PDRectangle rect = getRectangle();
-            PDRectangle bbox = new PDRectangle(rect.getWidth(), rect.getHeight());
+            float rectWidth = rect.getWidth();
+            float rectHeight = rect.getHeight();
+            PDRectangle bbox = new PDRectangle(rectWidth, rectHeight);
             PDAppearanceStream pdAppearanceStream = annotation.getNormalAppearanceStream();
             if (!annotation.getCOSObject().containsKey(COSName.RD))
             {
@@ -68,26 +70,26 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
                 // translation values in the matrix and also used for the line width
                 // (not here because it has no effect, see comment near fill() ).
                 // The curves are based on the original rectangle.
-                float rd = Math.min(rect.getHeight() / 10, 5);
+                float rd = Math.min(rectHeight / 10, 5);
                 annotation.setRectDifferences(rd);
-                bbox = new PDRectangle(-rd, -rd, rect.getWidth() + 2 * rd, rect.getHeight() + 2 * rd);
+                bbox = new PDRectangle(-rd, -rd, rectWidth + 2 * rd, rectHeight + 2 * rd);
                 Matrix matrix = pdAppearanceStream.getMatrix();
                 pdAppearanceStream.setMatrix(matrix.createAffineTransform());
                 PDRectangle rect2 = new PDRectangle(rect.getLowerLeftX() - rd, rect.getLowerLeftY() - rd,
-                                                    rect.getWidth() + 2 * rd, rect.getHeight() + 2 * rd);
+                                                rectWidth + 2 * rd, rectHeight + 2 * rd);
                 annotation.setRectangle(rect2);
             }
             pdAppearanceStream.setBBox(bbox);
 
-            float halfX = rect.getWidth() / 2;
-            float halfY = rect.getHeight() / 2;
+            float halfX = rectWidth / 2;
+            float halfY = rectHeight / 2;
             contentStream.moveTo(0, 0);
             contentStream.curveTo(halfX, 0,
                                   halfX, halfY, 
-                                  halfX, rect.getHeight());
+                                  halfX, rectHeight);
             contentStream.curveTo(halfX, halfY, 
                                   halfX, 0,
-                                  rect.getWidth(), 0);
+                                  rectWidth, 0);
             contentStream.closePath();
             contentStream.fill();
             // Adobe has an additional stroke, but it has no effect
