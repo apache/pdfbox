@@ -182,7 +182,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     public static PDType0Font load(PDDocument doc, InputStream input, boolean embedSubset)
             throws IOException
     {
-        return load(doc, new RandomAccessReadBuffer(input), embedSubset, false);
+        return load(doc, RandomAccessReadBuffer.createBufferFromStream(input), embedSubset, false);
     }
 
     /**
@@ -236,20 +236,20 @@ public class PDType0Font extends PDFont implements PDVectorFont
      * Loads a TTF to be embedded into a document as a vertical Type 0 font.
      *
      * @param doc The PDF document that will hold the embedded font.
-     * @param input A TrueType font.
+     * @param input A TrueType font. It will be closed before returning.
      * @return A Type0 font with a CIDFontType2 descendant.
      * @throws IOException If there is an error reading the font stream.
      */
     public static PDType0Font loadVertical(PDDocument doc, InputStream input) throws IOException
     {
-        return load(doc, new RandomAccessReadBuffer(input), true, true);
+        return load(doc, RandomAccessReadBuffer.createBufferFromStream(input), true, true);
     }
 
     /**
      * Loads a TTF to be embedded into a document as a vertical Type 0 font.
      *
      * @param doc The PDF document that will hold the embedded font.
-     * @param input A TrueType font.
+     * @param input A TrueType font. It will be closed before returning.
      * @param embedSubset True if the font will be subset before embedding
      * @return A Type0 font with a CIDFontType2 descendant.
      * @throws IOException If there is an error reading the font stream.
@@ -257,7 +257,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     public static PDType0Font loadVertical(PDDocument doc, InputStream input, boolean embedSubset)
             throws IOException
     {
-        return load(doc, new RandomAccessReadBuffer(input), embedSubset, true);
+        return load(doc, RandomAccessReadBuffer.createBufferFromStream(input), embedSubset, true);
     }
 
     /**

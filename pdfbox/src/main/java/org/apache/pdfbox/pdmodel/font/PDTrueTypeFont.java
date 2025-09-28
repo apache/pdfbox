@@ -195,11 +195,13 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     /**
      * Loads a TTF to be embedded into a document as a simple font.
      *
-     * <p><b>Note:</b> Simple fonts only support 256 characters. For Unicode support, use
-     * {@link PDType0Font#load(PDDocument, InputStream)} instead.</p>
+     * <p>
+     * <b>Note:</b> Simple fonts only support 256 characters. For Unicode support, use
+     * {@link PDType0Font#load(PDDocument, InputStream)} instead.
+     * </p>
      * 
      * @param doc The PDF document that will hold the embedded font.
-     * @param input A TTF file stream
+     * @param input A TTF file stream. It will be closed before returning.
      * @param encoding The PostScript encoding vector to be used for embedding.
      * @return a PDTrueTypeFont instance.
      * @throws IOException If there is an error loading the data.
@@ -207,7 +209,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     public static PDTrueTypeFont load(PDDocument doc, InputStream input, Encoding encoding)
             throws IOException
     {
-        return load(doc, new RandomAccessReadBuffer(input), encoding);
+        return load(doc, RandomAccessReadBuffer.createBufferFromStream(input), encoding);
     }
 
     /**

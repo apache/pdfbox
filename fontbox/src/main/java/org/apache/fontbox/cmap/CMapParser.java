@@ -480,7 +480,7 @@ public class CMapParser
         {
             throw new IOException("Error: Could not find referenced cmap stream " + name);
         }
-        return new RandomAccessReadBuffer(is);
+        return RandomAccessReadBuffer.createBufferFromStream(is);
     }
 
     private Object parseNextToken(RandomAccessRead randomAcccessRead) throws IOException

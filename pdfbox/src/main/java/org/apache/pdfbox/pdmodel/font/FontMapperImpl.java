@@ -122,8 +122,8 @@ final class FontMapperImpl implements FontMapper
             {
                 throw new IOException("resource '" + resourceName + "' not found");
             }
-            RandomAccessReadBuffer randomAccessReadBuffer = new RandomAccessReadBuffer(
-                    resourceAsStream);
+            RandomAccessReadBuffer randomAccessReadBuffer = RandomAccessReadBuffer
+                    .createBufferFromStream(resourceAsStream);
             TTFParser ttfParser = new TTFParser();
             lastResortFont = ttfParser.parse(randomAccessReadBuffer);
         }
