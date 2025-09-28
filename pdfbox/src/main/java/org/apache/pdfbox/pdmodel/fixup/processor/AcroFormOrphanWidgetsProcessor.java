@@ -252,20 +252,17 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
                         }
                         defaultResources.put(fontName, pdFont);
                     }
-                    else if (LOG.isDebugEnabled())
+                    else
                     {
                         LOG.debug("no suitable font found for field {} for font name {}",
-                                field.getFullyQualifiedName(), fontName.getName());
+                                field::getFullyQualifiedName, fontName::getName);
                     }
                 }
             }
             catch (IOException ioe)
             {
-                if (LOG.isDebugEnabled())
-                {
-                    LOG.debug("unable to handle font resources for field {}: {}",
-                            field.getFullyQualifiedName(), ioe.getMessage());
-                }
+                LOG.debug("unable to handle font resources for field {}: {}",
+                        field::getFullyQualifiedName, ioe::getMessage);
             }
         }
     }
