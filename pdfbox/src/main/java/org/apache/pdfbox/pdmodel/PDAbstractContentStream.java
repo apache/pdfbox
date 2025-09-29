@@ -660,12 +660,13 @@ abstract class PDAbstractContentStream implements Closeable
      */
     public void setStrokingColor(PDColor color) throws IOException
     {
+        PDColorSpace colorSpace = color.getColorSpace();
         if (strokingColorSpaceStack.isEmpty() ||
-            strokingColorSpaceStack.peek() != color.getColorSpace())
+            strokingColorSpaceStack.peek() != colorSpace)
         {
-            writeOperand(getName(color.getColorSpace()));
+            writeOperand(getName(colorSpace));
             writeOperator(OperatorName.STROKING_COLORSPACE);
-            setStrokingColorSpaceStack(color.getColorSpace());
+            setStrokingColorSpaceStack(colorSpace);
         }
 
         for (float value : color.getComponents())
@@ -673,15 +674,15 @@ abstract class PDAbstractContentStream implements Closeable
             writeOperand(value);
         }
 
-        if (color.getColorSpace() instanceof PDPattern)
+        if (colorSpace instanceof PDPattern)
         {
             writeOperand(color.getPatternName());
         }
 
-        if (color.getColorSpace() instanceof PDPattern ||
-            color.getColorSpace() instanceof PDSeparation ||
-            color.getColorSpace() instanceof PDDeviceN ||
-            color.getColorSpace() instanceof PDICCBased)
+        if (colorSpace instanceof PDPattern ||
+            colorSpace instanceof PDSeparation ||
+            colorSpace instanceof PDDeviceN ||
+            colorSpace instanceof PDICCBased)
         {
             writeOperator(OperatorName.STROKING_COLOR_N);
         }
@@ -779,12 +780,13 @@ abstract class PDAbstractContentStream implements Closeable
      */
     public void setNonStrokingColor(PDColor color) throws IOException
     {
+        PDColorSpace colorSpace = color.getColorSpace();
         if (nonStrokingColorSpaceStack.isEmpty() ||
-            nonStrokingColorSpaceStack.peek() != color.getColorSpace())
+            nonStrokingColorSpaceStack.peek() != colorSpace)
         {
-            writeOperand(getName(color.getColorSpace()));
+            writeOperand(getName(colorSpace));
             writeOperator(OperatorName.NON_STROKING_COLORSPACE);
-            setNonStrokingColorSpaceStack(color.getColorSpace());
+            setNonStrokingColorSpaceStack(colorSpace);
         }
 
         for (float value : color.getComponents())
@@ -792,15 +794,15 @@ abstract class PDAbstractContentStream implements Closeable
             writeOperand(value);
         }
 
-        if (color.getColorSpace() instanceof PDPattern)
+        if (colorSpace instanceof PDPattern)
         {
             writeOperand(color.getPatternName());
         }
 
-        if (color.getColorSpace() instanceof PDPattern ||
-            color.getColorSpace() instanceof PDSeparation ||
-            color.getColorSpace() instanceof PDDeviceN ||
-            color.getColorSpace() instanceof PDICCBased)
+        if (colorSpace instanceof PDPattern ||
+            colorSpace instanceof PDSeparation ||
+            colorSpace instanceof PDDeviceN ||
+            colorSpace instanceof PDICCBased)
         {
             writeOperator(OperatorName.NON_STROKING_COLOR_N);
         }
