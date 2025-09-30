@@ -35,7 +35,6 @@ public class PDJavascriptNameTreeNode extends PDNameTreeNode<PDActionJavaScript>
      */
     public PDJavascriptNameTreeNode()
     {
-        super();
     }
 
     /**

@@ -18,6 +18,7 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -48,7 +49,7 @@ class TestEmbeddedFiles
         EmbeddedFiles.main(args);
         ExtractEmbeddedFiles.main(args);
         byte[] bytes = Files.readAllBytes(Paths.get(embeddedFile));
-        String content = new String(bytes);
+        String content = new String(bytes, StandardCharsets.US_ASCII);
         Assertions.assertEquals("This is the contents of the embedded file", content);
         new File(embeddedFile).delete();
         new File(outputFile).delete();

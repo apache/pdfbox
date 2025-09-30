@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -87,7 +88,7 @@ abstract class TrueTypeEmbedder implements Subsetter
             InputStream is = ttf.getOriginalData();
             byte[] b = new byte[4];
             is.mark(b.length);
-            if (is.read(b) == b.length && new String(b).equals("ttcf"))
+            if (is.read(b) == b.length && new String(b, StandardCharsets.US_ASCII).equals("ttcf"))
             {
                 is.close();
                 throw new IOException("Full embedding of TrueType font collections not supported");
@@ -138,9 +139,10 @@ abstract class TrueTypeEmbedder implements Subsetter
      */
     final boolean isEmbeddingPermitted(TrueTypeFont ttf) throws IOException
     {
-        if (ttf.getOS2Windows() != null)
+        OS2WindowsMetricsTable os2 = ttf.getOS2Windows();
+        if (os2 != null)
         {
-            int fsType = ttf.getOS2Windows().getFsType();
+            int fsType = os2.getFsType();
             int maskedFsType = fsType & 0x000F;
             // PDFBOX-5191: don't check the bit because permissions are exclusive
             if (maskedFsType == OS2WindowsMetricsTable.FSTYPE_RESTRICTED)
@@ -163,9 +165,10 @@ abstract class TrueTypeEmbedder implements Subsetter
      */
     private boolean isSubsettingPermitted(TrueTypeFont ttf) throws IOException
     {
-        if (ttf.getOS2Windows() != null)
+        OS2WindowsMetricsTable os2 = ttf.getOS2Windows();
+        if (os2 != null)
         {
-            int fsType = ttf.getOS2Windows().getFsType();
+            int fsType = os2.getFsType();
             if ((fsType & OS2WindowsMetricsTable.FSTYPE_NO_SUBSETTING) ==
                           OS2WindowsMetricsTable.FSTYPE_NO_SUBSETTING)
             {

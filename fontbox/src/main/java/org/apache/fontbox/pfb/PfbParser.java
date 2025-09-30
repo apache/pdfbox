@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -132,7 +133,7 @@ public class PfbParser
         List<Integer> typeList = new ArrayList<>(3);
         List<byte[]> barrList = new ArrayList<>(3);
         ByteArrayInputStream in = new ByteArrayInputStream(pfb);
-        int total = 0;
+        long total = 0;
         do
         {
             int r = in.read();
@@ -162,6 +163,11 @@ public class PfbParser
             {
                 LOG.debug("record type: " + recordType + ", segment size: " + size);
             }
+            if (size > pfb.length)
+            {
+                // PDFBOX-6044: avoid potential OOM
+                throw new IOException("record size " + size + " would be larger than the input");
+            }
             byte[] ar = new byte[size];
             int got = in.read(ar);
             if (got != size)
@@ -177,8 +183,13 @@ public class PfbParser
         // We now have ASCII and binary segments. Lets arrange these so that the ASCII segments
         // come first, then the binary segments, then the last ASCII segment if it is
         // 0000... cleartomark
-        
-        pfbdata = new byte[total];
+
+        if (total > pfb.length)
+        {
+            // PDFBOX-6044: avoid potential OOM
+            throw new IOException("total record size " + total + " would be larger than the input");
+        }
+        pfbdata = new byte[(int) total];
         byte[] cleartomarkSegment = null;
         int dstPos = 0;
         
@@ -190,7 +201,8 @@ public class PfbParser
                 continue;
             }
             byte[] ar = barrList.get(i);
-            if (i == typeList.size() - 1 && ar.length < 600 && new String(ar).contains("cleartomark"))
+            if (i == typeList.size() - 1 && ar.length < 600 &&
+                    new String(ar, StandardCharsets.US_ASCII).contains("cleartomark"))
             {
                 cleartomarkSegment = ar;
                 continue;

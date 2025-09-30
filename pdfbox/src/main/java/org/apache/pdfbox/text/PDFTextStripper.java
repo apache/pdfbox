@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.text.Bidi;
 import java.text.Normalizer;
 import java.util.ArrayDeque;
@@ -1991,7 +1992,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      */
     private static void parseBidiFile(InputStream inputStream) throws IOException
     {
-        LineNumberReader rd = new LineNumberReader(new InputStreamReader(inputStream));
+        LineNumberReader rd = new LineNumberReader(new InputStreamReader(inputStream, StandardCharsets.US_ASCII));
 
         do
         {

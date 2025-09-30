@@ -99,7 +99,7 @@ class JPEGFactoryTest
         doWritePDF(document, ximage, TESTRESULTSDIR, "jpegcmykstream.pdf");
         checkJpegStream(TESTRESULTSDIR, "jpegcmykstream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpegcmyk.jpg"));
     }
-    
+
     /**
      * Tests JPEGFactory#createFromStream(PDDocument document, InputStream
      * stream) with gray JPEG file
@@ -107,21 +107,13 @@ class JPEGFactoryTest
     @Test
     void testCreateFromStream256() throws IOException
     {
-        try
-        {
-            PDDocument document = new PDDocument();
-            InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg");
-            PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
-            validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
-            
-            doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg256stream.pdf");
-            checkJpegStream(TESTRESULTSDIR, "jpeg256stream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"));
-        }
-        catch (Throwable ex)
-        {
-            ex.printStackTrace();
-            throw ex;
-        }
+        PDDocument document = new PDDocument();
+        InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg");
+        PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
+        validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
+
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg256stream.pdf");
+        checkJpegStream(TESTRESULTSDIR, "jpeg256stream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"));
     }
 
     /**

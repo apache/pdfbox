@@ -96,11 +96,7 @@ public class FDFAnnotationInk extends FDFAnnotation
                 {
                     String gesture = node.getFirstChild().getNodeValue();
                     String[] gestureValues = gesture.split("[,;]");
-                    float[] values = new float[gestureValues.length];
-                    for (int j = 0; j < gestureValues.length; j++)
-                    {
-                        values[j] = Float.parseFloat(gestureValues[j]);
-                    }
+                    float[] values = parseFloats(gestureValues);
                     inklist.add(values);
                 }
             }
@@ -143,7 +139,7 @@ public class FDFAnnotationInk extends FDFAnnotation
         COSArray array = annot.getCOSArray(COSName.INKLIST);
         if (array != null)
         {
-            List<float[]> retval = new ArrayList<>();
+            List<float[]> retval = new ArrayList<>(array.size());
             for (COSBase entry : array)
             {
                 retval.add(((COSArray) entry).toFloatArray());

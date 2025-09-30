@@ -89,7 +89,10 @@ abstract class PDTriangleBasedShadingType extends PDShading
         if (bitsPerCoordinate == -1)
         {
             bitsPerCoordinate = getCOSObject().getInt(COSName.BITS_PER_COORDINATE, -1);
-            LOG.debug("bitsPerCoordinate: " + (Math.pow(2, bitsPerCoordinate) - 1));
+            if (LOG.isDebugEnabled())
+            {
+                LOG.debug("bitsPerCoordinate: " + (Math.pow(2, bitsPerCoordinate) - 1));
+            }
         }
         return bitsPerCoordinate;
     }
@@ -197,6 +200,10 @@ abstract class PDTriangleBasedShadingType extends PDShading
                                 PDRange rangeX, PDRange rangeY, PDRange[] colRangeTab,
                                 Matrix matrix, AffineTransform xform) throws IOException
     {
+        if (bitsPerCoordinate <= 0 || numberOfColorComponents <= 0 || bitsPerColorComponent <= 0)
+        {
+            throw new IOException("nothing to read, check bitsPerCoordinate, numberOfColorComponents and bitsPerColorComponent");
+        }
         float[] colorComponentTab = new float[numberOfColorComponents];
         long x = input.readBits(bitsPerCoordinate);
         long y = input.readBits(bitsPerCoordinate);

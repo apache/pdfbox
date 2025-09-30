@@ -156,12 +156,12 @@ public interface PDFTemplateBuilder
     /**
      * Creates appearance dictionary
      * 
-     * @param holderForml form object to be used for the appearance stream
+     * @param holderForm form object to be used for the appearance stream
      * @param signatureField the signature field the appearance stream is added to
      * @throws IOException if the appearance stream could not be created
      */
-    void createAppearanceDictionary(PDFormXObject holderForml,
-            PDSignatureField signatureField) throws IOException;
+    void createAppearanceDictionary(PDFormXObject holderForm, PDSignatureField signatureField)
+            throws IOException;
 
     /**
      * Create a holder for the inner form stream.
@@ -188,7 +188,7 @@ public interface PDFTemplateBuilder
      * Insert given from as inner form.
      * 
      * @param innerForm the form object to be inserted
-     * @param holderFormResources resources the fomr object is added to
+     * @param holderFormResources resources the form object is added to
      */
     void insertInnerFormToHolderResources(PDFormXObject innerForm,
             PDResources holderFormResources);
@@ -263,7 +263,7 @@ public interface PDFTemplateBuilder
     /**
      * just to create visible signature
      * 
-     * @param template the document holding the visible signatue
+     * @param template the document holding the visible signature
      */
     void createVisualSignature(PDDocument template);
 
@@ -278,7 +278,7 @@ public interface PDFTemplateBuilder
             PDResources holderFormResources) throws IOException;
 
     /**
-     * Resturns the PDF template Structure
+     * Returns the PDF template Structure
      * 
      * @return PDF template Structure
      */

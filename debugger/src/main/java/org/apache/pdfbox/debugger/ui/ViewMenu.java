@@ -229,6 +229,10 @@ public class ViewMenu extends MenuBase
         extractTextMenuItem.setEnabled(false);
         viewMenu.add(extractTextMenuItem);
 
+        TextStripperMenu textStripperMenu = TextStripperMenu.getInstance();
+        textStripperMenu.setEnableMenu(false);
+        viewMenu.add(textStripperMenu.getMenu());
+
         viewMenu.addSeparator();
 
         repairAcroFormMenuItem = new JCheckBoxMenuItem(REPAIR_ACROFORM);

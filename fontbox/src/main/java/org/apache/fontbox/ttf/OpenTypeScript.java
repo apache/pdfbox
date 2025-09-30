@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -238,7 +239,7 @@ public final class OpenTypeScript
     private static void parseScriptsFile(InputStream inputStream) throws IOException
     {
         Map<int[], String> unicodeRanges = new TreeMap<>((o1, o2) -> Integer.compare(o1[0], o2[0]));
-        try (LineNumberReader rd = new LineNumberReader(new InputStreamReader(inputStream)))
+        try (LineNumberReader rd = new LineNumberReader(new InputStreamReader(inputStream, StandardCharsets.US_ASCII)))
         {
             int[] lastRange = { Integer.MIN_VALUE, Integer.MIN_VALUE };
             String lastScript = null;

@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.fdf;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
@@ -115,7 +116,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
         }
         if (base64EncodedAppearance != null && !base64EncodedAppearance.isEmpty())
         {
-            LOG.debug("Decoded XML: " + new String(decodedAppearanceXML));
+            LOG.debug("Decoded XML: " + new String(decodedAppearanceXML, StandardCharsets.UTF_8));
 
             Document stampAppearance = XMLUtil
                     .parse(new ByteArrayInputStream(decodedAppearanceXML));
@@ -255,8 +256,16 @@ public class FDFAnnotationStamp extends FDFAnnotation
                         {
                             try (OutputStream os = stream.createOutputStream())
                             {
-                                // not sure about charset
-                                os.write(child.getTextContent().getBytes());
+                                String encoding = child.getOwnerDocument().getXmlEncoding();
+                                if (encoding == null)
+                                {
+                                    encoding = child.getOwnerDocument().getInputEncoding();
+                                }
+                                if (encoding == null)
+                                {
+                                    encoding = "UTF-8";
+                                }
+                                os.write(child.getTextContent().getBytes(encoding));
                                 LOG.debug(parentAttrKey + " => Data was streamed");
                             }
                         }

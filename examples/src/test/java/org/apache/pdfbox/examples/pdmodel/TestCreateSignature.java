@@ -193,7 +193,7 @@ class TestCreateSignature
 
         // https://stackoverflow.com/questions/4442192/
         NTPUDPClient timeClient = new NTPUDPClient();
-        InetAddress inetAddress = InetAddress.getByName("time.nist.gov");
+        InetAddress inetAddress = InetAddress.getByName("pool.ntp.org");
         timeClient.setDefaultTimeout(Duration.ofMillis(5000));
         TimeInfo timeInfo;
         long returnTime;
@@ -245,7 +245,7 @@ class TestCreateSignature
      * @throws CertificateVerificationException
      */
     @ParameterizedTest
-	@MethodSource("signingTypes")
+    @MethodSource("signingTypes")
     void testDetachedSHA256(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException, URISyntaxException
@@ -285,7 +285,7 @@ class TestCreateSignature
      * @throws CertificateVerificationException
      */
     @ParameterizedTest
-	@MethodSource("signingTypes")
+    @MethodSource("signingTypes")
     void testDetachedSHA256WithTSA(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
@@ -397,7 +397,7 @@ class TestCreateSignature
      * @throws CertificateVerificationException
      */
     @ParameterizedTest
-	@MethodSource("signingTypes")
+    @MethodSource("signingTypes")
     void testCreateVisibleSignature(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
@@ -429,7 +429,7 @@ class TestCreateSignature
      * @throws CertificateVerificationException
      */
     @ParameterizedTest
-	@MethodSource("signingTypes")
+    @MethodSource("signingTypes")
     void testCreateVisibleSignature2(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
@@ -710,7 +710,7 @@ class TestCreateSignature
      * @throws Exception
      */
     @ParameterizedTest
-	@MethodSource("signingTypes")
+    @MethodSource("signingTypes")
     void testSaveIncrementalAfterSign(boolean externallySign) throws Exception
     {
         BufferedImage oldImage, expectedImage1, actualImage1, expectedImage2, actualImage2;
@@ -919,6 +919,43 @@ class TestCreateSignature
         addValidationInformation.validateSignature(inFile, outFile);
 
         checkLTV(outFile);
+    }
+
+    /** 
+     * PDFBOX-5521: Check that UR3 signature doesn't interfere.
+     * 
+     * @param externallySign
+     *
+     * @throws IOException
+     * @throws GeneralSecurityException
+     * @throws CMSException
+     * @throws OperatorCreationException
+     * @throws TSPException
+     * @throws CertificateVerificationException 
+     */
+    @ParameterizedTest
+    @MethodSource("signingTypes")
+    void testPDFBox5521(boolean externallySign)
+            throws IOException, GeneralSecurityException, CMSException,
+            OperatorCreationException, TSPException, CertificateVerificationException
+    {
+        // sign PDF
+        CreateSignature signing = new CreateSignature(keyStore, PASSWORD.toCharArray());
+        signing.setExternalSigning(externallySign);
+
+        final String fileNameSigned = getOutputFileName("PDFBOX-5521-santander_freistellungsauftrag.pdf_signed{0}.pdf", externallySign);
+        final File file = new File("target/pdfs", "PDFBOX-5521-santander_freistellungsauftrag.pdf");
+        signing.signDetached(file, new File(OUT_DIR + fileNameSigned));
+        checkSignature(file, new File(OUT_DIR, fileNameSigned), false);
+
+        // PDFBOX-6071: file that has a /ByteRange longer than the file
+        byte[] ba = Files.readAllBytes(file.toPath());
+        ba[2434] = '9'; // change /ByteRange from [ 0 2490 14292 2385472] to [ 0 2490 14292 2985472]
+        final File file2 = new File("target/pdfs", "PDFBOX-6071-santander_freistellungsauftrag.pdf");
+        Files.write(file2.toPath(), ba);
+        final String fileNameSigned2 = getOutputFileName("PDFBOX-6071-santander_freistellungsauftrag.pdf_signed{0}.pdf", externallySign);
+        signing.signDetached(file2, new File(OUT_DIR + fileNameSigned2));
+        checkSignature(file2, new File(OUT_DIR, fileNameSigned2), false);
     }
 
     private void checkLTV(File outFile)

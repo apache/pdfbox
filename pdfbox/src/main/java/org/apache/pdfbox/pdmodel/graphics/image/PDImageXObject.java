@@ -344,6 +344,27 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray, String name) throws IOException
     {
+        return createFromByteArray(document, byteArray, name, null);
+    }
+
+    /**
+     * Create a PDImageXObject from an image byte array. This overloaded version allows providing 
+     * a custom factory to handle specific image formats, such as BMP and GIF, or to act as a 
+     * fallback strategy when the default converters (e.g., for PNG or TIFF) fail.
+     *
+     * @param document the document that shall use this PDImageXObject.
+     * @param byteArray bytes from an image file.
+     * @param name name of image file for exception messages, can be null.
+     * @param customFactory optional factory used to handle BMP, GIF, or fallback cases 
+     *                       (e.g., for PNG or TIFF). If {@code null}, this method delegates to
+     *                       {@link #createFromByteArray(PDDocument, byte[], String)}.
+     * @return a PDImageXObject.
+     * @throws IOException if there is an error when reading the file or creating the
+     * PDImageXObject.
+     * @throws IllegalArgumentException if the image type is not supported.
+     */
+    public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray, String name, CustomFactory customFactory) throws IOException
+    {
         FileType fileType = FileTypeDetector.detectFileType(byteArray);
         if (fileType == null)
         {
@@ -380,6 +401,11 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
         if (fileType == FileType.BMP || fileType == FileType.GIF || fileType == FileType.PNG)
         {
+            if (customFactory != null)
+            {
+                return customFactory.createFromByteArray(document, byteArray);
+            }
+            
             ByteArrayInputStream bais = new ByteArrayInputStream(byteArray);
             BufferedImage bim = ImageIO.read(bais);
             return LosslessFactory.createFromImage(document, bim);

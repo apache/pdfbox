@@ -20,6 +20,7 @@ package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,8 +32,14 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.jupiter.api.Assertions;
+import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
+
+import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDLayoutAttributeObject;
+import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDTableAttributeObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -84,6 +91,28 @@ class PDStructureElementTest
             checkElement(structureTreeRoot.getK(), attributeSet, structureTreeRoot.getClassMap(), classSet);
         }
 
+        for (Revisions<PDAttributeObject> r : attributeSet)
+        {
+            // check a few that we know
+            if (r.size() >= 2)
+            {
+                // e.g. in Root/StructTreeRoot/K/[2]/K/[14]/K/[5]/K/[0]/K/[2]/A
+                // and     Root/StructTreeRoot/K/[2]/K/[14]/K/[5]/K/[2]/K/[0]/A
+                // and     Root/StructTreeRoot/K/[2]/K/[14]/K/[5]/K/[2]/K/[2]/A
+                PDTableAttributeObject obj0 = (PDTableAttributeObject) r.getObject(0);
+                assertEquals("Table", obj0.getOwner());
+                assertEquals(2, obj0.getColSpan());
+                PDLayoutAttributeObject obj1 = (PDLayoutAttributeObject) r.getObject(1);
+                assertEquals("Layout", obj1.getOwner());
+                assertTrue(((Float) obj1.getWidth()) == 166.375f || ((Float) obj1.getWidth()) == 246.75f);
+                assertTrue(((Float) obj1.getHeight()) == 14f || ((Float) obj1.getHeight()) == 17f);
+                assertEquals("Start", obj1.getInlineAlign());
+                assertTrue("After".equals(obj1.getBlockAlign()) || "Before".equals(obj1.getBlockAlign()));
+                assertEquals(0, r.getRevisionNumber(0));
+                assertEquals(0, r.getRevisionNumber(1));
+            }
+        }
+
         // collect attributes and check their count.
         assertEquals(72, attributeSet.size());
         int cnt = attributeSet.stream().map(Revisions::size).reduce(0, Integer::sum);
@@ -125,7 +154,7 @@ class PDStructureElementTest
                     {
                         String className = classNames.getObject(i);
                         classSet.add(className);
-                        Assertions.assertTrue(classMap.containsKey(className), "'" + className + "' not in ClassMap " + classMap);
+                        assertTrue(classMap.containsKey(className), "'" + className + "' not in ClassMap " + classMap);
                     }
                 }
             }
@@ -135,4 +164,53 @@ class PDStructureElementTest
             }
         }
     }    
+
+    @Test
+    void testSimple()
+    {
+        PDStructureElement structureElement = new PDStructureElement("S", null);
+        assertEquals(PDStructureElement.TYPE, structureElement.getType());
+        assertEquals("S", structureElement.getStructureType());
+        assertNull(structureElement.getParent());
+        structureElement.setStructureType("T");
+        assertEquals("T", structureElement.getStructureType());
+        structureElement.setElementIdentifier("Ident");
+        assertEquals("Ident", structureElement.getElementIdentifier());
+        structureElement.setRevisionNumber(33);
+        assertEquals(33, structureElement.getRevisionNumber());
+        structureElement.incrementRevisionNumber();
+        assertEquals(34, structureElement.getRevisionNumber());
+        assertThrows(IllegalArgumentException.class, () -> structureElement.setRevisionNumber(-1));
+        structureElement.setTitle("Title");
+        assertEquals("Title", structureElement.getTitle());
+        structureElement.setLanguage("Klingon");
+        assertEquals("Klingon", structureElement.getLanguage());
+        structureElement.setAlternateDescription("Alto");
+        assertEquals("Alto", structureElement.getAlternateDescription());
+        structureElement.setActualText("Actual");
+        assertEquals("Actual", structureElement.getActualText());
+        structureElement.setExpandedForm("ExpF");
+        assertEquals("ExpF", structureElement.getExpandedForm());
+        assertThrows(IllegalArgumentException.class, () -> structureElement.appendKid(-1));
+        structureElement.appendKid(0);
+        PDMarkedContentReference mcr1 = new PDMarkedContentReference();
+        mcr1.setMCID(1);
+        structureElement.appendKid(mcr1);
+        PDMarkedContentReference mcr2 = new PDMarkedContentReference();
+        mcr2.setMCID(2);
+        PDMarkedContent mc2 = PDMarkedContent.create(COSName.S, mcr2.getCOSObject());
+        structureElement.appendKid(mc2);
+        PDMarkedContentReference mcrSubZero = new PDMarkedContentReference();
+        assertThrows(IllegalArgumentException.class, () -> mcrSubZero.setMCID(-1));
+        mcrSubZero.getCOSObject().setInt(COSName.MCID, -1);
+        PDMarkedContent mcSubZero = PDMarkedContent.create(COSName.S, mcrSubZero.getCOSObject());
+        assertThrows(IllegalArgumentException.class, () -> structureElement.appendKid(mcSubZero));
+        List<Object> kids = structureElement.getKids();
+        assertEquals(3, kids.size());
+        assertEquals(0, kids.get(0));
+        mcr1 = (PDMarkedContentReference) kids.get(1);
+        assertEquals(PDMarkedContentReference.TYPE, mcr1.getCOSObject().getNameAsString(COSName.TYPE));
+        assertEquals(1, mcr1.getMCID());
+        assertEquals(2, kids.get(2));
+    }
 }

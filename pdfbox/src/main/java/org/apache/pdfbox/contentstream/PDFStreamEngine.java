@@ -79,7 +79,7 @@ public abstract class PDFStreamEngine
 {
     private static final Log LOG = LogFactory.getLog(PDFStreamEngine.class);
 
-    private final Map<String, OperatorProcessor> operators = new HashMap<>(80);
+    private final Map<String, OperatorProcessor> operators = new HashMap<>();
 
     private Deque<PDGraphicsState> graphicsStack = new ArrayDeque<>();
 
@@ -199,14 +199,15 @@ public abstract class PDFStreamEngine
     protected void processSoftMask(PDTransparencyGroup group) throws IOException
     {
         saveGraphicsState();
-        Matrix softMaskCTM = getGraphicsState().getSoftMask().getInitialTransformationMatrix();
-        getGraphicsState().setCurrentTransformationMatrix(softMaskCTM);
-        getGraphicsState().setTextMatrix(new Matrix());
-        getGraphicsState().setTextLineMatrix(new Matrix());
-        getGraphicsState().setNonStrokingColorSpace(PDDeviceGray.INSTANCE);
-        getGraphicsState().setNonStrokingColor(PDDeviceGray.INSTANCE.getInitialColor());
-        getGraphicsState().setStrokingColorSpace(PDDeviceGray.INSTANCE);
-        getGraphicsState().setStrokingColor(PDDeviceGray.INSTANCE.getInitialColor());
+        PDGraphicsState graphicsState = getGraphicsState();
+        Matrix softMaskCTM = graphicsState.getSoftMask().getInitialTransformationMatrix();
+        graphicsState.setCurrentTransformationMatrix(softMaskCTM);
+        graphicsState.setTextMatrix(new Matrix());
+        graphicsState.setTextLineMatrix(new Matrix());
+        graphicsState.setNonStrokingColorSpace(PDDeviceGray.INSTANCE);
+        graphicsState.setNonStrokingColor(PDDeviceGray.INSTANCE.getInitialColor());
+        graphicsState.setStrokingColorSpace(PDDeviceGray.INSTANCE);
+        graphicsState.setStrokingColor(PDDeviceGray.INSTANCE.getInitialColor());
 
         try
         {
@@ -286,17 +287,18 @@ public abstract class PDFStreamEngine
 
         PDResources parent = pushResources(charProc);
         Deque<PDGraphicsState> savedStack = saveGraphicsStack();
+        PDGraphicsState graphicsState = getGraphicsState();
 
         // replace the CTM with the TRM
-        getGraphicsState().setCurrentTransformationMatrix(textRenderingMatrix);
+        graphicsState.setCurrentTransformationMatrix(textRenderingMatrix);
 
         // transform the CTM using the stream's matrix (this is the FontMatrix)
         textRenderingMatrix.concatenate(charProc.getMatrix());
 
         // note: we don't clip to the BBox as it is often wrong, see PDFBOX-1917
 
-        getGraphicsState().setTextMatrix(new Matrix());
-        getGraphicsState().setTextLineMatrix(new Matrix());
+        graphicsState.setTextMatrix(new Matrix());
+        graphicsState.setTextLineMatrix(new Matrix());
 
         try
         {
@@ -755,7 +757,7 @@ public abstract class PDFStreamEngine
                 0, fontSize,                     // 0
                 0, textState.getRise());         // 1
         
-        Matrix textMatrix = getGraphicsState().getTextMatrix();
+        Matrix textMatrix = state.getTextMatrix();
 
         // read the stream until it is empty
         InputStream in = new ByteArrayInputStream(string);
@@ -945,7 +947,7 @@ public abstract class PDFStreamEngine
      *
      * @param operator The unknown operator.
      * @param operands The list of operands.
-     * @param exception the excpetion which occured when processing the operator
+     * @param exception the exception which occurred when processing the operator
      * 
      * @throws IOException if there is an error processing the operator exception
      */

@@ -119,7 +119,7 @@ public class COSArrayList<E> implements List<E>
     {
         array = new COSArray();
         array.add( item );
-        actual = new ArrayList<>();
+        actual = new ArrayList<>(1);
         actual.add( actualObject );
 
         parentDict = dictionary;
@@ -475,11 +475,12 @@ public class COSArrayList<E> implements List<E>
         }
         else
         {
+            COSBase cosObject = ((COSObjectable) element).getCOSObject();
             if( parentDict != null && index == 0 )
             {
-                parentDict.setItem( dictKey, ((COSObjectable)element).getCOSObject() );
+                parentDict.setItem(dictKey, cosObject);
             }
-            array.set( index, ((COSObjectable)element).getCOSObject() );
+            array.set(index, cosObject);
         }
         return actual.set( index, element );
     }

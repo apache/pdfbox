@@ -28,6 +28,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -107,6 +108,17 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      */
     public static COSBase getInheritableAttribute(COSDictionary node, COSName key)
     {
+        return getInheritableAttribute(node, key, new HashSet<>());
+    }
+
+    private static COSBase getInheritableAttribute(COSDictionary node, COSName key, Set<COSDictionary> visited)
+    {
+        if (visited.contains(node))
+        {
+            return null;
+        }
+        visited.add(node);
+
         COSBase value = node.getDictionaryObject(key);
         if (value != null)
         {
@@ -115,7 +127,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         COSDictionary parent = node.getCOSDictionary(COSName.PARENT, COSName.P);
         if (parent != null && COSName.PAGES.equals(parent.getCOSName(COSName.TYPE)))
         {
-            return getInheritableAttribute(parent, key);
+            return getInheritableAttribute(parent, key, visited);
         }
 
         return null;
@@ -137,16 +149,17 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      */
     private List<COSDictionary> getKids(COSDictionary node)
     {
-        List<COSDictionary> result = new ArrayList<>();
-
         COSArray kids = node.getCOSArray(COSName.KIDS);
         if (kids == null)
         {
             // probably a malformed PDF
-            return result;
+            return Collections.emptyList();
         }
 
-        for (int i = 0, size = kids.size(); i < size; i++)
+        int size = kids.size();
+        List<COSDictionary> result = new ArrayList<>(size);
+
+        for (int i = 0; i < size; i++)
         {
             COSBase base = kids.getObject(i);
             if (base instanceof COSDictionary)

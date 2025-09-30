@@ -500,4 +500,35 @@ class PDFontTest
             assertEquals(278.0f, font.getSpaceWidth());
         }
     }
+    
+    @Test
+    void testSymbol() throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            try (PDPageContentStream contentStream = new PDPageContentStream(doc, page))
+            {
+                PDType1Font font = new PDType1Font(FontName.SYMBOL);
+
+                contentStream.beginText();
+                contentStream.setFont(font, 10);
+                contentStream.newLineAtOffset(10, 700);
+                // Note that the Alpha is the greek alpha, but the Omega is the Ohm symbol
+                // (Tested on Windows)
+                contentStream.showText("\u0391 \u2126");
+                contentStream.endText();
+            }
+
+            doc.addPage(page);
+            doc.save(baos);
+        }
+        try (PDDocument doc = Loader.loadPDF(baos.toByteArray()))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            String text = stripper.getText(doc);
+            assertEquals("\u0391 \u2126", text.trim());
+        }
+    }
 }

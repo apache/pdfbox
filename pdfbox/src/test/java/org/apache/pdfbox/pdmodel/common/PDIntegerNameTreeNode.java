@@ -34,7 +34,6 @@ public class PDIntegerNameTreeNode extends PDNameTreeNode<COSInteger>
      */
     public PDIntegerNameTreeNode()
     {
-        super();
     }
 
     /**
@@ -50,6 +49,10 @@ public class PDIntegerNameTreeNode extends PDNameTreeNode<COSInteger>
     @Override
     protected COSInteger convertCOSToPD(COSBase base) throws IOException
     {
+        if (base != null && !(base instanceof COSInteger))
+        {
+            throw new IOException("integer expected here, but got " + base);
+        }
         return (COSInteger)base;
     }
 

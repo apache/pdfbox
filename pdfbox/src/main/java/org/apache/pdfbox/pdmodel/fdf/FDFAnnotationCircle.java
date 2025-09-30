@@ -83,16 +83,8 @@ public class FDFAnnotationCircle extends FDFAnnotation
         String fringe = element.getAttribute("fringe");
         if (fringe != null && !fringe.isEmpty())
         {
-            String[] fringeValues = fringe.split(",");
-            if (fringeValues.length != 4)
-            {
-                throw new IOException("Error: wrong amount of numbers in attribute 'fringe'");
-            }
-            PDRectangle rect = new PDRectangle();
-            rect.setLowerLeftX(Float.parseFloat(fringeValues[0]));
-            rect.setLowerLeftY(Float.parseFloat(fringeValues[1]));
-            rect.setUpperRightX(Float.parseFloat(fringeValues[2]));
-            rect.setUpperRightY(Float.parseFloat(fringeValues[3]));
+            PDRectangle rect = createRectangleFromAttributes(
+                    fringe, "Error: wrong amount of numbers in attribute 'fringe'");
             setFringe(rect);
         }
     }
@@ -121,17 +113,7 @@ public class FDFAnnotationCircle extends FDFAnnotation
      */
     public Color getInteriorColor()
     {
-        Color retval = null;
-        COSArray array = annot.getCOSArray(COSName.IC);
-        if (array != null)
-        {
-            float[] rgb = array.toFloatArray();
-            if (rgb.length >= 3)
-            {
-                retval = new Color(rgb[0], rgb[1], rgb[2]);
-            }
-        }
-        return retval;
+        return getColor(COSName.IC);
     }
 
     /**

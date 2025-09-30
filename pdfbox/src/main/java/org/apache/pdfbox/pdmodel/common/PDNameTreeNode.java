@@ -120,7 +120,18 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
             List<PDNameTreeNode<T>> pdObjects = new ArrayList<>(kids.size());
             for( int i=0; i<kids.size(); i++ )
             {
-                pdObjects.add( createChildNode( (COSDictionary)kids.getObject(i) ) );
+                COSBase base = kids.getObject(i);
+                PDNameTreeNode<T> childNode;
+                if (base instanceof COSDictionary)
+                {
+                    childNode = createChildNode((COSDictionary) base);
+                }
+                else
+                {
+                    LOG.warn("Bad child node at position " + i);
+                    childNode = createChildNode(new COSDictionary());
+                }
+                pdObjects.add(childNode);
             }
             retval = new COSArrayList<>(pdObjects, kids);
         }
@@ -255,12 +266,13 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
         COSArray namesArray = node.getCOSArray(COSName.NAMES);
         if( namesArray != null )
         {
-            Map<String, T> names = new LinkedHashMap<>();
+            int size = namesArray.size();
+            Map<String, T> names = new LinkedHashMap<>(size);
             if (namesArray.size() % 2 != 0)
             {
-                LOG.warn("Names array has odd size: " + namesArray.size());
+                LOG.warn("Names array has odd size: " + size);
             }
-            for (int i = 0; i + 1 < namesArray.size(); i += 2)
+            for (int i = 0; i + 1 < size; i += 2)
             {
                 COSBase base = namesArray.getObject(i);
                 if (!(base instanceof COSString))

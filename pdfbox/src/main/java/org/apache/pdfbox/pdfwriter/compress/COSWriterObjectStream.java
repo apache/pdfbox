@@ -172,10 +172,6 @@ public class COSWriterObjectStream
         {
             return;
         }
-        if (!(object instanceof COSBase))
-        {
-            throw new IOException("Error: Unknown type in object stream:" + object);
-        }
         COSBase base;
         if (object instanceof COSObject)
         {
@@ -318,7 +314,7 @@ public class COSWriterObjectStream
     private void writeCOSArray(OutputStream output, COSArray cosArray) throws IOException
     {
         output.write(COSWriter.ARRAY_OPEN);
-        for (COSBase value : cosArray.toList())
+        for (COSBase value : cosArray)
         {
             if (value == null)
             {

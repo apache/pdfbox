@@ -65,11 +65,13 @@ class MergeAcroFormsTest
         File toBeMerged = new File(IN_DIR,"AcroFormForMerge.pdf");
         File pdfOutput = new File(OUT_DIR,"PDFBoxLegacyMerge-SameMerged.pdf");
         merger.setDestinationFileName(pdfOutput.getAbsolutePath());
+        assertEquals(pdfOutput.getAbsolutePath(), merger.getDestinationFileName());
         merger.addSource(toBeMerged);
-        merger.addSource(toBeMerged);
+        merger.addSource(toBeMerged.getAbsolutePath());
         merger.mergeDocuments(null);
         merger.setAcroFormMergeMode(AcroFormMergeMode.PDFBOX_LEGACY_MODE);
-        
+        assertEquals(AcroFormMergeMode.PDFBOX_LEGACY_MODE, merger.getAcroFormMergeMode());
+
         try (PDDocument compliantDocument = Loader
                 .loadPDF(new File(IN_DIR, "PDFBoxLegacyMerge-SameMerged.pdf"));
                 PDDocument toBeCompared = Loader

@@ -91,10 +91,21 @@ public class PDNumberTreeNode implements COSObjectable
         COSArray kids = node.getCOSArray(COSName.KIDS);
         if( kids != null )
         {
-            List<PDNumberTreeNode> pdObjects = new ArrayList<>();
+            List<PDNumberTreeNode> pdObjects = new ArrayList<>(kids.size());
             for( int i=0; i<kids.size(); i++ )
             {
-                pdObjects.add( createChildNode( (COSDictionary)kids.getObject(i) ) );
+                COSBase base = kids.getObject(i);
+                PDNumberTreeNode childNode;
+                if (base instanceof COSDictionary)
+                {
+                    childNode = createChildNode((COSDictionary) base);
+                }
+                else
+                {
+                    LOG.warn("Bad child node at position " + i);
+                    childNode = new PDNumberTreeNode(valueType);
+                }
+                pdObjects.add(childNode);
             }
             retval = new COSArrayList<>(pdObjects,kids);
         }
@@ -180,12 +191,13 @@ public class PDNumberTreeNode implements COSObjectable
         COSArray numbersArray = node.getCOSArray(COSName.NUMS);
         if (numbersArray != null)
         {
+            int size = numbersArray.size();
             indices = new HashMap<>();
-            if (numbersArray.size() % 2 != 0)
+            if (size % 2 != 0)
             {
-                LOG.warn("Numbers array has odd size: " + numbersArray.size());
+                LOG.warn("Numbers array has odd size: " + size);
             }
-            for (int i = 0; i + 1 < numbersArray.size(); i += 2)
+            for (int i = 0; i + 1 < size; i += 2)
             {
                 COSBase base = numbersArray.getObject(i);
                 if (!(base instanceof COSInteger))

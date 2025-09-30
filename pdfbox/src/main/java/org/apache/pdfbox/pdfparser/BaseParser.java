@@ -1104,7 +1104,10 @@ public abstract class BaseParser
      * @return The string that was read from the stream of length 0 to length.
      *
      * @throws IOException If there is an error reading from the stream.
+     * 
+     * @deprecated this unused method will be removed in 4.0.
      */
+    @Deprecated
     protected String readString( int length ) throws IOException
     {
         skipSpaces();
@@ -1114,7 +1117,7 @@ public abstract class BaseParser
         //average string size is around 2 and the normal string buffer size is
         //about 16 so lets save some space.
         StringBuilder buffer = new StringBuilder(length);
-        while( !isWhitespace(c) && !isClosing(c) && c != -1 && buffer.length() < length &&
+        while (!isWhitespace(c) && c != -1 && buffer.length() < length &&
                 c != '[' &&
                 c != '<' &&
                 c != '(' &&
@@ -1139,7 +1142,7 @@ public abstract class BaseParser
      */
     protected boolean isClosing() throws IOException
     {
-        return isClosing(source.peek());
+        return source.peek() == ']';
     }
 
     /**
@@ -1147,7 +1150,9 @@ public abstract class BaseParser
      *
      * @param c The character to check against end of line
      * @return true if the next byte is ']', false otherwise.
+     * @deprecated This unused method will be removed in 4.0.
      */
+    @Deprecated
     protected boolean isClosing(int c)
     {
         return c == ']';

@@ -193,22 +193,23 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public Iterator<PDStream> getContentStreams()
     {
-        List<PDStream> streams = new ArrayList<>();
         COSBase base = page.getDictionaryObject(COSName.CONTENTS);
         if (base instanceof COSStream)
         {
-            streams.add(new PDStream((COSStream) base));
+            return Collections.singletonList(new PDStream((COSStream) base)).iterator();
         }
         else if (base instanceof COSArray)
         {
             COSArray array = (COSArray)base;
+            List<PDStream> streams = new ArrayList<>(array.size());
             for (int i = 0; i < array.size(); i++)
             {
                 COSStream stream = (COSStream) array.getObject(i);
                 streams.add(new PDStream(stream));
             }
+            return streams.iterator();
         }
-        return streams.iterator();
+        return Collections.emptyIterator();
     }
     
     /**
@@ -234,23 +235,19 @@ public class PDPage implements COSObjectable, PDContentStream
     {
         // return a stream based reader if there is just one stream
         COSStream contentStream = page.getCOSStream(COSName.CONTENTS);
-        if (contentStream != null)
+        if (contentStream != null && COSName.FLATE_DECODE.equals(contentStream.getFilters()))
         {
-            COSBase filter = contentStream.getFilters();
             // for now only streams using a flate filter are supported
-            if (filter instanceof COSName && ((COSName) filter).equals(COSName.FLATE_DECODE))
+            try
             {
-                try
-                {
-                    FlateFilterDecoderStream decoderStream = new FlateFilterDecoderStream(
-                            contentStream.createRawInputStream());
-                    return new NonSeekableRandomAccessReadInputStream(decoderStream);
-                }
-                catch (IOException exception)
-                {
-                    LOG.warn("skipped malformed content stream");
-                    return new RandomAccessReadBuffer(DELIMITER);
-                }
+                FlateFilterDecoderStream decoderStream = new FlateFilterDecoderStream(
+                        contentStream.createRawInputStream());
+                return new NonSeekableRandomAccessReadInputStream(decoderStream);
+            }
+            catch (IOException exception)
+            {
+                LOG.warn("skipped malformed content stream");
+                return new RandomAccessReadBuffer(DELIMITER);
             }
         }
         return getContentsForRandomAccess();

@@ -94,12 +94,8 @@ public class FDFAnnotationPolygon extends FDFAnnotation
             {
                 throw new IOException("Error: missing element 'vertices'");
             }
-            String[] verticesValues = vertices.split("[,;]");
-            float[] values = new float[verticesValues.length];
-            for (int i = 0; i < verticesValues.length; i++)
-            {
-                values[i] = Float.parseFloat(verticesValues[i]);
-            }
+            String[] verticesValues = vertices.split(",|;");
+            float[] values = parseFloats(verticesValues);
             setVertices(values);
         }
         catch (XPathExpressionException e)
@@ -155,16 +151,6 @@ public class FDFAnnotationPolygon extends FDFAnnotation
      */
     public Color getInteriorColor()
     {
-        Color retval = null;
-        COSArray array = annot.getCOSArray(COSName.IC);
-        if (array != null)
-        {
-            float[] rgb = array.toFloatArray();
-            if (rgb.length >= 3)
-            {
-                retval = new Color(rgb[0], rgb[1], rgb[2]);
-            }
-        }
-        return retval;
+        return getColor(COSName.IC);
     }
 }

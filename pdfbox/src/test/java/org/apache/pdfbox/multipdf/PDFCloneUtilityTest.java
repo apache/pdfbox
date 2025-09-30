@@ -22,6 +22,7 @@ import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.Loader;
@@ -31,7 +32,10 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -53,12 +57,18 @@ class PDFCloneUtilityTest
         try (PDDocument srcDoc = new PDDocument();
              PDDocument dstDoc = new PDDocument())
         {
-
             PDPage pdPage = new PDPage();
             srcDoc.addPage(pdPage);
             new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, true).close();
             new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, true).close();
-            new PDFCloneUtility(dstDoc).cloneForNewDocument(pdPage.getCOSObject());
+            PDFCloneUtility cloner = new PDFCloneUtility(dstDoc);
+            assertEquals(dstDoc, cloner.getDestination());
+            COSDictionary clonedPageDictionary = (COSDictionary) cloner.cloneForNewDocument(pdPage.getCOSObject());
+            PDPage clonedPage = new PDPage(clonedPageDictionary);
+            Iterator<PDStream> contentStreams = clonedPage.getContentStreams();
+            assertNotNull(contentStreams.next());
+            assertNotNull(contentStreams.next());
+            assertFalse(contentStreams.hasNext());
         }
     }
 
@@ -100,18 +110,31 @@ class PDFCloneUtilityTest
 
         srcDoc.save(TESTDIR + CLONESRC);
         PDFMergerUtility merger = new PDFMergerUtility();
-        PDDocument dstDoc = new PDDocument();
-
-        // this calls PDFCloneUtility.cloneForNewDocument(), 
-        // which would fail before the fix in PDFBOX-2052
-        merger.appendDocument(dstDoc, srcDoc);
-
-        // save and reload PDF, so that one can see that the files are legit
-        dstDoc.save(TESTDIR + CLONEDST);
-        Loader.loadPDF(new File(TESTDIR + CLONESRC)).close();
-        Loader.loadPDF(new File(TESTDIR + CLONESRC), (String) null).close();
-        Loader.loadPDF(new File(TESTDIR + CLONEDST)).close();
-        Loader.loadPDF(new File(TESTDIR + CLONEDST), (String) null).close();
+        try (PDDocument dstDoc = new PDDocument())
+        {
+            // this calls PDFCloneUtility.cloneForNewDocument(),
+            // which would fail before the fix in PDFBOX-2052
+            merger.appendDocument(dstDoc, srcDoc);
+            
+            // save and reload PDF, so that one can see that the files are legit
+            dstDoc.save(TESTDIR + CLONEDST);
+        }
+        try (PDDocument doc = Loader.loadPDF(new File(TESTDIR + CLONESRC)))
+        {
+            assertEquals(1, doc.getNumberOfPages());
+        }
+        try (PDDocument doc = Loader.loadPDF(new File(TESTDIR + CLONESRC), (String) null))
+        {
+            assertEquals(1, doc.getNumberOfPages());
+        }
+        try (PDDocument doc = Loader.loadPDF(new File(TESTDIR + CLONEDST)))
+        {
+            assertEquals(1, doc.getNumberOfPages());
+        }
+        try (PDDocument doc = Loader.loadPDF(new File(TESTDIR + CLONEDST), (String) null))
+        {
+            assertEquals(1, doc.getNumberOfPages());
+        }
     }
 
     /**

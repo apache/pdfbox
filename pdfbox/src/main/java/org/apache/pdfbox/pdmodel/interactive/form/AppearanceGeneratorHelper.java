@@ -495,13 +495,16 @@ class AppearanceGeneratorHelper
             }
             float padding = Math.max(1f, borderWidth);
             PDRectangle clipRect = applyPadding(bbox, padding);
+            float clipRectLowerLeftY = clipRect.getLowerLeftY();
+            float clipRectHeight = clipRect.getHeight();
+
             PDRectangle contentRect = applyPadding(clipRect, padding);
             
             contents.saveGraphicsState();
             
             // Acrobat always adds a clipping path
-            contents.addRect(clipRect.getLowerLeftX(), clipRect.getLowerLeftY(),
-                    clipRect.getWidth(), clipRect.getHeight());
+            contents.addRect(clipRect.getLowerLeftX(), clipRectLowerLeftY,
+                             clipRect.getWidth(), clipRectHeight);
             contents.clip();
             
             // get the font
@@ -571,21 +574,22 @@ class AppearanceGeneratorHelper
             else
             {
                 // Adobe shows the text 'shifted up' in case the caps don't fit into the clipping area
-                if (fontCapAtSize > clipRect.getHeight())
+                if (fontCapAtSize > clipRectHeight)
                 {
-                    y = clipRect.getLowerLeftY() + -fontDescentAtSize;
+                    y = clipRectLowerLeftY + -fontDescentAtSize;
                 }
                 else
                 {
                     // calculate the position based on the content rectangle
-                    y = clipRect.getLowerLeftY() + (clipRect.getHeight() - fontCapAtSize) / 2;
-                    
+                    y = clipRectLowerLeftY + (clipRectHeight - fontCapAtSize) / 2;
+
                     // check to ensure that ascents and descents fit
-                    if (y - clipRect.getLowerLeftY() < -fontDescentAtSize) {
-                        
-                        float fontDescentBased = -fontDescentAtSize + contentRect.getLowerLeftY();
-                        float fontCapBased = contentRect.getHeight() - contentRect.getLowerLeftY() - fontCapAtSize;
-                        
+                    if (y - clipRectLowerLeftY < -fontDescentAtSize)
+                    {
+                        float contentRectLowerLeftY = contentRect.getLowerLeftY();
+                        float fontDescentBased = -fontDescentAtSize + contentRectLowerLeftY;
+                        float fontCapBased = contentRect.getHeight() - contentRectLowerLeftY - fontCapAtSize;
+
                         y = Math.min(fontDescentBased, Math.max(y, fontCapBased));
                     }
                 }
@@ -716,13 +720,13 @@ class AppearanceGeneratorHelper
         int maxLen = ((PDTextField) field).getMaxLen();
         int quadding = field.getQ();
         int numChars = Math.min(value.length(), maxLen);
-                
-        float combWidth = appearanceStream.getBBox().getWidth() / maxLen;
+
+        PDRectangle bBox = appearanceStream.getBBox();
+        float combWidth = bBox.getWidth() / maxLen;
         float ascentAtFontSize = font.getFontDescriptor().getAscent() / FONTSCALE * fontSize;
 
-        float baselineOffset = appearanceStream.getBBox().getLowerLeftY() +  
-                (appearanceStream.getBBox().getHeight() - ascentAtFontSize)/2;
-        
+        float baselineOffset = bBox.getLowerLeftY() + (bBox.getHeight() - ascentAtFontSize) / 2;
+
         float prevCharWidth = 0f;
         
         // set initial offset based on width of first char.
@@ -921,19 +925,20 @@ class AppearanceGeneratorHelper
             }
             else
             {
-                float yScalingFactor = FONTSCALE * font.getFontMatrix().getScaleY();
-                float xScalingFactor = FONTSCALE * font.getFontMatrix().getScaleX();
+                Matrix fontMatrix = font.getFontMatrix();
+                float yScalingFactor = FONTSCALE * fontMatrix.getScaleY();
+                float xScalingFactor = FONTSCALE * fontMatrix.getScaleX();
                 
                 // fit width
-                float width = font.getStringWidth(value) * font.getFontMatrix().getScaleX();
+                float width = font.getStringWidth(value) * fontMatrix.getScaleX();
                 float widthBasedFontSize = contentRect.getWidth() / width * xScalingFactor;
 
                 // fit height
                 float height = (font.getFontDescriptor().getCapHeight() +
-                               -font.getFontDescriptor().getDescent()) * font.getFontMatrix().getScaleY();
+                               -font.getFontDescriptor().getDescent()) * fontMatrix.getScaleY();
                 if (height <= 0)
                 {
-                    height = font.getBoundingBox().getHeight() * font.getFontMatrix().getScaleY();
+                    height = font.getBoundingBox().getHeight() * fontMatrix.getScaleY();
                 }
 
                 float heightBasedFontSize = contentRect.getHeight() / height * yScalingFactor;

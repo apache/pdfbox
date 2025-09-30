@@ -80,16 +80,8 @@ public class FDFAnnotationLine extends FDFAnnotation
             throw new IOException("Error: missing attribute 'end'");
         }
         String line = startCoords + "," + endCoords;
-        String[] lineValues = line.split(",");
-        if (lineValues.length != 4)
-        {
-            throw new IOException("Error: wrong amount of line coordinates");
-        }
-        float[] values = new float[4];
-        for (int i = 0; i < 4; i++)
-        {
-            values[i] = Float.parseFloat(lineValues[i]);
-        }
+        float[] values = parseRectangleAttributes(
+                line, "Error: wrong amount of line coordinates");
         setLine(values);
 
         String leaderLine = element.getAttribute("leaderLength");
@@ -266,17 +258,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      */
     public Color getInteriorColor()
     {
-        Color retval = null;
-        COSArray array = annot.getCOSArray(COSName.IC);
-        if (array != null)
-        {
-            float[] rgb = array.toFloatArray();
-            if (rgb.length >= 3)
-            {
-                retval = new Color(rgb[0], rgb[1], rgb[2]);
-            }
-        }
-        return retval;
+        return getColor(COSName.IC);
     }
 
     /**

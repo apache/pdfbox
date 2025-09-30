@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.logging.Log;
@@ -47,6 +48,8 @@ public class PDFStreamParser extends BaseParser
 
     private static final int MAX_BIN_CHAR_TEST_LENGTH = 10;
     private final byte[] binCharTestArr = new byte[MAX_BIN_CHAR_TEST_LENGTH];
+    private int inlineImageDepth = 0;
+    private long inlineOffset = 0;
     
     /**
      * Constructor.
@@ -235,6 +238,17 @@ public class PDFStreamParser extends BaseParser
                 Operator beginImageOP = Operator.getOperator(nextOperator);
                 if (nextOperator.equals(OperatorName.BEGIN_INLINE_IMAGE))
                 {
+                    inlineImageDepth++;
+                    if (inlineImageDepth > 1)
+                    {
+                        // PDFBOX-6038
+                        throw new IOException("Nested '" + OperatorName.BEGIN_INLINE_IMAGE +
+                                "' operator not allowed at offset " + source.getPosition() + ", first: " + inlineOffset);
+                    }
+                    else
+                    {
+                        inlineOffset = source.getPosition();
+                    }
                     COSDictionary imageParams = new COSDictionary();
                     beginImageOP.setImageParameters( imageParams );
                     Object nextToken = null;
@@ -255,9 +269,17 @@ public class PDFStreamParser extends BaseParser
                         Operator imageData = (Operator) nextToken;
                         if (imageData.getImageData() == null || imageData.getImageData().length == 0)
                         {
-                            LOG.warn("empty inline image at stream offset " + source.getPosition());
+                            LOG.warn("empty inline image at stream offset " +
+                                    (source.isClosed() ? "EOF" : source.getPosition()));
                         }
                         beginImageOP.setImageData(imageData.getImageData());
+                        inlineImageDepth--;
+                    }
+                    else
+                    {
+                        LOG.warn("nextToken " + nextToken + " at position " +
+                                (source.isClosed() ? "EOF" : source.getPosition()) +
+                                ", expected " + OperatorName.BEGIN_INLINE_IMAGE_DATA + "?!");
                     }
                 }
                 return beginImageOP;
@@ -363,11 +385,11 @@ public class PDFStreamParser extends BaseParser
             {
                 // usually, the operator here is Q, sometimes EMC (PDFBOX-2376), S (PDFBOX-3784),
                 // or a number (PDFBOX-5957)
-                s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx);
+                s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx, StandardCharsets.US_ASCII);
                 if (!"Q".equals(s) && !"EMC".equals(s) && !"S".equals(s) &&
                     !s.matches("^\\d*\\.?\\d*$"))
                 {
-                    // operator is not Q, not EMC, not S, nur a number -> assume binary data
+                    // operator is not Q, not EMC, not S, nor a number -> assume binary data
                     noBinData = false;
                 }
             }
@@ -378,7 +400,7 @@ public class PDFStreamParser extends BaseParser
                 if (endOpIdx == -1)
                 {
                     endOpIdx = MAX_BIN_CHAR_TEST_LENGTH;
-                    s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx);
+                    s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx, StandardCharsets.US_ASCII);
                 }
                 // look for token of 3 chars max or a number
                 if (endOpIdx - startOpIdx > 3 && !s.matches("^\\d*\\.?\\d*$"))
@@ -414,7 +436,6 @@ public class PDFStreamParser extends BaseParser
         while(
             nextChar != -1 && // EOF
             !isWhitespace(nextChar) &&
-            !isClosing(nextChar) &&
             nextChar != '[' &&
             nextChar != '<' &&
             nextChar != '(' &&

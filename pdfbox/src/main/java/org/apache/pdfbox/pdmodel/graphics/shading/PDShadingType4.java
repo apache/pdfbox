@@ -166,39 +166,41 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
                                     colRange, matrix, xform);
                             ps = new Point2D[] { p0.point, p1.point, p2.point };
                             cs = new float[][] { p0.color, p1.color, p2.color };
+                            list.add(new ShadedTriangle(ps, cs));
+                            flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
+                            break;
+                        case 1:
+                        case 2:
+                            lastIndex = list.size() - 1;
+                            if (lastIndex < 0)
+                            {
+                                LOG.error("broken data stream: " + list.size() + ", aborting");
+                                eof = true;
+                            }
+                            else
+                            {
+                                ShadedTriangle preTri = list.get(lastIndex);
+                                p2 = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY,
+                                        colRange, matrix, xform);
+                                ps = new Point2D[] {
+                                        flag == 1 ? preTri.corner[1] : preTri.corner[0],
+                                        preTri.corner[2], p2.point };
+                                cs = new float[][] {
+                                        flag == 1 ? preTri.color[1] : preTri.color[0],
+                                        preTri.color[2], p2.color };
                                 list.add(new ShadedTriangle(ps, cs));
                                 flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
-                                break;
-                            case 1:
-                            case 2:
-                                lastIndex = list.size() - 1;
-                                if (lastIndex < 0)
-                                {
-                                    LOG.error("broken data stream: " + list.size());
-                                }
-                                else
-                                {
-                                    ShadedTriangle preTri = list.get(lastIndex);
-                                    p2 = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY,
-                                            colRange, matrix, xform);
-                                    ps = new Point2D[] {
-                                            flag == 1 ? preTri.corner[1] : preTri.corner[0],
-                                            preTri.corner[2], p2.point };
-                                    cs = new float[][] {
-                                            flag == 1 ? preTri.color[1] : preTri.color[0],
-                                            preTri.color[2], p2.color };
-                                    list.add(new ShadedTriangle(ps, cs));
-                                    flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
-                                }
-                                break;
-                            default:
-                                LOG.warn("bad flag: " + flag);
-                                break;
                             }
-                        }
-                        catch (EOFException ex)
-                        {
+                            break;
+                        default:
+                            LOG.error("bad flag " + flag + ", aborting");
                             eof = true;
+                            break;
+                        }
+                    }
+                    catch (EOFException ex)
+                    {
+                        eof = true;
                     }
                 }
             }

@@ -68,6 +68,7 @@ import org.apache.pdfbox.debugger.ui.HighResolutionImageIcon;
 import org.apache.pdfbox.debugger.ui.ImageTypeMenu;
 import org.apache.pdfbox.debugger.ui.RenderDestinationMenu;
 import org.apache.pdfbox.debugger.ui.TextDialog;
+import org.apache.pdfbox.debugger.ui.TextStripperMenu;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.fixup.AcroFormDefaultFixup;
 import org.apache.pdfbox.pdmodel.fixup.PDDocumentFixup;
@@ -214,7 +215,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                 // (checking widget.getPage() also works, but it is sometimes null)
                 if (dictionarySet.contains(widget.getCOSObject()) && widget.getRectangle() != null)
                 {
-                    rectMap.put(widget.getRectangle(), "Field name: " + field.getFullyQualifiedName());
+                    rectMap.put(widget.getRectangle(), "Field name: " + field.getFullyQualifiedName() + ", value: " + field.getValueAsString());
                 }
             }
         }
@@ -309,6 +310,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             PDFTextStripper stripper = new PDFTextStripper();
             stripper.setStartPage(pageIndex + 1);
             stripper.setEndPage(pageIndex + 1);
+            stripper.setSortByPosition(TextStripperMenu.isSorted());
+            stripper.setIgnoreContentStreamSpaceGlyphs(TextStripperMenu.isIgnoreSpaces());
             textDialog.setText(stripper.getText(document));
         }
         catch (IOException ex)

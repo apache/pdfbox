@@ -100,7 +100,7 @@ public class PDPageLabels implements COSObjectable
     private void findLabels(PDNumberTreeNode node) throws IOException 
     {
         List<PDNumberTreeNode> kids = node.getKids();
-        if (node.getKids() != null) 
+        if (kids != null) 
         {
             for (PDNumberTreeNode kid : kids) 
             {
@@ -208,7 +208,7 @@ public class PDPageLabels implements COSObjectable
     public Map<String, Integer> getPageIndicesByLabels()
     {
         int numberOfPages = doc.getNumberOfPages();
-        final Map<String, Integer> labelMap = new HashMap<>(numberOfPages);
+        final Map<String, Integer> labelMap = new HashMap<>();
         computeLabels((pageIndex, label) -> labelMap.put(label, pageIndex), numberOfPages);
         return labelMap;
     }

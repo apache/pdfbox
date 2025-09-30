@@ -111,7 +111,7 @@
     <dependency>
       <groupId>commons-net</groupId>
       <artifactId>commons-net</artifactId>
-      <version>3.11.1</version>
+      <version>3.12.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -129,7 +129,7 @@
     <dependency>
         <groupId>org.verapdf</groupId>
         <artifactId>validation-model</artifactId>
-        <version>1.28.1</version>
+        <version>1.28.2</version>
         <scope>test</scope>
     </dependency>
   </dependencies>
@@ -180,6 +180,19 @@
                       <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
                       <outputFileName>PDFBOX-2469-1-AcroForm-AES128.pdf</outputFileName>
                       <sha512>a5067d67da88dcb3f2b6e63c6387d2fc7170db104d67e81de59d12e9e6b1ad473c0325411fc1cc235e12fbc56a37a67181f85b4e49cb208fbea0c0a01ebe6dd2</sha512>
+                  </configuration>
+              </execution>
+              <execution>
+                  <id>testPDFBox5521</id>
+                  <phase>generate-test-resources</phase>
+                  <goals>
+                      <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                      <url>https://issues.apache.org/jira/secure/attachment/12744153/santander_freistellungsauftrag.pdf</url>
+                      <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                      <outputFileName>PDFBOX-5521-santander_freistellungsauftrag.pdf</outputFileName>
+                      <sha512>fe79d6465d85480805dcc4f42c5fb86d0c811c3d1938f9173efbeddc2fc1ba2459d9aa1ad1fb6606ae4536197fdaa4d0d3b63334e3b1f0aa6d0849d7eb54ca3d</sha512>
                   </configuration>
               </execution>
           </executions>

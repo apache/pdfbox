@@ -20,10 +20,11 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -126,7 +127,7 @@ final class FileSystemFontProvider extends FontProvider
         /**
          * {@inheritDoc}
          * <p>
-         * The method returns null if there is there was an error opening the font.
+         * The method returns null if there was an error opening the font.
          * 
          */
         @Override
@@ -431,7 +432,8 @@ final class FileSystemFontProvider extends FontProvider
         {
             File file = getDiskCacheFile();
 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file)))
+            try (BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)))
             {
                 for (FSFontInfo fontInfo : fontInfoList)
                 {
@@ -533,7 +535,8 @@ final class FileSystemFontProvider extends FontProvider
 
         if (fileExists)
         {
-            try (BufferedReader reader = new BufferedReader(new FileReader(diskCacheFile)))
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(diskCacheFile), StandardCharsets.UTF_8)))
             {
                 // consequent lines usually share the same font file (e.g. "Courier", "Courier-Bold", "Courier-Oblique").
                 // unused if SKIP_CHECKSUMS

@@ -150,7 +150,7 @@ public class COSDocument extends COSBase implements Closeable
         catch (IOException exception1)
         {
             LOG.warn(
-                    "An error occured when creating stream cache. Using memory only cache as fallback.",
+                    "An error occurred when creating stream cache. Using memory only cache as fallback.",
                     exception1);
         }
         try
@@ -159,7 +159,7 @@ public class COSDocument extends COSBase implements Closeable
         }
         catch (IOException exception2)
         {
-            LOG.warn("An error occured when creating stream cache for fallback.", exception2);
+            LOG.warn("An error occurred when creating stream cache for fallback.", exception2);
         }
         return null;
     }

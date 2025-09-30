@@ -36,6 +36,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -748,7 +750,8 @@ class PDFMergerUtilityTest
                     }
                 }
                 // actual count may be larger if last element is null, e.g. PDFBOX-4408
-                assertTrue(set.last() <= array.size() - 1);
+                // set can be empty, see last page of pdf_32000_2008.pdf
+                assertTrue(set.isEmpty() || set.last() <= array.size() - 1);
             }
             for (PDAnnotation ann : page.getAnnotations())
             {
@@ -779,15 +782,24 @@ class PDFMergerUtilityTest
         createSimpleFile(inFile1);
         createSimpleFile(inFile2);
 
-        try (OutputStream out = new FileOutputStream(outFile))
+        try (OutputStream out = new FileOutputStream(outFile);
+             // Unrelated: increase test coverage by testing RandomAccessRead
+             RandomAccessRead rar1 = new RandomAccessReadBufferedFile(inFile1);
+             RandomAccessRead rar2 = new RandomAccessReadBufferedFile(inFile2))
         {
             PDFMergerUtility merger = new PDFMergerUtility();
             merger.setDestinationStream(out);
+            assertEquals(out, merger.getDestinationStream());
 
-            merger.addSource(inFile1);
-            merger.addSource(inFile2);
+            merger.addSource(rar1);
+            merger.addSource(rar2);
 
             merger.mergeDocuments(IOUtils.createMemoryOnlyStreamCache());
+        }
+
+        try (PDDocument doc = Loader.loadPDF(outFile))
+        {
+            assertEquals(2, doc.getNumberOfPages());
         }
 
         Files.delete(inFile1.toPath());
@@ -864,6 +876,34 @@ class PDFMergerUtilityTest
         assertNotNull(structureTreeRoot.getK());
         checkElement(pageTree, structureTreeRoot.getK(), structureTreeRoot.getCOSObject());
         checkForIDTreeOrphans(pageTree, structureTreeRoot);
+        checkParentTreeAgainstK(structureTreeRoot);
+    }
+
+    private void checkParentTreeAgainstK(PDStructureTreeRoot structureTreeRoot) throws IOException
+    {
+        // check that elements in the /ParentTree are in the /K tree
+        ElementCounter elementCounter = new ElementCounter();
+        elementCounter.walk(structureTreeRoot.getK());
+        Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot.getParentTree());
+        for (Map.Entry<Integer, COSObjectable> entry : numberTreeAsMap.entrySet())
+        {
+            PDParentTreeValue val = (PDParentTreeValue) entry.getValue(); // array or dictionary
+            COSBase base = val.getCOSObject();
+            if (base instanceof COSArray)
+            {
+                COSArray array = (COSArray) base;
+                for (int i = 0; i < array.size(); ++i)
+                {
+                    COSBase arrayElement = array.getObject(i);
+                    if (arrayElement instanceof COSDictionary)
+                    {
+                        assertTrue(elementCounter.set.contains(arrayElement),
+                                "Element " + entry.getKey() + ":" + i + " from /ParentTree missing in /K ");
+                    }
+                }
+            }
+            // can't check this COSDictionary; ElementsCounter only counts those with a /Pg entry
+        }
     }
 
     private void checkForIDTreeOrphans(PDPageTree pageTree, PDStructureTreeRoot structureTreeRoot)
@@ -922,6 +962,27 @@ class PDFMergerUtilityTest
                 {
                     ++cnt;
                     set.add(kdict);
+                }
+                else if (kdict.containsKey(COSName.K))
+                {
+                    // at least 1 kid with dict with /Pg, /MCID and type /MCR
+                    // happens with confidential file from PDFBOX-6009
+                    COSArray kidArray = kdict.getCOSArray(COSName.K);
+                    if (kidArray != null)
+                    {
+                        for (int i = 0; i < kidArray.size(); ++i)
+                        {
+                            COSBase base2 = kidArray.getObject(i);
+                            if (base2 instanceof COSDictionary &&
+                                    ((COSDictionary) base2).containsKey(COSName.PG) &&
+                                    ((COSDictionary) base2).containsKey(COSName.MCID))
+                            {
+                                ++cnt;
+                                set.add(kdict);
+                                break;
+                            }
+                        }
+                    }
                 }
                 if (kdict.containsKey(COSName.K))
                 {
