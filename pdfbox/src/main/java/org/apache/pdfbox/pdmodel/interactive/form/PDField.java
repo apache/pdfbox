@@ -23,8 +23,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
@@ -227,6 +225,14 @@ public abstract class PDField implements COSObjectable
         return aa != null ? new PDFormFieldAdditionalActions(aa) : null;
     }
 
+    protected void setCOSValue(COSBase fieldValue) throws IOException
+    {
+        if (fieldValue != null)
+        {
+            dictionary.setItem(COSName.V, fieldValue);
+        }
+    }
+
    /**
      * This will import a fdf field from a fdf document.
      * 
@@ -236,36 +242,8 @@ public abstract class PDField implements COSObjectable
     void importFDF(FDFField fdfField) throws IOException
     {
         COSBase fieldValue = fdfField.getCOSValue();
-        
-        if (fieldValue != null && this instanceof PDTerminalField)
-        {
-            PDTerminalField currentField = (PDTerminalField) this;
-            
-            if (fieldValue instanceof COSName)
-            {
-                currentField.setValue(((COSName) fieldValue).getName());
-            }
-            else if (fieldValue instanceof COSString)
-            {
-                currentField.setValue(((COSString) fieldValue).getString());
-            }
-            else if (fieldValue instanceof COSStream)
-            {
-                currentField.setValue(((COSStream) fieldValue).toTextString());
-            }
-            else if (fieldValue instanceof COSArray && this instanceof PDChoice)
-            {
-                ((PDChoice) this).setValue(((COSArray) fieldValue).toCOSStringStringList());
-            }
-            else
-            {
-                throw new IOException("Error:Unknown type for field import" + fieldValue);
-            }
-        }
-        else if (fieldValue != null)
-        {
-            dictionary.setItem(COSName.V, fieldValue);
-        }
+
+        setCOSValue(fieldValue);
         
         Integer ff = fdfField.getFieldFlags();
         if (ff != null)

@@ -258,6 +258,19 @@ public abstract class PDChoice extends PDVariableText
         }
     }
 
+    @Override
+    protected void setCOSValue(COSBase fieldValue) throws IOException
+    {
+        if (fieldValue instanceof COSArray)
+        {
+            setValue(((COSArray) fieldValue).toCOSStringStringList());
+        }
+        else
+        {
+            super.setCOSValue(fieldValue);
+        }
+    }
+
     /**
      * Determines if Sort is set.
      * 

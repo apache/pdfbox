@@ -23,6 +23,8 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
+import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
@@ -93,6 +95,30 @@ public abstract class PDTerminalField extends PDField
             fieldType = getParent().getFieldType();
         }
         return fieldType;
+    }
+
+    @Override
+    protected void setCOSValue(COSBase fieldValue) throws IOException
+    {
+        if (fieldValue != null)
+        {
+            if (fieldValue instanceof COSName)
+            {
+                setValue(((COSName) fieldValue).getName());
+            }
+            else if (fieldValue instanceof COSString)
+            {
+                setValue(((COSString) fieldValue).getString());
+            }
+            else if (fieldValue instanceof COSStream)
+            {
+                setValue(((COSStream) fieldValue).toTextString());
+            }
+            else
+            {
+                throw new IOException("Error:Unknown type for field import" + fieldValue);
+            }
+        }
     }
 
     @Override
