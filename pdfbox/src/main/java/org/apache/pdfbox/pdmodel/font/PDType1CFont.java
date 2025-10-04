@@ -84,7 +84,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
             PDStream ff3Stream = fd.getFontFile3();
             if (ff3Stream != null)
             {
-                try (RandomAccessRead randomAccessRead = fd.getFontFile3().getCOSObject()
+                try (RandomAccessRead randomAccessRead = ff3Stream.getCOSObject()
                         .createView())
                 {
                     if (randomAccessRead.length() == 0)
@@ -124,13 +124,14 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
         }
         else
         {
+            String baseFont = getBaseFont();
             FontMapping<FontBoxFont> mapping = FontMappers.instance()
-                                                          .getFontBoxFont(getBaseFont(), fd);
+                                                          .getFontBoxFont(baseFont, fd);
             genericFont = mapping.getFont();
             
             if (mapping.isFallback())
             {
-                LOG.warn("Using fallback font {} for {}", genericFont.getName(), getBaseFont());
+                LOG.warn("Using fallback font {} for {}", genericFont.getName(), baseFont);
             }
             isEmbedded = false;
         }
