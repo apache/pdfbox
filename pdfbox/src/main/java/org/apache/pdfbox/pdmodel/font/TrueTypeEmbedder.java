@@ -334,7 +334,7 @@ abstract class TrueTypeEmbedder implements Subsetter
         }
 
         // PDF spec required tables (if present), all others will be removed
-        List<String> tables = new ArrayList<String>();
+        List<String> tables = new ArrayList<String>(10);
         tables.add("head");
         tables.add("hhea");
         tables.add("loca");
