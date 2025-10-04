@@ -23,7 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -313,18 +312,9 @@ abstract class TrueTypeEmbedder implements Subsetter
         }
 
         // PDF spec required tables (if present), all others will be removed
-        List<String> tables = new ArrayList<>();
-        tables.add("head");
-        tables.add("hhea");
-        tables.add("loca");
-        tables.add("maxp");
-        tables.add("cvt ");
-        tables.add("prep");
-        tables.add("glyf");
-        tables.add("hmtx");
-        tables.add("fpgm");
+        List<String> tables = List.of("head", "hhea","loca","maxp","cvt ","prep","glyf","hmtx","fpgm",
         // Windows ClearType
-        tables.add("gasp");
+        "gasp");
 
         // set the GIDs to subset
         TTFSubsetter subsetter = new TTFSubsetter(ttf, tables);
