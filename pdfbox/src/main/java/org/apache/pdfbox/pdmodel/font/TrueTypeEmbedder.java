@@ -55,6 +55,23 @@ abstract class TrueTypeEmbedder implements Subsetter
     private static final int ITALIC = 1;
     private static final int OBLIQUE = 512;
     private static final String BASE25 = "BCDEFGHIJKLMNOPQRSTUVWXYZ";
+    // PDF spec required tables (if present), all others will be removed
+    private static final List<String> TABLES = new ArrayList<String>(10);
+
+    static
+    {
+        TABLES.add("head");
+        TABLES.add("hhea");
+        TABLES.add("loca");
+        TABLES.add("maxp");
+        TABLES.add("cvt ");
+        TABLES.add("prep");
+        TABLES.add("glyf");
+        TABLES.add("hmtx");
+        TABLES.add("fpgm");
+        // Windows ClearType
+        TABLES.add("gasp");
+    }
 
     private final PDDocument document;
     protected TrueTypeFont ttf;
@@ -333,22 +350,8 @@ abstract class TrueTypeEmbedder implements Subsetter
             throw new IllegalStateException("Subsetting is disabled");
         }
 
-        // PDF spec required tables (if present), all others will be removed
-        List<String> tables = new ArrayList<String>(10);
-        tables.add("head");
-        tables.add("hhea");
-        tables.add("loca");
-        tables.add("maxp");
-        tables.add("cvt ");
-        tables.add("prep");
-        tables.add("glyf");
-        tables.add("hmtx");
-        tables.add("fpgm");
-        // Windows ClearType
-        tables.add("gasp");
-
         // set the GIDs to subset
-        TTFSubsetter subsetter = new TTFSubsetter(ttf, tables);
+        TTFSubsetter subsetter = new TTFSubsetter(ttf, TABLES);
         subsetter.addAll(subsetCodePoints);
         subsetter.forceInvisible('\u200B'); // ZWSP
         subsetter.forceInvisible('\u200C'); // ZWNJ
