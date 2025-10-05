@@ -18,9 +18,12 @@
 package org.apache.pdfbox.pdfparser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.io.InputStream;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.junit.jupiter.api.Test;
@@ -86,6 +89,25 @@ class TestBaseParser
         baseParser = new COSParser(buffer);
         cosString = baseParser.parseCOSString();
         assertEquals(output, cosString.getString());
+    }
+
+    @Test
+    void testBaseParserStackOverflow()
+    {
+        // PDFBOX-6041
+        try (InputStream is = TestPDFParser.class.getResourceAsStream("PDFBOX-6041-example.pdf"))
+        {
+            Loader.loadPDF(new RandomAccessReadBuffer(is)).close();
+        }
+        catch (IOException exception)
+        {
+            assertEquals("Missing root object specification in trailer.", exception.getMessage());
+        }
+        catch (Exception exception)
+        {
+            fail("Unexpected Exception");
+        }
+
     }
 
 }
