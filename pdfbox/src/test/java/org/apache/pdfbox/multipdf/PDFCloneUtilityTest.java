@@ -63,7 +63,7 @@ class PDFCloneUtilityTest
             new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, true).close();
             PDFCloneUtility cloner = new PDFCloneUtility(dstDoc);
             assertEquals(dstDoc, cloner.getDestination());
-            COSDictionary clonedPageDictionary = (COSDictionary) cloner.cloneForNewDocument(pdPage.getCOSObject());
+            COSDictionary clonedPageDictionary = cloner.cloneForNewDocument(pdPage.getCOSObject());
             PDPage clonedPage = new PDPage(clonedPageDictionary);
             Iterator<PDStream> contentStreams = clonedPage.getContentStreams();
             assertNotNull(contentStreams.next());
