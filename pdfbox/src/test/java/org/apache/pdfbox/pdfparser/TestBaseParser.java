@@ -95,7 +95,7 @@ class TestBaseParser
     void testBaseParserStackOverflow()
     {
         // PDFBOX-6041
-        try (InputStream is = TestPDFParser.class.getResourceAsStream("PDFBOX-6041-example.pdf"))
+        try (InputStream is = TestBaseParser.class.getResourceAsStream("PDFBOX-6041-example.pdf"))
         {
             Loader.loadPDF(new RandomAccessReadBuffer(is)).close();
         }
@@ -107,7 +107,6 @@ class TestBaseParser
         {
             fail("Unexpected Exception");
         }
-
     }
 
 }
