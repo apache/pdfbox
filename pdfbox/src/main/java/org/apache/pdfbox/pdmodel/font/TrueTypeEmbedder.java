@@ -22,7 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -55,23 +55,12 @@ abstract class TrueTypeEmbedder implements Subsetter
     private static final int ITALIC = 1;
     private static final int OBLIQUE = 512;
     private static final String BASE25 = "BCDEFGHIJKLMNOPQRSTUVWXYZ";
-    // PDF spec required tables (if present), all others will be removed
-    private static final List<String> TABLES = new ArrayList<String>(10);
 
-    static
-    {
-        TABLES.add("head");
-        TABLES.add("hhea");
-        TABLES.add("loca");
-        TABLES.add("maxp");
-        TABLES.add("cvt ");
-        TABLES.add("prep");
-        TABLES.add("glyf");
-        TABLES.add("hmtx");
-        TABLES.add("fpgm");
-        // Windows ClearType
-        TABLES.add("gasp");
-    }
+    // PDF spec required tables (if present), all others will be removed
+    private static final List<String> TABLES =
+            Arrays.asList("head", "hhea", "loca", "maxp", "cvt ", "prep", "glyf", "hmtx", "fpgm",
+                    // Windows ClearType
+                    "gasp");
 
     private final PDDocument document;
     protected TrueTypeFont ttf;
