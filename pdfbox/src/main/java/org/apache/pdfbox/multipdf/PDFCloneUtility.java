@@ -74,6 +74,7 @@ public class PDFCloneUtility
      * 
      * Expert use only, don’t use it if you don’t know exactly what you are doing.
      * 
+     * @param <TCOSBase> The type to be returned.
      * @param base the initial object as the root of the deep-clone operation
      * @return the cloned instance of the base object
      * @throws IOException if an I/O error occurs
