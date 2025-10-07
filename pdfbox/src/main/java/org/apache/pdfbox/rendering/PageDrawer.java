@@ -104,6 +104,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.AnnotationFilter;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationUnknown;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 
@@ -1560,14 +1561,17 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (annotation.isNoRotate() && getCurrentPage().getRotation() != 0)
         {
             appearance = annotation.getAppearance();
-            if (appearance != null && appearance.getNormalAppearance() != null &&
-                appearance.getNormalAppearance().isStream() &&
-                hasTransparency(appearance.getNormalAppearance().getAppearanceStream()))
+            if (appearance != null)
             {
-                // PDFBOX-4744: avoid appearances with transparency groups until we have fixed
-                // the rendering. A real solution should probably be
-                // in PDFStreamEngine.processAnnotation().
-                annotation.constructAppearances();
+                PDAppearanceEntry appearanceEntry = appearance.getNormalAppearance();
+                if (appearanceEntry != null && appearanceEntry.isStream() &&
+                    hasTransparency(appearanceEntry.getAppearanceStream()))
+                {
+                    // PDFBOX-4744: avoid appearances with transparency groups until we have fixed
+                    // the rendering. A real solution should probably be
+                    // in PDFStreamEngine.processAnnotation().
+                    annotation.constructAppearances();
+                }
             }
             PDRectangle rect = annotation.getRectangle();
             AffineTransform savedTransform = graphics.getTransform();
