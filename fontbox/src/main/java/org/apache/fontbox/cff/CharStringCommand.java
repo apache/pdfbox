@@ -90,10 +90,10 @@ public enum CharStringCommand
 
     static
     {
-        int max = Arrays.stream(CharStringCommand.values()).mapToInt(CharStringCommand::getValue)
-                .max().orElseThrow();
+        CharStringCommand[] values = CharStringCommand.values();
+        int max = Arrays.stream(values).mapToInt(CharStringCommand::getValue).max().orElseThrow();
         COMMANDS_BY_VALUE = new CharStringCommand[max + 1];
-        Arrays.stream(CharStringCommand.values()).forEach(c -> COMMANDS_BY_VALUE[c.getValue()] = c);
+        Arrays.stream(values).forEach(c -> COMMANDS_BY_VALUE[c.getValue()] = c);
     }
 
     private final Type1KeyWord type1KeyWord;
