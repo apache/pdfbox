@@ -127,13 +127,14 @@ public class PDType1CFont extends PDSimpleFont
         }
         else
         {
+            String baseFont = getBaseFont();
             FontMapping<FontBoxFont> mapping = FontMappers.instance()
-                                                          .getFontBoxFont(getBaseFont(), fd);
+                                                          .getFontBoxFont(baseFont, fd);
             genericFont = mapping.getFont();
             
             if (mapping.isFallback())
             {
-                LOG.warn("Using fallback font " + genericFont.getName() + " for " + getBaseFont());
+                LOG.warn("Using fallback font " + genericFont.getName() + " for " + baseFont);
             }
             isEmbedded = false;
         }
