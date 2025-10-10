@@ -533,19 +533,22 @@ public abstract class PDFStreamEngine
     private void processStreamOperators(PDContentStream contentStream) throws IOException
     {
         List<COSBase> arguments = new ArrayList<>();
-        PDFStreamParser parser = new PDFStreamParser(contentStream);
-        Object token = parser.parseNextToken();
-
-        boolean isFirstOperator = true;
+        PDFStreamParser parser = null;
         boolean oldShouldProcessColorOperators = shouldProcessColorOperators;
-        shouldProcessColorOperators = true;
-        if (contentStream instanceof PDTilingPattern &&
-            ((PDTilingPattern) contentStream).getPaintType() == PDTilingPattern.PAINT_UNCOLORED)
-        {
-            shouldProcessColorOperators = false;
-        }
+
         try
         {
+            parser = new PDFStreamParser(contentStream);
+            Object token = parser.parseNextToken();
+
+            boolean isFirstOperator = true;
+            shouldProcessColorOperators = true;
+            if (contentStream instanceof PDTilingPattern &&
+                ((PDTilingPattern) contentStream).getPaintType() == PDTilingPattern.PAINT_UNCOLORED)
+            {
+                shouldProcessColorOperators = false;
+            }
+
             while (token != null)
             {
                 if (token instanceof Operator)
@@ -568,6 +571,10 @@ public abstract class PDFStreamEngine
         }
         finally
         {
+            if (parser != null)
+            {
+                parser.close();
+            }
             shouldProcessColorOperators = oldShouldProcessColorOperators;
         }
     }
