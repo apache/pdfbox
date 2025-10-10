@@ -222,7 +222,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
     }
 
     /**
-     * This will set the a range for the "a" component.
+     * This will set the range for the "a" component.
      * @param range the new range for the "a" component, 
      * or null if defaults (-100..100) are to be set.
      */
