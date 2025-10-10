@@ -21,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +30,8 @@ import java.util.List;
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.ttf.model.GsubData;
+import org.apache.fontbox.ttf.model.ScriptFeature;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -50,6 +54,7 @@ class GsubWorkerForDevanagariTest
 
     private CmapLookup cmapLookup;
     private GsubWorker gsubWorkerForDevanagari;
+    private GsubData gsubData;
 
     @BeforeEach
     void init() throws IOException
@@ -57,6 +62,7 @@ class GsubWorkerForDevanagariTest
         try (TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(LOHIT_DEVANAGARI_TTF)))
         {
             cmapLookup = ttf.getUnicodeCmapLookup();
+            gsubData = ttf.getGsubData();
             gsubWorkerForDevanagari = new GsubWorkerFactory().getGsubWorker(cmapLookup, ttf.getGsubData());
         }
     }
@@ -100,14 +106,26 @@ class GsubWorkerForDevanagariTest
         assertEquals(glyphsAfterGsub, result);
     }
 
+
     @Test
-    void testApplyTransforms_rphf()
+    void testApplyTransform_rephReposition() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        // get the private method by name
+        Method privateMethod = gsubWorkerForDevanagari.getClass().getDeclaredMethod("adjustRephPosition",List.class );
+        privateMethod.setAccessible(true);
+        List<Integer> result = (List<Integer>) privateMethod.invoke(gsubWorkerForDevanagari,Arrays.asList(353,382,342,382,352,380));
+        // then
+        assertEquals(Arrays.asList(342,382,352,380,353,382), result);
+    }
+
+    @Test
+    void test_ApplyTransforms_rphf()
     {
         // given
-        List<Integer> glyphsAfterGsub = Arrays.asList(513);
+        List<Integer> glyphsAfterGsub = Arrays.asList(538, 352, 673);
 
         // when
-        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("र्"));
+        List<Integer> result = gsubWorkerForDevanagari.applyTransforms(getGlyphIds("र्थ्यो"));
+        // र्थ्यो -> र ् थ ् य ो
 
         // then
         assertEquals(glyphsAfterGsub, result);
@@ -152,6 +170,21 @@ class GsubWorkerForDevanagariTest
         // then
         assertEquals(glyphsAfterGsub, result);
     }
+
+    @Test
+    void testApplyTransforms_private_half_exception() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method privateMethod = gsubWorkerForDevanagari.getClass().getDeclaredMethod("applyGsubFeature", ScriptFeature.class,List.class );
+        privateMethod.setAccessible(true);
+        // given
+        List<Integer> glyphsAfterGsub = Arrays.asList(332,345,382);// छन्
+
+        // when
+        List<Integer> result = (List<Integer>) privateMethod.invoke(gsubWorkerForDevanagari,gsubData.getFeature("half"),Arrays.asList(332,345,382));
+
+        // then
+        assertEquals(glyphsAfterGsub, result);
+    }
+
 
     @Test
     void testApplyTransforms_vatu()

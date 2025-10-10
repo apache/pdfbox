@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nepali PDF Generator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            flex-direction: column;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 700px;
+            position: relative;
+            transition: height 0.3s ease;
+        }
+        h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            resize: none;
+            transition: border-color 0.3s ease;
+        }
+        textarea:focus {
+            border-color: #28a745;
+            outline: none;
+        }
+        .dropdown-container {
+            position: relative;
+            margin-top: 15px;
+        }
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: white;
+            font-size: 16px;
+            cursor: pointer;
+            appearance: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        select:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+            outline: none;
+        }
+        .dropdown-container::after {
+            content: '▼';
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #666;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 8px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+        .pdf-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            color: #333;
+            font-weight: bold;
+            border-radius: 8px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ccc;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        .pdf-box:hover {
+            opacity: 0.9;
+        }
+        .download {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Generate Nepali PDF</h2>
+    <textarea id="nepaliText" rows="4">मेरो नाम आयुष भण्डारी हो</textarea>
+
+    <div class="dropdown-container">
+        <select id="fontSelect" onfocus="adjustDropdown(true)" onblur="adjustDropdown(false)">
+            <option value="noto">Noto Sans Devanagari</option>
+            <option value="noto_the_group">Noto The Group</option>
+            <option value="kokila">Kokila</option>
+            <option value="nirmala">Nirmala</option>
+            <option value="nirmala_the_group">Nirmala The Group</option>
+            <option value="mangal">Mangal</option>
+            <option value="lohit">Lohit Devanagari</option>
+            <option value="tiro">Tiro Devanagari Hindi</option>
+            <option value="kalimati">Kalimati</option>
+            <option value="kanjirowa">Kanjirowa</option>
+        </select>
+    </div>
+
+    <button id="generateBtn" onclick="generatePDF()">Generate PDF</button>
+
+    <div id="pdfBox" class="pdf-box" onclick="downloadPDF()">
+        <span>Generated PDF: nepali.pdf</span>
+        <span class="download">📥</span>
+    </div>
+</div>
+
+<script>
+    function generatePDF() {
+        const text = document.getElementById("nepaliText").value;
+        const font = document.getElementById("fontSelect").value;
+
+        fetch("http://localhost:8080/generate-pdf", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text, font })
+        })
+            .then(response => response.blob())
+            .then(blob => {
+                window.generatedPDF = URL.createObjectURL(blob);
+                document.getElementById("pdfBox").style.display = "flex";
+            })
+            .catch(error => console.error("Error:", error));
+    }
+
+    function downloadPDF() {
+        const link = document.createElement("a");
+        link.href = window.generatedPDF;
+        link.download = "nepali.pdf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function adjustDropdown(expand) {
+        const select = document.getElementById("fontSelect");
+        const button = document.getElementById("generateBtn");
+
+        if (expand) {
+            select.style.height = "auto";
+            button.style.marginTop = "280px"; // Adjust based on dropdown height
+        } else {
+            select.style.height = "45px"; // Reset to default height
+            button.style.marginTop = "20px"; // Reset to default margin
+        }
+    }
+
+    document.getElementById("fontSelect").addEventListener("change", function () {
+        adjustDropdown(false); // Collapse dropdown when an option is selected
+    });
+
+</script>
+
+</body>
+</html>

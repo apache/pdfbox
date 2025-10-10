@@ -42,10 +42,14 @@ public class GlyphArraySplitterRegexImpl implements GlyphArraySplitter
     @Override
     public List<List<Integer>> split(List<Integer> glyphIds)
     {
+        // *** original glyphs ids into string form _342_352_321_
         String originalGlyphsAsText = convertGlyphIdsToString(glyphIds);
+
+        // *** this is where breaking / tokenizing happens
         List<String> tokens = compoundCharacterTokenizer.tokenize(originalGlyphsAsText);
 
         List<List<Integer>> modifiedGlyphs = new ArrayList<>(tokens.size());
+        // *** this is converting the List<String> back into List<List<Integers>>
         tokens.forEach(token -> modifiedGlyphs.add(convertGlyphIdsToList(token)));
         return modifiedGlyphs;
     }

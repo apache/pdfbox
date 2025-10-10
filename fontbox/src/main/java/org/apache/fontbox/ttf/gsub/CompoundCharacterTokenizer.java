@@ -80,10 +80,17 @@ public class CompoundCharacterTokenizer
      * @return A list of tokens like "_66_", "_71_71_", "74_79_70_". The "_" is sometimes missing at
      * the beginning or end, this has to be cleaned by the caller.
      */
+
+    // *** this is the main syllable tokenizing happens
+    // *** but the syllable is based on the entries found in the gsub table rather than the actual syllable system of the language
+    // *** this is font dependent
     public List<String> tokenize(String text)
     {
         List<String> tokens = new ArrayList<>();
 
+        // *** regexExpression: pattern we are searching for
+        // *** text: text where regexExpression is searched
+        // *** regexMatcher: result of the search for pattern in the text
         Matcher regexMatcher = regexExpression.matcher(text);
 
         int lastIndexOfPrevMatch = 0;
@@ -91,6 +98,7 @@ public class CompoundCharacterTokenizer
         while (regexMatcher.find(lastIndexOfPrevMatch)) // this is where the magic happens:
                                     // the regexp is used to find a matching pattern for substitution
         {
+            // starching search
             int beginIndexOfNextMatch = regexMatcher.start();
 
             String prevToken = text.substring(lastIndexOfPrevMatch, beginIndexOfNextMatch);

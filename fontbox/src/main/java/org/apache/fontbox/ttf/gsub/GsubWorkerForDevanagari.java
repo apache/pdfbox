@@ -30,19 +30,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * 
+ *
  * Devanagari-specific implementation of GSUB system
- * 
+ *
  * @author JAVAUSER
  *
  */
 public class GsubWorkerForDevanagari implements GsubWorker
 {
     private static final Logger LOG = LogManager.getLogger(GsubWorkerForDevanagari.class);
-    
+
     private static final String RKRF_FEATURE = "rkrf";
     private static final String VATU_FEATURE = "vatu";
-    
+
     /**
      * This sequence is very important. This has been taken from <a href=
      * "https://docs.microsoft.com/en-us/typography/script-development/devanagari">https://docs.microsoft.com/en-us/typography/script-development/devanagari</a>
@@ -61,7 +61,7 @@ public class GsubWorkerForDevanagari implements GsubWorker
 
     private final CmapLookup cmapLookup;
     private final GsubData gsubData;
-    
+
     private final List<Integer> rephGlyphIds;
     private final List<Integer> beforeRephGlyphIds;
     private final List<Integer> beforeHalfGlyphIds;
@@ -104,7 +104,7 @@ public class GsubWorkerForDevanagari implements GsubWorker
     }
 
     private List<Integer> applyRKRFFeature(ScriptFeature rkrfGlyphsForSubstitution,
-            List<Integer> originalGlyphIds)
+                                           List<Integer> originalGlyphIds)
     {
         Set<List<Integer>> rkrfGlyphIds = rkrfGlyphsForSubstitution.getAllGlyphIdsForSubstitution();
         if (rkrfGlyphIds.isEmpty())

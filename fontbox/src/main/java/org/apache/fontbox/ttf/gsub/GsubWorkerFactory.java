@@ -44,7 +44,8 @@ public class GsubWorkerFactory
         case BENGALI:
             return new GsubWorkerForBengali(cmapLookup, gsubData);
         case DEVANAGARI:
-            return new GsubWorkerForDevanagari(cmapLookup, gsubData);
+//            return new GsubWorkerForDevanagari(cmapLookup, gsubData);
+            return new GsubWorkerForDevanagariNepali(cmapLookup, gsubData);
         case GUJARATI:
             return new GsubWorkerForGujarati(cmapLookup, gsubData);
         case LATIN:
