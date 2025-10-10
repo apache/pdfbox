@@ -200,9 +200,10 @@ public class PlainText
                     lineWidth = font.getStringWidth(word) * scale;
                 }
 
-                if (wordWidth > width && textLine.getWords().isEmpty())
+                if (word.length() > 1 && wordWidth > width && textLine.getWords().isEmpty())
                 {
                     // single word does not fit into width
+                    // PDFBOX-6082: at least 1 character
                     wordNeedsSplit = true;
                     while (true)
                     {
