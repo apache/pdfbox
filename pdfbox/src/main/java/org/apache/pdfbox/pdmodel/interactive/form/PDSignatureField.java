@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSeedValue;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -196,10 +197,11 @@ public class PDSignatureField extends PDTerminalField
         PDAnnotationWidget widget = this.getWidgets().get(0);
         if (widget != null)
         {
+            PDRectangle rectangle = widget.getRectangle();
             // check if the signature is visible
-            if (widget.getRectangle() == null ||
-                Float.compare(widget.getRectangle().getHeight(), 0) == 0 && Float.compare(widget.getRectangle().getWidth(), 0) == 0 ||
-                widget.isNoView() ||  widget.isHidden())
+            if (rectangle == null ||
+                Float.compare(rectangle.getHeight(), 0) == 0 && Float.compare(rectangle.getWidth(), 0) == 0 ||
+                widget.isNoView() || widget.isHidden())
             {
                 return;
             }
