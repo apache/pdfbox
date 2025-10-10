@@ -481,8 +481,8 @@ public final class Matrix implements Cloneable
      * 0 y 0
      * 0 0 1
      *
-     * @param x The xscale operator.
-     * @param y The yscale operator.
+     * @param x The x-scale operator.
+     * @param y The y-scale operator.
      * @return A new matrix with just the x/y scaling
      */
     public static Matrix getScaleInstance(float x, float y)
