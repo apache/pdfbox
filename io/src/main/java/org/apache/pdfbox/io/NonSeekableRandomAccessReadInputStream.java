@@ -259,7 +259,7 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
         else
         {
             // there aren't enough bytes left in the buffers to perform the rewind operation
-            throw new IOException("not enough bytes available to perfomr the rewind operation");
+            throw new IOException("not enough bytes available to perform the rewind operation");
         }
     }
 
