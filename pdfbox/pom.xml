@@ -193,6 +193,9 @@
                         <exclude>src/main/resources/META-INF/services/*</exclude>
                         <exclude>src/test/resources/input/rendering/*.ai</exclude>
                         <exclude>src/test/resources/input/*.txt</exclude>
+                        <exclude>src/test/resources/input/**/*.pdf</exclude>
+                        <exclude>src/test/resources/input/**/*.png</exclude>
+                        <exclude>src/test/resources/org/apache/**/*.pdf</exclude>
                         <exclude>src/test/resources/output/*</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/pdmodel/sRGB.*</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/pdfparser/*.fdf</exclude>
