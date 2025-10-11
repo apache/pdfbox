@@ -40,7 +40,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
     private final long size;
 
     // file channel of the file to be read
-    private final FileChannel fileChannel;
+    private FileChannel fileChannel;
 
     // function to unmap the byte buffer
     private final Consumer<? super ByteBuffer> unmapper;
@@ -110,6 +110,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
         if (fileChannel != null)
         {
             fileChannel.close();
+            fileChannel = null;
         }
         if (mappedByteBuffer != null)
         {
