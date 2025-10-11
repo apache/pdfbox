@@ -175,10 +175,7 @@ public class DataInputRandomAccessRead implements DataInput
             throw new IOException("Premature end of buffer reached");
         }
         byte[] bytes = new byte[length];
-        for (int i = 0; i < length; i++)
-        {
-            bytes[i] = readByte();
-        }
+        randomAccessRead.read(bytes);
         return bytes;
     }
 
