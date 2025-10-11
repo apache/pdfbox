@@ -107,7 +107,7 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <version>1.17.7</version>
+            <version>1.17.8</version>
         </dependency>
         <!-- For legal reasons (incompatible license), these three dependencies below
         are to be used only in the tests and may not be distributed. 
