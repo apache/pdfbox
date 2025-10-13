@@ -107,6 +107,10 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
     @Override
     public void close() throws IOException
     {
+        if (isClosed())
+        {
+            return;
+        }
         if (fileChannel != null)
         {
             fileChannel.close();

@@ -242,11 +242,14 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
     @Override
     public void close() throws IOException
     {
-        rafCopies.values().forEach(IOUtils::closeQuietly);
-        rafCopies.clear();
-        fileChannel.close();
-        pageCache.clear();
-        isClosed = true;
+        if (!isClosed())
+        {
+            rafCopies.values().forEach(IOUtils::closeQuietly);
+            rafCopies.clear();
+            fileChannel.close();
+            pageCache.clear();
+            isClosed = true;
+        }
     }
 
     @Override
