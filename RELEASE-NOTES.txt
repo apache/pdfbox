@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 3.0.5
+Release Notes -- Apache PDFBox -- Version 3.0.6
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 3.0.4 release. It contains
+This is an incremental bugfix release based on the earlier 3.0.5 release. It contains
 a couple of fixes and small improvements.
 
 A migration guide is available at https://pdfbox.apache.org/3.0/migration.html. It is
@@ -18,66 +18,72 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-4744] - PageDrawer is not rendering unrotatable Annotations on rotated pages
-[PDFBOX-5230] - Zero-width non-joiner characters visible in generated PDF
-[PDFBOX-5747] - Surrogate pairs with combining diacritics are incorrectly ordered on text extraction
-[PDFBOX-5937] - IllegalArgumentException: Width (0) and height (0) must be non-zero
-[PDFBOX-5939] - Merge docs with specific characteristics causes stack overflow
-[PDFBOX-5940] - InvalidKeyException: Supplied key (sun.security.ec.ECPrivateKeyImpl) is not a RSAPrivateKey
-[PDFBOX-5942] - Can't read the embedded Type1 font: Found Token[kind=NAME, text=def] but expected begin
-[PDFBOX-5945] - Wrong size entry in trailer after incremental save
-[PDFBOX-5948] - FileSystemFontProvider doesn't register failed type1 fonts
-[PDFBOX-5949] - Text annotation crosshair symbol too small when using Adobe symbol font
-[PDFBOX-5951] - Orphan /OpenAction destination page kept in merge
-[PDFBOX-5952] - PDFRenderer causes endless loop
-[PDFBOX-5954] - Invalid stream length: 0, stream start position: <xxx>
-[PDFBOX-5957] - Inline image incorrectly parsed (2)
-[PDFBOX-5961] - IllegalArgumentException: Not a valid Unicode code point: 0xE28496
-[PDFBOX-5963] - Type 3 font glyphs not displayed
-[PDFBOX-5965] - Rewind in NonSeekableRandomAccessReadInputStream malfunction near end of file
-[PDFBOX-5966] - Rendered PDF is missing shading pattern graphics
-[PDFBOX-5968] - NPE during merge
-[PDFBOX-5972] - Infinite loop in fontbox o.a.f.cmap.CMapParser#readNumber
-[PDFBOX-5975] - Class cast exception in building PDDestinationNameTreeNode
-[PDFBOX-5976] - DomXmpParser incorrectly expects namespaces on attribute level
-[PDFBOX-5979] - Missing ICC profile in PDFDebugger CMYK tooltips
-[PDFBOX-5980] - BDC processor mishandles property name
-[PDFBOX-5981] - error "read() returns -1, assumed position: 8192, actual position: 8192"
-[PDFBOX-5987] - Can't render some Type1C fonts.
-[PDFBOX-5989] - PDF to Image conversion results in a blank white page
-[PDFBOX-5991] - NegativeArraySizeException with PDF file with huge fonts
-
-New Feature
-
-[PDFBOX-4668] - Add ResourceCacheFactory as global setting
+[PDFBOX-5992] - Inline image bug with multi-byte newline tokens
+[PDFBOX-5999] - fix initial ByteArrayOutputStream size for deflate operation
+[PDFBOX-6008] - PDF takes an hour to render
+[PDFBOX-6009] - Splitter does not include structure tree in documents past the first split
+[PDFBOX-6011] - build fails on jdk11
+[PDFBOX-6012] - COSWriter mentions a close() method that no longer exists
+[PDFBOX-6015] - Load a TTF font which is from Mac OS throw an exception
+[PDFBOX-6016] - PreflightParser doesn't close RandomAccessReadBufferedFile causing file locks on Windows
+[PDFBOX-6022] - Wrong glyphs since PDFBOX-5790
+[PDFBOX-6025] - ClassCastException on broken file in PDEmbeddedFilesNameTreeNode.convertCOSToPD()
+[PDFBOX-6027] - invalid XMP generated when Apache Xalan in the classpath
+[PDFBOX-6028] - XMP JobType constructor ignores fieldPrefix
+[PDFBOX-6029] - NullPointerException in xmpbox serializer if a date is empty
+[PDFBOX-6033] - Rendering issue with type 2 shading: vertical expansion
+[PDFBOX-6035] - Possible infinite loop in shading code
+[PDFBOX-6037] - Potential OOM in XrefStreamParser
+[PDFBOX-6038] - Potential StackOverflow in PDFStreamParser
+[PDFBOX-6040] - Potential StackOverflow in PDPageTree's getInheritableAttribute
+[PDFBOX-6041] - Potential StackOverflows in BaseParser
+[PDFBOX-6043] - Potential OOM in Type1Lexer
+[PDFBOX-6044] - Potential OOM in PfbParser
+[PDFBOX-6053] - PDMarkedContentReference.setMCID() should not accept negative numbers
+[PDFBOX-6057] - IllegalPathStateException: missing initial moveto in path definition
+[PDFBOX-6059] - Fix possible ClassCastException
+[PDFBOX-6061] - NullPointerException in COSDictionary
+[PDFBOX-6062] - XMPMetadata can only be parsed if xmp:CreateDate does not contain fractions of seconds
+[PDFBOX-6063] - StringIndexOutOfBoundsException in PlainText$Paragraph.getLines()
+[PDFBOX-6065] - LZWFilter crashes, probably not handling the KwKwK special case
+[PDFBOX-6066] - Broken font has too much log output
+[PDFBOX-6068] - NullPointerException in PDNumberTreeNode.getNumbers()
+[PDFBOX-6069] - UnsupportedOperationException: JPX color spaces don't support drawing
+[PDFBOX-6071] - Signing tries to set byteRange of old signature (2)
+[PDFBOX-6076] - ClassCastException in PDOptionalContentProperties.getBaseState()
+[PDFBOX-6078] - ArrayIndexOutOfBoundsException in GlyphSubstitutionTable.read()
+[PDFBOX-6079] - Close input streams to avoid resource leaks
+[PDFBOX-6080] - Unknown code in Huffman RLE stream
+[PDFBOX-6082] - IllegalArgumentException: Can't add attribute to 0-length text
 
 Improvement
 
-[PDFBOX-5938] - Implement PDFormXObject.setGroup()
-[PDFBOX-5941] - CertificateVerifier.isSelfSigned() should not throw an exception
-[PDFBOX-5943] - Extend interface ResourceCache to support the removal of cached objects
-[PDFBOX-5946] - Use Zapf Dingbats code for cross text annotation
-[PDFBOX-5947] - Support PushPin, Tag and Graph file attachment annotation icons
-[PDFBOX-5950] - Improve PDFMergerUtility memory footprint
-[PDFBOX-5955] - Support rare RC4 encryption where R=4, key length < 128 bits
-[PDFBOX-5974] - Improve checkWithNumberTree() test
-[PDFBOX-5982] - Support DP and MP operators
-[PDFBOX-5985] - Use SHA256 instead of MD5 for document id
-[PDFBOX-5993] - Add test for embedded files
-[PDFBOX-5994] - Support printing options combining tray and media size
-[PDFBOX-5996] - set size for ByteArrayOutputStreams
-
-Test
-
-[PDFBOX-5944] - Activate Devanagari blws test
+[PDFBOX-5997] - avoid creation of temporary objects when parsing hex values
+[PDFBOX-5998] - avoid unnecessary map lokups
+[PDFBOX-6000] - remove unnecessary iteration and StringBuilder creation
+[PDFBOX-6005] - Support reverse landscape orientation for printing
+[PDFBOX-6013] - Deprecate / Remove unused CompoundCharacterTokenizer constructor
+[PDFBOX-6018] - Add test coverage for orphan annotation
+[PDFBOX-6019] - Remove orphan popup parent annotation
+[PDFBOX-6026] - Improve XmpSerializer test by verifying its output
+[PDFBOX-6049] - Consider rotation of page when applying overlay
+[PDFBOX-6058] - Preserve Perms dictionary when signing
+[PDFBOX-6067] - Check /ParentTree against /K tree
+[PDFBOX-6070] - Add test for 5521
+[PDFBOX-6072] - Refactor RC4Cipher
+[PDFBOX-6073] - Add option to implement custom ICOSVisitor behaviour for COSObject
 
 Wish
 
-[PDFBOX-974] - PrintPDF should not be case sensitive against printer name on Windows
+[PDFBOX-6032] - Issues encountered while customizing "PDImageXObject"
 
 Task
 
-[PDFBOX-5995] - Run regression tests for 3.0.5
+[PDFBOX-6081] - Run regression tests for 3.0.6
+
+Sub-task
+
+[PDFBOX-6047] - Add text extraction options submenu
 
 
 Release Contents
