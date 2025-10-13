@@ -266,7 +266,7 @@ class RandomAccessReadBufferedFileTest
     }
 
     @Test
-    void testReadFullyAcrossBuffers() throws IOException, URISyntaxException
+    void testReadFullyAcrossBuffers() throws IOException
     {
         int bufferLen;
         File file = new File("src/test/java/org/apache/pdfbox/io/NonSeekableRandomAccessReadInputStreamTest.java");
