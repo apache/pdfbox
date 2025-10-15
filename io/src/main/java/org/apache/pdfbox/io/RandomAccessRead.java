@@ -189,7 +189,7 @@ public interface RandomAccessRead extends Closeable
             throw new EOFException("Premature end of buffer reached");
         }
         int bytesReadTotal = 0;
-        do
+        while (bytesReadTotal < length)
         {
             int bytesReadNow = read(b, offset + bytesReadTotal, length - bytesReadTotal);
             if (bytesReadNow <= 0)
@@ -198,6 +198,5 @@ public interface RandomAccessRead extends Closeable
             }
             bytesReadTotal += bytesReadNow;
         }
-        while (bytesReadTotal < length);
     }
 }
