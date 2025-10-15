@@ -296,4 +296,17 @@ class RandomAccessReadBufferedFileTest
             Assertions.assertArrayEquals(expectedBytes, b);
         }
     }
+
+    @Test
+    void testReadFullyNothing() throws IOException, URISyntaxException
+    {
+        try (RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
+                new File(getClass().getResource("RandomAccessReadFile1.txt").toURI())))
+        {
+            assertEquals(0, randomAccessSource.getPosition());
+            byte[] b = new byte[0];
+            randomAccessSource.readFully(b);
+            assertEquals(0, randomAccessSource.getPosition());
+        }
+    }
 }
