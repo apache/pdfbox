@@ -190,7 +190,6 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
         range.add(plus100);
         range.add(minus100);
         range.add(plus100);
-        System.out.println("getDefaultRangeArray");
         return range;
     }
 
