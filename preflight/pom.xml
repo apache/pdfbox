@@ -100,6 +100,9 @@
 					<excludes>
 						<exclude>src/main/resources/project.version</exclude>
 						<exclude>release.properties</exclude>
+						<exclude>src/test/resources/PDFBOX-3741.pdf</exclude>
+						<exclude>src/test/resources/org/apache/pdfbox/preflight/metadata/*.pdf</exclude>
+						<exclude>src/test/resources/pdfa-with-annotations-square.pdf</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
