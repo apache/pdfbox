@@ -51,20 +51,25 @@
   </scm>
 
   <build>
-      <pluginManagement>
-          <plugins>
-              <plugin>
-                  <groupId>org.apache.rat</groupId>
-                  <artifactId>apache-rat-plugin</artifactId>
-                  <version>0.16.1</version>
-                  <configuration>
-                      <excludes>
-                          <exclude>release.properties</exclude>
-                      </excludes>
-                  </configuration>
-              </plugin>
-          </plugins>
-      </pluginManagement>
+      <plugins>
+          <plugin>
+              <groupId>org.apache.rat</groupId>
+              <artifactId>apache-rat-plugin</artifactId>
+              <configuration>
+                  <excludes>
+                      <!-- already tested before -->
+                      <exclude>/pdfbox/**</exclude>
+                      <exclude>/fontbox/**</exclude>
+                      <exclude>/xmpbox/**</exclude>
+                      <exclude>/tools/**</exclude>
+                      <exclude>/preflight/**</exclude>
+                      <exclude>/examples/**</exclude>
+                      <!-- netbeans local -->
+                      <exclude>nb-configuration.xml</exclude>
+                  </excludes>
+              </configuration>
+          </plugin>
+      </plugins>
   </build>
 
 <profiles>
