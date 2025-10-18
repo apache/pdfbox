@@ -140,6 +140,12 @@
           <excludes>
             <exclude>src/test/resources/org/apache/pdfbox/examples/signature/*</exclude>
             <exclude>src/main/resources/org/apache/pdfbox/resources/pdfa/sRGB.*</exclude>
+            <exclude>src/main/resources/org/apache/pdfbox/examples/interactive/form/FillFormField.pdf</exclude>
+            <exclude>src/main/resources/org/apache/pdfbox/examples/rendering/custom-render-demo.pdf</exclude>
+            <exclude>src/test/resources/org/apache/pdfbox/examples/pdmodel/document.pdf</exclude>
+            <!-- netbeans local -->
+            <exclude>nbactions.xml</exclude>
+            <exclude>nb-configuration.xml</exclude>
           </excludes>
         </configuration>
       </plugin>
