@@ -50,21 +50,23 @@
   </scm>
 
   <build>
-    <pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.rat</groupId>
-                <artifactId>apache-rat-plugin</artifactId>
-                <version>0.16.1</version>
-                <configuration>
-                    <excludes>
-                        <exclude>release.properties</exclude>
-                        <exclude>.github/workflows/codeql-analysis.yml</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </pluginManagement>
+      <plugins>
+          <plugin>
+              <groupId>org.apache.rat</groupId>
+              <artifactId>apache-rat-plugin</artifactId>
+              <configuration>
+                  <excludes>
+                      <!-- already tested before -->
+                      <exclude>/pdfbox/**</exclude>
+                      <exclude>/fontbox/**</exclude>
+                      <exclude>/io/**</exclude>
+                      <exclude>/xmpbox/**</exclude>
+                      <exclude>/tools/**</exclude>
+                      <exclude>/examples/**</exclude>
+                  </excludes>
+              </configuration>
+          </plugin>
+      </plugins>
   </build>
 
   <profiles>
