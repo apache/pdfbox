@@ -106,6 +106,16 @@
                 </archive>
             </configuration>
         </plugin>
+        <plugin>
+            <groupId>org.apache.rat</groupId>
+            <artifactId>apache-rat-plugin</artifactId>
+            <configuration>
+                <excludes>
+                    <exclude>src/test/resources/input/ImageIOUtil/*.pdf</exclude>
+                    <exclude>src/test/resources/org/apache/pdfbox/*.pdf</exclude>
+                </excludes>
+            </configuration>
+        </plugin>
     </plugins>
   </build>
 
