@@ -109,7 +109,7 @@ public class Type1CharStringParser
                             + ", subrs.size(): " + subrs.size() + " in glyph '"
                             + glyphName + "' of font " + fontName);
                     // remove all parameters (there can be more than one)
-                    while (sequence.get(sequence.size() - 1) instanceof Integer)
+                    while (!sequence.isEmpty() && sequence.get(sequence.size() - 1) instanceof Integer)
                     {
                         sequence.remove(sequence.size() - 1);
                     }
