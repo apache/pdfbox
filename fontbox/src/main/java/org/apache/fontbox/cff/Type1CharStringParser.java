@@ -133,7 +133,7 @@ public class Type1CharStringParser
             LOG.warn("CALLSUBR is ignored, operand: " + operand + ", subrs.size(): " + subrs.size()
                     + " in glyph '" + currentGlyph + "' of font " + fontName);
             // remove all parameters (there can be more than one)
-            while (sequence.get(sequence.size() - 1) instanceof Integer)
+            while (!sequence.isEmpty() && sequence.get(sequence.size() - 1) instanceof Integer)
             {
                 sequence.remove(sequence.size() - 1);
             }
