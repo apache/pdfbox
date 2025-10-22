@@ -937,13 +937,13 @@ public final class TTFSubsetter
             }
 
             long lastOffset = 0;
-            for (Integer glyphId : glyphIds)
+            for (Integer gid : glyphIds)
             {
                 // offset in original file
                 long offset;
-                if (glyphId <= lastgid)
+                if (gid <= lastgid)
                 {
-                    if (invisibleGlyphIds.contains(glyphId))
+                    if (invisibleGlyphIds.contains(gid))
                     {
                         // force zero width (no change to last offset)
                         // 4 bytes total, 2 bytes each for: advance width = 0, left side bearing = 0
@@ -952,7 +952,7 @@ public final class TTFSubsetter
                     else
                     {
                         // copy width and lsb
-                        offset = glyphId * 4l;
+                        offset = gid * 4l;
                         lastOffset = copyBytes(is, bos, offset, lastOffset, 4);
                     }
                 }
@@ -970,7 +970,7 @@ public final class TTFSubsetter
                     }
 
                     // copy lsb only, as we are beyond numOfHMetrics
-                    offset = h.getNumberOfHMetrics() * 4l + (glyphId - h.getNumberOfHMetrics()) * 2l;
+                    offset = h.getNumberOfHMetrics() * 4l + (gid - h.getNumberOfHMetrics()) * 2l;
                     lastOffset = copyBytes(is, bos, offset, lastOffset, 2);
                 }
             }
