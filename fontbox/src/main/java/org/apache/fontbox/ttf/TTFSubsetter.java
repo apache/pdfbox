@@ -503,8 +503,8 @@ public final class TTFSubsetter
 
         boolean hasNested;
         GlyphTable g = ttf.getGlyph();
-            long[] offsets = ttf.getIndexToLocation().getOffsets();
-            do
+        long[] offsets = ttf.getIndexToLocation().getOffsets();
+        do
         {
             InputStream is = ttf.getOriginalData();
             Set<Integer> glyphIdsToAdd = null;
@@ -512,12 +512,12 @@ public final class TTFSubsetter
             {
                 is.skip(g.getOffset());
                 long lastOff = 0L;
-                for (Integer glyphId : glyphIds)
+                for (Integer gid : glyphIds)
                 {
-                    long offset = offsets[glyphId];
-                    long len = offsets[glyphId + 1] - offset;
+                    long offset = offsets[gid];
+                    long length = offsets[gid + 1] - offset;
                     is.skip(offset - lastOff);
-                    byte[] buf = new byte[(int)len];
+                    byte[] buf = new byte[(int) length];
                     is.read(buf);
                     // rewrite glyphIds for compound glyphs
                     if (buf.length >= 2 && buf[0] == -1 && buf[1] == -1)
@@ -566,7 +566,7 @@ public final class TTFSubsetter
                         while ((flags & 1 << 5) != 0); // MORE_COMPONENTS
 
                     }
-                    lastOff = offsets[glyphId + 1];
+                    lastOff = offsets[gid + 1];
                 }
             }
             finally
