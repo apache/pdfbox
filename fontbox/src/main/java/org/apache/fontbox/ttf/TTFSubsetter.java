@@ -612,7 +612,7 @@ public final class TTFSubsetter
                         isResult);
             }
 
-            long prevEnd = 0;    // previously read glyph offset
+            long lastOff = 0;    // previously read glyph offset
             long newOffset = 0;  // new offset for the glyph in the subset font
             int newGid = 0;      // new GID in subset font
 
@@ -623,11 +623,11 @@ public final class TTFSubsetter
                 long length = offsets[gid + 1] - offset;
 
                 newOffsets[newGid++] = newOffset;
-                isResult = is.skip(offset - prevEnd);
+                isResult = is.skip(offset - lastOff);
 
-                if (Long.compare(isResult, offset - prevEnd) != 0)
+                if (Long.compare(isResult, offset - lastOff) != 0)
                 {
-                    LOG.debug("Tried skipping {} bytes but skipped only {} bytes", offset - prevEnd,
+                    LOG.debug("Tried skipping {} bytes but skipped only {} bytes", offset - lastOff,
                             isResult);
                 }
 
@@ -728,7 +728,7 @@ public final class TTFSubsetter
                     newOffset += len;
                 }
 
-                prevEnd = offset + length;
+                lastOff = offset + length;
             }
             newOffsets[newGid++] = newOffset;
         }
