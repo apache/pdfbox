@@ -635,8 +635,6 @@ public final class TTFSubsetter
 
                         // glyphIndex
                         int componentGid = (buf[off] & 0xff) << 8 | buf[off + 1] & 0xff;
-                        glyphIds.add(componentGid);
-
                         int newComponentGid = getNewGlyphId(componentGid);
                         buf[off]   = (byte)(newComponentGid >>> 8);
                         buf[off + 1] = (byte)newComponentGid;
