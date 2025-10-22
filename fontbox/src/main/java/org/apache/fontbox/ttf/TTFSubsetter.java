@@ -594,7 +594,7 @@ public final class TTFSubsetter
         {
             is.skip(g.getOffset());
 
-            long prevEnd = 0;    // previously read glyph offset
+            long lastOff = 0;    // previously read glyph offset
             long newOffset = 0;  // new offset for the glyph in the subset font
             int newGid = 0;      // new GID in subset font
 
@@ -605,7 +605,7 @@ public final class TTFSubsetter
                 long length = offsets[gid + 1] - offset;
 
                 newOffsets[newGid++] = newOffset;
-                is.skip(offset - prevEnd);
+                is.skip(offset - lastOff);
 
                 // glyphs with no outlines have an empty entry in the 'glyf' table, with a
                 // corresponding 'loca' table entry with length = 0
@@ -699,7 +699,7 @@ public final class TTFSubsetter
                     newOffset += len;
                 }
 
-                prevEnd = offset + length;
+                lastOff = offset + length;
             }
             newOffsets[newGid++] = newOffset;
         }
