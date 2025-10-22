@@ -525,7 +525,10 @@ public final class TTFSubsetter
                     {
                         LOG.debug("Tried skipping " + (offset - lastOff) + " bytes but skipped only " + isResult + " bytes");
                     }
-
+                    if (invisibleGlyphIds.contains(gid))
+                    {
+                        continue;
+                    }
                     byte[] buf = new byte[(int) length];
                     isResult = is.read(buf);
 
