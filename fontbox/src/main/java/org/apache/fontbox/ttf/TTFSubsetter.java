@@ -517,6 +517,10 @@ public final class TTFSubsetter
                     long offset = offsets[gid];
                     long length = offsets[gid + 1] - offset;
                     is.skip(offset - lastOff);
+                    if (invisibleGlyphIds.contains(gid))
+                    {
+                        continue;
+                    }
                     byte[] buf = new byte[(int) length];
                     is.read(buf);
                     // rewrite glyphIds for compound glyphs
