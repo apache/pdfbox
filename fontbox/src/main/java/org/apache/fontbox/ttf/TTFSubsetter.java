@@ -527,10 +527,6 @@ public final class TTFSubsetter
                         LOG.debug("Tried skipping {} bytes but skipped only {} bytes",
                                 offset - lastOff, isResult);
                     }
-                    if (invisibleGlyphIds.contains(gid))
-                    {
-                        continue;
-                    }
                     byte[] buf = new byte[(int) length];
                     isResult = is.read(buf);
 
@@ -638,6 +634,7 @@ public final class TTFSubsetter
                 // corresponding 'loca' table entry with length = 0
                 if (invisibleGlyphIds.contains(gid))
                 {
+                    lastOff = offset;
                     continue;
                 }
 
@@ -663,6 +660,11 @@ public final class TTFSubsetter
 
                         // glyphIndex
                         int componentGid = (buf[off] & 0xff) << 8 | buf[off + 1] & 0xff;
+                        if (!glyphIds.contains(componentGid))
+                        {
+                            // PDFBOX-6085
+                            throw new IOException("Internal error: componentGid " + componentGid + " not in glyphIds set");
+                        }
                         int newComponentGid = getNewGlyphId(componentGid);
                         buf[off]   = (byte)(newComponentGid >>> 8);
                         buf[off + 1] = (byte)newComponentGid;
