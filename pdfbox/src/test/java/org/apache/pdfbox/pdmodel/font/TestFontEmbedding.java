@@ -512,4 +512,46 @@ public class TestFontEmbedding extends TestCase
         assertFalse(font.isDamaged());
         document.close();
     }
+
+    /**
+     * PDFBOX-6085: test with the Noto font, this one has a zero width GID between other GIDs and
+     * failed in the past. This "fails before the fix" only with the version 2.004, size 204.336
+     * Bytes.
+     *
+     * @throws IOException
+     */
+    public void testDevanagari2() throws IOException
+    {
+        File IN_DIR = new File("src/test/resources/org/apache/pdfbox/ttf");
+        File pdf = new File(OUT_DIR, "Devanagari2.pdf");
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage(PDRectangle.A4);
+        doc.addPage(page);
+        int[] codepoints = new int[]
+        {
+            'A', 8204
+        };
+        PDPageContentStream cs = new PDPageContentStream(doc, page);
+        InputStream is = TestFontEmbedding.class.getResourceAsStream(
+                "/org/apache/pdfbox/ttf/NotoSansDevanagari-Regular.ttf");
+        PDType0Font font = PDType0Font.load(doc, is);
+        String s = new String(codepoints, 0, codepoints.length);
+        cs.beginText();
+        cs.newLineAtOffset(20, 800);
+        cs.setFont(font, 18);
+        cs.showText(s);
+        cs.endText();
+        cs.close();
+        doc.save(pdf);
+        doc.close();
+
+        // compare rendering
+        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
+        if (!testPDFToImage.doTestFile(pdf, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        {
+            // don't fail, rendering is different on different systems, result must be viewed manually
+            System.err.println("Rendering of " + pdf + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
+        }
+    }
+
 }
