@@ -295,6 +295,50 @@ class TestFontEmbedding
         //assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
     }
 
+    /**
+     * PDFBOX-6085: test with the Noto font, this one has a zero width GID between other GIDs and
+     * failed in the past. This "fails before the fix" only with the version 2.004, size 204.336
+     * Bytes.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testDevanagari2() throws IOException
+    {
+        File pdf = new File(OUT_DIR, "Devanagari2.pdf");
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage(PDRectangle.A4);
+            doc.addPage(page);
+            int[] codepoints = new int[]
+            {
+                2305, 2306, 2309, 2310, 2311, 2312, 2313, 2315, 2319, 2324, 2325, 2326, 2327, 2328, 2329, 2330, 2331, 2332,
+                2333, 2335, 2336, 2337, 2339, 2340, 2341, 2342, 2343, 2344, 2346, 2348, 2349, 2350, 2351, 2352, 2354, 2355,
+                2357, 2358, 2359, 2360, 2361, 2364, 2366, 2367, 2368, 2369, 2370, 2375, 2376, 2379, 2380, 2381, 2396, 2404,
+                2406, 2407, 2408, 2409, 2410, 2411, 2414, 8204,
+            };
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+            {
+                InputStream is = TestFontEmbedding.class.getResourceAsStream("/org/apache/pdfbox/ttf/NotoSansDevanagari-Regular.ttf");
+                PDType0Font font = PDType0Font.load(doc, is);
+                String s = new String(codepoints, 0, codepoints.length);
+                cs.beginText();
+                cs.newLineAtOffset(20, 800);
+                cs.setFont(font, 18);
+                cs.showText(s);
+                cs.endText();
+            }
+            doc.save(pdf);
+        }
+
+        // compare rendering
+        if (!TestPDFToImage.doTestFile(pdf, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        {
+            // don't fail, rendering is different on different systems, result must be viewed manually
+            System.err.println("Rendering of " + pdf + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
+        }
+    }
+
     @Test
     void testGujarati() throws IOException
     {
