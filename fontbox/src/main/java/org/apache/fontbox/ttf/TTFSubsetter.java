@@ -515,10 +515,10 @@ public final class TTFSubsetter
                 }
 
                 long lastOff = 0L;
-                for (Integer glyphId : glyphIds)
+                for (Integer gid : glyphIds)
                 {
-                    long offset = offsets[glyphId];
-                    long len = offsets[glyphId + 1] - offset;
+                    long offset = offsets[gid];
+                    long length = offsets[gid + 1] - offset;
                     isResult = is.skip(offset - lastOff);
                     
                     if (Long.compare(isResult, offset - lastOff) != 0)
@@ -526,12 +526,12 @@ public final class TTFSubsetter
                         LOG.debug("Tried skipping " + (offset - lastOff) + " bytes but skipped only " + isResult + " bytes");
                     }
 
-                    byte[] buf = new byte[(int)len];
+                    byte[] buf = new byte[(int) length];
                     isResult = is.read(buf);
 
-                    if (Long.compare(isResult, len) != 0)
+                    if (Long.compare(isResult, length) != 0)
                     {
-                        LOG.debug("Tried reading " + len + " bytes but only " + isResult + " bytes read");
+                        LOG.debug("Tried reading " + length + " bytes but only " + isResult + " bytes read");
                     }
                     
                     // rewrite glyphIds for compound glyphs
@@ -581,7 +581,7 @@ public final class TTFSubsetter
                         while ((flags & 1 << 5) != 0); // MORE_COMPONENTS
 
                     }
-                    lastOff = offsets[glyphId + 1];
+                    lastOff = offsets[gid + 1];
                 }
             }
             hasNested = glyphIdsToAdd != null;
