@@ -298,8 +298,8 @@ class TestFontEmbedding
 
     /**
      * PDFBOX-6085: test with the Noto font, this one has a zero width GID between other GIDs and
-     * failed in the past. This "fails before the fix" only with the version 2.004, size 204.336
-     * Bytes.
+     * failed in the past. This "fails before the fix" only with the version 2.004,
+     * size 204336 bytes.
      *
      * @throws IOException
      */
@@ -322,6 +322,14 @@ class TestFontEmbedding
             {
                 InputStream is = TestFontEmbedding.class.getResourceAsStream("/org/apache/pdfbox/ttf/NotoSansDevanagari-Regular.ttf");
                 PDType0Font font = PDType0Font.load(doc, is);
+
+                // check that we're using the correct font version. The newer font has a different glyph ordering.
+                byte[] encoded = font.encode("A\u200c");
+                int val1 = (encoded[0] << 8) + (encoded[1] & 0xff);
+                int val2 = (encoded[2] << 8) + (encoded[3] & 0xff);
+                assertEquals(960, val1);
+                assertEquals(132, val2);
+
                 String s = new String(codepoints, 0, codepoints.length);
                 cs.beginText();
                 cs.newLineAtOffset(20, 800);
