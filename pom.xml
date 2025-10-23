@@ -48,7 +48,7 @@
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk</developerConnection>
     <url>https://svn.apache.org/viewvc/pdfbox/trunk</url>
   </scm>
-
+  
   <build>
       <plugins>
           <plugin>
@@ -98,7 +98,7 @@
           </plugin>
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.0</version>
             <executions>
               <execution>
                 <goals>
