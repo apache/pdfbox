@@ -27,6 +27,7 @@ import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -166,9 +167,10 @@ class PNGConverterTest
 
     private void checkImageConvertFail(String name) throws IOException
     {
-        try (PDDocument doc = new PDDocument())
+        try (PDDocument doc = new PDDocument();
+             InputStream is = PNGConverterTest.class.getResourceAsStream(name))
         {
-            byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream(name));
+            byte[] imageBytes = IOUtils.toByteArray(is);
             PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
             assertNull(pdImageXObject);
         }
@@ -176,9 +178,10 @@ class PNGConverterTest
 
     private void checkImageConvert(String name) throws IOException
     {
-        try (PDDocument doc = new PDDocument())
+        try (PDDocument doc = new PDDocument();
+             InputStream is = PNGConverterTest.class.getResourceAsStream(name))
         {
-            byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream(name));
+            byte[] imageBytes = IOUtils.toByteArray(is);
             PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
             assertNotNull(pdImageXObject);
             
@@ -367,9 +370,10 @@ class PNGConverterTest
     {
         checkImageConvert("929316.png");
 
-        try (PDDocument doc = new PDDocument())
+        try (PDDocument doc = new PDDocument();
+             InputStream is = PNGConverterTest.class.getResourceAsStream("929316.png"))
         {
-            byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream("929316.png"));
+            byte[] imageBytes = IOUtils.toByteArray(is);
             PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
             assertEquals(COSName.PERCEPTUAL, pdImageXObject.getCOSObject().getItem(COSName.INTENT));
 
