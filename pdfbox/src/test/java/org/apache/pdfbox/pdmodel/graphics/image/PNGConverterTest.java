@@ -166,9 +166,9 @@ class PNGConverterTest
 
     private void checkImageConvertFail(String name) throws IOException
     {
-        try (PDDocument doc = new PDDocument())
+        try (PDDocument doc = new PDDocument();
+            InputStream in = PNGConverterTest.class.getResourceAsStream(name))
         {
-            InputStream in = PNGConverterTest.class.getResourceAsStream(name);
             byte[] imageBytes = in.readAllBytes();
             PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
             assertNull(pdImageXObject);
@@ -177,9 +177,9 @@ class PNGConverterTest
 
     private void checkImageConvert(String name) throws IOException
     {
-        try (PDDocument doc = new PDDocument())
+        try (PDDocument doc = new PDDocument();
+             InputStream in = PNGConverterTest.class.getResourceAsStream(name))
         {
-            InputStream in = PNGConverterTest.class.getResourceAsStream(name);
             byte[] imageBytes = in.readAllBytes();
             PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
             assertNotNull(pdImageXObject);
@@ -369,9 +369,9 @@ class PNGConverterTest
     {
         checkImageConvert("929316.png");
 
-        try (PDDocument doc = new PDDocument())
+        try (PDDocument doc = new PDDocument();
+             InputStream in = PNGConverterTest.class.getResourceAsStream("929316.png"))
         {
-            InputStream in = PNGConverterTest.class.getResourceAsStream("929316.png");
             byte[] imageBytes = in.readAllBytes();
             PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
             assertEquals(COSName.PERCEPTUAL, pdImageXObject.getCOSObject().getItem(COSName.INTENT));
