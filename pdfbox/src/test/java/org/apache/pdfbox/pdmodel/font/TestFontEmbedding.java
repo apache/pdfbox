@@ -212,12 +212,12 @@ class TestFontEmbedding
         String expectedExtractedtext = BANGLA_TEXT_1 + "\n" + BANGLA_TEXT_2 + "\n" + BANGLA_TEXT_3;
         File pdf = new File(OUT_DIR, "Bengali.pdf");
 
-        try (PDDocument document = new PDDocument())
+        try (PDDocument document = new PDDocument();
+             InputStream input = getClass().getResourceAsStream("/org/apache/pdfbox/ttf/Lohit-Bengali.ttf"))
         {
             PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
-            PDFont font = PDType0Font.load(document, 
-                    this.getClass().getResourceAsStream("/org/apache/pdfbox/ttf/Lohit-Bengali.ttf"));
+            PDFont font = PDType0Font.load(document, input);
 
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
             {
@@ -259,12 +259,12 @@ class TestFontEmbedding
                 DEVANAGARI_TEXT_2 + "\n" + DEVANAGARI_TEXT_3;
         File pdf = new File(OUT_DIR, "Devanagari.pdf");
 
-        try (PDDocument document = new PDDocument())
+        try (PDDocument document = new PDDocument();
+             InputStream input = getClass().getResourceAsStream("/org/apache/pdfbox/ttf/Lohit-Devanagari.ttf"))
         {
             PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
-            PDFont font = PDType0Font.load(document, 
-                    this.getClass().getResourceAsStream("/org/apache/pdfbox/ttf/Lohit-Devanagari.ttf"));
+            PDFont font = PDType0Font.load(document, input);
 
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
             {
@@ -318,9 +318,9 @@ class TestFontEmbedding
                 2357, 2358, 2359, 2360, 2361, 2364, 2366, 2367, 2368, 2369, 2370, 2375, 2376, 2379, 2380, 2381, 2396, 2404,
                 2406, 2407, 2408, 2409, 2410, 2411, 2414, 8204,
             };
-            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page);
+                InputStream is = TestFontEmbedding.class.getResourceAsStream("/org/apache/pdfbox/ttf/NotoSansDevanagari-Regular.ttf"))
             {
-                InputStream is = TestFontEmbedding.class.getResourceAsStream("/org/apache/pdfbox/ttf/NotoSansDevanagari-Regular.ttf");
                 PDType0Font font = PDType0Font.load(doc, is);
 
                 // check that we're using the correct font version. The newer font has a different glyph ordering.
@@ -359,12 +359,12 @@ class TestFontEmbedding
         String expectedExtractedtext = GUJARATI_TEXT_0 + "\n" + GUJARATI_TEXT_1 + "\n" + GUJARATI_TEXT_2 + "\n" + GUJARATI_TEXT_3;
         File pdf = new File(OUT_DIR, "Gujarati.pdf");
 
-        try (PDDocument document = new PDDocument())
+        try (PDDocument document = new PDDocument();
+             InputStream input = getClass().getResourceAsStream("/org/apache/pdfbox/ttf/Lohit-Gujarati.ttf"))
         {
             PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
-            PDFont font = PDType0Font.load(document, 
-                    this.getClass().getResourceAsStream("/org/apache/pdfbox/ttf/Lohit-Gujarati.ttf"));
+            PDFont font = PDType0Font.load(document, input);
 
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
             {
@@ -445,12 +445,12 @@ class TestFontEmbedding
     {
         String text;
         File file;
-        try (PDDocument document = new PDDocument())
+        try (InputStream input = PDFont.class.getResourceAsStream(
+                "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
+             PDDocument document = new PDDocument())
         {
             PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
-            InputStream input = PDFont.class.getResourceAsStream(
-                    "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
             PDType0Font font = PDType0Font.load(document, input, useSubset);
             try (PDPageContentStream stream = new PDPageContentStream(document, page))
             {
@@ -490,12 +490,12 @@ class TestFontEmbedding
         String text1 = "The quick brown fox";
         String text2 = "xof nworb kciuq ehT";
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (PDDocument document = new PDDocument())
+        try (InputStream input = PDFont.class.getResourceAsStream(
+                "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
+             PDDocument document = new PDDocument())
         {
             PDPage page = new PDPage();
             document.addPage(page);
-            InputStream input = PDFont.class.getResourceAsStream(
-                    "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
             PDType0Font font = PDType0Font.load(document, input);
             try (PDPageContentStream stream = new PDPageContentStream(document, page))
             {
@@ -562,85 +562,87 @@ class TestFontEmbedding
     @Test
     void testIsEmbeddingPermittedMultipleVersions() throws IOException
     {
-        // SETUP
-        PDDocument doc = new PDDocument();
-        COSDictionary cosDictionary = new COSDictionary();
-        InputStream input = PDFont.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
-        TrueTypeFont ttf = new TTFParser().parseEmbedded(input);
-        TrueTypeEmbedderTester tester = new TrueTypeEmbedderTester(doc, cosDictionary, ttf, true);
-        TrueTypeFont mockTtf = Mockito.mock(TrueTypeFont.class);
-        OS2WindowsMetricsTable mockOS2 = Mockito.mock(OS2WindowsMetricsTable.class);
-        given(mockTtf.getOS2Windows()).willReturn(mockOS2);
-        Boolean embeddingIsPermitted;
+        try(InputStream input = PDFont.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"))
+        {
+            // SETUP
+            PDDocument doc = new PDDocument();
+            COSDictionary cosDictionary = new COSDictionary();
+            TrueTypeFont ttf = new TTFParser().parseEmbedded(input);
+            TrueTypeEmbedderTester tester = new TrueTypeEmbedderTester(doc, cosDictionary, ttf, true);
+            TrueTypeFont mockTtf = Mockito.mock(TrueTypeFont.class);
+            OS2WindowsMetricsTable mockOS2 = Mockito.mock(OS2WindowsMetricsTable.class);
+            given(mockTtf.getOS2Windows()).willReturn(mockOS2);
+            Boolean embeddingIsPermitted;
 
-        // TEST 1: 0000 -- Installable embedding versions 0-3+
-        given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x0000);
-        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
+            // TEST 1: 0000 -- Installable embedding versions 0-3+
+            given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x0000);
+            embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
 
-        // VERIFY
-        assertTrue(embeddingIsPermitted);
+            // VERIFY
+            assertTrue(embeddingIsPermitted);
 
-        // no test for 0001, since bit 0 is permanently reserved, and its use is deprecated
-        // TEST 2: 0010 -- Restricted License embedding versions 0-3+
-        given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x0002);
-        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
+            // no test for 0001, since bit 0 is permanently reserved, and its use is deprecated
+            // TEST 2: 0010 -- Restricted License embedding versions 0-3+
+            given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x0002);
+            embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
 
-        // VERIFY
-        assertFalse(embeddingIsPermitted);
+            // VERIFY
+            assertFalse(embeddingIsPermitted);
 
-        // no test for 0011
-        // TEST 3: 0100 -- Preview & Print embedding versions 0-3+
-        given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x0004);
-        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
+            // no test for 0011
+            // TEST 3: 0100 -- Preview & Print embedding versions 0-3+
+            given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x0004);
+            embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
 
-        // VERIFY
-        assertTrue(embeddingIsPermitted);
+            // VERIFY
+            assertTrue(embeddingIsPermitted);
 
-        // no test for 0101
-        // TEST 4: 0110 -- Restricted License embedding AND Preview & Print embedding versions 0-2
-        //              -- illegal permissions combination for versions 3+
-        given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x0006);
-        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
+            // no test for 0101
+            // TEST 4: 0110 -- Restricted License embedding AND Preview & Print embedding versions 0-2
+            //              -- illegal permissions combination for versions 3+
+            given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x0006);
+            embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
 
-        // VERIFY
-        assertTrue(embeddingIsPermitted);
+            // VERIFY
+            assertTrue(embeddingIsPermitted);
 
-        // no test for 0111
-        // TEST 5: 1000 -- Editable embedding versions 0-3+
-        given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x0008);
-        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
+            // no test for 0111
+            // TEST 5: 1000 -- Editable embedding versions 0-3+
+            given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x0008);
+            embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
 
-        // VERIFY
-        assertTrue(embeddingIsPermitted);
+            // VERIFY
+            assertTrue(embeddingIsPermitted);
 
-        // no test for 1001
-        // TEST 6: 1010 -- Restricted License embedding AND Editable embedding versions 0-2
-        //              -- illegal permissions combination for versions 3+
-        given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x000A);
-        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
+            // no test for 1001
+            // TEST 6: 1010 -- Restricted License embedding AND Editable embedding versions 0-2
+            //              -- illegal permissions combination for versions 3+
+            given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x000A);
+            embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
 
-        // VERIFY
-        assertTrue(embeddingIsPermitted);
+            // VERIFY
+            assertTrue(embeddingIsPermitted);
 
-        // no test for 1011
-        // TEST 7: 1100 -- Editable embedding AND Preview & Print embedding versions 0-2
-        //              -- illegal permissions combination for versions 3+
-        given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x000C);
-        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
+            // no test for 1011
+            // TEST 7: 1100 -- Editable embedding AND Preview & Print embedding versions 0-2
+            //              -- illegal permissions combination for versions 3+
+            given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x000C);
+            embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
 
-        // VERIFY
-        assertTrue(embeddingIsPermitted);
+            // VERIFY
+            assertTrue(embeddingIsPermitted);
 
-        // no test for 1101
-        // TEST 8: 1110 Editable embedding AND Preview & Print embedding AND Restricted License embedding versions 0-2
-        //              -- illegal permissions combination for versions 3+
-        given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x000E);
-        embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
+            // no test for 1101
+            // TEST 8: 1110 Editable embedding AND Preview & Print embedding AND Restricted License embedding versions 0-2
+            //              -- illegal permissions combination for versions 3+
+            given(mockTtf.getOS2Windows().getFsType()).willReturn((short) 0x000E);
+            embeddingIsPermitted = tester.isEmbeddingPermitted(mockTtf);
 
-        // VERIFY
-        assertTrue(embeddingIsPermitted);
+            // VERIFY
+            assertTrue(embeddingIsPermitted);
 
-        // no test for 1111
+            // no test for 1111
+        }
     }
 
     /**
@@ -692,12 +694,12 @@ class TestFontEmbedding
     {
         final String message = "あ";
 
-        try (PDDocument doc = new PDDocument())
+        try (PDDocument doc = new PDDocument();
+             InputStream input = getClass().getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"))
         {
             PDPage page = new PDPage();
             doc.addPage(page);
-            PDFont font = PDType0Font.load(doc,
-                    this.getClass().getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"));
+            PDFont font = PDType0Font.load(doc, input);
 
             try (PDPageContentStream contents = new PDPageContentStream(doc, page))
             {
@@ -721,12 +723,12 @@ class TestFontEmbedding
     void testSurrogatePairCharacterExceptionIsValidCodePoint() throws IOException
     {
         final String message = "𩸽";
-        try (PDDocument doc = new PDDocument())
+        try (PDDocument doc = new PDDocument();
+             InputStream input = getClass().getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"))
         {
             PDPage page = new PDPage();
             doc.addPage(page);
-            PDFont font = PDType0Font.load(doc,
-                    this.getClass().getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"));
+            PDFont font = PDType0Font.load(doc, input);
 
             try (PDPageContentStream contents = new PDPageContentStream(doc, page))
             {
@@ -756,12 +758,12 @@ class TestFontEmbedding
     {
         String text = "AAA\u200CBBB";
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (PDDocument document = new PDDocument())
+        try (PDDocument document = new PDDocument();
+             InputStream input = PDFont.class.getResourceAsStream(
+                     "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"))
         {
             PDPage page = new PDPage();
             document.addPage(page);
-            InputStream input = PDFont.class.getResourceAsStream(
-                    "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
             PDType0Font font = PDType0Font.load(document, input);
             try (PDPageContentStream stream = new PDPageContentStream(document, page))
             {
