@@ -118,16 +118,18 @@ public final class CreatePDFA
             }
 
             // sRGB output intent
-            InputStream colorProfile = CreatePDFA.class.getResourceAsStream(
-                    "/org/apache/pdfbox/resources/pdfa/sRGB.icc");
-            PDOutputIntent intent = new PDOutputIntent(doc, colorProfile);
-            intent.setInfo("sRGB IEC61966-2.1");
-            intent.setOutputCondition("sRGB IEC61966-2.1");
-            intent.setOutputConditionIdentifier("sRGB IEC61966-2.1");
-            intent.setRegistryName("http://www.color.org");
-            doc.getDocumentCatalog().addOutputIntent(intent);
+            try(InputStream colorProfile = CreatePDFA.class.getResourceAsStream(
+                    "/org/apache/pdfbox/resources/pdfa/sRGB.icc"))
+            {
+                PDOutputIntent intent = new PDOutputIntent(doc, colorProfile);
+                intent.setInfo("sRGB IEC61966-2.1");
+                intent.setOutputCondition("sRGB IEC61966-2.1");
+                intent.setOutputConditionIdentifier("sRGB IEC61966-2.1");
+                intent.setRegistryName("http://www.color.org");
+                doc.getDocumentCatalog().addOutputIntent(intent);
 
-            doc.save(file, CompressParameters.NO_COMPRESSION);
+                doc.save(file, CompressParameters.NO_COMPRESSION);
+            }
         }
     }
 }
