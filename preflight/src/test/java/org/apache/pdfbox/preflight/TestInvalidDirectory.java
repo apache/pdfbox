@@ -22,6 +22,7 @@
 package org.apache.pdfbox.preflight;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -74,14 +75,13 @@ public class TestInvalidDirectory
             }
         }
         Assert.assertFalse("Test of " + target, result.isValid());
-
     }
 
     @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Object[]> initializeParameters() throws IOException
     {
         // check directory
-        File directory = null;
+        File dir = null;
         String pdfPath = System.getProperty("pdfa.invalid", null);
         if ("${user.pdfa.invalid}".equals(pdfPath))
         {
@@ -89,24 +89,28 @@ public class TestInvalidDirectory
         }
         if (pdfPath != null)
         {
-            directory = new File(pdfPath);
-            if (!directory.exists())
-                throw new Exception("directory does not exists : " + directory.getAbsolutePath());
-            if (!directory.isDirectory())
-                throw new Exception("not a directory : " + directory.getAbsolutePath());
+            dir = new File(pdfPath);
+            if (!dir.exists())
+            {
+                throw new IOException("directory does not exists : " + dir.getAbsolutePath());
+            }
+            if (!dir.isDirectory())
+            {
+                throw new IOException("not a directory : " + dir.getAbsolutePath());
+            }
         }
         else
         {
             System.err.println("System property 'pdfa.invalid' not defined, will not run TestValidaDirectory");
         }
         // create list
-        if (directory == null)
+        if (dir == null)
         {
             return new ArrayList<Object[]>(0);
         }
         else
         {
-            File[] files = directory.listFiles();
+            File[] files = dir.listFiles();
             List<Object[]> data = new ArrayList<Object[]>(files.length);
             for (File file : files)
             {

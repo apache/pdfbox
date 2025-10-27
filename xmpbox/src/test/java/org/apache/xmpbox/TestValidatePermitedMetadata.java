@@ -31,6 +31,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -46,7 +47,7 @@ public class TestValidatePermitedMetadata
 {
 
     @Parameters(name="{0} {1} {2}")
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Object[]> initializeParameters() throws IOException
     {
         List<Object[]> params = new ArrayList<Object[]>();
         InputStream is =  TestValidatePermitedMetadata.class.getResourceAsStream("/permited_metadata.txt");

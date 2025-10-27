@@ -39,7 +39,7 @@ public class XMPMediaManagementTest extends AbstractXMPSchemaTest
 {
 
     @Before
-    public void initTempMetaData() throws Exception
+    public void initTempMetaData()
     {
         metadata = XMPMetadata.createXMPMetadata();
         schema = metadata.createAndAddXMPMediaManagementSchema();
@@ -47,7 +47,7 @@ public class XMPMediaManagementTest extends AbstractXMPSchemaTest
     }
 
     @Parameters(name = "{0} {1} '{2}'")
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Object[]> initializeParameters()
     {
         List<Object[]> data = new ArrayList<Object[]>();
         data.add(wrapProperty("DocumentID", Types.URI, "uuid:FB031973-5E75-11B2-8F06-E7F5C101C07A"));

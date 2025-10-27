@@ -38,7 +38,7 @@ public class PDFAIdentificationTest extends AbstractXMPSchemaTest
 {
 
     @Before
-    public void initTempMetaData() throws Exception
+    public void initTempMetaData()
     {
         metadata = XMPMetadata.createXMPMetadata();
         schema = metadata.createAndAddPDFAIdentificationSchema();
@@ -46,7 +46,7 @@ public class PDFAIdentificationTest extends AbstractXMPSchemaTest
     }
 
     @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Object[]> initializeParameters()
     {
         List<Object[]> data = new ArrayList<Object[]>();
         data.add(wrapProperty("part", Types.Integer, 1));

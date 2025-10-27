@@ -49,13 +49,12 @@ public class AdobePDFTest extends AbstractXMPSchemaTest
     }
 
     @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Object[]> initializeParameters()
     {
         List<Object[]> data = new ArrayList<Object[]>();
         data.add(wrapProperty("Keywords", Types.Text, "kw1 kw2 kw3"));
         data.add(wrapProperty("PDFVersion", Types.Text, "1.4"));
         data.add(wrapProperty("Producer", Types.Text, "testcase"));
-
         return data;
     }
 
@@ -65,7 +64,7 @@ public class AdobePDFTest extends AbstractXMPSchemaTest
     }
 
     @Test
-    public void testPDFAIdentification() throws Exception
+    public void testPDFAIdentification()
     {
         AdobePDFSchema schem = metadata.createAndAddAdobePDFSchema();
 

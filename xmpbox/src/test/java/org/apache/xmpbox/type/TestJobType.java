@@ -23,6 +23,7 @@ package org.apache.xmpbox.type;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import org.apache.xmpbox.xml.XmpParsingException;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -34,7 +35,7 @@ public class TestJobType extends AbstractStructuredTypeTester
 {
 
     @Before
-    public void before() throws Exception
+    public void before() throws XmpParsingException
     {
         super.before();
     }
@@ -51,7 +52,7 @@ public class TestJobType extends AbstractStructuredTypeTester
     }
 
     @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Object[]> initializeParameters()
     {
         Collection<Object[]> result = new ArrayList<Object[]>();
 

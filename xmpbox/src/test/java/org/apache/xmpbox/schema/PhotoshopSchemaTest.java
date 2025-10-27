@@ -25,6 +25,7 @@ import java.util.Collection;
 
 import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.Types;
+import org.apache.xmpbox.xml.XmpParsingException;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -42,7 +43,7 @@ public class PhotoshopSchemaTest extends AbstractSchemaTester
 
     @Before
     @Override
-    public void before() throws Exception
+    public void before() throws XmpParsingException
     {
         super.before();
     }
@@ -53,7 +54,7 @@ public class PhotoshopSchemaTest extends AbstractSchemaTester
     }
 
     @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Object[]> initializeParameters()
     {
         Collection<Object[]> result = new ArrayList<Object[]>();
 

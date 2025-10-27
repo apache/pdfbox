@@ -24,6 +24,7 @@ package org.apache.pdfbox.preflight;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +59,7 @@ public class TestIsartorBavaria
     private static FileOutputStream isartorResultFile;
 
     @Parameters(name = "{0}")
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Object[]> initializeParameters() throws IOException
     {
         String filter = System.getProperty(FILTER_FILE);
         String skipBavaria = System.getProperty(SKIP_BAVARIA);

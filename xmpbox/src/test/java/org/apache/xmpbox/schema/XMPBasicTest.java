@@ -53,7 +53,7 @@ public class XMPBasicTest extends AbstractXMPSchemaTest
     }
 
     @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Object[]> initializeParameters()
     {
         List<Object[]> data = new ArrayList<Object[]>();
 

@@ -23,6 +23,7 @@ package org.apache.pdfbox.preflight.integration;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,7 +67,7 @@ public class TestValidFiles
         this.logger = LogFactory.getLog(path != null ? path.getName() : "dummy");
     }
 
-    protected static Collection<Object[]> stopIfExpected() throws Exception
+    protected static Collection<Object[]> stopIfExpected()
     {
         // throw new Exception("Test badly configured");
         List<Object[]> ret = new ArrayList<Object[]>();
@@ -75,7 +76,7 @@ public class TestValidFiles
     }
 
     @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Object[]> initializeParameters() throws IOException
     {
         // find isartor files
         String isartor = System.getProperty(ISARTOR_FILES);
@@ -100,7 +101,7 @@ public class TestValidFiles
     }
 
     @BeforeClass
-    public static void beforeClass() throws Exception
+    public static void beforeClass() throws IOException
     {
         String irp = System.getProperty(RESULTS_FILE);
         if (irp == null)
@@ -116,7 +117,7 @@ public class TestValidFiles
     }
 
     @AfterClass
-    public static void afterClass() throws Exception
+    public static void afterClass()
     {
         IOUtils.closeQuietly(isartorResultFile);
     }

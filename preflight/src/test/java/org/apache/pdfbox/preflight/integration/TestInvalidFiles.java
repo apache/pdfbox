@@ -23,6 +23,7 @@ package org.apache.pdfbox.preflight.integration;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,7 +56,7 @@ public class TestInvalidFiles extends AbstractInvalidFileTester
         super(path, error);
     }
 
-    protected static Collection<Object[]> stopIfExpected() throws Exception
+    protected static Collection<Object[]> stopIfExpected()
     {
         List<Object[]> ret = new ArrayList<Object[]>();
         ret.add(new Object[] { null, null });
@@ -63,7 +64,7 @@ public class TestInvalidFiles extends AbstractInvalidFileTester
     }
 
     @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Object[]> initializeParameters() throws IOException
     {
         // find isartor files
         String isartor = System.getProperty(ISARTOR_FILES);

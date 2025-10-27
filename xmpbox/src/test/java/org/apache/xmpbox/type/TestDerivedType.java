@@ -58,7 +58,7 @@ public class TestDerivedType
     }
 
     @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Object[]> initializeParameters()
     {
         Collection<Object[]> result = new ArrayList<Object[]>();
 
@@ -79,7 +79,7 @@ public class TestDerivedType
     }
 
     @Before
-    public void before() throws Exception
+    public void before() throws NoSuchMethodException
     {
         xmp = XMPMetadata.createXMPMetadata();
         constructor = clz.getDeclaredConstructor(XMPMetadata.class, String.class, String.class, String.class,

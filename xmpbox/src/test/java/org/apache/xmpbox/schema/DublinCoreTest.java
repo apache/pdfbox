@@ -25,6 +25,7 @@ import java.util.Collection;
 
 import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.Types;
+import org.apache.xmpbox.xml.XmpParsingException;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -34,13 +35,15 @@ import org.junit.runners.Parameterized.Parameters;
 public class DublinCoreTest extends AbstractSchemaTester
 {
 
+    @Override
     public DublinCoreSchema getSchema()
     {
         return xmp.createAndAddDublinCoreSchema();
     }
 
     @Before
-    public void before() throws Exception
+    @Override
+    public void before() throws XmpParsingException
     {
         super.before();
     }
@@ -51,7 +54,7 @@ public class DublinCoreTest extends AbstractSchemaTester
     }
 
     @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Object[]> initializeParameters()
     {
         Collection<Object[]> result = new ArrayList<Object[]>();
 

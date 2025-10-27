@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpParsingException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -37,7 +38,7 @@ public class TestXMPWithDefinedSchemas
 {
 
     @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Object[]> initializeParameters()
     {
         List<Object[]> data = new ArrayList<Object[]>();
         data.add(new Object[] { "/validxmp/override_ns.rdf" });
@@ -56,7 +57,7 @@ public class TestXMPWithDefinedSchemas
     }
 
     @Test
-    public void main() throws Exception
+    public void main() throws XmpParsingException
     {
 
         InputStream is = this.getClass().getResourceAsStream(path);
