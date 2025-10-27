@@ -52,6 +52,7 @@ public class PDFAIdentificationTest extends AbstractXMPSchemaTest
         data.add(wrapProperty("part", Types.Integer, 1));
         data.add(wrapProperty("amd", Types.Text, "2005"));
         data.add(wrapProperty("conformance", Types.Text, "B"));
+        data.add(wrapProperty("rev", Types.Integer, 2020));
         return data;
     }
 
