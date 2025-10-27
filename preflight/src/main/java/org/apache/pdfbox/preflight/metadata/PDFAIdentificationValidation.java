@@ -24,6 +24,7 @@ package org.apache.pdfbox.preflight.metadata;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_INVALID_PDFA_CONFORMANCE;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_INVALID_PDFA_VERSION_ID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_PDFA_ID_MISSING;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_PROPERTY_UNKNOWN;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_WRONG_NS_PREFIX;
 
 import java.util.ArrayList;
@@ -83,6 +84,12 @@ public class PDFAIdentificationValidation
         }
         checkConformanceLevel(ve, id.getConformance());
         checkPartNumber(ve, id.getPart() == null ?  -1 : id.getPart());
+        // PDFBOX-6088
+        // https://pdfa.org/future-proofing-xmp-identification-schema/
+        if (id.getRevProperty() != null)
+        {
+            ve.add(new ValidationError(ERROR_METADATA_PROPERTY_UNKNOWN, "'rev' isn't defined for PDF/A-1"));
+        }
         return ve;
     }
 
