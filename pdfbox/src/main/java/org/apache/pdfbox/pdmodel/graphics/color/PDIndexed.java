@@ -57,7 +57,10 @@ public final class PDIndexed extends PDSpecialColorSpace
     /**
      * Creates a new Indexed color space.
      * Default DeviceRGB, hival 255.
+     * 
+     * @deprecated This will be removed in 4.0. If you need it, please contact us.
      */
+    @Deprecated
     public PDIndexed()
     {
         array = new COSArray();
@@ -306,7 +309,10 @@ public final class PDIndexed extends PDSpecialColorSpace
     /**
      * Sets the base color space.
      * @param base the base color space
+     *
+     * @deprecated This will be removed in 4.0. If you need it, please contact us.
      */
+    @Deprecated
     public void setBaseColorSpace(PDColorSpace base)
     {
         array.set(1, base.getCOSObject());
@@ -316,7 +322,10 @@ public final class PDIndexed extends PDSpecialColorSpace
     /**
      * Sets the highest value that is allowed. This cannot be higher than 255.
      * @param high the highest value for the lookup table
+     *
+     * @deprecated This will be removed in 4.0. If you need it, please contact us.
      */
+    @Deprecated
     public void setHighValue(int high)
     {
         array.set(2, high);
