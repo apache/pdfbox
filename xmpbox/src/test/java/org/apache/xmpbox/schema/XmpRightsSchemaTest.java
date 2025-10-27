@@ -64,7 +64,7 @@ class XmpRightsSchemaTest
         xmpSchemaTester.testGetSetProperty();
     }
 
-    static Stream<Arguments> initializeParameters() throws Exception
+    static Stream<Arguments> initializeParameters()
     {
         Map<String, String> desc = new HashMap<>(2);
         desc.put("fr", "Termes d'utilisation");

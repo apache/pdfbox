@@ -37,7 +37,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class TestXMPWithUndefinedSchemas
 {
-    static Stream<Arguments> initializeParameters() throws Exception
+    static Stream<Arguments> initializeParameters()
     {
         return Stream.of(
             Arguments.of("/undefinedxmp/prism.xmp", "http://prismstandard.org/namespaces/basic/2.0/", "aggregationType", "journal")

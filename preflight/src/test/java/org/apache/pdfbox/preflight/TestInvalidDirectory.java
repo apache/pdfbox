@@ -24,6 +24,7 @@ package org.apache.pdfbox.preflight;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,7 +37,7 @@ class TestInvalidDirectory
 {
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void validate(File target) throws Exception
+    void validate(File target) throws IOException
     {
         if (target != null)
         {
@@ -46,7 +47,7 @@ class TestInvalidDirectory
         }
     }
 
-    public static Collection<File> initializeParameters() throws Exception
+    public static Collection<File> initializeParameters() throws IOException
     {
         // check directory
         File directory = null;
@@ -59,9 +60,13 @@ class TestInvalidDirectory
         {
             directory = new File(pdfPath);
             if (!directory.exists())
-                throw new Exception("directory does not exists : " + directory.getAbsolutePath());
+            {
+                throw new IOException("directory does not exists : " + directory.getAbsolutePath());
+            }
             if (!directory.isDirectory())
-                throw new Exception("not a directory : " + directory.getAbsolutePath());
+            {
+                throw new IOException("not a directory : " + directory.getAbsolutePath());
+            }
         }
         else
         {

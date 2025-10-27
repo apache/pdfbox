@@ -63,7 +63,7 @@ class XMPBasicTest
         xmpSchemaTester.testGetSetProperty();
     }
 
-    static Stream<Arguments> initializeParameters() throws Exception
+    static Stream<Arguments> initializeParameters()
     {
         return Stream.of(
             Arguments.of("Advisory", XMPSchemaTester.createPropertyType(Types.XPath, Cardinality.Bag), new String[] { "xpath1", "xpath2" }),
