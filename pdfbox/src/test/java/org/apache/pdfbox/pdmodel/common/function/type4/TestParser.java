@@ -42,7 +42,6 @@ class TestParser
 
     /**
      * Test nested blocks.
-     * @throws Exception if an error occurs
      */
     @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test

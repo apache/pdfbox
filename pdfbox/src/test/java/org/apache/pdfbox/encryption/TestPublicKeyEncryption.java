@@ -267,7 +267,7 @@ class TestPublicKeyEncryption
      * @param decryptionPassword password to be used to decrypt the doc
      * @param keyStore password to be used to decrypt the doc
      * @return reloaded document
-     * @throws Exception if 
+     * @throws IOException
      */
     private PDDocument reload(File file, String decryptionPassword, InputStream keyStore)
             throws IOException
