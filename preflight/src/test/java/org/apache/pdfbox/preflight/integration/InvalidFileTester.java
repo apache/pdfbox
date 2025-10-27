@@ -27,7 +27,9 @@ import static org.junit.jupiter.api.Assertions.fail;
  ****************************************************************************/
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
@@ -55,14 +57,14 @@ public class InvalidFileTester
      * Prepare the test for one file
      * 
      * @param resultKeyFile the result key property file
-     * @throws Exception
+     * @throws FileNotFoundException
      */
-    public InvalidFileTester(String resultKeyFile) throws Exception
+    public InvalidFileTester(String resultKeyFile) throws FileNotFoundException
     {
         before(resultKeyFile);
     }
 
-    public final void validate(File path, String expectedError) throws Exception
+    public final void validate(File path, String expectedError) throws IOException
     {
         if (path == null)
         {
@@ -71,7 +73,7 @@ public class InvalidFileTester
         }
         ValidationResult result = PreflightParser.validate(path);
         assertFalse(result.isValid(), path + " : Isartor file should be invalid (" + path + ")");
-        assertTrue(result.getErrorsList().size() > 0, path + " : Should find at least one error");
+        assertTrue(!result.getErrorsList().isEmpty(), path + " : Should find at least one error");
         // could contain more than one error
         boolean found = false;
         if (expectedError != null)
@@ -95,7 +97,7 @@ public class InvalidFileTester
             }
         }
 
-        if (result.getErrorsList().size() > 0)
+        if (!result.getErrorsList().isEmpty())
         {
             if (expectedError == null)
             {
@@ -121,7 +123,7 @@ public class InvalidFileTester
         }
     }
 
-    public void before(String resultKeyFile) throws Exception
+    public void before(String resultKeyFile) throws FileNotFoundException
     {
         String irp = System.getProperty(resultKeyFile);
 
@@ -136,7 +138,7 @@ public class InvalidFileTester
         }
     }
 
-    public void after() throws Exception
+    public void after()
     {
         IOUtils.closeQuietly(outputResult);
     }
