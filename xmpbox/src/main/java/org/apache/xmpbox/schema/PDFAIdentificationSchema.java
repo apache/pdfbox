@@ -51,6 +51,10 @@ public class PDFAIdentificationSchema extends XMPSchema
     @PropertyType(type = Types.Text, card = Cardinality.Simple)
     public static final String CONFORMANCE = "conformance";
 
+    // PDFBOX-6088 https://pdfa.org/future-proofing-xmp-identification-schema/
+    @PropertyType(type = Types.Integer, card = Cardinality.Simple)
+    public static final String REV = "rev";
+
     /*
      * <rdf:Description rdf:about="" xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/">
      * <pdfaid:conformance>B</pdfaid:conformance> <pdfaid:part>1</pdfaid:part> </rdf:Description>
@@ -73,7 +77,7 @@ public class PDFAIdentificationSchema extends XMPSchema
     }
 
     /**
-     * Set the PDFA Version identifier (with string)
+     * Set the PDF/A Version identifier (with string)
      * 
      * @param value
      *            The version Id value to set
@@ -86,7 +90,7 @@ public class PDFAIdentificationSchema extends XMPSchema
     }
 
     /**
-     * Set the PDFA Version identifier (with an int)
+     * Set the PDF/A Version identifier (with an int)
      * 
      * @param value
      *            The version Id value to set
@@ -203,7 +207,7 @@ public class PDFAIdentificationSchema extends XMPSchema
     }
 
     /**
-     * Give the property corresponding to the PDFA Version id
+     * Give the property corresponding to the PDF/A Version id
      * 
      * @return Part property
      */
@@ -233,7 +237,7 @@ public class PDFAIdentificationSchema extends XMPSchema
     }
 
     /**
-     * Give the property corresponding to the PDFA Amendment id
+     * Give the property corresponding to the PDF/A Amendment id
      * 
      * @return Amendment property
      */
@@ -248,7 +252,7 @@ public class PDFAIdentificationSchema extends XMPSchema
     }
 
     /**
-     * Give the PDFA Amendment Id (as an String)
+     * Give the PDF/A Amendment Id (as an String)
      * 
      * @return Amendment Value
      */
@@ -273,7 +277,7 @@ public class PDFAIdentificationSchema extends XMPSchema
     }
 
     /**
-     * Give the property corresponding to the PDFA Conformance id
+     * Give the property corresponding to the PDF/A Conformance id
      * 
      * @return conformance property
      */
@@ -312,4 +316,76 @@ public class PDFAIdentificationSchema extends XMPSchema
         }
     }
 
+    /**
+     * Set the PDF/A revision (with string)
+     *
+     * @param value The revision value to set
+     *
+     */
+    public void setRevValueWithString(String value)
+    {
+        IntegerType rev = (IntegerType) instanciateSimple(REV, value);
+        addProperty(rev);
+    }
+
+    /**
+     * Set the PDF/A revision (with an int)
+     *
+     * @param value The revision value to set
+     */
+    public void setRevValueWithInt(int value)
+    {
+        IntegerType rev = (IntegerType) instanciateSimple(REV, value);
+        addProperty(rev);
+    }
+
+    /**
+     * Set the PDF/A revision identifier (with an int)
+     *
+     * @param value The revision property to set
+     */
+    public void setRev(Integer value)
+    {
+        setRevValueWithInt(value);
+    }
+
+    /**
+     * Set the PDF/A revision identifier
+     *
+     * @param rev set the PDF/A revision id property
+     */
+    public void setRevProperty(IntegerType rev)
+    {
+        addProperty(rev);
+    }
+
+    /**
+     * Give the property corresponding to the PDF/A revision
+     * 
+     * @return revision property
+     */
+    public IntegerType getRevProperty()
+    {
+        AbstractField tmp = getProperty(REV);
+        if (tmp instanceof IntegerType)
+        {
+            return (IntegerType) tmp;
+        }
+        return null;
+    }
+
+    /**
+     * Give the PDF/A revision (as an integer)
+     * 
+     * @return revision value (Integer) or null if it is missing
+     */
+    public Integer getRev()
+    {
+        IntegerType tmp = getRevProperty();
+        if (tmp == null)
+        {
+            return null;
+        }
+        return tmp.getValue();
+    }
 }
