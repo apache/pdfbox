@@ -118,9 +118,12 @@ public final class CreatePDFA
             }
 
             // sRGB output intent
-            InputStream colorProfile = CreatePDFA.class.getResourceAsStream(
-                    "/org/apache/pdfbox/resources/pdfa/sRGB.icc");
-            PDOutputIntent intent = new PDOutputIntent(doc, colorProfile);
+            PDOutputIntent intent;
+            try (InputStream colorProfile = CreatePDFA.class.getResourceAsStream(
+                            "/org/apache/pdfbox/resources/pdfa/sRGB.icc"))
+            {
+                intent = new PDOutputIntent(doc, colorProfile);
+            }
             intent.setInfo("sRGB IEC61966-2.1");
             intent.setOutputCondition("sRGB IEC61966-2.1");
             intent.setOutputConditionIdentifier("sRGB IEC61966-2.1");
