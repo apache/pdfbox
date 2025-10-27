@@ -33,6 +33,7 @@ import org.apache.xmpbox.type.TypeMapping;
 import org.apache.xmpbox.type.AbstractTypeTester;
 import org.apache.xmpbox.type.Types;
 import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpParsingException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -51,7 +52,7 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
 
     protected DomXmpParser builder;
 
-    public void before() throws Exception
+    public void before() throws XmpParsingException
     {
         builder = new DomXmpParser();
         xmp = XMPMetadata.createXMPMetadata();

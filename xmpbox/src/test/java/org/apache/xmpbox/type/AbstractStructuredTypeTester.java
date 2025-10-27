@@ -28,6 +28,7 @@ import java.util.Random;
 
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpParsingException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -46,7 +47,7 @@ public abstract class AbstractStructuredTypeTester extends AbstractTypeTester
 
     protected DomXmpParser builder;
 
-    public void before() throws Exception
+    public void before() throws XmpParsingException
     {
         builder = new DomXmpParser();
         xmp = XMPMetadata.createXMPMetadata();
