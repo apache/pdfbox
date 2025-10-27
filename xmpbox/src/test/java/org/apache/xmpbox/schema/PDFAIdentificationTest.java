@@ -61,7 +61,7 @@ class PDFAIdentificationTest
         xmpSchemaTester.testGetSetProperty();
     }
 
-    static Stream<Arguments> initializeParameters() throws Exception
+    static Stream<Arguments> initializeParameters()
     {
         return Stream.of(
             Arguments.of("part", XMPSchemaTester.createPropertyType(Types.Integer), 1),
