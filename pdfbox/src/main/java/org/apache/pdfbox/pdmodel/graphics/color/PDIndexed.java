@@ -27,7 +27,6 @@ import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
@@ -53,19 +52,6 @@ public final class PDIndexed extends PDSpecialColorSpace
     private float[][] colorTable;
     private int actualMaxIndex;
     private int[][] rgbColorTable;
-
-    /**
-     * Creates a new Indexed color space.
-     * Default DeviceRGB, hival 255.
-     */
-    public PDIndexed()
-    {
-        array = new COSArray();
-        array.add(COSName.INDEXED);
-        array.add(COSName.DEVICERGB);
-        array.add(COSInteger.get(255));
-        array.add(org.apache.pdfbox.cos.COSNull.NULL);
-    }
 
     /**
      * Creates a new indexed color space from the given PDF array.
@@ -303,25 +289,6 @@ public final class PDIndexed extends PDSpecialColorSpace
                 offset++;
             }
         }
-    }
-
-    /**
-     * Sets the base color space.
-     * @param base the base color space
-     */
-    public void setBaseColorSpace(PDColorSpace base)
-    {
-        array.set(1, base.getCOSObject());
-        baseColorSpace = base;
-    }
-
-    /**
-     * Sets the highest value that is allowed. This cannot be higher than 255.
-     * @param high the highest value for the lookup table
-     */
-    public void setHighValue(int high)
-    {
-        array.set(2, high);
     }
 
     @Override
