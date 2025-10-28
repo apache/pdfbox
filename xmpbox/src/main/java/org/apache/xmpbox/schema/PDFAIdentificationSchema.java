@@ -148,46 +148,36 @@ public class PDFAIdentificationSchema extends XMPSchema
 
     /**
      * Set the PDF/A conformance level
-     * 
-     * @param value
-     *            The conformance level value to set
-     * @throws BadFieldValueException
-     *             If Conformance Value not 'A', 'B' or 'U' (PDF/A-2 and PDF/A-3)
+     *
+     * @param value The conformance level value to set
+     * @throws BadFieldValueException If conformance value not 'A', 'B', 'U' (PDF/A-2 and PDF/A-3),
+     * 'e', 'f' (PDF/A-4)
      */
     public void setConformance(String value) throws BadFieldValueException
     {
-        if (value.equals("A") || value.equals("B") || value.equals("U"))
-        {
-            TextType conf = createTextType(CONFORMANCE, value);
-            addProperty(conf);
-
-        }
-        else
-        {
-            throw new BadFieldValueException(
-                    "The property given not seems to be a PDF/A conformance level (must be A, B or U)");
-        }
+        TextType conf = createTextType(CONFORMANCE, value);
+        setConformanceProperty(conf);
     }
 
     /**
      * Set the PDF/A conformance level
-     * 
-     * @param conf
-     *            The conformance level property to set
-     * @throws BadFieldValueException
-     *             If Conformance Value not 'A', 'B' or 'U' (PDF/A-2 and PDF/A-3)
+     *
+     * @param conf The conformance level property to set
+     * @throws BadFieldValueException If conformance value not 'A', 'B', 'U' (PDF/A-2 and PDF/A-3),
+     * 'e', 'f' (PDF/A-4)
      */
     public void setConformanceProperty(TextType conf) throws BadFieldValueException
     {
         String value = conf.getStringValue();
-        if (value.equals("A") || value.equals("B") || value.equals("U"))
+        if (value.equals("A") || value.equals("B") || value.equals("U") ||
+            value.equals("e") || value.equals("f"))
         {
             addProperty(conf);
         }
         else
         {
             throw new BadFieldValueException(
-                    "The property given not seems to be a PDF/A conformance level (must be A, B or U)");
+                    "The value '" + value + "' isn't a valid PDF/A conformance level (must be A, B, U, e or f)");
         }
     }
 
