@@ -59,13 +59,13 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 @Execution(ExecutionMode.CONCURRENT)
 class PNGConverterTest
 {
-    private static final File parentDir = new File("target/test-output/graphics/graphics");
+    private static final File PARENTDIR = new File("target/test-output/graphics/graphics");
 
     @BeforeAll
     static void setup()
     {
         //noinspection ResultOfMethodCallIgnored
-        parentDir.mkdirs();
+        PARENTDIR.mkdirs();
     }
 
     /**
@@ -203,7 +203,7 @@ class PNGConverterTest
                 contentStream.drawImage(pdImageXObject, 0, 0, pdImageXObject.getWidth(),
                         pdImageXObject.getHeight());
             }
-            doc.save(new File(parentDir, name + ".pdf"));
+            doc.save(new File(PARENTDIR, name + ".pdf"));
             BufferedImage image = pdImageXObject.getImage();
 
             assertNotNull(pdImageXObject.getRawRaster());
