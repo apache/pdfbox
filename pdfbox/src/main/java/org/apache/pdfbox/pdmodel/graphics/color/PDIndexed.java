@@ -201,15 +201,14 @@ public final class PDIndexed extends PDSpecialColorSpace
         BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         WritableRaster rgbRaster = rgbImage.getRaster();
 
-        int[] src = new int[1];
+        int[] src = new int[width];
         for (int y = 0; y < height; y++)
         {
+            raster.getPixels(0, y, width, 1, src);
             for (int x = 0; x < width; x++)
             {
-                raster.getPixel(x, y, src);
-
                 // lookup
-                int index = Math.min(src[0], actualMaxIndex);
+                int index = Math.min(src[x], actualMaxIndex);
                 rgbRaster.setPixel(x, y, rgbColorTable[index]);
             }
         }
