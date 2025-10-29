@@ -562,10 +562,10 @@ class TestFontEmbedding
     @Test
     void testIsEmbeddingPermittedMultipleVersions() throws IOException
     {
-        try(InputStream input = PDFont.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"))
+        try(InputStream input = PDFont.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
+            PDDocument doc = new PDDocument())
         {
             // SETUP
-            PDDocument doc = new PDDocument();
             COSDictionary cosDictionary = new COSDictionary();
             TrueTypeFont ttf = new TTFParser().parseEmbedded(input);
             TrueTypeEmbedderTester tester = new TrueTypeEmbedderTester(doc, cosDictionary, ttf, true);
