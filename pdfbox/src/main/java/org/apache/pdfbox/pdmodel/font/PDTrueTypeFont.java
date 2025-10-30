@@ -275,7 +275,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             // non-symbolic fonts don't have a built-in encoding per se, but there encoding is
             // assumed to be StandardEncoding by the PDF spec unless an explicit Encoding is present
             // which will override this anyway
-            if (getSymbolicFlag() != null &&!getSymbolicFlag())
+            if (Boolean.FALSE.equals(getSymbolicFlag()))
             {
                 return StandardEncoding.INSTANCE;
             }
