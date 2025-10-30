@@ -148,10 +148,12 @@ class TestFilters
     @Test
     void testPDFBOX1977() throws IOException
     {
-        Filter lzwFilter = FilterFactory.INSTANCE.getFilter(COSName.LZW_DECODE);
-        InputStream in = this.getClass().getResourceAsStream("PDFBOX-1977.bin");
-        byte[] byteArray = in.readAllBytes();
-        checkEncodeDecode(lzwFilter, byteArray);
+        try(InputStream in = this.getClass().getResourceAsStream("PDFBOX-1977.bin"))
+        {
+            Filter lzwFilter = FilterFactory.INSTANCE.getFilter(COSName.LZW_DECODE);
+            byte[] byteArray = in.readAllBytes();
+            checkEncodeDecode(lzwFilter, byteArray);
+        }
     }
 
     /**
