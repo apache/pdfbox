@@ -39,7 +39,7 @@ import org.apache.pdfbox.io.RandomAccessReadBuffer;
  *
  * @author Ben Litchfield
  */
-public class PDFStreamParser extends BaseParser
+public class PDFStreamParser extends COSParser
 {
     /**
      * Log instance.
@@ -66,8 +66,9 @@ public class PDFStreamParser extends BaseParser
      * Constructor.
      *
      * @param bytes the bytes to parse.
+     * @throws IOException If there is an error initializing the stream.
      */
-    public PDFStreamParser(byte[] bytes)
+    public PDFStreamParser(byte[] bytes) throws IOException
     {
         super(new RandomAccessReadBuffer(bytes));
     }
@@ -114,15 +115,13 @@ public class PDFStreamParser extends BaseParser
             case '<':
                 // pull off first left bracket
                 source.read();
-
                 // check for second left bracket
                 c = (char) source.peek();
 
-                // put back first bracket
-                source.rewind(1);
-
                 if (c == '<')
                 {
+                    // put back first bracket
+                    source.rewind(1);
                     try
                     {
                         return parseCOSDictionary(true);
@@ -137,7 +136,7 @@ public class PDFStreamParser extends BaseParser
                 }
                 else
                 {
-                    return parseCOSString();
+                    return parseCOSHexString();
                 }
             case '[':
                 // array
@@ -154,7 +153,7 @@ public class PDFStreamParser extends BaseParser
                 }
             case '(':
                 // string
-                return parseCOSString();
+                return parseCOSLiteralString();
             case '/':
                 // name
                 return parseCOSName();

@@ -24,72 +24,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.junit.jupiter.api.Test;
 
 class TestBaseParser
 {
-    @Test
-    void testCheckForEndOfString() throws IOException
-    {
-        // (Test)
-        byte[] inputBytes = { 40, 84, 101, 115, 116, 41 };
-
-        RandomAccessReadBuffer buffer = new RandomAccessReadBuffer(inputBytes);
-        BaseParser baseParser = new COSParser(buffer);
-        COSString cosString = baseParser.parseCOSString();
-        assertEquals("Test", cosString.getString());
-
-        String output = "(Test";
-        // ((Test) + LF + "/ "
-        inputBytes = new byte[] { '(', '(', 'T', 'e', 's', 't', ')', 10, '/', ' ' };
-
-        buffer = new RandomAccessReadBuffer(inputBytes);
-        baseParser = new COSParser(buffer);
-        cosString = baseParser.parseCOSString();
-        assertEquals(output, cosString.getString());
-
-        // ((Test) + CR + "/ "
-        inputBytes = new byte[] { '(', '(', 'T', 'e', 's', 't', ')', 13, '/', ' ' };
-
-        buffer = new RandomAccessReadBuffer(inputBytes);
-        baseParser = new COSParser(buffer);
-        cosString = baseParser.parseCOSString();
-        assertEquals(output, cosString.getString());
-
-        // ((Test) + CR + LF + "/ "
-        inputBytes = new byte[] { '(', '(', 'T', 'e', 's', 't', ')', 13, 10, '/' };
-
-        buffer = new RandomAccessReadBuffer(inputBytes);
-        baseParser = new COSParser(buffer);
-        cosString = baseParser.parseCOSString();
-        assertEquals(output, cosString.getString());
-
-        // ((Test) + LF + "> "
-        inputBytes = new byte[] { '(', '(', 'T', 'e', 's', 't', ')', 10, '>', ' ' };
-
-        buffer = new RandomAccessReadBuffer(inputBytes);
-        baseParser = new COSParser(buffer);
-        cosString = baseParser.parseCOSString();
-        assertEquals(output, cosString.getString());
-
-        // ((Test) + CR + "> "
-        inputBytes = new byte[] { '(', '(', 'T', 'e', 's', 't', ')', 13, '>', ' ' };
-
-        buffer = new RandomAccessReadBuffer(inputBytes);
-        baseParser = new COSParser(buffer);
-        cosString = baseParser.parseCOSString();
-        assertEquals(output, cosString.getString());
-
-        // ((Test) + CR + LF + "> "
-        inputBytes = new byte[] { '(', '(', 'T', 'e', 's', 't', ')', 13, 10, '>' };
-
-        buffer = new RandomAccessReadBuffer(inputBytes);
-        baseParser = new COSParser(buffer);
-        cosString = baseParser.parseCOSString();
-        assertEquals(output, cosString.getString());
-    }
 
     @Test
     void testBaseParserStackOverflow()

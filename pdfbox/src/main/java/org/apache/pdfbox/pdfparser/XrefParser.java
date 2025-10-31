@@ -46,6 +46,8 @@ public class XrefParser
     private static final char[] XREF_TABLE = { 'x', 'r', 'e', 'f' };
     private static final char[] STARTXREF = { 's', 't', 'a', 'r', 't', 'x', 'r', 'e', 'f' };
 
+    private static final long MINIMUM_SEARCH_OFFSET = 6;
+
     /** 
      * Collects all Xref/trailer objects and resolves them into single
      * object using startxref reference. 
@@ -476,7 +478,7 @@ public class XrefParser
             Map<COSObjectKey, Long> xrefOffset) throws IOException
     {
         // there can't be any object at the very beginning of a pdf
-        if (offset < COSParser.MINIMUM_SEARCH_OFFSET)
+        if (offset < MINIMUM_SEARCH_OFFSET)
         {
             return null;
         }
