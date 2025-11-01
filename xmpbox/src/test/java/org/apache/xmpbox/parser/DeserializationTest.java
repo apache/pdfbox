@@ -89,94 +89,128 @@ class DeserializationTest
     @Test
     void testStructuredRecursive() throws XmpParsingException, TransformerException, NoSuchAlgorithmException
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/structured_recursive.xml");
-        XMPMetadata metadata = xdb.parse(fis);
-        checkTransform(metadata, "50429052370059903229869639943824137435756655804864824611365505219590816799783");
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/structured_recursive.xml"))
+        {
+            XMPMetadata metadata = xdb.parse(fis);
+            checkTransform(metadata, "50429052370059903229869639943824137435756655804864824611365505219590816799783");
+        }
+        catch (IOException e)
+        {
+            fail(e);
+        }
     }
 
     @Test
     void testEmptyLi() throws XmpParsingException, TransformerException, NoSuchAlgorithmException
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/empty_list.xml");
-        XMPMetadata metadata = xdb.parse(fis);
-        checkTransform(metadata, "92757984740574362800045336947395134346147179161385043989715484359442690118913");
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/empty_list.xml"))
+        {
+            XMPMetadata metadata = xdb.parse(fis);
+            checkTransform(metadata, "92757984740574362800045336947395134346147179161385043989715484359442690118913");
+        }
+        catch (IOException e)
+        {
+            fail(e);
+        }
     }
 
     @Test
     void testEmptyLi2() throws XmpParsingException, TransformerException, NoSuchAlgorithmException
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/emptyli.xml");
-        XMPMetadata metadata = xdb.parse(fis);
-        DublinCoreSchema dc = metadata.getDublinCoreSchema();
-        dc.getCreatorsProperty();
-        checkTransform(metadata, "84846877440303452108560435796840772468446174326989274262473618453524301429629");
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/emptyli.xml"))
+        {
+            XMPMetadata metadata = xdb.parse(fis);
+            DublinCoreSchema dc = metadata.getDublinCoreSchema();
+            dc.getCreatorsProperty();
+            checkTransform(metadata, "84846877440303452108560435796840772468446174326989274262473618453524301429629");
+        }
+        catch (IOException e)
+        {
+            fail(e);
+        }
     }
 
     @Test
     void testGetTitle() throws XmpParsingException, BadFieldValueException
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/emptyli.xml");
-        XMPMetadata metadata = xdb.parse(fis);
-        DublinCoreSchema dc = metadata.getDublinCoreSchema();
-        String s = dc.getTitle(null);
-        assertEquals("title value", s);
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/emptyli.xml"))
+        {
+            XMPMetadata metadata = xdb.parse(fis);
+            DublinCoreSchema dc = metadata.getDublinCoreSchema();
+            String s = dc.getTitle(null);
+            assertEquals("title value", s);
+        }
+        catch (IOException e)
+        {
+            fail(e);
+        }
     }
 
     @Test
     void testAltBagSeq() throws XmpParsingException, TransformerException, NoSuchAlgorithmException
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/AltBagSeqTest.xml");
-        XMPMetadata metadata=xdb.parse(fis);
-        checkTransform(metadata, "16805992283807186369849610414335227396239089071611806706387795179375897398118");
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/AltBagSeqTest.xml"))
+        {
+            XMPMetadata metadata = xdb.parse(fis);
+            checkTransform(metadata, "16805992283807186369849610414335227396239089071611806706387795179375897398118");
+        }
+        catch (IOException e)
+        {
+            fail(e);
+        }
     }
 
     @Test
     void testIsartorStyleWithThumbs()
-            throws XmpParsingException, IOException, BadFieldValueException, TransformerException, NoSuchAlgorithmException
+            throws XmpParsingException, BadFieldValueException, TransformerException, NoSuchAlgorithmException
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/ThumbisartorStyle.xml");
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/ThumbisartorStyle.xml"))
+        {
+            XMPMetadata metadata = xdb.parse(fis);
 
-        XMPMetadata metadata = xdb.parse(fis);
+            // <xmpMM:DocumentID>
+            assertEquals("uuid:09C78666-2F91-3A9C-92AF-3691A6D594F7", metadata.getXMPMediaManagementSchema()
+                    .getDocumentID());
 
-        // <xmpMM:DocumentID>
-        assertEquals("uuid:09C78666-2F91-3A9C-92AF-3691A6D594F7", metadata.getXMPMediaManagementSchema()
-                .getDocumentID());
+            // <xmp:CreateDate>
+            // <xmp:ModifyDate>
+            // <xmp:MetadataDate>
+            assertEquals(DateConverter.toCalendar("2008-01-18T16:59:54+01:00"), metadata.getXMPBasicSchema()
+                    .getCreateDate());
+            assertEquals(DateConverter.toCalendar("2008-01-18T16:59:54+01:00"), metadata.getXMPBasicSchema()
+                    .getModifyDate());
+            assertEquals(DateConverter.toCalendar("2008-01-18T16:59:54+01:00"), metadata.getXMPBasicSchema()
+                    .getMetadataDate());
 
-        // <xmp:CreateDate>
-        // <xmp:ModifyDate>
-        // <xmp:MetadataDate>
-        assertEquals(DateConverter.toCalendar("2008-01-18T16:59:54+01:00"), metadata.getXMPBasicSchema()
-                .getCreateDate());
-        assertEquals(DateConverter.toCalendar("2008-01-18T16:59:54+01:00"), metadata.getXMPBasicSchema()
-                .getModifyDate());
-        assertEquals(DateConverter.toCalendar("2008-01-18T16:59:54+01:00"), metadata.getXMPBasicSchema()
-                .getMetadataDate());
+            // THUMBNAILS TEST
+            List<ThumbnailType> thumbs = metadata.getXMPBasicSchema().getThumbnailsProperty();
+            assertNotNull(thumbs);
+            assertEquals(2, thumbs.size());
 
-        // THUMBNAILS TEST
-        List<ThumbnailType> thumbs = metadata.getXMPBasicSchema().getThumbnailsProperty();
-        assertNotNull(thumbs);
-        assertEquals(2, thumbs.size());
+            ThumbnailType thumb = thumbs.get(0);
+            assertEquals(Integer.valueOf(162), thumb.getHeight());
+            assertEquals(Integer.valueOf(216), thumb.getWidth());
+            assertEquals("JPEG", thumb.getFormat());
+            assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
 
-        ThumbnailType thumb = thumbs.get(0);
-        assertEquals(Integer.valueOf(162), thumb.getHeight());
-        assertEquals(Integer.valueOf(216), thumb.getWidth());
-        assertEquals("JPEG", thumb.getFormat());
-        assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
+            thumb = thumbs.get(1);
+            assertEquals(Integer.valueOf(162), thumb.getHeight());
+            assertEquals(Integer.valueOf(216), thumb.getWidth());
+            assertEquals("JPEG", thumb.getFormat());
+            assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
 
-        thumb = thumbs.get(1);
-        assertEquals(Integer.valueOf(162), thumb.getHeight());
-        assertEquals(Integer.valueOf(216), thumb.getWidth());
-        assertEquals("JPEG", thumb.getFormat());
-        assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
-
-        checkTransform(metadata, "29120813843205587378639665706339183422557956085575883885304382528664692315203");
+            checkTransform(metadata, "29120813843205587378639665706339183422557956085575883885304382528664692315203");
+        }
+        catch (IOException e)
+        {
+            fail(e);
+        }
     }
 
     @Test
-    void testWithNoXPacketStart() throws XmpParsingException
+    void testWithNoXPacketStart()
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/noxpacket.xml");
-        try
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/noxpacket.xml"))
         {
             xdb.parse(fis);
             fail("Should fail during parse");
@@ -185,43 +219,55 @@ class DeserializationTest
         {
             assertEquals(ErrorType.XpacketBadStart, e.getErrorType());
         }
+        catch (IOException e)
+        {
+            fail(e);
+        }
     }
 
     @Test
-    void testWithNoXPacketEnd() throws XmpParsingException
+    void testWithNoXPacketEnd()
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/noxpacketend.xml");
-        try
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/noxpacketend.xml"))
         {
-            xdb.parse(fis);
-            fail("Should fail during parse");
+            try
+            {
+                xdb.parse(fis);
+                fail("Should fail during parse");
+            }
+            catch (XmpParsingException e)
+            {
+                assertEquals(ErrorType.XpacketBadEnd, e.getErrorType());
+            }
         }
-        catch (XmpParsingException e)
+        catch (IOException e)
         {
-            assertEquals(ErrorType.XpacketBadEnd, e.getErrorType());
+            fail(e);
         }
     }
 
     @Test
     void testWithNoRDFElement() throws XmpParsingException
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/noroot.xml");
-        try
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/noroot.xml"))
         {
             xdb.parse(fis);
             fail("Should fail during parse");
         }
-        catch (XmpParsingException e)
+        catch(XmpParsingException e)
         {
             assertEquals(ErrorType.Format, e.getErrorType());
+        }
+        catch (IOException e)
+        {
+            fail(e);
         }
     }
 
     @Test
     void testWithTwoRDFElement() throws XmpParsingException
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/tworoot.xml");
-        try
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/tworoot.xml"))
         {
             xdb.parse(fis);
             fail("Should fail during parse");
@@ -229,14 +275,17 @@ class DeserializationTest
         catch (XmpParsingException e)
         {
             assertEquals(ErrorType.Format, e.getErrorType());
+        }
+        catch (IOException e)
+        {
+            fail(e);
         }
     }
 
     @Test
     void testWithInvalidRDFElementPrefix()
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/invalidroot2.xml");
-        try
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/invalidroot2.xml"))
         {
             xdb.parse(fis);
             fail("Should fail during parse");
@@ -244,14 +293,17 @@ class DeserializationTest
         catch (XmpParsingException e)
         {
             assertEquals(ErrorType.Format, e.getErrorType());
+        }
+        catch (IOException e)
+        {
+            fail(e);
         }
     }
 
     @Test
     void testWithRDFRootAsText()
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/invalidroot.xml");
-        try
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/invalidroot.xml"))
         {
             xdb.parse(fis);
             fail("Should fail during parse");
@@ -260,13 +312,16 @@ class DeserializationTest
         {
             assertEquals(ErrorType.Format, e.getErrorType());
         }
+        catch (IOException e)
+        {
+            fail(e);
+        }
     }
 
     @Test
     void testUndefinedSchema()
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/undefinedschema.xml");
-        try
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/undefinedschema.xml"))
         {
             xdb.parse(fis);
             fail("Should fail during parse");
@@ -275,13 +330,16 @@ class DeserializationTest
         {
             assertEquals(ErrorType.NoSchema, e.getErrorType());
         }
+        catch (IOException e)
+        {
+            fail(e);
+        }
     }
 
     @Test
     void testUndefinedPropertyWithDefinedSchema()
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/undefinedpropertyindefinedschema.xml");
-        try
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/undefinedpropertyindefinedschema.xml"))
         {
             xdb.parse(fis);
             fail("Should fail during parse");
@@ -290,13 +348,16 @@ class DeserializationTest
         {
             assertEquals(ErrorType.NoType, e.getErrorType());
         }
+        catch (IOException e)
+        {
+            fail(e);
+        }
     }
 
     @Test
     void testUndefinedStructuredWithDefinedSchema()
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/undefinedstructuredindefinedschema.xml");
-        try
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/undefinedstructuredindefinedschema.xml"))
         {
             xdb.parse(fis);
             fail("Should fail during parse");
@@ -305,36 +366,52 @@ class DeserializationTest
         {
             assertEquals(ErrorType.NoValueType, e.getErrorType());
         }
+        catch (IOException e)
+        {
+            fail(e);
+        }
     }
 
     @Test
     void testRdfAboutFound() throws XmpParsingException
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/emptyli.xml");
-        XMPMetadata metadata = xdb.parse(fis);
-        List<XMPSchema> schemas = metadata.getAllSchemas();
-        for (XMPSchema xmpSchema : schemas)
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/emptyli.xml"))
         {
-            assertNotNull(xmpSchema.getAboutAttribute());
+            XMPMetadata metadata = xdb.parse(fis);
+            List<XMPSchema> schemas = metadata.getAllSchemas();
+            for (XMPSchema xmpSchema : schemas)
+            {
+                assertNotNull(xmpSchema.getAboutAttribute());
+            }
+        }
+        catch (IOException e)
+        {
+            fail(e);
         }
     }
 
     @Test
     void testWihtAttributesAsProperties() throws XmpParsingException, TransformerException, NoSuchAlgorithmException
     {
-        InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/attr_as_props.xml");
-        XMPMetadata metadata = xdb.parse(fis);
+        try(InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/attr_as_props.xml"))
+        {
+            XMPMetadata metadata = xdb.parse(fis);
 
-        AdobePDFSchema pdf = metadata.getAdobePDFSchema();
-        assertEquals("GPL Ghostscript 8.64", pdf.getProducer());
+            AdobePDFSchema pdf = metadata.getAdobePDFSchema();
+            assertEquals("GPL Ghostscript 8.64", pdf.getProducer());
 
-        DublinCoreSchema dc = metadata.getDublinCoreSchema();
-        assertEquals("application/pdf", dc.getFormat());
+            DublinCoreSchema dc = metadata.getDublinCoreSchema();
+            assertEquals("application/pdf", dc.getFormat());
 
-        XMPBasicSchema basic = metadata.getXMPBasicSchema();
-        assertNotNull(basic.getCreateDate());
-        
-        checkTransform(metadata, "91466370449938102905842936306160100538543510664071400903097987792216034311743");
+            XMPBasicSchema basic = metadata.getXMPBasicSchema();
+            assertNotNull(basic.getCreateDate());
+
+            checkTransform(metadata, "91466370449938102905842936306160100538543510664071400903097987792216034311743");
+        }
+        catch (IOException e)
+        {
+            fail(e);
+        }
     }
 
     @Test
@@ -342,14 +419,20 @@ class DeserializationTest
     {
         // check values with spaces at start or end
         // in this case, the value should not be trimmed
-        InputStream is = DomXmpParser.class.getResourceAsStream("/validxmp/only_space_fields.xmp");
-        XMPMetadata metadata = xdb.parse(is);
-        // check producer
-        assertEquals(" ", metadata.getAdobePDFSchema().getProducer());
-        // check creator tool
-        assertEquals("Canon ",metadata.getXMPBasicSchema().getCreatorTool());
-        
-        checkTransform(metadata, "65475542891943378255730260794798768587695617138297196920293698476028940113080");
+        try(InputStream is = DomXmpParser.class.getResourceAsStream("/validxmp/only_space_fields.xmp"))
+        {
+            XMPMetadata metadata = xdb.parse(is);
+            // check producer
+            assertEquals(" ", metadata.getAdobePDFSchema().getProducer());
+            // check creator tool
+            assertEquals("Canon ", metadata.getXMPBasicSchema().getCreatorTool());
+
+            checkTransform(metadata, "65475542891943378255730260794798768587695617138297196920293698476028940113080");
+        }
+        catch (IOException e)
+        {
+            fail(e);
+        }
     }
 
     @Test
