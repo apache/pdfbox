@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -51,38 +52,39 @@ class GlyphSubstitutionTableTest
     void testGetGsubData() throws IOException
     {
         // given
-        RandomAccessReadBuffer randomAccessReadBuffer = new RandomAccessReadBuffer(
-                GSUBTableDebugger.class.getResourceAsStream("/ttf/Lohit-Bengali.ttf"));
-        RandomAccessReadDataStream randomAccessReadBufferDataStream = new RandomAccessReadDataStream(
-                randomAccessReadBuffer);
-        randomAccessReadBufferDataStream.seek(DATA_POSITION_FOR_GSUB_TABLE);
-
-        GlyphSubstitutionTable testClass = new GlyphSubstitutionTable();
-
-        // when
-        testClass.read(null, randomAccessReadBufferDataStream);
-
-        // then
-        GsubData gsubData = testClass.getGsubData();
-        assertNotNull(gsubData);
-        assertNotEquals(GsubData.NO_DATA_FOUND, gsubData);
-        assertEquals(Language.BENGALI, gsubData.getLanguage());
-        assertEquals("bng2", gsubData.getActiveScriptName());
-
-        assertEquals(new HashSet<>(EXPECTED_FEATURE_NAMES), gsubData.getSupportedFeatures());
-
-        String templatePathToFile = "/gsub/lohit_bengali/bng2/%s.txt";
-
-        for (String featureName : EXPECTED_FEATURE_NAMES)
+        try (InputStream is = GSUBTableDebugger.class.getResourceAsStream("/ttf/Lohit-Bengali.ttf");
+             RandomAccessReadBuffer rarb = new RandomAccessReadBuffer(is);
+             RandomAccessReadDataStream rarbds = new RandomAccessReadDataStream(rarb))
         {
-            System.out.println("******* Testing feature: " + featureName);
-            Map<List<Integer>, Integer> expectedGsubTableRawData = getExpectedGsubTableRawData(
-                    String.format(templatePathToFile, featureName));
-            ScriptFeature scriptFeature = new MapBackedScriptFeature(featureName,
-                    expectedGsubTableRawData);
-            assertEquals(scriptFeature, gsubData.getFeature(featureName));
+            rarbds.seek(DATA_POSITION_FOR_GSUB_TABLE);
+            
+            GlyphSubstitutionTable testClass = new GlyphSubstitutionTable();
+            
+            // when
+            testClass.read(null, rarbds);
+            
+            // then
+            GsubData gsubData = testClass.getGsubData();
+            assertNotNull(gsubData);
+            assertNotEquals(GsubData.NO_DATA_FOUND, gsubData);
+            assertEquals(Language.BENGALI, gsubData.getLanguage());
+            assertEquals("bng2", gsubData.getActiveScriptName());
+            
+            assertEquals(new HashSet<>(EXPECTED_FEATURE_NAMES), gsubData.getSupportedFeatures());
+            
+            String templatePathToFile = "/gsub/lohit_bengali/bng2/%s.txt";
+            
+            for (String featureName : EXPECTED_FEATURE_NAMES)
+            {
+                System.out.println("******* Testing feature: " + featureName);
+                System.out.println("******* Testing feature: " + featureName);
+                Map<List<Integer>, Integer> expectedGsubTableRawData = getExpectedGsubTableRawData(
+                        String.format(templatePathToFile, featureName));
+                ScriptFeature scriptFeature = new MapBackedScriptFeature(featureName,
+                        expectedGsubTableRawData);
+                assertEquals(scriptFeature, gsubData.getFeature(featureName));
+            }
         }
-
     }
 
     private Map<List<Integer>, Integer> getExpectedGsubTableRawData(String pathToResource)
