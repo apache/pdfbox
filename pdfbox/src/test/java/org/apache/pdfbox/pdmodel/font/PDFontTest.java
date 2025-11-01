@@ -168,7 +168,9 @@ public class PDFontTest
         PDPage page = new PDPage();
         PDPageContentStream contentStream = new PDPageContentStream(doc, page);
 
-        PDType1Font font = new PDType1Font(doc, new FileInputStream(fontFile), WinAnsiEncoding.INSTANCE);
+        InputStream is = new FileInputStream(fontFile);
+        PDType1Font font = new PDType1Font(doc, is, WinAnsiEncoding.INSTANCE);
+        is.close();
 
         contentStream.beginText();
         contentStream.setFont(font, 10);
