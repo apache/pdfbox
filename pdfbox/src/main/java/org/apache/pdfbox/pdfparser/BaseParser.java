@@ -262,7 +262,6 @@ public abstract class BaseParser
 
             if (ch == ')')
             {
-
                 braces--;
                 braces = checkForEndOfString(braces);
                 if (braces != 0)
@@ -279,25 +278,25 @@ public abstract class BaseParser
             {
                 //patched by ram
                 char next = (char) source.read();
-                switch(next)
+                switch (next)
                 {
-                    case 'n':
-                        out.write('\n');
-                        break;
-                    case 'r':
-                        out.write('\r');
-                        break;
-                    case 't':
-                        out.write('\t');
-                        break;
-                    case 'b':
-                        out.write('\b');
-                        break;
-                    case 'f':
-                        out.write('\f');
-                        break;
-                    case ')':
-                        // PDFBox 276 /Title (c:\)
+                case 'n':
+                    out.write('\n');
+                    break;
+                case 'r':
+                    out.write('\r');
+                    break;
+                case 't':
+                    out.write('\t');
+                    break;
+                case 'b':
+                    out.write('\b');
+                    break;
+                case 'f':
+                    out.write('\f');
+                    break;
+                case ')':
+                    // PDFBox 276 /Title (c:\)
                     braces = checkForEndOfString(braces);
                     if (braces != 0)
                     {

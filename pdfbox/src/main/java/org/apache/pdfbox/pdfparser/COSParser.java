@@ -1249,7 +1249,7 @@ public class COSParser extends BaseParser implements ICOSParser
             }
         }
         String endStream = readString();
-        if (endStream.equals("endobj") && isLenient)
+        if (endStream.equals(ENDOBJ_STRING) && isLenient)
         {
             LOG.warn("stream ends with 'endobj' instead of 'endstream' at offset {}",
                     source.getPosition());
@@ -1999,7 +1999,6 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     protected COSObjectKey getObjectKey(long num, int gen)
     {
-        // return new COSObjectKey(num, gen);
         if (document == null || document.getXrefTable().isEmpty())
         {
             return new COSObjectKey(num, gen);
