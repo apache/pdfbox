@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -67,6 +66,7 @@ public class JPEGFactoryTest extends TestCase
 
         doWritePDF(document, ximage, testResultsDir, "jpegrgbstream.pdf");
         checkJpegStream(testResultsDir, "jpegrgbstream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
+        stream.close();
     }
 
     /*
@@ -82,6 +82,7 @@ public class JPEGFactoryTest extends TestCase
 
         doWritePDF(document, ximage, testResultsDir, "jpegcmykstream.pdf");
         checkJpegStream(testResultsDir, "jpegcmykstream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpegcmyk.jpg"));
+        stream.close();
     }
 
     /**
@@ -97,6 +98,7 @@ public class JPEGFactoryTest extends TestCase
 
         doWritePDF(document, ximage, testResultsDir, "jpeg256stream.pdf");
         checkJpegStream(testResultsDir, "jpeg256stream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"));
+        stream.close();
     }
 
     /**
@@ -284,20 +286,16 @@ public class JPEGFactoryTest extends TestCase
 
     // check whether it is possible to extract the jpeg stream exactly 
     // as it was passed to createFromStream
-    private void checkJpegStream(File testResultsDir, String filename, InputStream resourceStream)
+    private void checkJpegStream(File testResultsDir, String filename, InputStream expected)
             throws IOException
     {
         PDDocument doc = PDDocument.load(new File(testResultsDir, filename));
         PDImageXObject img =
                 (PDImageXObject) doc.getPage(0).getResources().getXObject(COSName.getPDFName("Im1"));
         InputStream dctStream = img.createInputStream(Arrays.asList(COSName.DCT_DECODE.getName()));
-        ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
-        ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
-        IOUtils.copy(resourceStream, baos1);
-        IOUtils.copy(dctStream, baos2);
-        resourceStream.close();
+        assertArrayEquals(IOUtils.toByteArray(expected), IOUtils.toByteArray(dctStream));
+        expected.close();
         dctStream.close();
-        assertArrayEquals(baos1.toByteArray(), baos2.toByteArray());
         doc.close();
     }
 }
