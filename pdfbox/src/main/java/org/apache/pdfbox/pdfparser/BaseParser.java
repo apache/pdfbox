@@ -399,7 +399,10 @@ public abstract class BaseParser
      */
     protected final void readExpectedString(final char[] expectedString, boolean skipSpaces) throws IOException
     {
-        skipSpaces();
+        if (skipSpaces)
+        {
+            skipSpaces();
+        }
         for (char c : expectedString)
         {
             if (source.read() != c)
@@ -409,7 +412,10 @@ public abstract class BaseParser
                         + source.getPosition());
             }
         }
-        skipSpaces();
+        if (skipSpaces)
+        {
+            skipSpaces();
+        }
     }
 
     /**
