@@ -84,7 +84,8 @@ class PDFontTest
     void testPDFBox988() throws IOException
     {
         try (PDDocument doc = 
-                Loader.loadPDF(new RandomAccessReadBuffer(PDFontTest.class.getResourceAsStream("F001u_3_7j.pdf"))))
+                Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
+                        PDFontTest.class.getResourceAsStream("F001u_3_7j.pdf"))))
         {
             PDFRenderer renderer = new PDFRenderer(doc);
             renderer.renderImage(0);
@@ -184,9 +185,10 @@ class PDFontTest
         try (PDDocument doc = new PDDocument())
         {
             PDPage page = new PDPage();
-            try (PDPageContentStream contentStream = new PDPageContentStream(doc, page))
+            try (PDPageContentStream contentStream = new PDPageContentStream(doc, page);
+                 InputStream is = new FileInputStream(fontFile))
             {
-                PDType1Font font = new PDType1Font(doc, new FileInputStream(fontFile), WinAnsiEncoding.INSTANCE);
+                PDType1Font font = new PDType1Font(doc, is, WinAnsiEncoding.INSTANCE);
 
                 contentStream.beginText();
                 contentStream.setFont(font, 10);
