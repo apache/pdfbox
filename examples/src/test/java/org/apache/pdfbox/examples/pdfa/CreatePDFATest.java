@@ -48,6 +48,7 @@ import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
 import org.verapdf.pdfa.Foundries;
 import org.verapdf.pdfa.PDFAParser;
 import org.verapdf.pdfa.PDFAValidator;
+import org.verapdf.pdfa.VeraPDFFoundry;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
 import org.verapdf.pdfa.results.ValidationResult;
 
@@ -82,7 +83,10 @@ class CreatePDFATest
 
         // sign PDF - because we want to make sure that the signed PDF is also PDF/A-1b
         KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), "123456".toCharArray());
+        try(FileInputStream is = new FileInputStream(keystorePath))
+        {
+            keystore.load(is, "123456".toCharArray());
+        }
         CreateSignature signing = new CreateSignature(keystore, "123456".toCharArray());
         signing.signDetached(new File(pdfaFilename), new File(signedPdfaFilename));
 
@@ -131,9 +135,10 @@ class CreatePDFATest
         // https://docs.verapdf.org/develop/
         VeraGreenfieldFoundryProvider.initialise();
         PDFAFlavour flavour = PDFAFlavour.fromString("1b");
-        try (PDFAParser parser = Foundries.defaultInstance().createParser(signedFile, flavour))
+        try (VeraPDFFoundry foundry = Foundries.defaultInstance();
+             PDFAParser parser = foundry.createParser(signedFile, flavour);
+             PDFAValidator validator = foundry.createValidator(flavour, false))
         {
-            PDFAValidator validator = Foundries.defaultInstance().createValidator(flavour, false);
             ValidationResult veraResult = validator.validate(parser);
             assertTrue(veraResult.isCompliant());
         }
