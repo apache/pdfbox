@@ -33,11 +33,6 @@ import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.verapdf.core.VeraPDFException;
-import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
-import org.verapdf.pdfa.Foundries;
-import org.verapdf.pdfa.PDFAParser;
-import org.verapdf.pdfa.PDFAValidator;
-import org.verapdf.pdfa.flavours.PDFAFlavour;
 
 /**
  *
@@ -87,13 +82,6 @@ public class MergePDFATest extends TestCase
         assertTrue("PDF file created with MergePDFA is not valid PDF/A-1b", result.isValid());
         preflightDocument.close();
 
-        // https://docs.verapdf.org/develop/
-        VeraGreenfieldFoundryProvider.initialise();
-        PDFAFlavour flavour = PDFAFlavour.fromString("1b");
-        PDFAParser parser = Foundries.defaultInstance().createParser(new File(pdfaMergedFilename), flavour);
-        PDFAValidator validator = Foundries.defaultInstance().createValidator(flavour, false);
-        org.verapdf.pdfa.results.ValidationResult veraResult = validator.validate(parser);
-        assertTrue(veraResult.isCompliant());
-        parser.close();
+        CreatePDFATest.checkWithVeraPDF(new File(pdfaMergedFilename));
     }
 }
