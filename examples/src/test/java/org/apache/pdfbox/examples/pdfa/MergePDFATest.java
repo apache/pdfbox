@@ -33,11 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.verapdf.core.VeraPDFException;
-import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
-import org.verapdf.pdfa.Foundries;
-import org.verapdf.pdfa.PDFAParser;
-import org.verapdf.pdfa.PDFAValidator;
-import org.verapdf.pdfa.flavours.PDFAFlavour;
 
 /**
  *
@@ -83,14 +78,6 @@ class MergePDFATest
         }
         assertTrue(result.isValid(), "PDF file created with CreatePDFA is not valid PDF/A-1b");
 
-        // https://docs.verapdf.org/develop/
-        VeraGreenfieldFoundryProvider.initialise();
-        PDFAFlavour flavour = PDFAFlavour.fromString("1b");
-        try (PDFAParser parser = Foundries.defaultInstance().createParser(new File(pdfaMergedFilename), flavour))
-        {
-            PDFAValidator validator = Foundries.defaultInstance().createValidator(flavour, false);
-            org.verapdf.pdfa.results.ValidationResult veraResult = validator.validate(parser);
-            assertTrue(veraResult.isCompliant());
-        }
+        CreatePDFATest.checkWithVeraPDF(new File(pdfaMergedFilename));
     }
 }

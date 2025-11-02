@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.KeyStore;
 import java.util.HashSet;
@@ -41,10 +42,12 @@ import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.verapdf.core.VeraPDFException;
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
 import org.verapdf.pdfa.Foundries;
 import org.verapdf.pdfa.PDFAParser;
 import org.verapdf.pdfa.PDFAValidator;
+import org.verapdf.pdfa.VeraPDFFoundry;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
 
 /**
@@ -77,7 +80,10 @@ class CreatePDFATest
 
         // sign PDF - because we want to make sure that the signed PDF is also PDF/A-1b
         KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), "123456".toCharArray());
+        try(FileInputStream is = new FileInputStream(keystorePath))
+        {
+            keystore.load(is, "123456".toCharArray());
+        }
         CreateSignature signing = new CreateSignature(keystore, "123456".toCharArray());
         signing.signDetached(new File(pdfaFilename), new File(signedPdfaFilename));
 
@@ -130,15 +136,18 @@ class CreatePDFATest
                 }
             }
         }
+        checkWithVeraPDF(signedFile);
+    }
 
+    static void checkWithVeraPDF(File file) throws IOException, VeraPDFException
+    {
         // https://docs.verapdf.org/develop/
         VeraGreenfieldFoundryProvider.initialise();
-        PDFAFlavour flavour = PDFAFlavour.fromString("1b");
-        try (PDFAParser parser = Foundries.defaultInstance().createParser(new File(signedPdfaFilename), flavour))
+        try (VeraPDFFoundry foundry = Foundries.defaultInstance();
+                PDFAParser parser = foundry.createParser(file, PDFAFlavour.PDFA_1_B);
+                PDFAValidator validator = foundry.createValidator(PDFAFlavour.PDFA_1_B, false))
         {
-            PDFAValidator validator = Foundries.defaultInstance().createValidator(flavour, false);
-            org.verapdf.pdfa.results.ValidationResult veraResult = validator.validate(parser);
-            assertTrue(veraResult.isCompliant());
+             assertTrue(validator.validate(parser).isCompliant());
         }
     }
 }
