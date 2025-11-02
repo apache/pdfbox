@@ -23,6 +23,7 @@ package org.apache.xmpbox;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
@@ -46,13 +47,13 @@ class TestXMPWithDefinedSchemas
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void main(String path) throws XmpParsingException
-    {
-        InputStream is = this.getClass().getResourceAsStream(path);
-
-        DomXmpParser builder = new DomXmpParser();
-        XMPMetadata rxmp = builder.parse(is);
-        // ensure basic parsing was OK
-        assertFalse(rxmp.getAllSchemas().isEmpty());
+    void main(String path) throws XmpParsingException, IOException {
+        try(InputStream is = this.getClass().getResourceAsStream(path))
+        {
+            DomXmpParser builder = new DomXmpParser();
+            XMPMetadata rxmp = builder.parse(is);
+            // ensure basic parsing was OK
+            assertFalse(rxmp.getAllSchemas().isEmpty());
+        }
     }
 }
