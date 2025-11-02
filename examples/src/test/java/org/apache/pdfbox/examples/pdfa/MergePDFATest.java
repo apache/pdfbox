@@ -15,8 +15,6 @@
  */
 package org.apache.pdfbox.examples.pdfa;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,12 +29,6 @@ import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.verapdf.core.VeraPDFException;
-import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
-import org.verapdf.pdfa.Foundries;
-import org.verapdf.pdfa.PDFAParser;
-import org.verapdf.pdfa.PDFAValidator;
-import org.verapdf.pdfa.flavours.PDFAFlavour;
-import org.verapdf.pdfa.results.ValidationResult;
 
 /**
  *
@@ -74,14 +66,6 @@ class MergePDFATest
         sources.get(0).close();
         sources.get(1).close();
 
-        // https://docs.verapdf.org/develop/
-        VeraGreenfieldFoundryProvider.initialise();
-        PDFAFlavour flavour = PDFAFlavour.fromString("1b");
-        try (PDFAParser parser = Foundries.defaultInstance().createParser(new File(pdfaMergedFilename), flavour))
-        {
-            PDFAValidator validator = Foundries.defaultInstance().createValidator(flavour, false);
-            ValidationResult veraResult = validator.validate(parser);
-            assertTrue(veraResult.isCompliant());
-        }
+        CreatePDFATest.checkWithVeraPDF(new File(pdfaMergedFilename));
     }
 }
