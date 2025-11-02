@@ -169,8 +169,10 @@ class TestCreateSignature
 
         // load the keystore
         keyStore = KeyStore.getInstance("PKCS12");
-        keyStore.load(new FileInputStream(KEYSTORE_PATH), PASSWORD.toCharArray());
-
+        try(FileInputStream is = new FileInputStream(KEYSTORE_PATH))
+        {
+            keyStore.load(is, PASSWORD.toCharArray());
+        }
         new File("target/test-output").mkdirs();
 
         certificate = keyStore.getCertificateChain(keyStore.aliases().nextElement())[0];
@@ -192,45 +194,47 @@ class TestCreateSignature
         Date localTime = new Date();
 
         // https://stackoverflow.com/questions/4442192/
-        NTPUDPClient timeClient = new NTPUDPClient();
-        InetAddress inetAddress = InetAddress.getByName("pool.ntp.org");
-        timeClient.setDefaultTimeout(Duration.ofMillis(5000));
-        TimeInfo timeInfo;
-        long returnTime;
-        try
+        try(NTPUDPClient timeClient = new NTPUDPClient())
         {
-            timeInfo = timeClient.getTime(inetAddress);
-            returnTime = timeInfo.getReturnTime();
-        }
-        catch (SocketTimeoutException ex)
-        {
-            // Won't work behind a proxy. Nor on our CI :-(
-            System.out.println("Socket timeout when trying to get time from NTP server; trying google");
-
-            String dateString;
+            InetAddress inetAddress = InetAddress.getByName("pool.ntp.org");
+            timeClient.setDefaultTimeout(Duration.ofMillis(5000));
+            TimeInfo timeInfo;
+            long returnTime;
             try
             {
-                HttpsURLConnection con = (HttpsURLConnection) new URI("https://www.google.com/").toURL().openConnection();
-                if (con.getResponseCode() != HttpsURLConnection.HTTP_OK)
+                timeInfo = timeClient.getTime(inetAddress);
+                returnTime = timeInfo.getReturnTime();
+            }
+            catch (SocketTimeoutException ex)
+            {
+                // Won't work behind a proxy. Nor on our CI :-(
+                System.out.println("Socket timeout when trying to get time from NTP server; trying google");
+
+                String dateString;
+                try
                 {
-                    System.out.println("Google returns " + con.getResponseCode());
+                    HttpsURLConnection con = (HttpsURLConnection) new URI("https://www.google.com/").toURL().openConnection();
+                    if (con.getResponseCode() != HttpsURLConnection.HTTP_OK)
+                    {
+                        System.out.println("Google returns " + con.getResponseCode());
+                        return;
+                    }
+                    dateString = con.getHeaderField("Date");
+                    con.disconnect();
+                }
+                catch (IOException ioex)
+                {
+                    System.out.println("failed to access google: " + ioex.getMessage());
                     return;
                 }
-                dateString = con.getHeaderField("Date");
-                con.disconnect();
+                ZonedDateTime zdt = DateTimeFormatter.RFC_1123_DATE_TIME.parse(dateString, ZonedDateTime::from);
+                returnTime = Date.from(zdt.toInstant()).getTime();
             }
-            catch (IOException ioex)
-            {
-                System.out.println("failed to access google: " + ioex.getMessage());
-                return;
-            }
-            ZonedDateTime zdt = DateTimeFormatter.RFC_1123_DATE_TIME.parse(dateString, ZonedDateTime::from);
-            returnTime = Date.from(zdt.toInstant()).getTime();
+            System.out.println("Remote time: " + sdf.format(new Date(returnTime)));
+            System.out.println("Local  time: " + sdf.format(localTime));
+            long diff = Math.abs(localTime.getTime() - returnTime) / 1000;
+            assertTrue(diff < 15, "Local time is off by more than " + diff + " seconds");
         }
-        System.out.println("Remote time: " + sdf.format(new Date(returnTime)));
-        System.out.println("Local  time: " + sdf.format(localTime));
-        long diff = Math.abs(localTime.getTime() - returnTime) / 1000;
-        assertTrue(diff < 15, "Local time is off by more than " + diff + " seconds");
     }
 
     /**
@@ -593,13 +597,15 @@ class TestCreateSignature
                 assertArrayEquals(signedFileContent1, signedFileContent2);
 
                 // verify that all getContents() methods returns the same content
-                try (FileInputStream fis = new FileInputStream(signedFile))
+                try (FileInputStream fis = new FileInputStream(signedFile);
+                     FileInputStream fis2 = new FileInputStream(signedFile))
                 {
                     byte[] contents2 = sig.getContents(fis.readAllBytes());
                     assertArrayEquals(contents, contents2);
+
+                    byte[] contents3 = sig.getContents(fis2);
+                    assertArrayEquals(contents, contents3);
                 }
-                byte[] contents3 = sig.getContents(new FileInputStream(signedFile));
-                assertArrayEquals(contents, contents3);
 
                 // inspiration:
                 // http://stackoverflow.com/a/26702631/535646
@@ -729,11 +735,11 @@ class TestCreateSignature
 
         checkSignature(new File(SIMPLE_FORM_FILENAME), new File(OUT_DIR, fileNameSigned), false);
 
-        try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameSigned)))
+        try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameSigned));
+            FileOutputStream fileOutputStream = new FileOutputStream(new File(OUT_DIR, fileNameResaved1)))
         {
             oldImage = new PDFRenderer(doc).renderImage(0);
-            
-            FileOutputStream fileOutputStream = new FileOutputStream(new File(OUT_DIR, fileNameResaved1));
+
             PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
             field.setValue("New Value 1");
 
@@ -778,9 +784,9 @@ class TestCreateSignature
             assertArrayEquals(expectedData.getData(), actualData.getData());
         }
 
-        try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameSigned)))
+        try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameSigned));
+            FileOutputStream fileOutputStream = new FileOutputStream(new File(OUT_DIR, fileNameResaved2)))
         {
-            FileOutputStream fileOutputStream = new FileOutputStream(new File(OUT_DIR, fileNameResaved2));
             PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
             field.setValue("New Value 2");
             expectedImage2 = new PDFRenderer(doc).renderImage(0);
@@ -1127,7 +1133,10 @@ class TestCreateSignature
     private byte[] signEncrypted(SecureRandom secureRandom, Date signingTime) throws IOException, GeneralSecurityException
     {
         KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(KEYSTORE_PATH), PASSWORD.toCharArray());
+        try(FileInputStream is = new FileInputStream(KEYSTORE_PATH))
+        {
+            keystore.load(is, PASSWORD.toCharArray());
+        }
 
         CreateSignature signing = new CreateSignature(keystore, PASSWORD.toCharArray());
         signing.setExternalSigning(true);
