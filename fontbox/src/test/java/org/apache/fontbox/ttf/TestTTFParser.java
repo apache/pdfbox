@@ -66,48 +66,48 @@ class TestTTFParser
      * @throws IOException if an error occurs.
      */
     @Test
-    void testPostTable() throws IOException
-    {
-        InputStream input = TestTTFParser.class.getResourceAsStream(
-                "/ttf/LiberationSans-Regular.ttf");
-        assertNotNull(input);
-
-        TTFParser parser = new TTFParser();
-        TrueTypeFont font = parser.parse(new RandomAccessReadBuffer(input));
-
-        CmapTable cmapTable = font.getCmap();
-        assertNotNull(cmapTable);
-
-        CmapSubtable[] cmaps = cmapTable.getCmaps();
-        assertNotNull(cmaps);
-
-        CmapSubtable cmap = null;
-
-        for (CmapSubtable e : cmaps)
+    void testPostTable() throws IOException {
+        try (InputStream input = TestTTFParser.class.getResourceAsStream(
+                "/ttf/LiberationSans-Regular.ttf"))
         {
-            if (e.getPlatformId() == NameRecord.PLATFORM_WINDOWS
-                    && e.getPlatformEncodingId() == NameRecord.ENCODING_WINDOWS_UNICODE_BMP)
+            assertNotNull(input);
+
+            TTFParser parser = new TTFParser();
+            TrueTypeFont font = parser.parse(new RandomAccessReadBuffer(input));
+
+            CmapTable cmapTable = font.getCmap();
+            assertNotNull(cmapTable);
+
+            CmapSubtable[] cmaps = cmapTable.getCmaps();
+            assertNotNull(cmaps);
+
+            CmapSubtable cmap = null;
+
+            for (CmapSubtable e : cmaps)
             {
-                cmap = e;
-                break;
+                if (e.getPlatformId() == NameRecord.PLATFORM_WINDOWS
+                    && e.getPlatformEncodingId() == NameRecord.ENCODING_WINDOWS_UNICODE_BMP)
+                {
+                    cmap = e;
+                    break;
+                }
             }
+
+            assertNotNull(cmap);
+
+            PostScriptTable post = font.getPostScript();
+            assertNotNull(post);
+
+            String[] glyphNames = font.getPostScript().getGlyphNames();
+            assertNotNull(glyphNames);
+
+            // test a WGL4 (Macintosh standard) name
+            int gid = cmap.getGlyphId(0x2122); // TRADE MARK SIGN
+            assertEquals("trademark", glyphNames[gid]);
+
+            // test an additional name
+            gid = cmap.getGlyphId(0x20AC); // EURO SIGN
+            assertEquals("Euro", glyphNames[gid]);
         }
-
-        assertNotNull(cmap);
-
-        PostScriptTable post = font.getPostScript();
-        assertNotNull(post);
-
-        String[] glyphNames = font.getPostScript().getGlyphNames();
-        assertNotNull(glyphNames);
-
-        // test a WGL4 (Macintosh standard) name
-        int gid = cmap.getGlyphId(0x2122); // TRADE MARK SIGN
-        assertEquals("trademark", glyphNames[gid]);
-
-        // test an additional name
-        gid = cmap.getGlyphId(0x20AC); // EURO SIGN
-        assertEquals("Euro", glyphNames[gid]);
     }
-
 }
