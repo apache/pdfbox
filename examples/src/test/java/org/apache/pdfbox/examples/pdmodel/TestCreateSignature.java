@@ -149,7 +149,9 @@ public class TestCreateSignature
 
         // load the keystore
         keyStore = KeyStore.getInstance("PKCS12");
-        keyStore.load(new FileInputStream(keystorePath), password.toCharArray());
+        InputStream is = new FileInputStream(keystorePath);
+        keyStore.load(is, password.toCharArray());
+        is.close();
 
         new File("target/test-output").mkdirs();
 
@@ -468,20 +470,22 @@ public class TestCreateSignature
             byte[] contents = sig.getContents();
             
             byte[] buf = sig.getSignedContent(new FileInputStream(signedFile));
+            
+            InputStream is = new FileInputStream(signedFile);
+            byte[] totalFileContent = IOUtils.toByteArray(is);
+            is.close();
 
             // verify that getSignedContent() brings the same content
             // regardless whether from an InputStream or from a byte array
-            FileInputStream fis2 = new FileInputStream(signedFile);
-            byte[] buf2 = sig.getSignedContent(IOUtils.toByteArray(fis2));
+            byte[] buf2 = sig.getSignedContent(totalFileContent);
             Assert.assertArrayEquals(buf, buf2);
-            fis2.close();
 
             // verify that all getContents() methods returns the same content
-            FileInputStream fis3 = new FileInputStream(signedFile);
-            byte[] contents2 = sig.getContents(IOUtils.toByteArray(fis3));
+            byte[] contents2 = sig.getContents(totalFileContent);
             Assert.assertArrayEquals(contents, contents2);
-            fis3.close();
-            byte[] contents3 = sig.getContents(new FileInputStream(signedFile));
+            InputStream is3 = new FileInputStream(signedFile);
+            byte[] contents3 = sig.getContents(is3);
+            is3.close();
             Assert.assertArrayEquals(contents, contents3);
 
             // inspiration:
