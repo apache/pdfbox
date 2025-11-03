@@ -169,7 +169,10 @@ class TestCreateSignature
 
         // load the keystore
         keyStore = KeyStore.getInstance("PKCS12");
-        keyStore.load(new FileInputStream(KEYSTORE_PATH), PASSWORD.toCharArray());
+        try (InputStream is = new FileInputStream(KEYSTORE_PATH))
+        {
+            keyStore.load(is, PASSWORD.toCharArray());
+        }
 
         new File("target/test-output").mkdirs();
 
@@ -192,13 +195,12 @@ class TestCreateSignature
         Date localTime = new Date();
 
         // https://stackoverflow.com/questions/4442192/
-        NTPUDPClient timeClient = new NTPUDPClient();
         InetAddress inetAddress = InetAddress.getByName("pool.ntp.org");
-        timeClient.setDefaultTimeout(Duration.ofMillis(5000));
         TimeInfo timeInfo;
         long returnTime;
-        try
+        try (NTPUDPClient timeClient = new NTPUDPClient())
         {
+            timeClient.setDefaultTimeout(Duration.ofMillis(5000));
             timeInfo = timeClient.getTime(inetAddress);
             returnTime = timeInfo.getReturnTime();
         }
@@ -593,13 +595,14 @@ class TestCreateSignature
                 assertArrayEquals(signedFileContent1, signedFileContent2);
 
                 // verify that all getContents() methods returns the same content
-                try (FileInputStream fis = new FileInputStream(signedFile))
+                byte[] contents2 = sig.getContents(totalFileContent);
+                assertArrayEquals(contents, contents2);
+                try (InputStream is = new FileInputStream(signedFile))
                 {
-                    byte[] contents2 = sig.getContents(fis.readAllBytes());
-                    assertArrayEquals(contents, contents2);
+                    byte[] contents3 = sig.getContents(is);
+                    assertArrayEquals(contents, contents3);
                 }
-                byte[] contents3 = sig.getContents(new FileInputStream(signedFile));
-                assertArrayEquals(contents, contents3);
+                
 
                 // inspiration:
                 // http://stackoverflow.com/a/26702631/535646
@@ -729,11 +732,11 @@ class TestCreateSignature
 
         checkSignature(new File(SIMPLE_FORM_FILENAME), new File(OUT_DIR, fileNameSigned), false);
 
-        try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameSigned)))
+        try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameSigned));
+             FileOutputStream fileOutputStream = new FileOutputStream(new File(OUT_DIR, fileNameResaved1)))
         {
             oldImage = new PDFRenderer(doc).renderImage(0);
-            
-            FileOutputStream fileOutputStream = new FileOutputStream(new File(OUT_DIR, fileNameResaved1));
+
             PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
             field.setValue("New Value 1");
 
@@ -1126,10 +1129,7 @@ class TestCreateSignature
 
     private byte[] signEncrypted(SecureRandom secureRandom, Date signingTime) throws IOException, GeneralSecurityException
     {
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(KEYSTORE_PATH), PASSWORD.toCharArray());
-
-        CreateSignature signing = new CreateSignature(keystore, PASSWORD.toCharArray());
+        CreateSignature signing = new CreateSignature(keyStore, PASSWORD.toCharArray());
         signing.setExternalSigning(true);
 
         File inFile = new File(IN_DIR + "sign_me_protected.pdf");
