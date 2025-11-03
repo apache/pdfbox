@@ -64,12 +64,10 @@ public class TestTTFParser
     @Test
     public void testPostTable() throws IOException
     {
-        InputStream input = TestTTFParser.class.getResourceAsStream(
-                "/ttf/LiberationSans-Regular.ttf");
-        Assert.assertNotNull(input);
-
+        InputStream is = TestTTFParser.class.getResourceAsStream("/ttf/LiberationSans-Regular.ttf");
         TTFParser parser = new TTFParser();
-        TrueTypeFont font = parser.parse(input);
+        TrueTypeFont font = parser.parse(is);
+        is.close();
 
         CmapTable cmapTable = font.getCmap();
         Assert.assertNotNull(cmapTable);
