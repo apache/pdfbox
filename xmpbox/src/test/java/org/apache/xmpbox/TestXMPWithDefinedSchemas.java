@@ -21,10 +21,13 @@
 
 package org.apache.xmpbox;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static org.junit.Assert.assertFalse;
 
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpParsingException;
@@ -57,14 +60,15 @@ public class TestXMPWithDefinedSchemas
     }
 
     @Test
-    public void main() throws XmpParsingException
+    public void main() throws XmpParsingException, IOException
     {
-
         InputStream is = this.getClass().getResourceAsStream(path);
 
         DomXmpParser builder = new DomXmpParser();
         XMPMetadata rxmp = builder.parse(is);
-
+        // ensure basic parsing was OK
+        assertFalse(rxmp.getAllSchemas().isEmpty());
+        is.close();
     }
 
 }
