@@ -993,13 +993,14 @@ public class CFFParser
             throws IOException
     {
         int nSups = dataInput.readUnsignedByte();
-        encoding.supplement = new CFFBuiltInEncoding.Supplement[nSups];
+        CFFBuiltInEncoding.Supplement[] supplement = new CFFBuiltInEncoding.Supplement[nSups];
+        encoding.supplement = supplement;
         for (int i = 0; i < nSups; i++)
         {
             int code = dataInput.readUnsignedByte();
             int sid = dataInput.readUnsignedShort();
-            encoding.supplement[i] = new CFFBuiltInEncoding.Supplement(code, sid, readString(sid));
-            encoding.add(encoding.supplement[i]);
+            supplement[i] = new CFFBuiltInEncoding.Supplement(code, sid, readString(sid));
+            encoding.add(supplement[i]);
         }
     }
 
