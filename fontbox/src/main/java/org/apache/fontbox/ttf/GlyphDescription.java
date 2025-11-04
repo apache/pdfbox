@@ -20,8 +20,8 @@ package org.apache.fontbox.ttf;
  * Specifies access to glyph description classes, simple and composite.
  * 
  * This class is based on code from Apache Batik a subproject of Apache XMLGraphics.
- * see http://xmlgraphics.apache.org/batik/ for further details.
- * 
+ * see <a href="http://xmlgraphics.apache.org/batik/">The Apache™ Batik Project</a> for further details.
+ *
  */
 public interface GlyphDescription 
 {

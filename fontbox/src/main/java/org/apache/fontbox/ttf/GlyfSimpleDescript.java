@@ -19,7 +19,7 @@ package org.apache.fontbox.ttf;
 import java.io.IOException;
 /**
  * This class is based on code from Apache Batik a subproject of Apache XMLGraphics. see
- * http://xmlgraphics.apache.org/batik/ for further details.
+ * <a href="http://xmlgraphics.apache.org/batik/">The Apache™ Batik Project</a> for further details.
  */
 public class GlyfSimpleDescript extends GlyfDescript
 {
