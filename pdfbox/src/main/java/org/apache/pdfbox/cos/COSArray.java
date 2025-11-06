@@ -85,15 +85,11 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         if ((object instanceof COSDictionary || object instanceof COSArray) && !object.isDirect()
                 && object.getKey() != null)
         {
-            COSObject cosObject = new COSObject(object, object.getKey());
-            objects.add(cosObject);
-            getUpdateState().update(cosObject);
+            object = new COSObject(object, object.getKey());
         }
-        else
-        {
-            objects.add(object);
-            getUpdateState().update(object);
-        }
+
+        objects.add(object);
+        getUpdateState().update(object);
     }
 
     /**
@@ -123,15 +119,11 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         if ((object instanceof COSDictionary || object instanceof COSArray) && !object.isDirect()
                 && object.getKey() != null)
         {
-            COSObject cosObject = new COSObject(object, object.getKey());
-            objects.add(i, cosObject);
-            getUpdateState().update(cosObject);
+            object = new COSObject(object, object.getKey());
         }
-        else
-        {
-            objects.add(i, object);
-            getUpdateState().update(object);
-        }
+
+        objects.add(i, object);
+        getUpdateState().update(object);
     }
 
     /**
@@ -222,13 +214,12 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         if ((object instanceof COSDictionary || object instanceof COSArray) && !object.isDirect()
                 && object.getKey() != null)
         {
-            COSObject cosObject = new COSObject(object, object.getKey());
-            objects.set(index, cosObject);
-            getUpdateState().update(cosObject);
+            object = new COSObject(object, object.getKey());
         }
-        else
+
+        COSBase prev = objects.set(index, object);
+        if (prev != object)
         {
-            objects.set(index, object);
             getUpdateState().update(object);
         }
     }
