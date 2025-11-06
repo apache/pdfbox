@@ -48,7 +48,7 @@ public class GsubWorkerFactory
         case GUJARATI:
             return new GsubWorkerForGujarati(cmapLookup, gsubData);
         case LATIN:
-            return new GsubWorkerForLatin(cmapLookup, gsubData);
+            return new GsubWorkerForLatin(gsubData);
         default:
             return new DefaultGsubWorker();
         }
