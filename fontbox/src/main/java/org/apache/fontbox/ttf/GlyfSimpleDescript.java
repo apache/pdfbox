@@ -21,8 +21,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * This class is based on code from Apache Batik a subproject of Apache XMLGraphics. see
- * http://xmlgraphics.apache.org/batik/ for further details.
+ * This class is based on code from Apache Batik, a subproject of Apache XMLGraphics. see
+ * <a href="http://xmlgraphics.apache.org/batik/">The Apache™ Batik Project</a> for further details.
  */
 public class GlyfSimpleDescript extends GlyfDescript
 {
