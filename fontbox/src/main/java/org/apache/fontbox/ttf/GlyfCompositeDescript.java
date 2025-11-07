@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
  * each.
  *
  * This class is based on code from Apache Batik a subproject of Apache
- * XMLGraphics. see http://xmlgraphics.apache.org/batik/ for further details.
+ * XMLGraphics. See <a href="http://xmlgraphics.apache.org/batik/">The Apache™ Batik Project</a> for further details.
  */
 public class GlyfCompositeDescript extends GlyfDescript
 {
