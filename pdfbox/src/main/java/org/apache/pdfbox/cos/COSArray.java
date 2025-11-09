@@ -82,18 +82,15 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void add( COSBase object )
     {
+        COSBase objectToAdd = object;
         if ((object instanceof COSDictionary || object instanceof COSArray) && !object.isDirect()
                 && object.getKey() != null)
         {
-            COSObject cosObject = new COSObject(object, object.getKey());
-            objects.add(cosObject);
-            getUpdateState().update(cosObject);
+            objectToAdd = new COSObject(object, object.getKey());
         }
-        else
-        {
-            objects.add(object);
-            getUpdateState().update(object);
-        }
+
+        objects.add(objectToAdd);
+        getUpdateState().update(objectToAdd);
     }
 
     /**
@@ -120,18 +117,15 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void add( int i, COSBase object)
     {
+        COSBase objectToAdd = object;
         if ((object instanceof COSDictionary || object instanceof COSArray) && !object.isDirect()
                 && object.getKey() != null)
         {
-            COSObject cosObject = new COSObject(object, object.getKey());
-            objects.add(i, cosObject);
-            getUpdateState().update(cosObject);
+            objectToAdd = new COSObject(object, object.getKey());
         }
-        else
-        {
-            objects.add(i, object);
-            getUpdateState().update(object);
-        }
+
+        objects.add(i, objectToAdd);
+        getUpdateState().update(objectToAdd);
     }
 
     /**
@@ -219,18 +213,15 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void set( int index, COSBase object )
     {
+        COSBase objectToAdd = object;
         if ((object instanceof COSDictionary || object instanceof COSArray) && !object.isDirect()
                 && object.getKey() != null)
         {
-            COSObject cosObject = new COSObject(object, object.getKey());
-            objects.set(index, cosObject);
-            getUpdateState().update(cosObject);
+            objectToAdd = new COSObject(object, object.getKey());
         }
-        else
-        {
-            objects.set(index, object);
-            getUpdateState().update(object);
-        }
+
+        objects.set(index, objectToAdd);
+        getUpdateState().update(objectToAdd);
     }
 
     /**
