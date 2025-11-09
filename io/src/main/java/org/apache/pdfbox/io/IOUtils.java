@@ -183,11 +183,13 @@ public final class IOUtils
     }
 
     /**
-     * Unmap memory mapped byte buffers. This is a hack waiting for a proper JVM provided solution expected in java 10
-     * https://bugs.openjdk.java.net/browse/JDK-4724038 The issue here is that even when closed, memory mapped byte
-     * buffers hold a lock on the underlying file until GC is executes and this in turns result in an error if the user
-     * tries to move or delete the file.
-     * 
+     * Unmap memory mapped byte buffers. This is a hack waiting for a proper JVM provided solution
+     * mentioned in
+     * <a href="https://bugs.openjdk.java.net/browse/JDK-4724038">JDK-4724038: Add unmap method to
+     * MappedByteBuffer</a>. The issue here is that even when closed, memory mapped byte buffers
+     * hold a lock on the underlying file until GC is executing and this in turns result in an error
+     * if the user tries to move or delete the file.
+     *
      * @param buf the buffer to be unmapped
      */
     public static void unmap(ByteBuffer buf)
