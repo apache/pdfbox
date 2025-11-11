@@ -25,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +34,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
@@ -329,11 +332,15 @@ class TestRadioButtons
      * PDFBOX-5831 Numeric value for Opt entry
      * 
      * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox5831NumericValueForOpt() throws IOException
+    void testPDFBox5831NumericValueForOpt() throws IOException, URISyntaxException
     {
-        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13069137/AU_Erklaerung_final.pdf";
+
+        try (PDDocument testPdf = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Formular1[0].Seite1[0].TF_P[0].Optionsfeldliste[0]");
