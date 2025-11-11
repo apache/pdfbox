@@ -101,7 +101,7 @@ class GlyphRenderer
             {
                 Point firstPoint = points[start];
                 Point lastPoint = points[p];
-                List<Point> contour = new ArrayList<>();
+                List<Point> contour = new ArrayList<>((p - start) + 3);
                 for (int q = start; q <= p; ++q)
                 {
                     contour.add(points[q]);
