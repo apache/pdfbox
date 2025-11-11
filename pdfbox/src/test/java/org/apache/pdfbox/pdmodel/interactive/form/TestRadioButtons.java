@@ -25,6 +25,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -379,14 +381,17 @@ public class TestRadioButtons
      * PDFBOX-5831 Numeric value for Opt entry
      * 
      * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
-    public void testPDFBox5831NumericValueForOpt() throws IOException
+    public void testPDFBox5831NumericValueForOpt() throws IOException, URISyntaxException
     {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13069137/AU_Erklaerung_final.pdf";
+
         PDDocument testPdf = null;
         try
         {
-            testPdf = PDDocument.load(TESTFILE3656);
+            testPdf = PDDocument.load(new URL(sourceUrl).openStream());
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Formular1[0].Seite1[0].TF_P[0].Optionsfeldliste[0]");
 
