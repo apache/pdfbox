@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 
 /**
  * This class represents a floating point number in a PDF document.
@@ -34,6 +35,9 @@ public class COSFloat extends COSNumber
 
     public static final COSFloat ZERO = new COSFloat(0f, "0.0");
     public static final COSFloat ONE = new COSFloat(1f, "1.0");
+
+    private static final Pattern pattern1 = Pattern.compile("^0\\.0*-\\d+");
+    private static final Pattern pattern2 = Pattern.compile("^-\\d+\\.-\\d+");
 
     /**
      * Constructor.
@@ -81,14 +85,14 @@ public class COSFloat extends COSNumber
                 // PDFBOX-4289 has --16.33
                 aFloat = aFloat.substring(1);
             }
-            else if (aFloat.matches("^0\\.0*-\\d+"))
+            else if (pattern1.matcher(aFloat).find())
             {
                 // PDFBOX-2990 has 0.00000-33917698
                 // PDFBOX-3369 has 0.00-35095424
                 // PDFBOX-3500 has 0.-262
                 aFloat = "-" + aFloat.replaceFirst("-", "");
             }
-            else if (aFloat.matches("^-\\d+\\.-\\d+"))
+            else if (pattern2.matcher(aFloat).find())
             {
                 // PDFBOX-5829 has -12.-1
                 aFloat = "-" + aFloat.replace("-", "");
