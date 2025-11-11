@@ -308,13 +308,14 @@ public class BruteForceParser
         Map<Long, COSObjectKey> bfSearchForObjStreamOffsets = bfSearchForObjStreamOffsets();
         Map<COSObjectKey, Long> bfCOSObjectOffsets = getBFCOSObjectOffsets();
         // log warning about skipped stream
-        bfSearchForObjStreamOffsets.entrySet().stream() //
+        Set<Entry<Long, COSObjectKey>> entries = bfSearchForObjStreamOffsets.entrySet();
+        entries.stream() //
                 .filter(o -> bfCOSObjectOffsets.get(o.getValue()) == null) //
                 .forEach(o -> LOG.warn("Skipped incomplete object stream:{} at {}", o.getValue(),
                         o.getKey()));
 
         // collect all stream offsets
-        List<Long> objStreamOffsets = bfSearchForObjStreamOffsets.entrySet().stream() //
+        List<Long> objStreamOffsets = entries.stream() //
                 .filter(o -> bfCOSObjectOffsets.get(o.getValue()) != null) //
                 .filter(o -> o.getKey().equals(bfCOSObjectOffsets.get(o.getValue()))) //
                 .map(Map.Entry::getKey) //
