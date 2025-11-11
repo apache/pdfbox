@@ -92,7 +92,7 @@ public class BruteForceParser extends COSParser
     }
 
     /**
-     * Indicates wether the brute force search for objects was triggered.
+     * Indicates whether the brute force search for objects was triggered.
      * 
      * @return true if the search was triggered
      */
