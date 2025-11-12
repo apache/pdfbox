@@ -417,23 +417,17 @@ public class BruteForceParser
                 {
                     trailer.setItem(COSName.ROOT, rootObj);
                     trailer.setItem(COSName.INFO, infoObj);
-                    if (trailerDict.containsKey(COSName.ENCRYPT))
+                    COSObject encObj = trailerDict.getCOSObject(COSName.ENCRYPT);
+                    // check if the dictionary can be dereferenced
+                    // TODO check if the dictionary is an encryption dictionary?
+                    if (encObj != null && encObj.getObject() instanceof COSDictionary)
                     {
-                        COSObject encObj = trailerDict.getCOSObject(COSName.ENCRYPT);
-                        // check if the dictionary can be dereferenced
-                        // TODO check if the dictionary is an encryption dictionary?
-                        if (encObj != null && encObj.getObject() instanceof COSDictionary)
-                        {
-                            trailer.setItem(COSName.ENCRYPT, encObj);
-                        }
+                        trailer.setItem(COSName.ENCRYPT, encObj);
                     }
-                    if (trailerDict.containsKey(COSName.ID))
+                    COSBase idObj = trailerDict.getItem(COSName.ID);
+                    if (idObj instanceof COSArray)
                     {
-                        COSBase idObj = trailerDict.getItem(COSName.ID);
-                        if (idObj instanceof COSArray)
-                        {
-                            trailer.setItem(COSName.ID, idObj);
-                        }
+                        trailer.setItem(COSName.ID, idObj);
                     }
                     return true;
                 }
