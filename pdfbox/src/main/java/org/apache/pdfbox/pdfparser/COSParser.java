@@ -1865,27 +1865,21 @@ public class COSParser extends BaseParser
                     {
                         trailer.setItem(COSName.ROOT, rootObj);
                         trailer.setItem(COSName.INFO, infoObj);
-                        if (trailerDict.containsKey(COSName.ENCRYPT))
+                        COSObject encObj = trailerDict.getCOSObject(COSName.ENCRYPT);
+                        if (encObj != null)
                         {
-                            COSObject encObj = trailerDict.getCOSObject(COSName.ENCRYPT);
-                            if (encObj != null)
+                            // check if the dictionary can be dereferenced
+                            // TODO check if the dictionary is an encryption dictionary?
+                            COSDictionary encDict = retrieveCOSDictionary(encObj);
+                            if (encDict != null)
                             {
-                                // check if the dictionary can be dereferenced
-                                // TODO check if the dictionary is an encryption dictionary?
-                                COSDictionary encDict = retrieveCOSDictionary(encObj);
-                                if (encDict != null)
-                                {
-                                    trailer.setItem(COSName.ENCRYPT, encObj);
-                                }
+                                trailer.setItem(COSName.ENCRYPT, encObj);
                             }
                         }
-                        if (trailerDict.containsKey(COSName.ID))
+                        COSBase idObj = trailerDict.getItem(COSName.ID);
+                        if (idObj instanceof COSArray)
                         {
-                            COSBase idObj = trailerDict.getItem(COSName.ID);
-                            if (idObj instanceof COSArray)
-                            {
-                                trailer.setItem(COSName.ID, idObj);
-                            }
+                            trailer.setItem(COSName.ID, idObj);
                         }
                         return true;
                     }
