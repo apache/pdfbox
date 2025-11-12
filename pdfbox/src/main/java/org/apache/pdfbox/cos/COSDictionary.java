@@ -52,6 +52,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
 
     private static final String PATH_SEPARATOR = "/";
 
+    private static final List<COSName> PARENT_KEYS = Arrays.asList(COSName.PARENT, COSName.P);
+
     /**
      * The name-value pairs of this dictionary. The pairs are kept in the order they were added to the dictionary.
      */
@@ -1474,7 +1476,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             COSBase cosBase = entry.getValue();
             COSObjectKey cosBaseKey = cosBase != null ? cosBase.getKey() : null;
             // avoid endless recursions
-            if (COSName.PARENT.equals(entry.getKey())
+            if (PARENT_KEYS.contains(entry.getKey())
                     || (cosBaseKey != null && indirectObjects.contains(cosBaseKey)))
             {
                 continue;
