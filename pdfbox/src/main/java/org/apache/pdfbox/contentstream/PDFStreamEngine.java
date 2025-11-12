@@ -324,17 +324,19 @@ public abstract class PDFStreamEngine
         PDRectangle bbox = appearance.getBBox();
         PDRectangle rect = annotation.getRectangle();
 
-        // zero-sized rectangles are not valid
+        // PDFBOX-4783: zero-sized rectangles are not valid
         if (rect != null && rect.getWidth() > 0 && rect.getHeight() > 0 &&
             bbox != null && bbox.getWidth() > 0 && bbox.getHeight() > 0)
         {
-            PDResources parent = pushResources(appearance);
-            Deque<PDGraphicsState> savedStack = saveGraphicsStack();
-
             Matrix matrix = appearance.getMatrix();
 
             // transformed appearance box  fixme: may be an arbitrary shape
             Rectangle2D transformedBox = bbox.transform(matrix).getBounds2D();
+            if (transformedBox.isEmpty())
+            {
+                // PDFBOX-6095: zero-sized rectangles are not valid
+                return;
+            }
 
             // compute a matrix which scales and translates the transformed appearance box to align
             // with the edges of the annotation's rectangle
@@ -349,6 +351,9 @@ public abstract class PDFStreamEngine
             // HOWEVER only the opposite order works for rotated pages with 
             // filled fields / annotations that have a matrix in the appearance stream, see PDFBOX-3083
             Matrix aa = Matrix.concatenate(a, matrix);
+
+            PDResources parent = pushResources(appearance);
+            Deque<PDGraphicsState> savedStack = saveGraphicsStack();
 
             // make matrix AA the CTM
             getGraphicsState().setCurrentTransformationMatrix(aa);

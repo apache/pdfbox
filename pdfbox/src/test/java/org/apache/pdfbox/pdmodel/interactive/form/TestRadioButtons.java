@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.File;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -24,10 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +48,9 @@ import org.junit.jupiter.api.Test;
  */
 class TestRadioButtons
 {
+    static final File TESTFILE3656 =
+            new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form/PDFBOX-3656-SF1199AEG (Complete).pdf");
+
     /**
      * This will test the radio button PDModel.
      *
@@ -137,16 +139,11 @@ class TestRadioButtons
      * PDFBOX-3656 Radio button field with FLAG_RADIOS_IN_UNISON false
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox3656NotInUnison() throws IOException, URISyntaxException
+    void testPDFBox3656NotInUnison() throws IOException
     {
-
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -162,15 +159,11 @@ class TestRadioButtons
      * Setting by the first export value shall only select the first radio button
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox3656ByValidExportValue() throws IOException, URISyntaxException
+    void testPDFBox3656ByValidExportValue() throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -189,15 +182,11 @@ class TestRadioButtons
      * PDFBOX-3656 Set by invalid export value
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox3656ByInvalidExportValue() throws IOException, URISyntaxException
+    void testPDFBox3656ByInvalidExportValue() throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -214,7 +203,7 @@ class TestRadioButtons
             // compare the messages
             String expectedMessage = "value 'Invalid' is not a valid option for the field Checking/Savings, valid values are: [Checking, Savings] and Off";
             String actualMessage = exception.getMessage();
-     
+
             assertTrue(actualMessage.contains(expectedMessage));
 
             assertEquals("Off", field.getValue(), "no option shall be selected");
@@ -229,15 +218,11 @@ class TestRadioButtons
      * Setting by the index shall only select the corresponding radio button
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox3656ByValidIndex() throws IOException, URISyntaxException
+    void testPDFBox3656ByValidIndex() throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -259,16 +244,11 @@ class TestRadioButtons
      * Setting by the index shall only select the corresponding radio button
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox3656ByInvalidIndex() throws IOException, URISyntaxException
+    void testPDFBox3656ByInvalidIndex() throws IOException
     {
-
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -285,7 +265,7 @@ class TestRadioButtons
             // compare the messages
             String expectedMessage = "index '6' is not a valid index for the field Checking/Savings, valid indices are from 0 to 5";
             String actualMessage = exception.getMessage();
-     
+
             assertTrue(actualMessage.contains(expectedMessage));
 
             assertEquals("Off", field.getValue(), "no option shall be selected");
@@ -297,15 +277,11 @@ class TestRadioButtons
      * PDFBOX-4617 Enable getting selected index
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox4617IndexNoneSelected() throws IOException, URISyntaxException
+    void testPDFBox4617IndexNoneSelected() throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -318,15 +294,11 @@ class TestRadioButtons
      * PDFBOX-4617 Enable getting selected index for value being set by option
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox4617IndexForSetByOption() throws IOException, URISyntaxException
+    void testPDFBox4617IndexForSetByOption() throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -340,15 +312,11 @@ class TestRadioButtons
      * PDFBOX-4617 Enable getting selected index for value being set by index
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox4617IndexForSetByIndex() throws IOException, URISyntaxException
+    void testPDFBox4617IndexForSetByIndex() throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
