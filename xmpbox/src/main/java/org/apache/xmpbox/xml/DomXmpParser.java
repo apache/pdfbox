@@ -182,6 +182,7 @@ public class DomXmpParser
         // xpacket is OK and the is no more nodes
         // Now, parse the content of root
         Element rdfRdf = findDescriptionsParent(root);
+        nsFinder.push(rdfRdf); // PDFBOX-6099: push namespaces in rdf:RDF
         List<Element> descriptions = DomHelper.getElementChildren(rdfRdf);
         List<Element> dataDescriptions = new ArrayList<Element>(descriptions.size());
         for (Element description : descriptions)
@@ -204,6 +205,8 @@ public class DomXmpParser
         {
             parseDescriptionRoot(xmp, description);
         }
+
+        nsFinder.pop();
 
         return xmp;
     }
