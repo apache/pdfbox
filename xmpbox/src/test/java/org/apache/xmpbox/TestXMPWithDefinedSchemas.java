@@ -41,7 +41,8 @@ class TestXMPWithDefinedSchemas
             "/validxmp/ghost2.xmp",
             "/validxmp/history2.rdf",
             "/validxmp/Notepad++_A1b.xmp",
-            "/validxmp/metadata.rdf"
+            "/validxmp/metadata.rdf",
+            "/validxmp/PDFBOX-6099.xmp"
         );
     }
 
