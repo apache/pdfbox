@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.Files;
 import javax.imageio.ImageIO;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -207,7 +208,7 @@ public class TestPDFToImage
 
             // test to see whether file is destroyed in pdfbox
             new FileOutputStream(new File(outDir, file.getName() + ".saveerror")).close();
-            File tmpFile = File.createTempFile("pdfbox", ".pdf");
+            File tmpFile = Files.createTempFile("pdfbox", ".pdf").toFile();
             document.setAllSecurityToBeRemoved(true);
             document.save(tmpFile);
             new File(outDir, file.getName() + ".saveerror").delete();
