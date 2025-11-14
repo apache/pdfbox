@@ -1,12 +1,11 @@
-# nonk8s
-apiVersion: "backstage.io/v1alpha1"
-kind: "Component"
+apiVersion: backstage.io/v1alpha1
+kind: Component
 metadata:
-  name: "pdfbox"
+  name: pdfbox
   tags:
-  - "public"
+    - public
 spec:
-  type: "library"
-  lifecycle: "production"
-  owner: "digibok"
-  system: "dokumentbestilling"
+  type: library
+  lifecycle: production
+  owner: eiet
+  system: dokumentbestilling
