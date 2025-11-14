@@ -294,7 +294,7 @@ public class Tree extends JTree
         {
             try
             {
-                File temp = File.createTempFile("pdfbox", "." + extension);
+                File temp = Files.createTempFile("pdfbox", "." + extension).toFile();
                 temp.deleteOnExit();
 
                 try (InputStream is = cosStream.createInputStream())
