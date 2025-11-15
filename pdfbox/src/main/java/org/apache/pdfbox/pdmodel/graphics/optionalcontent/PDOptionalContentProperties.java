@@ -129,7 +129,7 @@ public class PDOptionalContentProperties implements COSObjectable
     }
 
     /**
-     * Return the the /D dictionary.
+     * Return the /D dictionary.
      *
      * @return the /D dictionary, never null.
      */
