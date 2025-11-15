@@ -224,7 +224,7 @@ class PDAcroFormFromAnnotsTest
             PDAcroForm acroForm = catalog.getAcroForm(new CreateFieldsFixup(testPdf));
             assertEquals(numFormFieldsByAcrobat, acroForm.getFields().size(), "After rebuild there shall be " + numFormFieldsByAcrobat + " fields");
 
-            // the the fields found are contained in the map
+            // the fields found are contained in the map
             for (PDField field : acroForm.getFieldTree())
             {
                 assertNotNull(fieldsByName.get(field.getFullyQualifiedName()));
