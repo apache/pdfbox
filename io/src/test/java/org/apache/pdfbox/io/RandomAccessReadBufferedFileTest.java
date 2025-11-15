@@ -255,12 +255,13 @@ class RandomAccessReadBufferedFileTest
     void testReadFullyExact() throws IOException, URISyntaxException
     {
         try (RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
-                new File(getClass().getResource("RandomAccessReadFile1.txt").toURI())))
+                new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
+             InputStream is = getClass().getResourceAsStream("RandomAccessReadFile1.txt"))
         {
             int length = (int) randomAccessSource.length();
             byte[] b = new byte[length];
             randomAccessSource.readFully(b);
-            byte[] allBytes = getClass().getResourceAsStream("RandomAccessReadFile1.txt").readAllBytes();
+            byte[] allBytes = is.readAllBytes();
             Assertions.assertArrayEquals(allBytes, b);
         }
     }
