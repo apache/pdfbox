@@ -45,7 +45,6 @@ public class WindowsFontDirFinder implements FontDirFinder
         {
             // should continue if this fails
         }
-        String osName = System.getProperty("os.name");
         if (windir == null)
         {
             try
@@ -79,6 +78,7 @@ public class WindowsFontDirFinder implements FontDirFinder
         }
         else
         {
+            String osName = System.getProperty("os.name");
             String windowsDirName = osName.endsWith("NT") ? "WINNT" : "WINDOWS";
             // look for true type font folder
             for (char driveLetter = 'C'; driveLetter <= 'E'; driveLetter++)
