@@ -405,10 +405,7 @@ final class FontMapperImpl implements FontMapper
         }
         
         // make sure the font provider is initialized
-        if (fontProvider == null)
-        {
-            getProvider();
-        }
+        getProvider();
 
         // first try to match the PostScript name
         FontInfo info = getFont(format, postScriptName);
@@ -513,7 +510,7 @@ final class FontMapperImpl implements FontMapper
             return new CIDFontMapping(null, ttf, false);
         }
 
-        if (cidSystemInfo != null)
+        if (cidSystemInfo != null && fontDescriptor != null)
         {
             // "In Acrobat 3.0.1 and later, Type 0 fonts that use a CMap whose CIDSystemInfo
             // dictionary defines the Adobe-GB1, Adobe-CNS1 Adobe-Japan1, or Adobe-Korea1 character
@@ -560,6 +557,9 @@ final class FontMapperImpl implements FontMapper
     private PriorityQueue<FontMatch> getFontMatches(PDFontDescriptor fontDescriptor,
                                                            PDCIDSystemInfo cidSystemInfo)
     {
+        // make sure the font provider is initialized
+        getProvider();
+
         PriorityQueue<FontMatch> queue = new PriorityQueue<>(20);
         
         for (FontInfo info : fontInfoByName.values())
