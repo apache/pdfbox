@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -305,14 +306,15 @@ public class BruteForceParser extends COSParser
 
         Map<Long, COSObjectKey> bfSearchForObjStreamOffsets = bfSearchForObjStreamOffsets();
         Map<COSObjectKey, Long> bfCOSObjectOffsets = getBFCOSObjectOffsets();
+        Set<Entry<Long, COSObjectKey>> entries = bfSearchForObjStreamOffsets.entrySet();
         // log warning about skipped stream
-        bfSearchForObjStreamOffsets.entrySet().stream() //
+        entries.stream() //
                 .filter(o -> bfCOSObjectOffsets.get(o.getValue()) == null) //
                 .forEach(o -> LOG.warn(
                         "Skipped incomplete object stream:" + o.getValue() + " at " + o.getKey()));
 
         // collect all stream offsets
-        List<Long> objStreamOffsets = bfSearchForObjStreamOffsets.entrySet().stream() //
+        List<Long> objStreamOffsets = entries.stream() //
                 .filter(o -> bfCOSObjectOffsets.get(o.getValue()) != null) //
                 .filter(o -> o.getKey().equals(bfCOSObjectOffsets.get(o.getValue()))) //
                 .map(Map.Entry::getKey) //
