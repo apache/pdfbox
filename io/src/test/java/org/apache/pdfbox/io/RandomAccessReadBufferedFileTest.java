@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Assertions;
@@ -254,17 +256,13 @@ class RandomAccessReadBufferedFileTest
     @Test
     void testReadFullyExact() throws IOException, URISyntaxException
     {
-        try (RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
-                new File(getClass().getResource("RandomAccessReadFile1.txt").toURI())))
+        Path path = Paths.get(getClass().getResource("RandomAccessReadFile1.txt").toURI());
+        try (RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(path))
         {
             int length = (int) randomAccessSource.length();
             byte[] b = new byte[length];
             randomAccessSource.readFully(b);
-            byte[] allBytes;
-            try (InputStream is = getClass().getResourceAsStream("RandomAccessReadFile1.txt"))
-            {
-                allBytes = IOUtils.toByteArray(is);
-            }
+            byte[] allBytes = Files.readAllBytes(path);
             Assertions.assertArrayEquals(allBytes, b);
         }
     }
