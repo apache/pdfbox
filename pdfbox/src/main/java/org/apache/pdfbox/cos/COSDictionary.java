@@ -52,8 +52,6 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
 
     private static final String PATH_SEPARATOR = "/";
 
-    private static final List<COSName> PARENT_KEYS = Arrays.asList(COSName.PARENT, COSName.P);
-
     /**
      * The name-value pairs of this dictionary. The pairs are kept in the order they were added to the dictionary.
      */
@@ -1466,40 +1464,41 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             {
                 return;
             }
-            else
-            {
-                indirectObjects.add(key);
-            }
+            indirectObjects.add(key);
         }
         for (Entry<COSName, COSBase> entry : items.entrySet())
         {
             COSBase cosBase = entry.getValue();
-            COSObjectKey cosBaseKey = cosBase != null ? cosBase.getKey() : null;
-            // avoid endless recursions
-            if (PARENT_KEYS.contains(entry.getKey())
-                    || (cosBaseKey != null && indirectObjects.contains(cosBaseKey)))
+            COSObjectKey indirectObjectKey = cosBase instanceof COSObject ? cosBase.getKey() : null;
+            if (indirectObjectKey != null)
             {
-                continue;
-            }
-            if (cosBase instanceof COSObject)
-            {
+                // avoid endless recursions
+                if ( indirectObjects.contains(indirectObjectKey))
+                {
+                    continue;
+                }
                 // dereference object
                 cosBase = ((COSObject) cosBase).getObject();
             }
             if (cosBase instanceof COSDictionary)
             {
+                COSName entryKey = entry.getKey();
                 // descend to included dictionary to collect all included indirect objects
-                ((COSDictionary) cosBase).getIndirectObjectKeys(indirectObjects);
+                // skip PARENT and P references to avoid recursions
+                if (!COSName.PARENT.equals(entryKey) && !COSName.P.equals(entryKey))
+                {
+                    ((COSDictionary) cosBase).getIndirectObjectKeys(indirectObjects);
+                }
             }
             else if (cosBase instanceof COSArray)
             {
                 // descend to included array to collect all included indirect objects
                 ((COSArray) cosBase).getIndirectObjectKeys(indirectObjects);
             }
-            else if (cosBaseKey != null)
+            else if (indirectObjectKey != null)
             {
                 // add key for all indirect objects other than COSDictionary/COSArray
-                indirectObjects.add(cosBaseKey);
+                indirectObjects.add(indirectObjectKey);
             }
         }
     }
