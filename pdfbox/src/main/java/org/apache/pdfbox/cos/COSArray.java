@@ -565,7 +565,6 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         while( size() < size )
         {
             add( object );
-            getUpdateState().update(object);
         }
         getUpdateState().update();
     }
