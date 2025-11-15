@@ -289,14 +289,14 @@ public class Type1CharString
         {
             if (numbers.size() >= 2)
             {
-                setcurrentpoint(numbers.get(0), numbers.get(1));
+                setCurrentPoint(numbers.get(0), numbers.get(1));
             }
         }
         else if ("callothersubr".equals(name))
         {
             if (!numbers.isEmpty())
             {
-                callothersubr(numbers.get(0).intValue());
+                callOtherSubr(numbers.get(0).intValue());
             }
         }
         else if ("div".equals(name))
@@ -348,7 +348,7 @@ public class Type1CharString
      * Sets the current absolute point without performing a moveto.
      * Used only with results from callothersubr
      */
-    private void setcurrentpoint(Number x, Number y)
+    private void setCurrentPoint(Number x, Number y)
     {
         current.setLocation(x.floatValue(), y.floatValue());
     }
@@ -357,7 +357,7 @@ public class Type1CharString
      * Flex (via OtherSubrs)
      * @param num OtherSubrs entry number
      */
-    private void callothersubr(int num)
+    private void callOtherSubr(int num)
     {
         if (num == 0)
         {
