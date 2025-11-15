@@ -794,25 +794,21 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
             {
                 return;
             }
-            else
-            {
-                indirectObjects.add(key);
-            }
+            indirectObjects.add(key);
         }
-
         for (COSBase cosBase : objects)
         {
             if (cosBase == null)
             {
                 continue;
             }
-            COSObjectKey cosBaseKey = cosBase.getKey();
-            if (cosBaseKey != null && indirectObjects.contains(cosBaseKey))
+            COSObjectKey indirectObjectKey = cosBase instanceof COSObject ? cosBase.getKey() : null;
+            if (indirectObjectKey != null)
             {
-                continue;
-            }
-            if (cosBase instanceof COSObject)
-            {
+                if (indirectObjects.contains(indirectObjectKey))
+                {
+                    continue;
+                }
                 // dereference object
                 cosBase = ((COSObject) cosBase).getObject();
             }
@@ -826,10 +822,10 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
                 // descend to included array to collect all included indirect objects
                 ((COSArray) cosBase).getIndirectObjectKeys(indirectObjects);
             }
-            else if (cosBaseKey != null)
+            else if (indirectObjectKey != null)
             {
                 // add key for all indirect objects other than COSDictionary/COSArray
-                indirectObjects.add(cosBaseKey);
+                indirectObjects.add(indirectObjectKey);
             }
         }
     }
