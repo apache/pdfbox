@@ -42,6 +42,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.OutputStream;
+import java.io.InputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -311,12 +313,14 @@ class TestCOSIncrement
             document.save(baos);
         }
 
-        try (PDDocument document = Loader.loadPDF(baos.toByteArray()))
+        try (PDDocument document = Loader.loadPDF(baos.toByteArray());
+             InputStream is = TestCOSIncrement.class.getResourceAsStream(
+                     "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
+             OutputStream os = new FileOutputStream("target/test-output/PDFBOX-5627.pdf"))
         {
             PDPage page = document.getPage(0);
 
-            PDFont font = PDType0Font.load(document, TestCOSIncrement.class.getResourceAsStream(
-                    "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"));
+            PDFont font = PDType0Font.load(document, is);
 
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
             {
@@ -333,7 +337,7 @@ class TestCOSIncrement
             pages.setNeedToBeUpdated(true);
             page.getCOSObject().setNeedToBeUpdated(true);
 
-            document.saveIncremental(new FileOutputStream("target/test-output/PDFBOX-5627.pdf"));
+            document.saveIncremental(os);
         }
 
         try (PDDocument document = Loader.loadPDF(new File("target/test-output/PDFBOX-5627.pdf")))
