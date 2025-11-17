@@ -174,7 +174,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 float contentLength = 0;
                 try
                 {
-                    contentLength = font.getStringWidth(annotation.getContents()) / 1000 * FONT_SIZE;
+                    contentLength = font.getStringWidth(contents) / 1000 * FONT_SIZE;
 
                     //TODO How to decide the size of the font?
                     // 9 seems to be standard, but if the text doesn't fit, a scaling is done
@@ -183,7 +183,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 catch (IllegalArgumentException ex)
                 {
                     // Adobe Reader displays placeholders instead
-                    LOG.error("line text '" + annotation.getContents() + "' can't be shown", ex);
+                    LOG.error("line text '" + contents + "' can't be shown", ex);
                 }
                 float xOffset = (lineLength - contentLength) / 2;
                 float yOffset;
@@ -235,7 +235,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     cs.setFont(font, FONT_SIZE);
                     cs.newLineAtOffset(xOffset + captionHorizontalOffset, 
                                        y + yOffset + captionVerticalOffset);
-                    cs.showText(annotation.getContents());
+                    cs.showText(contents);
                     cs.endText();
                 }
 
