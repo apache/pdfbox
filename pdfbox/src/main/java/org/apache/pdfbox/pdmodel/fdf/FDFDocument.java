@@ -31,6 +31,7 @@ import java.io.Writer;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdfparser.FDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.w3c.dom.Document;
@@ -210,7 +211,7 @@ public class FDFDocument implements Closeable
      */
     public static FDFDocument loadXFDF(String filename) throws IOException
     {
-        return loadXFDF(new BufferedInputStream(new FileInputStream(filename)));
+        return loadXFDF(new File(filename));
     }
 
     /**
@@ -224,7 +225,16 @@ public class FDFDocument implements Closeable
      */
     public static FDFDocument loadXFDF(File file) throws IOException
     {
-        return loadXFDF(new BufferedInputStream(new FileInputStream(file)));
+        InputStream is = null;
+        try
+        {
+            is = new BufferedInputStream(new FileInputStream(file));
+            return loadXFDF(is);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(is);
+        }
     }
 
     /**
