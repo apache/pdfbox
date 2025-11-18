@@ -33,6 +33,7 @@ import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpSerializer;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.io.InputStream;
 import javax.xml.transform.TransformerException;
 import org.apache.xmpbox.xml.XmpParsingException;
@@ -40,17 +41,18 @@ import org.apache.xmpbox.xml.XmpParsingException;
 class TestExifXmp
 {
     @Test
-    void testNonStrict() throws XmpParsingException
+    void testNonStrict() throws XmpParsingException, IOException
     {
-        InputStream is = this.getClass().getResourceAsStream("/validxmp/exif.xmp");
-
-        DomXmpParser builder = new DomXmpParser();
-        builder.setStrictParsing(false);
-        XMPMetadata rxmp = builder.parse(is);
-        ExifSchema schema = (ExifSchema)rxmp.getSchema(ExifSchema.class);
-        TextType ss = (TextType)schema.getProperty(ExifSchema.SPECTRAL_SENSITIVITY);
-        assertNotNull(ss);
-        assertEquals("spectral sens value",ss.getValue());
+        try(InputStream is = this.getClass().getResourceAsStream("/validxmp/exif.xmp"))
+        {
+            DomXmpParser builder = new DomXmpParser();
+            builder.setStrictParsing(false);
+            XMPMetadata rxmp = builder.parse(is);
+            ExifSchema schema = (ExifSchema)rxmp.getSchema(ExifSchema.class);
+            TextType ss = (TextType)schema.getProperty(ExifSchema.SPECTRAL_SENSITIVITY);
+            assertNotNull(ss);
+            assertEquals("spectral sens value", ss.getValue());
+        }
     }
 
     @Test
