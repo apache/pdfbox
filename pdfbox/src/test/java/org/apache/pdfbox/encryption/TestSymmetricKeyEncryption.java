@@ -535,7 +535,10 @@ class TestSymmetricKeyEncryption
 
     private byte[] getFileResourceAsByteArray(String testFileName) throws IOException
     {
-        return TestSymmetricKeyEncryption.class.getResourceAsStream(testFileName).readAllBytes();
+        try(InputStream is = TestSymmetricKeyEncryption.class.getResourceAsStream(testFileName))
+        {
+            return is.readAllBytes();
+        }
     }
 
     private byte[] getFileAsByteArray(File f) throws IOException
