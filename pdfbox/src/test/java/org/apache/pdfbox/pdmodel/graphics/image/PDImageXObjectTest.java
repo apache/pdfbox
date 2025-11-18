@@ -122,9 +122,7 @@ public class PDImageXObjectTest
         File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
         PDImageXObject image = PDImageXObject.createFromFileByExtension(file, doc);
 
-        InputStream is = PDImageXObjectTest.class.getResourceAsStream(filename);
-        BufferedImage bim = ImageIO.read(is);
-        is.close();
+        BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResource(filename));
         PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
 
         Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
@@ -172,9 +170,7 @@ public class PDImageXObjectTest
         File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
         PDImageXObject image = PDImageXObject.createFromFile(file.getAbsolutePath(), doc);
 
-        InputStream is = PDImageXObjectTest.class.getResourceAsStream(filename);
-        BufferedImage bim = ImageIO.read(is);
-        is.close();
+        BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResource(filename));
         PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
 
         Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
@@ -222,9 +218,7 @@ public class PDImageXObjectTest
         File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
         PDImageXObject image = PDImageXObject.createFromFileByContent(file, doc);
 
-        InputStream is = PDImageXObjectTest.class.getResourceAsStream(filename);
-        BufferedImage bim = ImageIO.read(is);
-        is.close();
+        BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResource(filename));
         PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
 
         Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
