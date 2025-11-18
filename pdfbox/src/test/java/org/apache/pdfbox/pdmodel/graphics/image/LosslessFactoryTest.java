@@ -33,6 +33,7 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Random;
 import javax.imageio.ImageIO;
@@ -70,12 +71,12 @@ public class LosslessFactoryTest extends TestCase
      * Tests RGB LosslessFactoryTest#createFromImage(PDDocument document,
      * BufferedImage image)
      *
-     * @throws java.io.IOException
+     * @throws IOException
      */
     public void testCreateLosslessFromImageRGB() throws IOException
     {
         PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
 
         PDImageXObject ximage1 = LosslessFactory.createFromImage(document, image);
         validate(ximage1, 8, image.getWidth(), image.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
@@ -127,12 +128,12 @@ public class LosslessFactoryTest extends TestCase
      * Tests INT_ARGB LosslessFactoryTest#createFromImage(PDDocument document,
      * BufferedImage image)
      *
-     * @throws java.io.IOException
+     * @throws IOException
      */
     public void testCreateLosslessFromImageINT_ARGB() throws IOException
     {
         PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
 
         // create an ARGB image
         int w = image.getWidth();
@@ -166,7 +167,7 @@ public class LosslessFactoryTest extends TestCase
      * Tests INT_ARGB LosslessFactoryTest#createFromImage(PDDocument document,
      * BufferedImage image) with BITMASK transparency
      *
-     * @throws java.io.IOException
+     * @throws IOException
      */
     public void testCreateLosslessFromImageBITMASK_INT_ARGB() throws IOException
     {
@@ -177,7 +178,7 @@ public class LosslessFactoryTest extends TestCase
      * Tests 4BYTE_ABGR LosslessFactoryTest#createFromImage(PDDocument document,
      * BufferedImage image) with BITMASK transparency
      *
-     * @throws java.io.IOException
+     * @throws IOException
      */
     public void testCreateLosslessFromImageBITMASK4BYTE_ABGR() throws IOException
     {
@@ -188,12 +189,12 @@ public class LosslessFactoryTest extends TestCase
      * Tests 4BYTE_ABGR LosslessFactoryTest#createFromImage(PDDocument document,
      * BufferedImage image)
      *
-     * @throws java.io.IOException
+     * @throws IOException
      */
     public void testCreateLosslessFromImage4BYTE_ABGR() throws IOException
     {
         PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
 
         // create an ARGB image
         int w = image.getWidth();
@@ -238,12 +239,12 @@ public class LosslessFactoryTest extends TestCase
      * image). This should create an 8-bit-image; prevent the problems from PDFBOX-4674 in case
      * image creation is modified in the future.
      *
-     * @throws java.io.IOException
+     * @throws IOException
      */
     public void testCreateLosslessFromImageUSHORT_555_RGB() throws IOException
     {
         PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
 
         // create an USHORT_555_RGB image
         int w = image.getWidth();
@@ -276,12 +277,12 @@ public class LosslessFactoryTest extends TestCase
      * Tests LosslessFactoryTest#createFromImage(PDDocument document,
      * BufferedImage image) with transparent GIF
      *
-     * @throws java.io.IOException
+     * @throws IOException
      */
     public void testCreateLosslessFromTransparentGIF() throws IOException
     {
         PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("gif.gif"));
+        BufferedImage image = ImageIO.read(this.getClass().getResource("gif.gif"));
         
         assertEquals(Transparency.BITMASK, image.getColorModel().getTransparency());
 
@@ -305,12 +306,12 @@ public class LosslessFactoryTest extends TestCase
      * BufferedImage image) with a transparent 1 bit GIF. (PDFBOX-4672)
      * This ends up as RGB because the 1 bit fast path doesn't support transparency.
      *
-     * @throws java.io.IOException
+     * @throws IOException
      */
     public void testCreateLosslessFromTransparent1BitGIF() throws IOException
     {
         PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("gif-1bit-transparent.gif"));
+        BufferedImage image = ImageIO.read(this.getClass().getResource("gif-1bit-transparent.gif"));
 
         assertEquals(Transparency.BITMASK, image.getColorModel().getTransparency());
         assertEquals(BufferedImage.TYPE_BYTE_BINARY, image.getType());
@@ -333,7 +334,7 @@ public class LosslessFactoryTest extends TestCase
     /**
      * Test file that had a predictor encoding bug in PDFBOX-4184.
      *
-     * @throws java.io.IOException
+     * @throws IOException
      */
     public void testCreateLosslessFromGovdocs032163() throws IOException
     {
@@ -536,14 +537,17 @@ public class LosslessFactoryTest extends TestCase
 
     /**
      * Test lossless encoding of CMYK images
+     *
+     * @throws IOException
      */
     public void testCreateLosslessFromImageCMYK() throws IOException
     {
         PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
 
-        final ColorSpace targetCS = new ICC_ColorSpace(ICC_Profile
-                .getInstance(this.getClass().getResourceAsStream("/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc")));
+        InputStream is = this.getClass().getResourceAsStream("/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc");
+        final ColorSpace targetCS = new ICC_ColorSpace(ICC_Profile.getInstance(is));
+        is.close();
         ColorConvertOp op = new ColorConvertOp(image.getColorModel().getColorSpace(), targetCS, null);
         BufferedImage imageCMYK = op.filter(image, null);
 
@@ -559,7 +563,7 @@ public class LosslessFactoryTest extends TestCase
     public void testCreateLosslessFrom16Bit() throws IOException
     {
         PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
 
         ColorSpace targetCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         int dataBufferType = DataBuffer.TYPE_USHORT;
@@ -580,7 +584,7 @@ public class LosslessFactoryTest extends TestCase
     public void testCreateLosslessFromImageINT_BGR() throws IOException
     {
         PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
 
         BufferedImage imgBgr = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_BGR);
         Graphics2D graphics = imgBgr.createGraphics();
@@ -594,7 +598,7 @@ public class LosslessFactoryTest extends TestCase
     public void testCreateLosslessFromImageINT_RGB() throws IOException
     {
         PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
 
         BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = imgRgb.createGraphics();
@@ -608,7 +612,7 @@ public class LosslessFactoryTest extends TestCase
     public void testCreateLosslessFromImageBYTE_3BGR() throws IOException
     {
         PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
 
         BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
         Graphics2D graphics = imgRgb.createGraphics();
