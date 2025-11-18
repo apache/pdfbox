@@ -1095,7 +1095,7 @@ public class PDDocument implements Closeable
      * <p>
      * Don't use the input file as target as this will produce a corrupted file.
      *
-     * @param output stream to write to. It will be closed when done. It <i><b>must never</b></i> point to the source
+     * @param output stream to write to. It <i><b>must never</b></i> point to the source
      * file or that one will be harmed!
      * @throws IOException if the output could not be written
      * @throws IllegalStateException if the document was not loaded from a file or a stream.
@@ -1131,7 +1131,7 @@ public class PDDocument implements Closeable
      * <p>
      * Don't use the input file as target as this will produce a corrupted file.
      *
-     * @param output stream to write to. It will be closed when done. It <i><b>must never</b></i> point to the source
+     * @param output stream to write to. It <i><b>must never</b></i> point to the source
      * file or that one will be harmed!
      * @param objectsToWrite objects that <b>must</b> be part of the incremental saving.
      * @throws IOException if the output could not be written
@@ -1178,7 +1178,7 @@ public class PDDocument implements Closeable
      * <p>
      * Don't use the input file as target as this will produce a corrupted file.
      *
-     * @param output stream to write the final PDF. It will be closed when the document is closed. It <i><b>must
+     * @param output stream to write the final PDF. It <i><b>must
      * never</b></i> point to the source file or that one will be harmed!
      * @return instance to be used for external signing and setting CMS signature
      * @throws IOException if the output could not be written
