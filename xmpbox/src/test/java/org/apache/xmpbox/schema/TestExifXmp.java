@@ -22,6 +22,7 @@
 package org.apache.xmpbox.schema;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.OECFType;
 import org.apache.xmpbox.type.TextType;
@@ -32,14 +33,14 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.InputStream;
+import org.apache.xmpbox.xml.XmpParsingException;
 
 public class TestExifXmp
 {
     @Test
-    public void testNonStrict() throws Exception
+    public void testNonStrict() throws XmpParsingException, IOException
     {
         InputStream is = this.getClass().getResourceAsStream("/validxmp/exif.xmp");
-
         DomXmpParser builder = new DomXmpParser();
         builder.setStrictParsing(false);
         XMPMetadata rxmp = builder.parse(is);
@@ -47,6 +48,7 @@ public class TestExifXmp
         TextType ss = (TextType)schema.getProperty(ExifSchema.SPECTRAL_SENSITIVITY);
         Assert.assertNotNull(ss);
         Assert.assertEquals("spectral sens value",ss.getValue());
+        is.close();
     }
 
     @Test
