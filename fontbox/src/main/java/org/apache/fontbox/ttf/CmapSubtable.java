@@ -415,11 +415,11 @@ public class CmapSubtable implements CmapLookup
         {
             int start = startCount[i];
             int end = endCount[i];
-            int delta = idDelta[i];
-            int rangeOffset = idRangeOffset[i];
-            long segmentRangeOffset = idRangeOffsetPosition + (i * 2L) + rangeOffset;
             if (start != 65535 && end != 65535)
             {
+                int delta = idDelta[i];
+                int rangeOffset = idRangeOffset[i];
+                long segmentRangeOffset = idRangeOffsetPosition + (i * 2L) + rangeOffset;
                 for (int j = start; j <= end; j++)
                 {
                     if (rangeOffset == 0)
