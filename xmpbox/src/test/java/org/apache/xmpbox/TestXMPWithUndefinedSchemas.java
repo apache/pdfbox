@@ -25,12 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.stream.Stream;
+
 import org.apache.xmpbox.type.BadFieldValueException;
-
-
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpParsingException;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -49,13 +48,15 @@ class TestXMPWithUndefinedSchemas
     @ParameterizedTest
     @MethodSource("initializeParameters")
     void main(String path, String namespace, String propertyName, String propertyValue)
-            throws XmpParsingException, BadFieldValueException
+            throws XmpParsingException, BadFieldValueException, IOException
     {
-        InputStream is = this.getClass().getResourceAsStream(path);
-
         DomXmpParser builder = new DomXmpParser();
         builder.setStrictParsing(false);
-        XMPMetadata rxmp = builder.parse(is);
+        XMPMetadata rxmp;
+        try (InputStream is = this.getClass().getResourceAsStream(path))
+        {
+            rxmp = builder.parse(is);
+        }
         // ensure basic parsing was OK
         assertFalse(rxmp.getAllSchemas().isEmpty(), "There should be a least one schema");
         assertNotNull(rxmp.getSchema(namespace), "The schema for {" + namespace + "} should be available");
