@@ -292,7 +292,7 @@ class TestSymmetricKeyEncryption
      * @throws IOException If there is an unexpected error during the test.
      */
     @Test
-    void testProtectionInnerAttachment() throws IOException
+    void testProtectionInnerAttachmetn() throws IOException
     {
         String testFileName = "preEnc_20141025_105451.pdf";
         byte[] inputFileWithEmbeddedFileAsByteArray = getFileResourceAsByteArray(testFileName);
@@ -535,7 +535,10 @@ class TestSymmetricKeyEncryption
 
     private byte[] getFileResourceAsByteArray(String testFileName) throws IOException
     {
-        return TestSymmetricKeyEncryption.class.getResourceAsStream(testFileName).readAllBytes();
+        try (InputStream is = TestSymmetricKeyEncryption.class.getResourceAsStream(testFileName))
+        {
+            return is.readAllBytes();
+        }
     }
 
     private byte[] getFileAsByteArray(File f) throws IOException
