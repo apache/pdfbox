@@ -292,7 +292,7 @@ class TestSymmetricKeyEncryption
      * @throws IOException If there is an unexpected error during the test.
      */
     @Test
-    void testProtectionInnerAttachmetn() throws IOException
+    void testProtectionInnerAttachment() throws IOException
     {
         String testFileName = "preEnc_20141025_105451.pdf";
         byte[] inputFileWithEmbeddedFileAsByteArray = getFileResourceAsByteArray(testFileName);
