@@ -508,11 +508,27 @@ public class TestSymmetricKeyEncryption extends TestCase
 
     private byte[] getFileResourceAsByteArray(String testFileName) throws IOException
     {
-        return IOUtils.toByteArray(TestSymmetricKeyEncryption.class.getResourceAsStream(testFileName));
+        InputStream is = TestSymmetricKeyEncryption.class.getResourceAsStream(testFileName);
+        try
+        {
+            return IOUtils.toByteArray(is);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(is);
+        }
     }
 
     private byte[] getFileAsByteArray(File f) throws IOException
     {
-        return IOUtils.toByteArray(new FileInputStream(f));
+        InputStream is = new FileInputStream(f);
+        try
+        {
+            return IOUtils.toByteArray(is);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(is);
+        }
     }
 }
