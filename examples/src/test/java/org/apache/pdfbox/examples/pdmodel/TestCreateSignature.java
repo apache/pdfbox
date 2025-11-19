@@ -781,9 +781,9 @@ class TestCreateSignature
             assertArrayEquals(expectedData.getData(), actualData.getData());
         }
 
-        try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameSigned)))
+        try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameSigned));
+             FileOutputStream fileOutputStream = new FileOutputStream(new File(OUT_DIR, fileNameResaved2)))
         {
-            FileOutputStream fileOutputStream = new FileOutputStream(new File(OUT_DIR, fileNameResaved2));
             PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
             field.setValue("New Value 2");
             expectedImage2 = new PDFRenderer(doc).renderImage(0);
