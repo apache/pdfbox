@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.fontbox.util.BoundingBox;
@@ -68,7 +69,9 @@ class AppearanceGeneratorHelper
 
     private static final Operator BMC = Operator.getOperator("BMC");
     private static final Operator EMC = Operator.getOperator("EMC");
- 
+
+    private static final Pattern pattern = Pattern.compile("\\u000D\\u000A|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029]");
+
     private final PDVariableText field;
     
     private PDDefaultAppearanceString defaultAppearance;
@@ -197,7 +200,7 @@ class AppearanceGeneratorHelper
         // see PDFBOX-3911
         if (field instanceof PDTextField && !((PDTextField) field).isMultiline())
         {
-            value = value.replaceAll("\\u000D\\u000A|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029]", " ");
+            value = pattern.matcher(value).replaceAll(" ");
         }
 
         for (PDAnnotationWidget widget : field.getWidgets())
