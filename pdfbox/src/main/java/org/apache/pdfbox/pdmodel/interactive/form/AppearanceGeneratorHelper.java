@@ -283,9 +283,9 @@ class AppearanceGeneratorHelper
         PDAction actionF = actions.getF();
         if (actionF != null)
         {
-            if (field.getAcroForm().getScriptingHandler() != null)
+            ScriptingHandler scriptingHandler = field.getAcroForm().getScriptingHandler();
+            if (scriptingHandler != null)
             {
-                ScriptingHandler scriptingHandler = field.getAcroForm().getScriptingHandler();
                 return scriptingHandler.format((PDActionJavaScript) actionF, apValue);
             }
             LOG.info("Field contains a formatting action but no ScriptingHandler " +
