@@ -146,8 +146,12 @@ public class Rendering {
             int numPages = pdf.getNumberOfPages();
             for (int i = 0; i< numPages; i++)
             {
-                BufferedImage bi = renderer.renderImageWithDPI(i, 150);
-                ImageIO.write(bi, "PNG", new BufferedOutputStream(new FileOutputStream(new File (RENDER_OUTPUT_DIR, "pdf32000_2008-" + i + ".png"))));
+                try(OutputStream os = new BufferedOutputStream(
+                        new FileOutputStream(new File (RENDER_OUTPUT_DIR, "pdf32000_2008-" + i + ".png"))))
+                {
+                    BufferedImage bi = renderer.renderImageWithDPI(i, 150);
+                    ImageIO.write(bi, "PNG", os);
+                }
             }
         }
     }
