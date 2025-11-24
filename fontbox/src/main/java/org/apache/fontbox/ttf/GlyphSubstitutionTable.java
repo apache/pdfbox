@@ -188,7 +188,7 @@ public class GlyphSubstitutionTable extends TTFTable
     private ScriptTable readScriptTable(TTFDataStream data, long offset) throws IOException
     {
         data.seek(offset);
-        int defaultLangSys = data.readUnsignedShort();
+        int defaultLangSysOffset = data.readUnsignedShort();
         int langSysCount = data.readUnsignedShort();
         String[] langSysTags = new String[langSysCount];
         int[] langSysOffsets = new int[langSysCount];
@@ -215,9 +215,9 @@ public class GlyphSubstitutionTable extends TTFTable
 
         LangSysTable defaultLangSysTable = null;
 
-        if (defaultLangSys != 0)
+        if (defaultLangSysOffset != 0)
         {
-            defaultLangSysTable = readLangSysTable(data, offset + defaultLangSys);
+            defaultLangSysTable = readLangSysTable(data, offset + defaultLangSysOffset);
         }
         Map<String, LangSysTable> langSysTables = new LinkedHashMap<>(langSysCount);
         for (int i = 0; i < langSysCount; i++)
