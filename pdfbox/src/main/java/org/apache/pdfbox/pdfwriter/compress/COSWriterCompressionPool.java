@@ -18,9 +18,9 @@ package org.apache.pdfbox.pdfwriter.compress;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -29,7 +29,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
@@ -79,12 +78,23 @@ public class COSWriterCompressionPool
         objectPool = new COSObjectPool(document.getDocument().getHighestXRefObjectNumber());
 
         // Initialize object pool.
-        COSDocument cosDocument = document.getDocument();
-
-        COSDictionary trailer = cosDocument.getTrailer();
-        addStructure(trailer.getItem(COSName.ROOT));
-        addStructure(trailer.getItem(COSName.INFO));
-
+        COSDictionary trailer = document.getDocument().getTrailer();
+        List<COSBase> cosBaseList = new ArrayList<>();
+        COSDictionary root = trailer.getCOSDictionary(COSName.ROOT);
+        if (root != null)
+        {
+            cosBaseList.add(root);
+        }
+        COSDictionary info = trailer.getCOSDictionary(COSName.INFO);
+        if (info != null)
+        {
+            cosBaseList.add(info);
+        }
+        while (!cosBaseList.isEmpty())
+        {
+            cosBaseList = addStructure(cosBaseList);
+        }
+        allDirectObjects.clear();
         Collections.sort(objectStreamObjects);
         Collections.sort(topLevelObjects);
     }
@@ -160,10 +170,27 @@ public class COSWriterCompressionPool
     /**
      * Attempts to find yet unregistered streams and dictionaries in the given structure.
      *
+     * @param cosBaseList A list of objects to be added for compressing.
+     * @throws IOException Shall be thrown, if adding failed.
+     */
+    private List<COSBase> addStructure(List<COSBase> cosBaseList) throws IOException
+    {
+        List<COSBase> cosBaseListNext = new ArrayList<>();
+        for (COSBase cosBase : cosBaseList)
+        {
+            cosBaseListNext.addAll(addStructure(cosBase));
+        }
+        cosBaseList.clear();
+        return cosBaseListNext;
+    }
+
+    /**
+     * Attempts to find yet unregistered streams and dictionaries in the given structure.
+     *
      * @param current The object to be added for compressing.
      * @throws IOException Shall be thrown, if compressing the object failed.
      */
-    private void addStructure(COSBase current) throws IOException
+    private List<COSBase> addStructure(COSBase current) throws IOException
     {
         COSBase base = current;
         if (current instanceof COSStream
@@ -183,45 +210,63 @@ public class COSWriterCompressionPool
         }
         if (base instanceof COSArray)
         {
-            addElements(((COSArray) base).iterator());
+            return getElements(((COSArray) base).toList());
         }
         else if (base instanceof COSDictionary)
         {
-            addElements(((COSDictionary) base).getValues().iterator());
+            return getElements(((COSDictionary) base).getValues());
         }
+        return Collections.emptyList();
     }
 
-    private void addElements(Iterator<COSBase> elements) throws IOException
+    /**
+     * Collect all relevant objects from a COSDictionary/COSArray.
+     * 
+     * @param elements collection of all elements of a COSDictionary/COSArray.
+     * 
+     * @return a collection containing the relevant objects within the given Collection.
+     * @throws IOException if something went wrong.
+     */
+    private List<COSBase> getElements(Collection<? extends COSBase> elements) throws IOException
     {
-        while (elements.hasNext())
+        List<COSBase> relevantElements = new ArrayList<>();
+        for (COSBase element : elements)
         {
-            COSBase value = elements.next();
-            if (value instanceof COSArray
-                    || (value instanceof COSDictionary
-                    && !allDirectObjects.contains(value)))
+            if (filterElement(element))
             {
-                allDirectObjects.add(value);
-                addStructure(value);
-            }
-            else if (value instanceof COSObject)
-            {
-                COSObject cosObject = (COSObject) value;
-                if (cosObject.getKey() != null && objectPool.contains(cosObject.getKey()))
-                {
-                    // check if the stored object matches the referenced object otherwise replace the key with a new one
-                    // there may differences if some imported content uses the same object numbers than the target pdf
-                    if (objectPool.getObject(cosObject.getKey()).equals(cosObject.getObject()))
-                    {
-                        continue;
-                    }
-                    cosObject.setKey(null);
-                }
-                if (cosObject.getObject() != null)
-                {
-                    addStructure(value);
-                }
+                relevantElements.add(element);
             }
         }
+        return relevantElements;
+    }
+
+    private boolean filterElement(COSBase element) throws IOException
+    {
+        if (element instanceof COSObject)
+        {
+            COSObject cosObject = (COSObject) element;
+            if (cosObject.getKey() != null && objectPool.contains(cosObject.getKey()))
+            {
+                // check if the stored object matches the referenced object otherwise replace the key with a new one
+                // there may differences if some imported content uses the same object numbers than the target pdf
+                if (objectPool.getObject(cosObject.getKey()).equals(cosObject.getObject()))
+                {
+                    return false;
+                }
+                cosObject.setKey(null);
+            }
+            if (cosObject.getObject() != null)
+            {
+                return true;
+            }
+        }
+        else if (element instanceof COSArray
+                || (element instanceof COSDictionary && !allDirectObjects.contains(element)))
+        {
+            allDirectObjects.add(element);
+            return true;
+        }
+        return false;
     }
 
     /**
