@@ -17,21 +17,26 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
-import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Integration test for {@link GsubWorkerForDflt}. Tests DFLT (default) script GSUB worker.
@@ -40,284 +45,68 @@ import org.junit.jupiter.api.Test;
  * writing systems, particularly when text lacks a specific script (symbols, punctuation)
  * or when no script-specific table exists.</p>
  *
- * <p>Note: RobotoMono-Regular.ttf uses DFLT script but only supports the 'smcp' (small capitals)
- * feature, which is not processed by GsubWorkerForDflt. These tests verify that the worker
- * correctly handles DFLT fonts without ligature features, ensuring glyphs pass through unchanged.</p>
- *
  * <p>JosefinSans-Italic.ttf (SIL Open Font License) uses DFLT script and has standard ligatures
- * (fi, fl) which are used for testing actual GSUB transformations with ligature substitutions.</p>
+ * (fi, fl) which are used for testing GSUB transformations. Words without ligature sequences
+ * (like "font" or "code") pass through unchanged, while words containing "fi" or "fl" are
+ * transformed to use ligature glyphs.</p>
  *
- * @author Palash Ray
  */
 class GsubWorkerForDfltTest
 {
-    private static final String ROBOTO_MONO_TTF =
-            "src/test/resources/ttf/RobotoMono-Regular.ttf";
     private static final String JOSEFIN_SANS_TTF =
             "src/test/resources/ttf/JosefinSans-Italic.ttf";
 
-    private CmapLookup cmapLookup;
-    private GsubWorker gsubWorkerForDflt;
+    private static CmapLookup cmapLookup;
+    private static GsubWorker gsubWorkerForDflt;
 
-    @BeforeEach
-    void init() throws IOException
+    @BeforeAll
+    static void init() throws IOException
     {
-        try (TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(ROBOTO_MONO_TTF)))
+        try (TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(JOSEFIN_SANS_TTF)))
         {
             cmapLookup = ttf.getUnicodeCmapLookup();
             gsubWorkerForDflt = new GsubWorkerFactory().getGsubWorker(cmapLookup, ttf.getGsubData());
         }
     }
 
-    /**
-     * Test that text without ligature substitutions passes through unchanged.
-     * RobotoMono doesn't have 'liga', 'ccmp', 'clig', or 'calt' features.
-     */
-    @Test
-    void testApplyTransforms_noLigatures_fi()
-    {
-        // given - "fi" which would be a ligature in fonts that support it
-        List<Integer> glyphsExpected = Arrays.asList(72, 75);
-
-        // when
-        List<Integer> result = gsubWorkerForDflt.applyTransforms(getGlyphIds("fi"));
-
-        // then - should pass through unchanged
-        assertEquals(glyphsExpected, result);
-    }
-
-    /**
-     * Test that text passes through correctly for common text.
-     */
-    @Test
-    void testApplyTransforms_basicText()
-    {
-        // given
-        List<Integer> glyphsExpected = Arrays.asList(72, 81, 80, 86);
-
-        // when
-        List<Integer> result = gsubWorkerForDflt.applyTransforms(getGlyphIds("font"));
-
-        // then
-        assertEquals(glyphsExpected, result);
-    }
-
-    /**
-     * Test that programming symbols pass through unchanged.
-     */
-    @Test
-    void testApplyTransforms_programmingSymbols()
-    {
-        // given - "!=" which might be a ligature in programming fonts
-        List<Integer> glyphsExpected = Arrays.asList(1040, 31);
-
-        // when
-        List<Integer> result = gsubWorkerForDflt.applyTransforms(getGlyphIds("!="));
-
-        // then
-        assertEquals(glyphsExpected, result);
-    }
-
-    /**
-     * Test multiple character text transformation.
-     */
-    @Test
-    void testApplyTransforms_multipleChars()
-    {
-        // given
-        List<Integer> glyphsExpected = Arrays.asList(69, 81, 70, 71);
-
-        // when
-        List<Integer> result = gsubWorkerForDflt.applyTransforms(getGlyphIds("code"));
-
-        // then
-        assertEquals(glyphsExpected, result);
-    }
-
-    /**
-     * Test that applyTransforms returns immutable list.
-     */
-    @Test
-    void testApplyTransforms_immutableResult()
-    {
-        // given
-        List<Integer> input = getGlyphIds("abc");
-
-        // when
-        List<Integer> result = gsubWorkerForDflt.applyTransforms(input);
-
-        // then
-        try
-        {
-            result.add(999);
-            throw new AssertionError("Expected UnsupportedOperationException");
-        }
-        catch (UnsupportedOperationException e)
-        {
-            // Expected - the list should be immutable
-        }
-
-        try
-        {
-            result.remove(0);
-            throw new AssertionError("Expected UnsupportedOperationException");
-        }
-        catch (UnsupportedOperationException e)
-        {
-            // Expected - the list should be immutable
-        }
-    }
-
-    /**
-     * Test worker type verification.
-     */
     @Test
     void testCorrectWorkerType()
     {
-        // then
         assertInstanceOf(GsubWorkerForDflt.class, gsubWorkerForDflt);
     }
 
-    /**
-     * Test ligature substitution with JosefinSans-Italic font (fi -> ligature).
-     * JosefinSans-Italic uses DFLT script with standard ligatures.
-     */
-    @Test
-    void testApplyTransforms_josefinSansItalic_fi() throws IOException
+    static Stream<Arguments> provideTransformTestCases()
     {
-        try (TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(JOSEFIN_SANS_TTF)))
-        {
-            CmapLookup josefinCmap = ttf.getUnicodeCmapLookup();
-            GsubWorker josefinWorker = new GsubWorkerFactory().getGsubWorker(josefinCmap, ttf.getGsubData());
-
-            // given - "fi" which has a standard ligature in this font
-            List<Integer> glyphsExpected = Arrays.asList(407);
-
-            // when
-            List<Integer> input = new ArrayList<>();
-            for (char c : "fi".toCharArray())
-            {
-                input.add(josefinCmap.getGlyphId(c));
-            }
-            List<Integer> result = josefinWorker.applyTransforms(input);
-
-            // then - should transform to ligature glyph
-            assertEquals(glyphsExpected, result);
-        }
+        return Stream.of(
+                // No ligature - text passes through unchanged
+                Arguments.of("code", Arrays.asList(229, 293, 235, 237), "no ligature sequences"),
+                // Simple ligature
+                Arguments.of("fi", Collections.singletonList(407), "fi -> ligature"),
+                // Ligature within word
+                Arguments.of("office", Arrays.asList(293, 257, 407, 229, 237), "ffi -> f + fi-ligature"),
+                // Multi-f sequence
+                Arguments.of("ffl", Arrays.asList(257, 408), "ffl -> f + fl-ligature")
+        );
     }
 
-    /**
-     * Test ligature substitution with JosefinSans-Italic font (fl -> ligature).
-     */
-    @Test
-    void testApplyTransforms_josefinSansItalic_fl() throws IOException
+    @ParameterizedTest(name = "{0}: {2}")
+    @MethodSource("provideTransformTestCases")
+    void testApplyTransforms(String input, List<Integer> expectedGlyphs, String description)
     {
-        try (TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(JOSEFIN_SANS_TTF)))
-        {
-            CmapLookup josefinCmap = ttf.getUnicodeCmapLookup();
-            GsubWorker josefinWorker = new GsubWorkerFactory().getGsubWorker(josefinCmap, ttf.getGsubData());
-
-            // given - "fl" which has a standard ligature in this font
-            List<Integer> glyphsExpected = Arrays.asList(408);
-
-            // when
-            List<Integer> input = new ArrayList<>();
-            for (char c : "fl".toCharArray())
-            {
-                input.add(josefinCmap.getGlyphId(c));
-            }
-            List<Integer> result = josefinWorker.applyTransforms(input);
-
-            // then - should transform to ligature glyph
-            assertEquals(glyphsExpected, result);
-        }
+        List<Integer> result = gsubWorkerForDflt.applyTransforms(getGlyphIds(input));
+        assertEquals(expectedGlyphs, result);
     }
 
-    /**
-     * Test ligature substitution within word with JosefinSans-Italic font.
-     */
     @Test
-    void testApplyTransforms_josefinSansItalic_office() throws IOException
+    void testApplyTransforms_immutableResult()
     {
-        try (TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(JOSEFIN_SANS_TTF)))
-        {
-            CmapLookup josefinCmap = ttf.getUnicodeCmapLookup();
-            GsubWorker josefinWorker = new GsubWorkerFactory().getGsubWorker(josefinCmap, ttf.getGsubData());
+        List<Integer> result = gsubWorkerForDflt.applyTransforms(getGlyphIds("abc"));
 
-            // given - "office" which contains "fi" ligature
-            List<Integer> glyphsExpected = Arrays.asList(293, 257, 407, 229, 237);
-
-            // when
-            List<Integer> input = new ArrayList<>();
-            for (char c : "office".toCharArray())
-            {
-                input.add(josefinCmap.getGlyphId(c));
-            }
-            List<Integer> result = josefinWorker.applyTransforms(input);
-
-            // then - "ffi" should become "f" + "fi ligature", other chars unchanged
-            assertEquals(glyphsExpected, result);
-        }
+        assertThrows(UnsupportedOperationException.class, () -> result.add(999));
+        assertThrows(UnsupportedOperationException.class, () -> result.remove(0));
     }
 
-    /**
-     * Test ligature processing in multi-f sequences with JosefinSans-Italic font.
-     * "ffl" should become f + fl-ligature.
-     */
-    @Test
-    void testApplyTransforms_josefinSansItalic_ffl() throws IOException
-    {
-        try (TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(JOSEFIN_SANS_TTF)))
-        {
-            CmapLookup josefinCmap = ttf.getUnicodeCmapLookup();
-            GsubWorker josefinWorker = new GsubWorkerFactory().getGsubWorker(josefinCmap, ttf.getGsubData());
-
-            // given - "ffl" which should become f + fl-ligature
-            // JosefinSans-Italic has fi and fl ligatures, but not a dedicated ffl ligature
-            List<Integer> glyphsExpected = Arrays.asList(257, 408);
-
-            // when
-            List<Integer> input = new ArrayList<>();
-            for (char c : "ffl".toCharArray())
-            {
-                input.add(josefinCmap.getGlyphId(c));
-            }
-            List<Integer> result = josefinWorker.applyTransforms(input);
-
-            // then - should transform fl to ligature, leaving first f unchanged
-            assertEquals(glyphsExpected, result);
-        }
-    }
-
-    /**
-     * Test ligature processing in "ffij" sequence with JosefinSans-Italic font.
-     * "ffij" should become f + fi-ligature + j.
-     */
-    @Test
-    void testApplyTransforms_josefinSansItalic_ffij() throws IOException
-    {
-        try (TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(JOSEFIN_SANS_TTF)))
-        {
-            CmapLookup josefinCmap = ttf.getUnicodeCmapLookup();
-            GsubWorker josefinWorker = new GsubWorkerFactory().getGsubWorker(josefinCmap, ttf.getGsubData());
-
-            // given - "ffij" which should become f + fi-ligature + j
-            List<Integer> glyphsExpected = Arrays.asList(257, 407, 279);
-
-            // when
-            List<Integer> input = new ArrayList<>();
-            for (char c : "ffij".toCharArray())
-            {
-                input.add(josefinCmap.getGlyphId(c));
-            }
-            List<Integer> result = josefinWorker.applyTransforms(input);
-
-            // then - should transform fi to ligature
-            assertEquals(glyphsExpected, result);
-        }
-    }
-
-    private List<Integer> getGlyphIds(String word)
+    private static List<Integer> getGlyphIds(String word)
     {
         List<Integer> originalGlyphIds = new ArrayList<>();
 

@@ -43,7 +43,6 @@ import org.apache.fontbox.ttf.model.ScriptFeature;
  * <a href="https://learn.microsoft.com/en-us/typography/opentype/spec/chapter2#scriptlist-table">
  * OpenType ScriptList Table Specification</a></p>
  *
- * @author Palash Ray
  */
 public class GsubWorkerForDflt implements GsubWorker
 {
