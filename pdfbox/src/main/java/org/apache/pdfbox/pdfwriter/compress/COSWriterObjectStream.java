@@ -191,6 +191,10 @@ public class COSWriterObjectStream
                 writeCOSNull(output);
                 return;
             }
+            if (base instanceof COSObject)
+            {
+                LOG.error("COSObject {} references another COSObject?!", object);
+            }
         }
         else
         {
