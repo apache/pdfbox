@@ -78,11 +78,11 @@ public class GsubWorkerForDflt implements GsubWorker
         {
             if (!gsubData.isFeatureSupported(feature))
             {
-                LOG.debug("the feature " + feature + " was not found");
+                LOG.debug("the feature {} was not found", feature);
                 continue;
             }
 
-            LOG.debug("applying the feature " + feature);
+            LOG.debug("applying the feature {}", feature);
 
             ScriptFeature scriptFeature = gsubData.getFeature(feature);
 
@@ -98,7 +98,7 @@ public class GsubWorkerForDflt implements GsubWorker
     {
         if (scriptFeature.getAllGlyphIdsForSubstitution().isEmpty())
         {
-            LOG.debug("getAllGlyphIdsForSubstitution() for " + scriptFeature.getName() + " is empty");
+            LOG.debug("getAllGlyphIdsForSubstitution() for {} is empty", scriptFeature.getName());
             return originalGlyphs;
         }
 
@@ -122,8 +122,7 @@ public class GsubWorkerForDflt implements GsubWorker
             }
         }
 
-        LOG.debug("originalGlyphs: " + originalGlyphs + ", gsubProcessedGlyphs: "
-                + gsubProcessedGlyphs);
+        LOG.debug("originalGlyphs: {} gsubProcessedGlyphs: {}", originalGlyphs, gsubProcessedGlyphs);
 
         return gsubProcessedGlyphs;
     }
