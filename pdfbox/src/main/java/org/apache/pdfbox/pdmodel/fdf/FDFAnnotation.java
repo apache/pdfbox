@@ -303,8 +303,8 @@ public abstract class FDFAnnotation implements COSObjectable
                 }
                 borderStyle.setDashStyle(dashPattern);
             }
-            setBorderStyle(borderStyle);
         }
+        setBorderStyle(borderStyle);
     }
 
     final float[] parseRectangleAttributes(String rect, String errorMessage) throws IOException
