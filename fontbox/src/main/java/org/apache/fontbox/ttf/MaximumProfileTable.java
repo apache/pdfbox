@@ -18,8 +18,6 @@ package org.apache.fontbox.ttf;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * This 'maxp'-table is a required table in a TrueType font.
@@ -28,8 +26,6 @@ import org.apache.logging.log4j.Logger;
  */
 public class MaximumProfileTable extends TTFTable
 {
-    private static final Logger LOG = LogManager.getLogger(MaximumProfileTable.class);
-
     /**
      * A tag that identifies this table type.
      */
@@ -295,7 +291,7 @@ public class MaximumProfileTable extends TTFTable
             maxComponentDepth = data.readUnsignedShort();
             if (maxComponentDepth == 0)
             {
-                LOG.warn("maxComponentDepth is 0, set to 1");
+                // PDFBOX-6105
                 maxComponentDepth = 1;
             }
         }
