@@ -765,12 +765,13 @@ public class GlyphSubstitutionTable extends TTFTable
      * @return The indicated {@code FeatureRecord}s
      */
     private List<FeatureRecord> getFeatureRecords(Collection<LangSysTable> langSysTables,
-            final List<String> enabledFeatures)
+                                                  List<String> enabledFeatures)
     {
         if (langSysTables.isEmpty())
         {
             return Collections.emptyList();
         }
+        final List<String> tmpEnabledFeatures = enabledFeatures != null ? enabledFeatures : Collections.emptyList();
         List<FeatureRecord> result = new ArrayList<>();
         langSysTables.forEach(langSysTable ->
         {
@@ -780,13 +781,15 @@ public class GlyphSubstitutionTable extends TTFTable
             {
                 result.add(featureRecords[required]);
             }
-            for (int featureIndex : langSysTable.getFeatureIndices())
+            if (tmpEnabledFeatures.size() > 0)
             {
-                if (featureIndex < featureRecords.length &&
-                        (enabledFeatures == null ||
-                         enabledFeatures.contains(featureRecords[featureIndex].getFeatureTag())))
+                for (int featureIndex : langSysTable.getFeatureIndices())
                 {
-                    result.add(featureRecords[featureIndex]);
+                    if (featureIndex < featureRecords.length &&
+                        tmpEnabledFeatures.contains(featureRecords[featureIndex].getFeatureTag()))
+                    {
+                        result.add(featureRecords[featureIndex]);
+                    }
                 }
             }
         });
@@ -798,9 +801,9 @@ public class GlyphSubstitutionTable extends TTFTable
             removeFeature(result, "vert");
         }
 
-        if (enabledFeatures != null && result.size() > 1)
+        if (tmpEnabledFeatures.size() > 0 && result.size() > 1)
         {
-            result.sort(Comparator.comparingInt(o -> enabledFeatures.indexOf(o.getFeatureTag())));
+            result.sort(Comparator.comparingInt(o -> tmpEnabledFeatures.indexOf(o.getFeatureTag())));
         }
 
         return result;
