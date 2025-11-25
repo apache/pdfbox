@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.util.BoundingBox;
@@ -64,6 +65,8 @@ class AppearanceGeneratorHelper {
 
     private static final Operator BMC = Operator.getOperator("BMC");
     private static final Operator EMC = Operator.getOperator("EMC");
+
+    private static final Pattern PATTERN = Pattern.compile("\\u000D\\u000A|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029]");
 
     private final PDVariableText field;
 
@@ -184,8 +187,9 @@ class AppearanceGeneratorHelper {
         // set programmatically and Reader is forced to generate the appearance
         // using PDAcroForm.setNeedAppearances
         // see PDFBOX-3911
-        if (field instanceof PDTextField && !((PDTextField) field).isMultiline()) {
-            value = value.replaceAll("\\u000D\\u000A|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029]", " ");
+        if (field instanceof PDTextField && !((PDTextField) field).isMultiline())
+        {
+            value = PATTERN.matcher(value).replaceAll(" ");
         }
 
         for (PDAnnotationWidget widget : field.getWidgets()) {
