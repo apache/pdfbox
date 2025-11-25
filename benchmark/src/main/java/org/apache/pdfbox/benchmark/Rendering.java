@@ -17,9 +17,7 @@
 package org.apache.pdfbox.benchmark;
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -147,7 +145,7 @@ public class Rendering {
             for (int i = 0; i< numPages; i++)
             {
                 BufferedImage bi = renderer.renderImageWithDPI(i, 150);
-                ImageIO.write(bi, "PNG", new BufferedOutputStream(new FileOutputStream(new File (RENDER_OUTPUT_DIR, "pdf32000_2008-" + i + ".png"))));
+                ImageIO.write(bi, "PNG", new File (RENDER_OUTPUT_DIR, "pdf32000_2008-" + i + ".png"));
             }
         }
     }
