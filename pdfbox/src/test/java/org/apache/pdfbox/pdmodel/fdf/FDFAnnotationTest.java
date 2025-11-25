@@ -109,13 +109,15 @@ class FDFAnnotationTest
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(xfdf.getBytes(StandardCharsets.UTF_8));
 
-        FDFDocument fdfDoc = Loader.loadXFDF(inputStream);
-        List<FDFAnnotation> fdfAnnots = fdfDoc.getCatalog().getFDF().getAnnotations();
-        assertEquals(1, fdfAnnots.size());
-
-        FDFAnnotation annot = fdfAnnots.get(0);
-        assertNotNull(annot.getBorderStyle());
-        assertEquals(0f, annot.getBorderStyle().getWidth(), 0.01f);
+        try (FDFDocument fdfDoc = Loader.loadXFDF(inputStream))
+        {
+            List<FDFAnnotation> fdfAnnots = fdfDoc.getCatalog().getFDF().getAnnotations();
+            assertEquals(1, fdfAnnots.size());
+            
+            FDFAnnotation annot = fdfAnnots.get(0);
+            assertNotNull(annot.getBorderStyle());
+            assertEquals(0f, annot.getBorderStyle().getWidth(), 0.01f);
+        }
     }
 
 }
