@@ -18,6 +18,9 @@ package org.apache.fontbox.ttf;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * A table in a true type font.
  * 
@@ -25,6 +28,8 @@ import java.io.IOException;
  */
 public class MaximumProfileTable extends TTFTable
 {
+    private static final Log LOG = LogFactory.getLog(MaximumProfileTable.class);
+
     /**
      * A tag that identifies this table type.
      */
@@ -289,6 +294,11 @@ public class MaximumProfileTable extends TTFTable
             maxSizeOfInstructions = data.readUnsignedShort();
             maxComponentElements = data.readUnsignedShort();
             maxComponentDepth = data.readUnsignedShort();
+            if (maxComponentDepth == 0)
+            {
+                LOG.warn("maxComponentDepth is 0, set to 1");
+                maxComponentDepth = 1;
+            }
         }
         initialized = true;
     }
