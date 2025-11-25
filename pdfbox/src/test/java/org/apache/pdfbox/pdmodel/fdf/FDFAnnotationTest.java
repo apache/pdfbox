@@ -109,5 +109,7 @@ public class FDFAnnotationTest
         FDFAnnotation annot = fdfAnnots.get(0);
         assertNotNull(annot.getBorderStyle());
         assertEquals(0f, annot.getBorderStyle().getWidth(), 0.01f);
+
+        fdfDoc.close();
     }
 }
