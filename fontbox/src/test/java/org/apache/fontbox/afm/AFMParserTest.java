@@ -45,7 +45,7 @@ class AFMParserTest
     public static final String HELVETICA_AFM = "src/test/resources/afm/Helvetica.afm";
 
     @Test
-    void testStartFontMetrics() throws IOException
+    void testStartFontMetrics()
     {
         assertThrows(IOException.class,
                 () -> new AFMParser(new ByteArrayInputStream("huhu".getBytes(StandardCharsets.US_ASCII))).parse(),
@@ -55,30 +55,39 @@ class AFMParserTest
     @Test
     void testEndFontMetrics() throws IOException
     {
-        AFMParser parser = new AFMParser(new FileInputStream("src/test/resources/afm/NoEndFontMetrics.afm"));
-        IOException e = assertThrows(IOException.class, parser::parse,
-                "The AFMParser should have thrown an IOException because of a missing " + AFMParser.END_FONT_METRICS);
-        assertTrue(e.getMessage().contains("Unknown AFM key"));
+        try (InputStream is = new FileInputStream("src/test/resources/afm/NoEndFontMetrics.afm"))
+        {
+            AFMParser parser = new AFMParser(is);
+            IOException e = assertThrows(IOException.class, parser::parse,
+                    "The AFMParser should have thrown an IOException because of a missing " + AFMParser.END_FONT_METRICS);
+            assertTrue(e.getMessage().contains("Unknown AFM key"));
+        }
     }
 
     @Test
     void testMalformedFloat() throws IOException
     {
-        AFMParser parser = new AFMParser(new FileInputStream("src/test/resources/afm/MalformedFloat.afm"));
-        IOException e = assertThrows(IOException.class, parser::parse,
-                "The AFMParser should have thrown an IOException because of a malformed float value");
-        assertInstanceOf(NumberFormatException.class, e.getCause());
-        assertTrue(e.getMessage().contains("4,1ab"));
+        try (InputStream is = new FileInputStream("src/test/resources/afm/MalformedFloat.afm"))
+        {
+            AFMParser parser = new AFMParser(is);
+            IOException e = assertThrows(IOException.class, parser::parse,
+                    "The AFMParser should have thrown an IOException because of a malformed float value");
+            assertInstanceOf(NumberFormatException.class, e.getCause());
+            assertTrue(e.getMessage().contains("4,1ab"));
+        }
     }
 
     @Test
     void testMalformedInteger() throws IOException
     {
-        AFMParser parser = new AFMParser(new FileInputStream("src/test/resources/afm/MalformedInteger.afm"));
-        IOException e = assertThrows(IOException.class, parser::parse,
-                "The AFMParser should have thrown an IOException because of a malformed int value");
-        assertInstanceOf(NumberFormatException.class, e.getCause());
-        assertTrue(e.getMessage().contains("3.4"));
+        try (InputStream is = new FileInputStream("src/test/resources/afm/MalformedInteger.afm"))
+        {
+            AFMParser parser = new AFMParser(is);
+            IOException e = assertThrows(IOException.class, parser::parse,
+                    "The AFMParser should have thrown an IOException because of a malformed int value");
+            assertInstanceOf(NumberFormatException.class, e.getCause());
+            assertTrue(e.getMessage().contains("3.4"));
+        }
     }
 
     @Test
