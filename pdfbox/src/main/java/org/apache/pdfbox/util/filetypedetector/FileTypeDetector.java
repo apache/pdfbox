@@ -23,13 +23,13 @@ import java.nio.charset.StandardCharsets;
 /**
  * @author Drew Noakes
  *
- * code taken from https://github.com/drewnoakes/metadata-extractor
+ * code taken from <a href="https://github.com/drewnoakes/metadata-extractor">metadata-extractor</a>
  *
  * 2016-01-04
  *
  * latest commit number 73f1a48
  *
- * Examines the a file's first bytes and estimates the file's type.
+ * Examines the file's first bytes and estimates the file's type.
  */
 public final class FileTypeDetector
 {
@@ -75,7 +75,7 @@ public final class FileTypeDetector
     }
 
     /**
-     * Examines the a file's first bytes and estimates the file's type.
+     * Examines the file's first bytes and estimates the file's type.
      * <p>
      * Requires a {@link BufferedInputStream} in order to mark and reset the stream to the position
      * at which it was provided to this method once completed.
