@@ -38,6 +38,9 @@ public class GsubWorkerFactory
     {
         //TODO this needs to be redesigned / improved because if a font supports several languages,
         // it will choose one of them and maybe not the one expected.
+        // See also PDFBOX-5700 and PDFBOX-5729
+        // For example, NotoSans-Regular hits Devanagari first
+        // See also GlyphSubstitutionDataExtractor.getSupportedLanguage() which decides the language?!
         LOG.debug("Language: {}", gsubData.getLanguage());
         switch (gsubData.getLanguage())
         {
@@ -49,6 +52,8 @@ public class GsubWorkerFactory
             return new GsubWorkerForGujarati(cmapLookup, gsubData);
         case LATIN:
             return new GsubWorkerForLatin(gsubData);
+        case DFLT:
+            return new GsubWorkerForDflt(gsubData);
         default:
             return new DefaultGsubWorker();
         }
