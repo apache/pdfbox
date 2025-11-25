@@ -40,7 +40,7 @@ class GsubWorkerForTamilTest
     private GsubWorker gsubWorkerForTamil;
 
     @BeforeEach
-    public void init() throws IOException
+    void init() throws IOException
     {
         try (TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(LOHIT_TAMIL_TTF)))
         {
