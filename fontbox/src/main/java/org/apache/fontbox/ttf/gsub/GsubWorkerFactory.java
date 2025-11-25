@@ -54,6 +54,8 @@ public class GsubWorkerFactory
             return new GsubWorkerForLatin(gsubData);
         case DFLT:
             return new GsubWorkerForDflt(gsubData);
+        case TAMIL:
+            //TODO implement me
         default:
             return new DefaultGsubWorker();
         }

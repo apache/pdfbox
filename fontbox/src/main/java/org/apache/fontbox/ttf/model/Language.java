@@ -35,6 +35,7 @@ public enum Language
     BENGALI(new String[] { "bng2", "beng" }),
     DEVANAGARI(new String[] { "dev2", "deva" }),
     GUJARATI(new String[] { "gjr2", "gujr" }),
+    TAMIL(new String[] { "tml2", "taml" }),
     LATIN(new String[] { "latn" }),
     DFLT(new String[] { "DFLT" }),
 
