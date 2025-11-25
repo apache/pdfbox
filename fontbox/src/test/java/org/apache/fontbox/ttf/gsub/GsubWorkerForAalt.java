@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.fontbox.ttf.model.ScriptFeature;
 
@@ -43,12 +42,10 @@ public class GsubWorkerForAalt implements GsubWorker
 
     private static final List<String> FEATURES_IN_ORDER = Arrays.asList("aalt");
 
-    private final CmapLookup cmapLookup;
     private final GsubData gsubData;
 
-    GsubWorkerForAalt(CmapLookup cmapLookup, GsubData gsubData)
+    GsubWorkerForAalt(GsubData gsubData)
     {
-        this.cmapLookup = cmapLookup;
         this.gsubData = gsubData;
     }
 
