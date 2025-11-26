@@ -21,6 +21,7 @@
 package org.apache.xmpbox;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +62,9 @@ public class XMPMetadata
 
     private String xpacketEndData = XmpConstants.DEFAULT_XPACKET_END;
 
-    private List<XMPSchema> schemas;
+    private final List<XMPSchema> schemas;
+
+    private Map<String, String> rdfAttributeMap = Collections.emptyMap();
 
     private TypeMapping typeMapping;
 
@@ -596,4 +599,23 @@ public class XMPMetadata
         schemas.clear();
     }
 
+    /**
+     * Get the rdf attribute map (namespace declarations). This is used in serialization.
+     *
+     * @return the rdf attribute map.
+     */
+    public Map<String, String> getRdfAttributeMap()
+    {
+        return Collections.unmodifiableMap(rdfAttributeMap);
+    }
+
+    /**
+     * Set the rdf attribute map (namespace declarations). This is used in serialization.
+     *
+     * @param rdfAttributeMap an rdf attribute map.
+     */
+    public void setRdfAttributeMap(Map<String, String> rdfAttributeMap)
+    {
+        this.rdfAttributeMap = rdfAttributeMap;
+    }
 }

@@ -99,6 +99,12 @@ public class XmpSerializer
         {
             rdf.appendChild(serializeSchema(doc, schema));
         }
+        // PDFBOX-2378: avoid rdf namespace declarations getting lost in serialization
+        Map<String, String> rdfAttributeMap = metadata.getRdfAttributeMap();
+        for (Map.Entry<String, String> entry : rdfAttributeMap.entrySet())
+        {
+            rdf.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, entry.getKey(), entry.getValue());
+        }
         // save
         save(doc, os, "UTF-8");
     }
