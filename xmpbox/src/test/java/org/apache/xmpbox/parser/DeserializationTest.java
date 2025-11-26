@@ -325,8 +325,9 @@ class DeserializationTest
     }
 
     @Test
-    void testWihtAttributesAsProperties() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException, IOException
+    void testWithAttributesAsProperties() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, IOException
     {
+        // also serves as a test for the changes in PDFBOX-2378
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/validxmp/attr_as_props.xml"))
         {
             XMPMetadata metadata = xdb.parse(is);
@@ -340,7 +341,7 @@ class DeserializationTest
             XMPBasicSchema basic = metadata.getXMPBasicSchema();
             assertNotNull(basic.getCreateDate());
             
-            checkTransform(metadata, "91466370449938102905842936306160100538543510664071400903097987792216034311743");
+            checkTransform(metadata, "18065297971979344549773207273794555094175502580946345976611821901439849242965");
         }
     }
 
