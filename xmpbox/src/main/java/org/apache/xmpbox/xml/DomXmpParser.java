@@ -123,7 +123,7 @@ public class DomXmpParser
         }
         catch (SAXException | IOException e)
         {
-            throw new XmpParsingException(ErrorType.Undefined, "Failed to parse", e);
+            throw new XmpParsingException(ErrorType.Undefined, "Failed to parse: " + e.getMessage(), e);
         }
 
         XMPMetadata xmp = null;
