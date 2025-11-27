@@ -88,34 +88,35 @@ class DeserializationTest
     }
 
     @Test
-    void testStructuredRecursive() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException, IOException
+    void testStructuredRecursive() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, IOException
     {
+        // not valid XMP according to https://www.pdflib.com/pdf-knowledge-base/xmp/free-xmp-validator/
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/structured_recursive.xml"))
         {
             XMPMetadata metadata = xdb.parse(is);
-            checkTransform(metadata, "50429052370059903229869639943824137435756655804864824611365505219590816799783");
+            checkTransform(metadata, "52753264982056308826419701767667619100664406974698584945629426171445624909200", metadata.getAllSchemas().size());
         }
     }
 
     @Test
-    void testEmptyLi() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException, IOException
+    void testEmptyLi() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, IOException
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/empty_list.xml"))
         {
             XMPMetadata metadata = xdb.parse(is);
-            checkTransform(metadata, "92757984740574362800045336947395134346147179161385043989715484359442690118913");
+            checkTransform(metadata, "19567447256605061134904612869562878052777123273535814661244629430271579345577", metadata.getAllSchemas().size());
         }
     }
 
     @Test
-    void testEmptyLi2() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException, IOException
+    void testEmptyLi2() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, IOException
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/validxmp/emptyli.xml"))
         {
             XMPMetadata metadata = xdb.parse(is);
             DublinCoreSchema dc = metadata.getDublinCoreSchema();
             dc.getCreatorsProperty();
-            checkTransform(metadata, "84846877440303452108560435796840772468446174326989274262473618453524301429629");
+            checkTransform(metadata, "39450703080437563739186076111811684356424147071014681699119272065568305393521", metadata.getAllSchemas().size());
         }
     }
 
@@ -132,18 +133,18 @@ class DeserializationTest
     }
 
     @Test
-    void testAltBagSeq() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException, IOException
+    void testAltBagSeq() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, IOException
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/AltBagSeqTest.xml"))
         {
-            XMPMetadata metadata=xdb.parse(is);
-            checkTransform(metadata, "16805992283807186369849610414335227396239089071611806706387795179375897398118");
+            XMPMetadata metadata = xdb.parse(is);
+            checkTransform(metadata, "19154431745733679891721944365143324348437445906324353036103478292448653362772", metadata.getAllSchemas().size());
         }
     }
 
     @Test
     void testIsartorStyleWithThumbs()
-            throws XmpParsingException, IOException, BadFieldValueException, TransformerException, NoSuchAlgorithmException
+            throws XmpParsingException, BadFieldValueException, TransformerException, NoSuchAlgorithmException, IOException
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/ThumbisartorStyle.xml"))
         {
@@ -179,8 +180,8 @@ class DeserializationTest
             assertEquals(Integer.valueOf(216), thumb.getWidth());
             assertEquals("JPEG", thumb.getFormat());
             assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
-            
-            checkTransform(metadata, "29120813843205587378639665706339183422557956085575883885304382528664692315203");
+
+            checkTransform(metadata, "84558386150683037967795120526515137256954964034058806864845109667021390825020", metadata.getAllSchemas().size());
         }
     }
 
@@ -340,13 +341,13 @@ class DeserializationTest
             
             XMPBasicSchema basic = metadata.getXMPBasicSchema();
             assertNotNull(basic.getCreateDate());
-            
-            checkTransform(metadata, "18065297971979344549773207273794555094175502580946345976611821901439849242965");
+
+            checkTransform(metadata, "103011318952861241491609772230618389876889507758821590919505444434501582047075", metadata.getAllSchemas().size());
         }
     }
 
     @Test
-    void testSpaceTextValues() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException, IOException
+    void testSpaceTextValues() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, IOException
     {
         // check values with spaces at start or end
         // in this case, the value should not be trimmed
@@ -356,14 +357,14 @@ class DeserializationTest
             // check producer
             assertEquals(" ", metadata.getAdobePDFSchema().getProducer());
             // check creator tool
-            assertEquals("Canon ",metadata.getXMPBasicSchema().getCreatorTool());
-            
-            checkTransform(metadata, "65475542891943378255730260794798768587695617138297196920293698476028940113080");
+            assertEquals("Canon ", metadata.getXMPBasicSchema().getCreatorTool());
+
+            checkTransform(metadata, "35040104785033687813052387728441520994588808120158942942660631178163542677230", metadata.getAllSchemas().size());
         }
     }
 
     @Test
-    void testMetadataParsing() throws TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException
+    void testMetadataParsing() throws TransformerException, NoSuchAlgorithmException, XmpParsingException, UnsupportedEncodingException
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
 
@@ -377,7 +378,7 @@ class DeserializationTest
         pdf.setProducer("Producer");
         pdf.setPDFVersion("1.4");
         
-        checkTransform(metadata, "90022311886271402508155234494196354960301469636090129252744270615851988530557");
+        checkTransform(metadata, "24727341753942351260821151680330022244742411666459385225917195999704816908515", metadata.getAllSchemas().size());
     }
 
     /**
@@ -400,12 +401,12 @@ class DeserializationTest
                 + "  </rdf:RDF>\n"
                 + "</x:xmpmeta>\n"
                 + "<?xpacket end=\"w\"?>";
-        XMPMetadata xmp = xdb.parse(xmpmeta.getBytes(StandardCharsets.UTF_8));
-        checkTransform(xmp, "8175296932768628269367133054275876764131784758539061072921527253098102430315");
+        XMPMetadata metadata = xdb.parse(xmpmeta.getBytes(StandardCharsets.UTF_8));
+        checkTransform(metadata, "114563613226112098345006389295317658957506710850378716324758103164733276333281", metadata.getAllSchemas().size());
     }
 
-    private void checkTransform(XMPMetadata metadata, String expected)
-            throws TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException
+    private void checkTransform(XMPMetadata metadata, String expected, int expectedSchemaCount)
+            throws TransformerException, NoSuchAlgorithmException, XmpParsingException, UnsupportedEncodingException
     {
         serializer.serialize(metadata, baos, true);
         String replaced = baos.toString(StandardCharsets.UTF_8.displayName()).replace("\r\n", "\n");
@@ -413,5 +414,7 @@ class DeserializationTest
         byte[] digest = MessageDigest.getInstance("SHA-256").digest(ba);
         String result = new BigInteger(1, digest).toString();
         assertEquals(expected, result, "output:\n" + replaced);
+        XMPMetadata xmp = xdb.parse(baos.toByteArray()); // tests round trip
+        assertEquals(expectedSchemaCount, xmp.getAllSchemas().size());
     }
 }
