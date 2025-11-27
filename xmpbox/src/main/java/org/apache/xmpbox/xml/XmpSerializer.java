@@ -56,6 +56,7 @@ public class XmpSerializer
 
     private final TransformerFactory transformerFactory;
     private final DocumentBuilder documentBuilder;
+    private Element rdf;
 
     private boolean parseTypeResourceForLi = true;
 
@@ -94,7 +95,7 @@ public class XmpSerializer
     {
         Document doc = documentBuilder.newDocument();
         // fill document
-        Element rdf = createRdfElement(doc, metadata, withXpacket);
+        rdf = createRdfElement(doc, metadata, withXpacket);
         for (XMPSchema schema : metadata.getAllSchemas())
         {
             rdf.appendChild(serializeSchema(doc, schema));
@@ -166,6 +167,13 @@ public class XmpSerializer
                                                attribute.getValue());
                     }
                 }
+
+                // PDFBOX-2378 part 2: add namespace declaration to the top
+                if (!field.getPrefix().isEmpty() && field.getNamespace() != null && !field.getNamespace().isEmpty())
+                {
+                    rdf.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:" + field.getPrefix(), field.getNamespace());
+                }
+
                 parent.appendChild(esimple);
             }
             else if (field instanceof ArrayProperty)
@@ -304,11 +312,11 @@ public class XmpSerializer
             doc.appendChild(endXPacket);
         }
         // rdf element
-        Element rdf = doc.createElementNS(XmpConstants.RDF_NAMESPACE, "rdf:RDF");
+        Element rdfElement = doc.createElementNS(XmpConstants.RDF_NAMESPACE, "rdf:RDF");
         // rdf.setAttributeNS(XMPSchema.NS_NAMESPACE, qualifiedName, value)
-        xmpmeta.appendChild(rdf);
+        xmpmeta.appendChild(rdfElement);
         // return the rdf element where all will be put
-        return rdf;
+        return rdfElement;
     }
 
     /**
