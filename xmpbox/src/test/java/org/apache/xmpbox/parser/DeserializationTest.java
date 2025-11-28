@@ -368,7 +368,7 @@ class DeserializationTest
     }
 
     @Test
-    void testMetadataParsing() throws TransformerException, NoSuchAlgorithmException, XmpParsingException, IOException
+    void testMetadataParsing() throws TransformerException, NoSuchAlgorithmException, XmpParsingException
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
 
@@ -393,7 +393,7 @@ class DeserializationTest
      * @throws NoSuchAlgorithmException 
      */
     @Test
-    void testEmptyDate() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, IOException
+    void testEmptyDate() throws XmpParsingException, TransformerException, NoSuchAlgorithmException
     {
         String xmpmeta = "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n"
                 + "<x:xmpmeta x:xmptk=\"Adobe XMP Core 4.2.1-c041 52.342996, 2008/05/07-20:48:00\" xmlns:x=\"adobe:ns:meta/\">\n"
