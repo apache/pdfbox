@@ -26,6 +26,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.XMPMediaManagementSchema;
+import org.apache.xmpbox.type.ArrayProperty;
+import org.apache.xmpbox.type.ResourceEventType;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -148,6 +151,11 @@ class DomXmpParserTest
                     "</x:xmpmeta><?xpacket end=\"w\"?>";
         DomXmpParser xmpParser = new DomXmpParser();
         XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
-        Assertions.assertNotNull(xmp.getXMPMediaManagementSchema());
+        XMPMediaManagementSchema xmpMediaManagementSchema = xmp.getXMPMediaManagementSchema();
+        Assertions.assertEquals("uidd:1f0e03977b90b6365a376454ffdf34a7", xmpMediaManagementSchema.getDocumentID());
+        ArrayProperty historyProperty = xmpMediaManagementSchema.getHistoryProperty();
+        ResourceEventType firstHistoryEntry = (ResourceEventType) historyProperty.getAllProperties().iterator().next();
+        Assertions.assertEquals("created", firstHistoryEntry.getAction());
+        Assertions.assertEquals("iDRS PDF output engine 7", firstHistoryEntry.getParameters());
     }
 }
