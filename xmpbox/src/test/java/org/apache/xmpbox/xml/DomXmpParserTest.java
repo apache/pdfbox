@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 
 import org.apache.xmpbox.XMPMetadata;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 
 /**
@@ -68,5 +69,43 @@ public class DomXmpParserTest
         XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
         assertEquals("B", xmp.getPDFIdentificationSchema().getConformance());
         assertEquals((Integer) 3, xmp.getPDFIdentificationSchema().getPart());
+    }
+
+    /**
+     * PDFBOX-6106: Check that "pdf:CreationDate='2004-01-30T17:21:50Z'" is detected as incorrect.
+     * (Only Keywords, PDFVersion, and Producer are allowed in strict mode)
+     *
+     * @throws XmpParsingException
+     */
+    @Test
+    public void testPDFBox6106() throws XmpParsingException, UnsupportedEncodingException
+    {
+        // from file 001358.pdf
+        String s = "<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d' bytes='647'?>\n" +
+                    "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'\n" +
+                    "         xmlns:iX='http://ns.adobe.com/iX/1.0/'>\n" +
+                    "	<rdf:Description about=''\n" +
+                    "	                 xmlns='http://ns.adobe.com/pdf/1.3/'\n" +
+                    "	                 xmlns:pdf='http://ns.adobe.com/pdf/1.3/'\n" +
+                    "	                 pdf:CreationDate='2004-01-30T17:21:50Z'\n" +
+                    "	                 pdf:ModDate='2004-01-30T17:21:50Z'\n" +
+                    "	                 pdf:Producer='Acrobat Distiller 5.0.5 (Windows)'/>\n" +
+                    "	<rdf:Description about=''\n" +
+                    "	                 xmlns='http://ns.adobe.com/xap/1.0/'\n" +
+                    "	                 xmlns:xap='http://ns.adobe.com/xap/1.0/'\n" +
+                    "	                 xap:CreateDate='2004-01-30T17:21:50Z'\n" +
+                    "	                 xap:ModifyDate='2004-01-30T17:21:50Z'\n" +
+                    "	                 xap:MetadataDate='2004-01-30T17:21:50Z'/>\n" +
+                    "</rdf:RDF><?xpacket end='r'?>";
+        DomXmpParser xmpParser = new DomXmpParser();
+        try
+        {
+            xmpParser.parse(s.getBytes("utf-8"));
+            fail("XmpParsingException expected");
+        }
+        catch (XmpParsingException ex)
+        {
+            assertEquals("No type defined for {http://ns.adobe.com/pdf/1.3/}CreationDate", ex.getMessage());
+        }        
     }
 }
