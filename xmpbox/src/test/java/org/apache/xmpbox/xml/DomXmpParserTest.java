@@ -25,8 +25,10 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.XMPMediaManagementSchema;
+import org.apache.xmpbox.type.ArrayProperty;
+import org.apache.xmpbox.type.ResourceEventType;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 
@@ -141,6 +143,11 @@ public class DomXmpParserTest
                     "</x:xmpmeta><?xpacket end=\"w\"?>";
         DomXmpParser xmpParser = new DomXmpParser();
         XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
-        assertNotNull(xmp.getXMPMediaManagementSchema());
+        XMPMediaManagementSchema xmpMediaManagementSchema = xmp.getXMPMediaManagementSchema();
+        assertEquals("uidd:1f0e03977b90b6365a376454ffdf34a7", xmpMediaManagementSchema.getDocumentID());
+        ArrayProperty historyProperty = xmpMediaManagementSchema.getHistoryProperty();
+        ResourceEventType firstHistoryEntry = (ResourceEventType) historyProperty.getAllProperties().iterator().next();
+        assertEquals("created", firstHistoryEntry.getAction());
+        assertEquals("iDRS PDF output engine 7", firstHistoryEntry.getParameters());
     }
 }
