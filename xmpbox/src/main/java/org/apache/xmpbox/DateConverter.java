@@ -284,7 +284,7 @@ public final class DateConverter
     {
         StringBuilder retval = new StringBuilder();
 
-        retval.append(cal.get(Calendar.YEAR));
+        retval.append(String.format(Locale.US, "%04d", cal.get(Calendar.YEAR)));
         retval.append('-');
         retval.append(String.format(Locale.US, "%02d", cal.get(Calendar.MONTH) + 1));
         retval.append('-');
