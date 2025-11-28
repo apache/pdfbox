@@ -53,6 +53,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * DomXmpParser imports the XML into an internal representation. XmpSerializer exports this into
+ * XML. The result may look different, but should be the same from a data point of view.
+ *
+ * @author Tilman Hausherr
+ */
 public class DeserializationTest
 {
     private ByteArrayOutputStream baos;
@@ -90,7 +96,7 @@ public class DeserializationTest
     {
         InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/structured_recursive.xml");
         XMPMetadata metadata = xdb.parse(is);
-        checkTransform(metadata, "52753264982056308826419701767667619100664406974698584945629426171445624909200", metadata.getAllSchemas().size());
+        checkTransform(metadata, "62495942572014793625872774972947435765670563107818217447706375288846297812281", metadata.getAllSchemas().size());
         is.close();
     }
 
@@ -99,7 +105,7 @@ public class DeserializationTest
     {
         InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/empty_list.xml");
         XMPMetadata metadata = xdb.parse(is);
-        checkTransform(metadata, "19567447256605061134904612869562878052777123273535814661244629430271579345577", metadata.getAllSchemas().size());
+        checkTransform(metadata, "95754993383010030299848397520773287413798669761891751126809013411187892693280", metadata.getAllSchemas().size());
         is.close();
     }
 
@@ -130,7 +136,7 @@ public class DeserializationTest
     {
         InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/AltBagSeqTest.xml");
         XMPMetadata metadata=xdb.parse(is);
-        checkTransform(metadata, "19154431745733679891721944365143324348437445906324353036103478292448653362772", metadata.getAllSchemas().size());
+        checkTransform(metadata, "89123270336154452745819041017446278583816329940574853160909598044560152910018", metadata.getAllSchemas().size());
         is.close();
     }
 
@@ -173,7 +179,7 @@ public class DeserializationTest
         Assert.assertEquals("JPEG", thumb.getFormat());
         Assert.assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
 
-        checkTransform(metadata, "84558386150683037967795120526515137256954964034058806864845109667021390825020", metadata.getAllSchemas().size());
+        checkTransform(metadata, "64755266855514150823517184659364700851455308334441170957883187622624192802093", metadata.getAllSchemas().size());
         is.close();
     }
 
@@ -373,7 +379,7 @@ public class DeserializationTest
         XMPBasicSchema basic = metadata.getXMPBasicSchema();
         Assert.assertNotNull(basic.getCreateDate());
         
-        checkTransform(metadata, "103011318952861241491609772230618389876889507758821590919505444434501582047075", metadata.getAllSchemas().size());
+        checkTransform(metadata, "27499224985683016678197540524065114038595582230834506941950503218519476041225", metadata.getAllSchemas().size());
         is.close();
     }
 
@@ -389,7 +395,7 @@ public class DeserializationTest
         // check creator tool
         Assert.assertEquals("Canon ",metadata.getXMPBasicSchema().getCreatorTool());
         
-        checkTransform(metadata, "35040104785033687813052387728441520994588808120158942942660631178163542677230", metadata.getAllSchemas().size());
+        checkTransform(metadata, "9220923061800113567693538810355030344095407871190202111473587642358933618073", metadata.getAllSchemas().size());
         is.close();
     }
 
@@ -432,7 +438,7 @@ public class DeserializationTest
                 + "</x:xmpmeta>\n"
                 + "<?xpacket end=\"w\"?>";
         XMPMetadata metadata = xdb.parse(xmpmeta.getBytes("UTF-8"));
-        checkTransform(metadata, "114563613226112098345006389295317658957506710850378716324758103164733276333281", metadata.getAllSchemas().size());
+        checkTransform(metadata, "19030153876683461724958694183980892665426846590791273142114566290124997390122", metadata.getAllSchemas().size());
     }
 
     private void checkTransform(XMPMetadata metadata, String expected, int expectedSchemaCount)
