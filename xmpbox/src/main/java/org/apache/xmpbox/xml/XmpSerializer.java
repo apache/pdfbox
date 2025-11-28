@@ -23,7 +23,6 @@ package org.apache.xmpbox.xml;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -98,12 +97,6 @@ public class XmpSerializer
         {
             rdf.appendChild(serializeSchema(doc, schema));
         }
-        // PDFBOX-2378: avoid rdf namespace declarations getting lost in serialization
-        Map<String, String> rdfAttributeMap = metadata.getRdfAttributeMap();
-        for (Map.Entry<String, String> entry : rdfAttributeMap.entrySet())
-        {
-            rdf.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, entry.getKey(), entry.getValue());
-        }
         // save
         save(doc, os, "UTF-8");
     }
@@ -166,7 +159,7 @@ public class XmpSerializer
                     }
                 }
 
-                // PDFBOX-2378 part 2: add namespace declaration to the top
+                // PDFBOX-2378: add namespace declaration to the top
                 if (!field.getPrefix().isEmpty() && field.getNamespace() != null && !field.getNamespace().isEmpty())
                 {
                     rdf.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:" + field.getPrefix(), field.getNamespace());
