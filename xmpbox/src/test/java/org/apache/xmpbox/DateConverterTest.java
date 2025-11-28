@@ -28,6 +28,7 @@ import static org.junit.Assert.fail;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import org.junit.Test;
 
@@ -137,6 +138,7 @@ public class DateConverterTest
 
         // PDFBOX-6107
         cal = DateConverter.toCalendar("0000-01-01");
-        assertEquals("0001-01-01T00:00:00+01:00", DateConverter.toISO8601(cal));
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        assertEquals("0001-01-01T00:00:00+00:00", DateConverter.toISO8601(cal));
     }
 }
