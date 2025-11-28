@@ -279,13 +279,21 @@ public class DomXmpParser
             ComplexPropertyContainer container = schema.getContainer();
             PropertyType type = checkPropertyDefinition(xmp,
                     new QName(attr.getNamespaceURI(), attr.getLocalName()));
-            
-            //Default to text if no type is found
-            if( type == null)
+
+            // PDFBOX-2318, PDFBOX-6106: Default to text if no type is found
+            if (type == null)
             {
-                type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
+                if (strictParsing)
+                {
+                    throw new XmpParsingException(ErrorType.InvalidType, "No type defined for {" + attr.getNamespaceURI() + "}"
+                            + attr.getLocalName());
+                }
+                else
+                {
+                    type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
+                }
             }
-            
+
             try
             {
                 AbstractSimpleProperty sp = tm.instanciateSimpleProperty(namespace, schema.getPrefix(),

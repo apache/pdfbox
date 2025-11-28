@@ -83,4 +83,37 @@ class DomXmpParserTest
         Assertions.assertEquals("B", xmp.getPDFAIdentificationSchema().getConformance());
         Assertions.assertEquals((Integer) 3, xmp.getPDFAIdentificationSchema().getPart());
     }
+
+    /**
+     * PDFBOX-6106: Check that "pdf:CreationDate='2004-01-30T17:21:50Z'" is detected as incorrect.
+     * (Only Keywords, PDFVersion, and Producer are allowed in strict mode)
+     *
+     * @throws XmpParsingException
+     */
+    @Test
+    void testPDFBox6106() throws XmpParsingException
+    {
+        // from file 001358.pdf
+        String s = "<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d' bytes='647'?>\n" +
+                    "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'\n" +
+                    "         xmlns:iX='http://ns.adobe.com/iX/1.0/'>\n" +
+                    "	<rdf:Description about=''\n" +
+                    "	                 xmlns='http://ns.adobe.com/pdf/1.3/'\n" +
+                    "	                 xmlns:pdf='http://ns.adobe.com/pdf/1.3/'\n" +
+                    "	                 pdf:CreationDate='2004-01-30T17:21:50Z'\n" +
+                    "	                 pdf:ModDate='2004-01-30T17:21:50Z'\n" +
+                    "	                 pdf:Producer='Acrobat Distiller 5.0.5 (Windows)'/>\n" +
+                    "	<rdf:Description about=''\n" +
+                    "	                 xmlns='http://ns.adobe.com/xap/1.0/'\n" +
+                    "	                 xmlns:xap='http://ns.adobe.com/xap/1.0/'\n" +
+                    "	                 xap:CreateDate='2004-01-30T17:21:50Z'\n" +
+                    "	                 xap:ModifyDate='2004-01-30T17:21:50Z'\n" +
+                    "	                 xap:MetadataDate='2004-01-30T17:21:50Z'/>\n" +
+                    "</rdf:RDF><?xpacket end='r'?>";
+        DomXmpParser xmpParser = new DomXmpParser();
+        XmpParsingException ex = Assertions.assertThrows(
+                XmpParsingException.class,
+                () -> xmpParser.parse(s.getBytes(StandardCharsets.UTF_8)));
+        Assertions.assertEquals("No type defined for {http://ns.adobe.com/pdf/1.3/}CreationDate", ex.getMessage());
+    }
 }
