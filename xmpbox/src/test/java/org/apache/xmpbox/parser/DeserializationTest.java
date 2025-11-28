@@ -400,7 +400,7 @@ public class DeserializationTest
     }
 
     @Test
-    public void testMetadataParsing() throws TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException, IOException, XmpParsingException
+    public void testMetadataParsing() throws TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException, XmpParsingException
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
 
@@ -426,7 +426,7 @@ public class DeserializationTest
      * @throws UnsupportedEncodingException 
      */
     @Test
-    public void testEmptyDate() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException, IOException
+    public void testEmptyDate() throws XmpParsingException, TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException
     {
         String xmpmeta = "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n"
                 + "<x:xmpmeta x:xmptk=\"Adobe XMP Core 4.2.1-c041 52.342996, 2008/05/07-20:48:00\" xmlns:x=\"adobe:ns:meta/\">\n"
@@ -442,14 +442,15 @@ public class DeserializationTest
     }
 
     private void checkTransform(XMPMetadata metadata, String expected, int expectedSchemaCount)
-            throws TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException, IOException, XmpParsingException
+            throws TransformerException, NoSuchAlgorithmException, UnsupportedEncodingException, XmpParsingException
     {
         serializer.serialize(metadata, baos, true);
         String replaced = baos.toString("UTF-8").replace("\r\n", "\n");
         byte[] ba = replaced.getBytes("UTF-8");
         byte[] digest = MessageDigest.getInstance("SHA-256").digest(ba);
         String result = new BigInteger(1, digest).toString();
-        assertEquals("output:\n" + replaced, expected, result);XMPMetadata xmp = xdb.parse(baos.toByteArray()); // tests round trip
+        assertEquals("output:\n" + replaced, expected, result);
+        XMPMetadata xmp = xdb.parse(baos.toByteArray()); // tests round trip
         assertEquals(expectedSchemaCount, xmp.getAllSchemas().size());
     }
 }
