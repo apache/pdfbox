@@ -133,5 +133,9 @@ class DateConverterTest
         assertEquals(dateFormat.format(cal.getTime()), 
                     dateFormat.format(DateConverter.toCalendar(DateConverter.toISO8601(cal,true)).getTime())
                 );
+
+        // PDFBOX-6107
+        cal = DateConverter.toCalendar("0000-01-01");
+        assertEquals("0001-01-01T00:00:00+01:00", DateConverter.toISO8601(cal));
     }
 }
