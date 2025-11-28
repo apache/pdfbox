@@ -539,8 +539,17 @@ public class DomXmpParser
         Element liChild = DomHelper.getUniqueElementChild(liElement);
         if (liChild != null)
         {
-            nsFinder.push(liChild);
-            return parseLiDescription(xmp, descriptor, liChild);
+            try
+            {
+                nsFinder.push(liElement);
+                nsFinder.push(liChild);
+                return parseLiDescription(xmp, descriptor, liChild);
+            }
+            finally
+            {
+                nsFinder.pop();
+                nsFinder.pop();
+            }
         }
         else
         {

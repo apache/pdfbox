@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 
 import org.apache.xmpbox.XMPMetadata;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 
@@ -107,5 +108,39 @@ public class DomXmpParserTest
         {
             assertEquals("No type defined for {http://ns.adobe.com/pdf/1.3/}CreationDate", ex.getMessage());
         }        
+    }
+
+    /**
+     * PDFBOX-5288: check that namespace declaration within an "rdf:li" element is found.
+     *
+     * @throws XmpParsingException
+     */
+    @Test
+    public void testPDFBox5288() throws XmpParsingException, UnsupportedEncodingException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Public XMP Toolkit Core 4.0  \">\n" +
+                    " \n" +
+                    " <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "  \n" +
+                    "  <rdf:Description xmlns:xmpMM=\"http://ns.adobe.com/xap/1.0/mm/\" rdf:about=\"\">\n" +
+                    "   <xmpMM:DocumentID>uidd:1f0e03977b90b6365a376454ffdf34a7</xmpMM:DocumentID>\n" +
+                    "   <xmpMM:History>\n" +
+                    "    <rdf:Seq>\n" +
+                    "     <rdf:li xmlns:stEvt=\"http://ns.adobe.com/xap/1.0/sType/ResourceEvent#\">\n" +
+                    "      <rdf:Description>\n" +
+                    "       <stEvt:action>created</stEvt:action>\n" +
+                    "       <stEvt:parameters>iDRS PDF output engine 7</stEvt:parameters>\n" +
+                    "       <stEvt:when>2022-09-12T12:00:07+02:00</stEvt:when>\n" +
+                    "      </rdf:Description>\n" +
+                    "     </rdf:li>\n" +
+                    "    </rdf:Seq>\n" +
+                    "   </xmpMM:History>\n" +
+                    "  </rdf:Description>\n" +
+                    " </rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end=\"w\"?>";
+        DomXmpParser xmpParser = new DomXmpParser();
+        XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
+        assertNotNull(xmp.getXMPMediaManagementSchema());
     }
 }
