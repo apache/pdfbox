@@ -106,6 +106,15 @@ class PhotoshopSchemaTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
+    void testRandomSetterSimple(String fieldName, Types type, Cardinality card)
+            throws ReflectiveOperationException
+    {
+        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
+        schemaTester.testRandomSetterSimple();
+    }
+
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
     void testPropertySetterInArray(String fieldName, Types type, Cardinality card)
             throws ReflectiveOperationException
     {
