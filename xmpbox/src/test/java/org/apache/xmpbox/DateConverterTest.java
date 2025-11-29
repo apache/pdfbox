@@ -59,6 +59,42 @@ class DateConverterTest
         convDate = DateConverter.toCalendar("D:2015-02-02");
         assertEquals(2015, convDate.get(Calendar.YEAR));
 
+        convDate = DateConverter.toCalendar("D:2015-02-03T10:11:12");
+        assertEquals(2015, convDate.get(Calendar.YEAR));
+        assertEquals(1, convDate.get(Calendar.MONTH)); // 0-based
+        assertEquals(3, convDate.get(Calendar.DAY_OF_MONTH));
+        assertEquals(10, convDate.get(Calendar.HOUR));
+        assertEquals(11, convDate.get(Calendar.MINUTE));
+        assertEquals(12, convDate.get(Calendar.SECOND));
+
+        convDate = DateConverter.toCalendar("D:2015-02-03T10:11:12Z");
+        assertEquals(2015, convDate.get(Calendar.YEAR));
+        assertEquals(1, convDate.get(Calendar.MONTH)); // 0-based
+        assertEquals(3, convDate.get(Calendar.DAY_OF_MONTH));
+        assertEquals(10, convDate.get(Calendar.HOUR));
+        assertEquals(11, convDate.get(Calendar.MINUTE));
+        assertEquals(12, convDate.get(Calendar.SECOND));
+
+        convDate = DateConverter.toCalendar("D:2015-02-03T10:11:12+05:00");
+        assertEquals(2015, convDate.get(Calendar.YEAR));
+        assertEquals(1, convDate.get(Calendar.MONTH)); // 0-based
+        assertEquals(3, convDate.get(Calendar.DAY_OF_MONTH));
+        assertEquals(10, convDate.get(Calendar.HOUR));
+        assertEquals(11, convDate.get(Calendar.MINUTE));
+        assertEquals(12, convDate.get(Calendar.SECOND));
+        assertEquals(5 * 3600 * 1000, convDate.get(Calendar.ZONE_OFFSET));
+        assertEquals("GMT+05:00", convDate.getTimeZone().getDisplayName());
+
+        convDate = DateConverter.toCalendar("D:2015-02-03T10:11:12-05:00");
+        assertEquals(2015, convDate.get(Calendar.YEAR));
+        assertEquals(1, convDate.get(Calendar.MONTH)); // 0-based
+        assertEquals(3, convDate.get(Calendar.DAY_OF_MONTH));
+        assertEquals(10, convDate.get(Calendar.HOUR));
+        assertEquals(11, convDate.get(Calendar.MINUTE));
+        assertEquals(12, convDate.get(Calendar.SECOND));
+        assertEquals(-5 * 3600 * 1000, convDate.get(Calendar.ZONE_OFFSET));
+        assertEquals("GMT-05:00", convDate.getTimeZone().getDisplayName());
+
         convDate = DateConverter.toCalendar("2025-09-03T15:43:47.989082+00:00");
         assertEquals(989, convDate.get(Calendar.MILLISECOND));
 
