@@ -31,6 +31,7 @@ import org.apache.xmpbox.schema.XMPPageTextSchema;
 import org.apache.xmpbox.type.ArrayProperty;
 import org.apache.xmpbox.type.DimensionsType;
 import org.apache.xmpbox.type.ResourceEventType;
+import org.apache.xmpbox.type.ResourceRefType;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -157,6 +158,11 @@ class DomXmpParserTest
         Assertions.assertEquals("iDRS PDF output engine 7", firstHistoryEntry.getParameters());
     }
 
+    /**
+     * Test PageTextSchema and XMPMediaManagementSchema.
+     *
+     * @throws XmpParsingException 
+     */
     @Test
     void testPageTextSchema() throws XmpParsingException
     {
@@ -164,6 +170,16 @@ class DomXmpParserTest
                     "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
                     "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" +
                     "	<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "           <rdf:Description xmlns:stRef=\"http://ns.adobe.com/xap/1.0/sType/ResourceRef#\"\n" +
+                    "		                 xmlns:xmpMM=\"http://ns.adobe.com/xap/1.0/mm/\"\n" +
+                    "		                 rdf:about=\"\">\n" +
+                    "			<xmpMM:InstanceID>uuid:b429d411-e628-45ca-b932-d2c77fbe6cd3</xmpMM:InstanceID>\n" +
+                    "			<xmpMM:DocumentID>adobe:docid:indd:db084a4d-dbb2-11dc-ac34-beb3cc4028ec</xmpMM:DocumentID>\n" +
+                    "			<xmpMM:RenditionClass>proof:pdf</xmpMM:RenditionClass>\n" +
+                    "			<xmpMM:DerivedFrom rdf:parseType=\"Resource\">\n" +
+                    "				<stRef:documentID>adobe:docid:indd:fa7c6589-9f4a-11dc-9641-af983df728d7</stRef:documentID>\n" +
+                    "			</xmpMM:DerivedFrom>\n" +
+                    "		</rdf:Description>" +
                     "		<rdf:Description xmlns:xmpTPg=\"http://ns.adobe.com/xap/1.0/t/pg/\"\n" +
                     "		                 rdf:about=\"\">\n" +
                     "			<xmpTPg:MaxPageSize>\n" +
@@ -183,5 +199,11 @@ class DomXmpParserTest
         DimensionsType dim = (DimensionsType) pageTextSchema.getProperty(XMPPageTextSchema.MAX_PAGE_SIZE);
         Assertions.assertEquals("DimensionsType{4.0 x 3.0 inch}", dim.toString());
         Assertions.assertEquals("[IntegerType:7]", pageTextSchema.getProperty(XMPPageTextSchema.N_PAGES).toString());
+        XMPMediaManagementSchema xmpMediaManagementSchema = xmp.getXMPMediaManagementSchema();
+        ResourceRefType derivedFromProperty = xmpMediaManagementSchema.getDerivedFromProperty();
+        Assertions.assertEquals("uuid:b429d411-e628-45ca-b932-d2c77fbe6cd3", xmpMediaManagementSchema.getInstanceID());
+        Assertions.assertEquals("proof:pdf", xmpMediaManagementSchema.getRenditionClass());
+        Assertions.assertEquals("adobe:docid:indd:db084a4d-dbb2-11dc-ac34-beb3cc4028ec", xmpMediaManagementSchema.getDocumentID());
+        Assertions.assertEquals("adobe:docid:indd:fa7c6589-9f4a-11dc-9641-af983df728d7", derivedFromProperty.getDocumentID());
     }
 }
