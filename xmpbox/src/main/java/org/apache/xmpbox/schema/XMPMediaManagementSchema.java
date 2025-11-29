@@ -89,10 +89,10 @@ public class XMPMediaManagementSchema extends XMPSchema
     public static final String DERIVED_FROM = "DerivedFrom";
 
     /**
-     * Set ResourceRef property
+     * Set DerivedFrom property
      * 
      * @param tt
-     *            ResourceRef property to set
+     *            DerivedFrom property to set
      */
     public void setDerivedFromProperty(ResourceRefType tt)
     {
@@ -100,11 +100,11 @@ public class XMPMediaManagementSchema extends XMPSchema
     }
 
     /**
-     * Get ResourceRef property
+     * Get DerivedFrom property
      * 
-     * @return ResourceRef property
+     * @return DerivedFrom property
      */
-    public ResourceRefType getResourceRefProperty()
+    public ResourceRefType getDerivedFromProperty()
     {
         return (ResourceRefType) getProperty(DERIVED_FROM);
     }
@@ -511,13 +511,12 @@ public class XMPMediaManagementSchema extends XMPSchema
 
     /**
      * set ManageFrom Property
-     * 
-     * @param resourceRef
-     *            ManageFrom Property to set
+     *
+     * @param managedFrom ManageFrom Property to set
      */
-    public void setManagedFromProperty(ResourceRefType resourceRef)
+    public void setManagedFromProperty(ResourceRefType managedFrom)
     {
-        addProperty(resourceRef);
+        addProperty(managedFrom);
     }
 
     /**
