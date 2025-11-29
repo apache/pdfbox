@@ -73,6 +73,7 @@ public class ArrayProperty extends AbstractComplexProperty
     {
         List<AbstractField> allProperties = getContainer().getAllProperties();
         List<String> retval = new ArrayList<>(allProperties.size());
+        //FIXME this will produce a ClassCastException if the elements are not of type AbstractSimpleProperty
         allProperties.forEach(tmp -> retval.add(((AbstractSimpleProperty) tmp).getStringValue()));
         return Collections.unmodifiableList(retval);
     }
