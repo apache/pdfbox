@@ -33,7 +33,7 @@ import org.apache.xmpbox.type.Types;
  * To change this template use File | Settings | File Templates.
  */
 @StructuredType(preferedPrefix = "xmpTPg",namespace = "http://ns.adobe.com/xap/1.0/t/pg/")
-public class XMPageTextSchema extends XMPSchema
+public class XMPPageTextSchema extends XMPSchema
 {
 
     @PropertyType(type = Types.Dimensions)
@@ -43,12 +43,12 @@ public class XMPageTextSchema extends XMPSchema
     public static final String N_PAGES = "NPages";
 
 
-    public XMPageTextSchema(XMPMetadata metadata)
+    public XMPPageTextSchema(XMPMetadata metadata)
     {
         super(metadata);
     }
 
-    public XMPageTextSchema(XMPMetadata metadata, String prefix)
+    public XMPPageTextSchema(XMPMetadata metadata, String prefix)
     {
         super(metadata, prefix);
     }

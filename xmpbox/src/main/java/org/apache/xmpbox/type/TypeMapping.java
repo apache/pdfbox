@@ -46,7 +46,7 @@ import org.apache.xmpbox.schema.XMPMediaManagementSchema;
 import org.apache.xmpbox.schema.XMPRightsManagementSchema;
 import org.apache.xmpbox.schema.XMPSchema;
 import org.apache.xmpbox.schema.XMPSchemaFactory;
-import org.apache.xmpbox.schema.XMPageTextSchema;
+import org.apache.xmpbox.schema.XMPPageTextSchema;
 import org.apache.xmpbox.schema.XmpSchemaException;
 
 public final class TypeMapping
@@ -111,7 +111,7 @@ public final class TypeMapping
         addNameSpace(XMPBasicJobTicketSchema.class);
         addNameSpace(ExifSchema.class);
         addNameSpace(TiffSchema.class);
-        addNameSpace(XMPageTextSchema.class);
+        addNameSpace(XMPPageTextSchema.class);
     }
 
     public void addToDefinedStructuredTypes(String typeName, String ns, PropertiesDescription pm)
