@@ -797,7 +797,10 @@ public class XMPMediaManagementSchema extends XMPSchema
      * Get List of History values
      * 
      * @return List of History values
+     * @deprecated This method will be removed in 4.0 because it produces a ClassCastException. Use
+     * {@link #getHistoryProperty()} instead.
      */
+    @Deprecated
     public List<String> getHistory()
     {
         return getUnqualifiedSequenceValueList(HISTORY);
