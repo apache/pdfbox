@@ -26,7 +26,9 @@ import java.io.UnsupportedEncodingException;
 
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.XMPMediaManagementSchema;
+import org.apache.xmpbox.schema.XMPageTextSchema;
 import org.apache.xmpbox.type.ArrayProperty;
+import org.apache.xmpbox.type.DimensionsType;
 import org.apache.xmpbox.type.ResourceEventType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -38,10 +40,6 @@ import org.junit.Test;
  */
 public class DomXmpParserTest
 {
-
-    public DomXmpParserTest()
-    {
-    }
 
     @Test
     public void testPDFBox5835() throws IOException, XmpParsingException
@@ -149,5 +147,33 @@ public class DomXmpParserTest
         ResourceEventType firstHistoryEntry = (ResourceEventType) historyProperty.getAllProperties().iterator().next();
         assertEquals("created", firstHistoryEntry.getAction());
         assertEquals("iDRS PDF output engine 7", firstHistoryEntry.getParameters());
+    }
+
+    @Test
+    public void testPageTextSchema() throws XmpParsingException, UnsupportedEncodingException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
+                    "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" +
+                    "	<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "		<rdf:Description xmlns:xmpTPg=\"http://ns.adobe.com/xap/1.0/t/pg/\"\n" +
+                    "		                 rdf:about=\"\">\n" +
+                    "			<xmpTPg:MaxPageSize>\n" +
+                    "				<rdf:Description xmlns:stDim=\"http://ns.adobe.com/xap/1.0/sType/Dimensions#\">\n" +
+                    "					<stDim:w>4</stDim:w>\n" +
+                    "					<stDim:h>3</stDim:h>\n" +
+                    "					<stDim:unit>inch</stDim:unit>\n" +
+                    "				</rdf:Description>\n" +
+                    "			</xmpTPg:MaxPageSize>\n" +
+                    "			<xmpTPg:NPages>7</xmpTPg:NPages>\n" +
+                    "		</rdf:Description>\n" +
+                    "	</rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end=\"r\"?>";
+        DomXmpParser xmpParser = new DomXmpParser();
+        XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
+        XMPageTextSchema pageTextSchema = xmp.getPageTextSchema();
+        DimensionsType dim = (DimensionsType) pageTextSchema.getProperty(XMPageTextSchema.MAX_PAGE_SIZE);
+        assertEquals("DimensionsType{4.0 x 3.0 inch}", dim.toString());
+        assertEquals("[IntegerType:7]", pageTextSchema.getProperty(XMPageTextSchema.N_PAGES).toString());
     }
 }
