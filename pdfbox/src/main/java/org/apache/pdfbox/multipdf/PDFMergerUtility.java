@@ -1237,11 +1237,8 @@ public class PDFMergerUtility
             {
                 if (srcAcroForm != null)
                 {
-                    if (acroFormMergeMode == AcroFormMergeMode.PDFBOX_LEGACY_MODE)
-                    {
-                        acroFormLegacyMode(cloner, destAcroForm, srcAcroForm);
-                    }
-                    else if (acroFormMergeMode == AcroFormMergeMode.JOIN_FORM_FIELDS_MODE)
+                    if (acroFormMergeMode == AcroFormMergeMode.PDFBOX_LEGACY_MODE ||
+                        acroFormMergeMode == AcroFormMergeMode.JOIN_FORM_FIELDS_MODE)
                     {
                         acroFormJoinFieldsMode(cloner, destAcroForm, srcAcroForm);
                     }
@@ -1268,21 +1265,6 @@ public class PDFMergerUtility
      * @throws IOException If an error occurs while adding the field.
      */
     private void acroFormJoinFieldsMode(PDFCloneUtility cloner, PDAcroForm destAcroForm, PDAcroForm srcAcroForm)
-            throws IOException
-    {
-        acroFormLegacyMode(cloner, destAcroForm, srcAcroForm);
-    }
-    
-    /*
-     * Merge the contents of the source form into the destination form for the
-     * destination file.
-     *
-     * @param cloner the object cloner for the destination document
-     * @param destAcroForm the destination form
-     * @param srcAcroForm the source form
-     * @throws IOException If an error occurs while adding the field.
-     */
-    private void acroFormLegacyMode(PDFCloneUtility cloner, PDAcroForm destAcroForm, PDAcroForm srcAcroForm)
             throws IOException
     {
         List<PDField> srcFields = srcAcroForm.getFields();
