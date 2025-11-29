@@ -21,6 +21,7 @@
 package org.apache.xmpbox.schema;
 
 import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.PropertyType;
 import org.apache.xmpbox.type.StructuredType;
 import org.apache.xmpbox.type.Types;
@@ -36,12 +37,21 @@ import org.apache.xmpbox.type.Types;
 public class XMPageTextSchema extends XMPSchema
 {
 
+    // The size of the largest page in the document
     @PropertyType(type = Types.Dimensions)
     public static final String MAX_PAGE_SIZE = "MaxPageSize";
 
+    // The number of pages in the document
     @PropertyType(type = Types.Integer)
     public static final String N_PAGES = "NPages";
 
+    // An ordered array of plate names that are needed to print the document
+    @PropertyType(type = Types.Text, card = Cardinality.Seq)
+    public static final String PLATENAMES = "PlateNames"; // Ordered array of Text
+
+    // missing:
+    // Colorants / Ordered array of Colorants / Cardinality.Seq
+    // Fonts / Unordered array of Fonts / Cardinality.Bag
 
     public XMPageTextSchema(XMPMetadata metadata)
     {
