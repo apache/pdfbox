@@ -782,16 +782,6 @@ public class XMPMediaManagementSchema extends XMPSchema
         return (ArrayProperty) getProperty(HISTORY);
     }
 
-    /**
-     * Get List of History values
-     * 
-     * @return List of History values
-     */
-    public List<String> getHistory()
-    {
-        return getUnqualifiedSequenceValueList(HISTORY);
-    }
-
     // --------------------------------------- Ingredients
     // ----------------------------
 
