@@ -313,8 +313,6 @@ class SchemaTester extends AbstractTypeTester
 
         String setter = calculateSimpleSetter(fieldName);
         Object value = getJavaValue(type);
-        AbstractSimpleProperty asp = typeMapping.instanciateSimpleProperty(schema.getNamespace(), schema
-                .getPrefix(), fieldName, value, type);
         Method set = schemaClass.getMethod(setter, String.class);
         set.invoke(schema, value);
         // check property set
