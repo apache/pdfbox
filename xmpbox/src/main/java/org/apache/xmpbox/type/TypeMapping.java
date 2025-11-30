@@ -47,7 +47,6 @@ import org.apache.xmpbox.schema.XMPRightsManagementSchema;
 import org.apache.xmpbox.schema.XMPSchema;
 import org.apache.xmpbox.schema.XMPSchemaFactory;
 import org.apache.xmpbox.schema.XMPPageTextSchema;
-import org.apache.xmpbox.schema.XmpSchemaException;
 
 public final class TypeMapping
 {
@@ -219,34 +218,6 @@ public final class TypeMapping
     public PropertiesDescription getStructuredPropMapping(Types type)
     {
         return structuredMappings.get(type);
-    }
-
-    /**
-     * Return the specialized schema class representation if it's known (create and add it to metadata). In other cases,
-     * return null
-     * 
-     * @param metadata
-     *            Metadata to link the new schema
-     * @param namespace
-     *            The namespace URI
-     * @param prefix The namespace prefix
-     * @return Schema representation
-     * @throws XmpSchemaException
-     *             When Instancing specified Object Schema failed
-     */
-    public XMPSchema getAssociatedSchemaObject(XMPMetadata metadata, String namespace, String prefix)
-            throws XmpSchemaException
-    {
-        if (schemaMap.containsKey(namespace))
-        {
-            XMPSchemaFactory factory = schemaMap.get(namespace);
-            return factory.createXMPSchema(metadata, prefix);
-        }
-        else
-        {
-            XMPSchemaFactory factory = getSchemaFactory(namespace);
-            return factory != null ? factory.createXMPSchema(metadata, prefix) : null;
-        }
     }
 
     public XMPSchemaFactory getSchemaFactory(String namespace)
