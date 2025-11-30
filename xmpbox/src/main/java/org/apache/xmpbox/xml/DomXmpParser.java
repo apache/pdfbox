@@ -618,11 +618,13 @@ public class DomXmpParser
         // Instantiate abstract structured type with hint from first element
         Element firstLiDescriptionElementChild = liDescriptionElementChildren.get(0);
         nsFinder.push(firstLiDescriptionElementChild);
-        PropertyType ctype = checkPropertyDefinition(xmp, DomHelper.getQName(firstLiDescriptionElementChild));
+        QName qName = DomHelper.getQName(firstLiDescriptionElementChild);
+        PropertyType ctype = checkPropertyDefinition(xmp, qName);
         if (ctype == null)
         {
-            throw new XmpParsingException(ErrorType.NoType, "ctype is null, first: " + firstLiDescriptionElementChild + 
-                    ", DomHelper.getQName(first): " + DomHelper.getQName(firstLiDescriptionElementChild));
+            // PDFBOX-5649
+            throw new XmpParsingException(ErrorType.NoType,
+                    "Property '" + qName.getLocalPart() + "' not defined in " + qName.getNamespaceURI());
         }
         Types tt = ctype.type();
         AbstractStructuredType ast = instanciateStructured(tm, tt, descriptor.getLocalPart(), firstLiDescriptionElementChild.getNamespaceURI());
