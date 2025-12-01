@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.contentstream.PDContentStream;
@@ -46,6 +47,7 @@ public class PDFStreamParser extends COSParser
      */
     private static final Logger LOG = LogManager.getLogger(PDFStreamParser.class);
 
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("^\\d*\\.?\\d*$");
     private static final int MAX_BIN_CHAR_TEST_LENGTH = 10;
     private final byte[] binCharTestArr = new byte[MAX_BIN_CHAR_TEST_LENGTH];
     private int inlineImageDepth = 0;
@@ -388,7 +390,7 @@ public class PDFStreamParser extends COSParser
                 // or a number (PDFBOX-5957)
                 s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx, StandardCharsets.US_ASCII);
                 if (!"Q".equals(s) && !"EMC".equals(s) && !"S".equals(s) &&
-                    !s.matches("^\\d*\\.?\\d*$"))
+                    !NUMBER_PATTERN.matcher(s).find())
                 {
                     // operator is not Q, not EMC, not S, nor a number -> assume binary data
                     noBinData = false;
@@ -405,7 +407,7 @@ public class PDFStreamParser extends COSParser
                 }
                 LOG.debug("startOpIdx: {} endOpIdx: {} s = '{}'", startOpIdx, endOpIdx, s);
                 // look for token of 3 chars max or a number
-                if (endOpIdx - startOpIdx > 3 && !s.matches("^\\d*\\.?\\d*$"))
+                if (endOpIdx - startOpIdx > 3 && !NUMBER_PATTERN.matcher(s).find())
                 {
                     noBinData = false; // "operator" too long, assume binary data
                 }
