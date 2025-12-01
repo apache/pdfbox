@@ -710,15 +710,12 @@ public class XMPSchema extends AbstractStructuredType
      */
     public List<String> getUnqualifiedBagValueList(String bagName)
     {
-        ArrayProperty array = (ArrayProperty) getAbstractProperty(bagName);
-        if (array != null)
+        AbstractField abstractProperty = getAbstractProperty(bagName);
+        if (abstractProperty instanceof ArrayProperty)
         {
-            return array.getElementsAsString();
+            return ((ArrayProperty) abstractProperty).getElementsAsString();
         }
-        else
-        {
-            return null;
-        }
+        return null;
     }
 
     /**
