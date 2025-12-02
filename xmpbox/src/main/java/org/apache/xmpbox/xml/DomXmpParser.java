@@ -478,9 +478,10 @@ public class DomXmpParser
         {
             // not an array
             String whatFound = "nothing";
-            if (property.getFirstChild() != null)
+            Node firstChild = property.getFirstChild();
+            if (firstChild != null)
             {
-                whatFound = property.getFirstChild().getClass().getName();
+                whatFound = firstChild instanceof Text ? "Text" : firstChild.getClass().getName();
             }
             throw new XmpParsingException(ErrorType.Format, "Invalid array definition, expecting " + type.card()
                     + " and found "
