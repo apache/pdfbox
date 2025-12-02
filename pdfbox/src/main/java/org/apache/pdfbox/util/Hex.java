@@ -86,7 +86,7 @@ public final class Hex
     /**
      * Returns the bytes corresponding to the ASCII hex encoding of the given bytes.
      * 
-     * @param bytes the bytey to be converted
+     * @param bytes the bytes to be converted
      * @return the ASCII hex encoding of the given bytes
      */
     public static byte[] getBytes(byte[] bytes)
