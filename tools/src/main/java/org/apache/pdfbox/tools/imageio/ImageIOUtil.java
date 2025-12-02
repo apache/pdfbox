@@ -396,10 +396,11 @@ public final class ImageIOUtil
         IIOMetadataNode child;
 
         child = getOrCreateChildNode(dimension, "HorizontalPixelSize");
-        child.setAttribute("value", Double.toString(res));
+        String stringRes = Double.toString(res);
+        child.setAttribute("value", stringRes);
 
         child = getOrCreateChildNode(dimension, "VerticalPixelSize");
-        child.setAttribute("value", Double.toString(res));
+        child.setAttribute("value", stringRes);
 
         metadata.mergeTree(MetaUtil.STANDARD_METADATA_FORMAT, root);
     }
