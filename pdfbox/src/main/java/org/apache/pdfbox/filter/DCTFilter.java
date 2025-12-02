@@ -82,18 +82,17 @@ final class DCTFilter extends Filter
             if (raster.getNumBands() == 4)
             {
                 // get APP14 marker
-                Integer transform;
+                Integer colorTransform;
                 try
                 {
-                    transform = getAdobeTransform(reader.getImageMetadata(0));
+                    colorTransform = getAdobeTransform(reader.getImageMetadata(0));
                 }
                 catch (IIOException | NegativeArraySizeException e)
                 {
                     // we really tried asking nicely, now we're using brute force.
                     LOG.debug("Couldn't read usíng getAdobeTransform() - using getAdobeTransformByBruteForce() as fallback", e);
-                    transform = getAdobeTransformByBruteForce(iis);
+                    colorTransform = getAdobeTransformByBruteForce(iis);
                 }
-                int colorTransform = transform != null ? transform : 0;
 
                 // 0 = Unknown (RGB or CMYK), 1 = YCbCr, 2 = YCCK
                 // https://exiftool.org/TagNames/JPEG.html#Adobe
