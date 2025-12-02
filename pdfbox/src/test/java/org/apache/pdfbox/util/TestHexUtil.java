@@ -16,7 +16,9 @@
 package org.apache.pdfbox.util;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -79,6 +81,37 @@ public class TestHexUtil extends TestCase
         assertArrayEquals(dstString.getBytes(Charsets.US_ASCII), byteDstArray);
         
         assertArrayEquals(byteSrcArray, Hex.decodeHex(dstString));
+    }
+
+    public void testGetHexValue()
+    {
+        Set<Character> validHexCharacters = new HashSet<Character>();
+        for (char c = '0'; c <= '9'; ++c)
+        {
+            validHexCharacters.add(c);
+            String s = new StringBuilder().append(c).toString();
+            assertEquals(Integer.parseInt(s, 16), Hex.getHexValue(c));
+        }
+        for (char c = 'a'; c <= 'f'; ++c)
+        {
+            validHexCharacters.add(c);
+            String s = new StringBuilder().append(c).toString();
+            assertEquals(Integer.parseInt(s, 16), Hex.getHexValue(c));
+        }
+        for (char c = 'A'; c <= 'F'; ++c)
+        {
+            validHexCharacters.add(c);
+            String s = new StringBuilder().append(c).toString();
+            assertEquals(Integer.parseInt(s, 16), Hex.getHexValue(c));
+        }
+        assertEquals(22, validHexCharacters.size());
+        for (char c = 0; c < 256; ++c)
+        {
+            if (!validHexCharacters.contains(c))
+            {
+                assertEquals(-256, Hex.getHexValue(c));
+            }
+        }
     }
 
     /**
