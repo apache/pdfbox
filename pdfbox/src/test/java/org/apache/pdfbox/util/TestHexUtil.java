@@ -16,7 +16,9 @@
 package org.apache.pdfbox.util;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -85,4 +87,35 @@ class TestHexUtil
         assertArrayEquals(byteSrcArray, Hex.decodeHex(dstString));
     }
 
+    @Test
+    void testGetHexValue()
+    {
+        Set<Character> validHexCharacters = new HashSet<>();
+        for (char c = '0'; c <= '9'; ++c)
+        {
+            validHexCharacters.add(c);
+            String s = new StringBuilder().append(c).toString();
+            assertEquals(Integer.parseInt(s, 16), Hex.getHexValue(c));
+        }
+        for (char c = 'a'; c <= 'f'; ++c)
+        {
+            validHexCharacters.add(c);
+            String s = new StringBuilder().append(c).toString();
+            assertEquals(Integer.parseInt(s, 16), Hex.getHexValue(c));
+        }
+        for (char c = 'A'; c <= 'F'; ++c)
+        {
+            validHexCharacters.add(c);
+            String s = new StringBuilder().append(c).toString();
+            assertEquals(Integer.parseInt(s, 16), Hex.getHexValue(c));
+        }
+        assertEquals(22, validHexCharacters.size());
+        for (char c = 0; c < 256; ++c)
+        {
+            if (!validHexCharacters.contains(c))
+            {
+                assertEquals(-256, Hex.getHexValue(c));
+            }
+        }
+    }
 }
