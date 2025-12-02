@@ -234,7 +234,7 @@ public final class TypeMapping
      * @throws XmpSchemaException
      *             When Instancing specified Object Schema failed
      *
-     * @Deprecated This method will be removed in 4.0. If you need it, let us know.
+     * @deprecated This method will be removed in 4.0. If you need it, let us know.
      */
     @Deprecated
     public XMPSchema getAssociatedSchemaObject(XMPMetadata metadata, String namespace, String prefix)
