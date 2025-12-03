@@ -938,14 +938,14 @@ public class DomXmpParser
         if (!nsFinder.containsNamespace(prop.getNamespaceURI()))
         {
             throw new XmpParsingException(ErrorType.NoSchema, "Schema is not set in this document : "
-                    + prop.getNamespaceURI());
+                    + prop.getNamespaceURI() + ", property: " + prop.getPrefix() + ":" + prop.getLocalPart());
         }
         // test if namespace is defined
         String nsuri = prop.getNamespaceURI();
         if (!tm.isDefinedNamespace(nsuri))
         {
             throw new XmpParsingException(ErrorType.NoSchema, "Cannot find a definition for the namespace "
-                    + prop.getNamespaceURI());
+                    + prop.getNamespaceURI() + ", property: " + prop.getPrefix() + ":" + prop.getLocalPart());
         }
         try
         {
@@ -953,7 +953,7 @@ public class DomXmpParser
         }
         catch (BadFieldValueException e)
         {
-            throw new XmpParsingException(ErrorType.InvalidType, "Failed to retrieve property definition", e);
+            throw new XmpParsingException(ErrorType.InvalidType, "Failed to retrieve property definition for " + prop, e);
         }
     }
 
