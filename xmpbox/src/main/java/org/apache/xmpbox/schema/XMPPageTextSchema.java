@@ -49,9 +49,13 @@ public class XMPPageTextSchema extends XMPSchema
     @PropertyType(type = Types.Text, card = Cardinality.Seq)
     public static final String PLATENAMES = "PlateNames"; // Ordered array of Text
 
-    // missing:
-    // Colorants / Ordered array of Colorants / Cardinality.Seq
-    // Fonts / Unordered array of Fonts / Cardinality.Bag
+    // An ordered array of colorants (swatches) that are used in the document
+    @PropertyType(type = Types.Colorant, card = Cardinality.Seq)
+    public static final String COLORANTS = "Colorants"; // Ordered array of Colorants
+
+    // An unordered array of fonts that are used in the document
+    @PropertyType(type = Types.Font, card = Cardinality.Bag)
+    public static final String FONTS = "Fonts"; // Unordered array of Fonts
 
     public XMPPageTextSchema(XMPMetadata metadata)
     {
