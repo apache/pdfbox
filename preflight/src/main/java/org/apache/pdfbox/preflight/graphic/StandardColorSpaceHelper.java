@@ -327,7 +327,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             PDDeviceNAttributes attr = deviceN.getAttributes();
             if (attr != null)
             {
-                final Map<String, PDSeparation> colorants = attr.getColorants();
+                final Map<String, PDSeparation> colorants = attr.getColorants(null);
                 numberOfColorants = colorants.size();
                 colorants.values().stream().
                         filter(Objects::nonNull).
