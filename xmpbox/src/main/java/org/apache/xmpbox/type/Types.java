@@ -35,6 +35,7 @@ public enum Types
             Text, PartType.class), URL(true, Text, URLType.class), URI(true, Text, URIType.class), Choice(true, Text,
             ChoiceType.class), MIMEType(true, Text, MIMEType.class), LangAlt(true, Text, TextType.class), RenditionClass(
             true, Text, RenditionClassType.class), Rational(true,Text,RationalType.class),
+            Colorant(false,Structured,ColorantType.class), Font(false,Structured,FontType.class),
 
     Layer(false, Structured, LayerType.class), Thumbnail(false, Structured, ThumbnailType.class), ResourceEvent(false,
             Structured, ResourceEventType.class), ResourceRef(false, Structured, ResourceRefType.class), Version(false,
