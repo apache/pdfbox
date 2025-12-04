@@ -898,24 +898,32 @@ public final class StandardSecurityHandler extends SecurityHandler
     }
 
     // steps (a) to (d) of "Algorithm 3: Computing the encryption dictionary’s O (owner password) value".
-    private byte[] computeRC4key(byte[] ownerPassword, int encRevision, int length)
+    private byte[] computeRC4key(byte[] ownerPassword, int encRevision, int length) throws IOException
     {
-        MessageDigest md = MessageDigests.getMD5();
-        byte[] digest = md.digest(truncateOrPad(ownerPassword));
-        if (encRevision == 3 || encRevision == 4)
+        try
         {
-            for (int i = 0; i < 50; i++)
+            MessageDigest md = MessageDigests.getMD5();
+            byte[] digest = md.digest(truncateOrPad(ownerPassword));
+            if (encRevision == 3 || encRevision == 4)
             {
-                // this deviates from the spec - however, omitting the length
-                // parameter prevents the file to be opened in Adobe Reader
-                // with the owner password when the key length is 40 bit (= 5 bytes)
-                md.update(digest, 0, length);
-                digest = md.digest();
+                for (int i = 0; i < 50; i++)
+                {
+                    // this deviates from the spec - however, omitting the length
+                    // parameter prevents the file to be opened in Adobe Reader
+                    // with the owner password when the key length is 40 bit (= 5 bytes)
+                    md.update(digest, 0, length);
+                    digest = md.digest();
+                }
             }
+            byte[] rc4Key = new byte[length];
+            System.arraycopy(digest, 0, rc4Key, 0, length);
+            return rc4Key;
         }
-        byte[] rc4Key = new byte[length];
-        System.arraycopy(digest, 0, rc4Key, 0, length);
-        return rc4Key;
+        catch (IllegalArgumentException ex)
+        {
+            // PDFBOX-6115: happens with illegal key length
+            throw new IOException(ex);
+        }
     }
 
 
