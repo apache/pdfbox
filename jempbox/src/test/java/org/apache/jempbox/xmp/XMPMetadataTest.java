@@ -134,6 +134,9 @@ public class XMPMetadataTest extends TestCase {
         basicSchema.setCreateDate(new GregorianCalendar());
         Calendar createDate2 = basicSchema.getCreateDate();
         assertFalse("CreateDate has not been set", createDate1.equals(createDate2));
+        XMPSchemaMediaManagement mediaManagementSchema = xmp.getMediaManagementSchema();
+        assertEquals("uuid:31ae92cf-9a27-45e0-9371-0d2741e25919", mediaManagementSchema.getDocumentID());
+        assertEquals("uuid:2c7eb5da-9210-4666-8cef-e02ef6631c5e", mediaManagementSchema.getInstanceID());
     }
 
 }

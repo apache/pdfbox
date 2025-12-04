@@ -130,7 +130,28 @@ public class XMPSchemaMediaManagement extends XMPSchema
     {
         return getTextProperty( prefix + ":DocumentID" );
     }
-    
+
+    /**
+     * Get id that identifies a specific instance of this document.
+     *
+     * @return The instance id.
+     */
+    public String getInstanceID()
+    {
+        return getTextProperty( prefix + ":InstanceID" );
+    }
+
+   /**
+     * Set the identifier for the specific instance of this document.  It should
+     * be based on a UUID.
+     *
+     * @param id The instance id.
+     */
+    public void setInstanceID( String id )
+    {
+        setTextProperty( prefix + ":InstanceID", id );
+    }
+
     /**
      *
      * @param id An identifier for the current version.
