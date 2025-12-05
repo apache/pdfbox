@@ -40,7 +40,9 @@ import org.apache.xmpbox.DateConverter;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.AdobePDFSchema;
 import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.xmpbox.schema.XMPBasicSchema;
+import org.apache.xmpbox.schema.XMPMediaManagementSchema;
 import org.apache.xmpbox.schema.XMPSchema;
 import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.type.ThumbnailType;
@@ -345,6 +347,13 @@ class DeserializationTest
 
             XMPBasicSchema basic = metadata.getXMPBasicSchema();
             assertNotNull(basic.getCreateDate());
+
+            PDFAIdentificationSchema pdfaIdentificationSchema = metadata.getPDFAIdentificationSchema();
+            assertEquals("B", pdfaIdentificationSchema.getConformance());
+            assertEquals(1, pdfaIdentificationSchema.getPart());
+
+            XMPMediaManagementSchema xmpMediaManagementSchema = metadata.getXMPMediaManagementSchema();
+            assertEquals("e7127190-445c-11ea-0000-b3bc74086807", xmpMediaManagementSchema.getDocumentID());
 
             checkTransform(metadata, "27499224985683016678197540524065114038595582230834506941950503218519476041225", metadata.getAllSchemas().size());
         }
