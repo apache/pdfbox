@@ -54,7 +54,7 @@ import picocli.CommandLine.Option;
  * 
  * @author Ben Litchfield
  */
-@Command(name = "printpdf", header = "Prints a PDF document", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "print", header = "Prints a PDF document", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public final class PrintPDF implements Callable<Integer>
 {
     // We need this helper class because the Sides class isn't a real enum class.
