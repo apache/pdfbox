@@ -157,6 +157,8 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
             cs.moveTo(lineLength, llo);
             cs.lineTo(lineLength, llo + ll + lle);
 
+            String startPointEndingStyle = annotation.getStartPointEndingStyle();
+            String endPointEndingStyle = annotation.getEndPointEndingStyle();
             if (annotation.hasCaption() && !contents.isEmpty())
             {
                 // Note that Adobe places the text as a caption even if /CP is not set
@@ -187,7 +189,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
 
                 // draw the line horizontally, using the rotation CTM to get to correct final position
                 // that's the easiest way to calculate the positions for the line before and after inline caption
-                if (SHORT_STYLES.contains(annotation.getStartPointEndingStyle()))
+                if (SHORT_STYLES.contains(startPointEndingStyle))
                 {
                     cs.moveTo(lineEndingSize, y);
                 }
@@ -209,7 +211,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     cs.lineTo(xOffset - lineEndingSize, y);
                     cs.moveTo(lineLength - xOffset + lineEndingSize, y);
                 }
-                if (SHORT_STYLES.contains(annotation.getEndPointEndingStyle()))
+                if (SHORT_STYLES.contains(endPointEndingStyle))
                 {
                     cs.lineTo(lineLength - lineEndingSize, y);
                 }
@@ -244,7 +246,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
             }
             else
             {
-                if (SHORT_STYLES.contains(annotation.getStartPointEndingStyle()))
+                if (SHORT_STYLES.contains(startPointEndingStyle))
                 {
                     cs.moveTo(lineEndingSize, y);
                 }
@@ -252,7 +254,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 {
                     cs.moveTo(0, y);
                 }
-                if (SHORT_STYLES.contains(annotation.getEndPointEndingStyle()))
+                if (SHORT_STYLES.contains(endPointEndingStyle))
                 {
                     cs.lineTo(lineLength - lineEndingSize, y);
                 }
@@ -277,13 +279,13 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
             }
 
             // check for LE_NONE only needed to avoid q cm Q for that case
-            if (!LE_NONE.equals(annotation.getStartPointEndingStyle()))
+            if (!LE_NONE.equals(startPointEndingStyle))
             {
                 cs.saveGraphicsState();
-                if (ANGLED_STYLES.contains(annotation.getStartPointEndingStyle()))
+                if (ANGLED_STYLES.contains(startPointEndingStyle))
                 {
                     cs.transform(Matrix.getRotateInstance(angle, x1, y1));
-                    drawStyle(annotation.getStartPointEndingStyle(), cs, 0, y, lineEndingSize, hasStroke, hasBackground, false);
+                    drawStyle(startPointEndingStyle, cs, 0, y, lineEndingSize, hasStroke, hasBackground, false);
                 }
                 else
                 {
@@ -293,19 +295,19 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     // We use the angle we already know and the distance y to translate to the new coordinate.
                     float xx1 = x1 - (float) (y * Math.sin(angle));
                     float yy1 = y1 + (float) (y * Math.cos(angle));
-                    drawStyle(annotation.getStartPointEndingStyle(), cs, xx1, yy1, lineEndingSize, hasStroke, hasBackground, false);
+                    drawStyle(startPointEndingStyle, cs, xx1, yy1, lineEndingSize, hasStroke, hasBackground, false);
                 }
                 cs.restoreGraphicsState();
             }
 
             // check for LE_NONE only needed to avoid q cm Q for that case
-            if (!LE_NONE.equals(annotation.getEndPointEndingStyle()))
+            if (!LE_NONE.equals(endPointEndingStyle))
             {
                 // save / restore not needed because it's the last one
-                if (ANGLED_STYLES.contains(annotation.getEndPointEndingStyle()))
+                if (ANGLED_STYLES.contains(endPointEndingStyle))
                 {
                     cs.transform(Matrix.getRotateInstance(angle, x2, y2));
-                    drawStyle(annotation.getEndPointEndingStyle(), cs, 0, y, lineEndingSize, hasStroke, hasBackground, true);
+                    drawStyle(endPointEndingStyle, cs, 0, y, lineEndingSize, hasStroke, hasBackground, true);
                 }
                 else
                 {
@@ -315,7 +317,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     // We use the angle we already know and the distance y to translate to the new coordinate.
                     float xx2 = x2 - (float) (y * Math.sin(angle));
                     float yy2 = y2 + (float) (y * Math.cos(angle));
-                    drawStyle(annotation.getEndPointEndingStyle(), cs, xx2, yy2, lineEndingSize, hasStroke, hasBackground, true);
+                    drawStyle(endPointEndingStyle, cs, xx2, yy2, lineEndingSize, hasStroke, hasBackground, true);
                 }
             }
         }
