@@ -232,18 +232,13 @@ public class DomXmpParser
                 else if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix()))
                 {
                     String namespace = attr.getValue();
-                    if (!strictParsing && !tm.isStructuredTypeNamespace(namespace))
+                    if (!strictParsing && !tm.isStructuredTypeNamespace(namespace) &&
+                         xmp.getSchema(namespace) == null && tm.getSchemaFactory(namespace) == null)
                     {
                         // PDFBOX-5128: Add the schema on the fly if it can't be found
                         // PDFBOX-5649: But only if the namespace isn't already known
                         // because this adds a namespace without property descriptions
-                        String prefix = attr.getLocalName();
-
-                        XMPSchema schema = xmp.getSchema(namespace);
-                        if (schema == null && tm.getSchemaFactory(namespace) == null)
-                        {
-                            tm.addNewNameSpace(namespace, prefix);
-                        }
+                        tm.addNewNameSpace(namespace, attr.getLocalName());
                     }
                 }
                 else
