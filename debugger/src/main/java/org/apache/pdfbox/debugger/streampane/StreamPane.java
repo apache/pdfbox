@@ -412,12 +412,13 @@ public class StreamPane implements ActionListener
                     transformerFactory.setAttribute("http://javax.xml.XMLConstants/property/accessExternalStylesheet", "");
                     Transformer transformer = transformerFactory.newTransformer();
                     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-                    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "1");
+                    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
                     StringWriter sw = new StringWriter();
                     StreamResult result = new StreamResult(sw);
                     DOMSource source = new DOMSource(doc);
                     transformer.transform(source, result);
-                    docu.insertString(0, sw.toString(), null);
+                    // replaceAll because of JDK-8262285. Alternatively pass an XSLT to newTransformer()
+                    docu.insertString(0, sw.toString().replaceAll("(\\r\\n|\\r|\\n) +(\\r\\n|\\r|\\n)","\n"), null);
                 }
                 catch (UnsupportedEncodingException ex)
                 {
