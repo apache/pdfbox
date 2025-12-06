@@ -199,7 +199,7 @@ class DomXmpParserTest
         XMPageTextSchema pageTextSchema = xmp.getPageTextSchema();
         DimensionsType dim = (DimensionsType) pageTextSchema.getProperty(XMPageTextSchema.MAX_PAGE_SIZE);
         Assertions.assertEquals("DimensionsType{4.0 x 3.0 inch}", dim.toString());
-        Assertions.assertEquals("[IntegerType:7]", pageTextSchema.getProperty(XMPageTextSchema.N_PAGES).toString());
+        Assertions.assertEquals("[NPages=IntegerType:7]", pageTextSchema.getProperty(XMPageTextSchema.N_PAGES).toString());
         XMPMediaManagementSchema xmpMediaManagementSchema = xmp.getXMPMediaManagementSchema();
         ResourceRefType derivedFromProperty = xmpMediaManagementSchema.getDerivedFromProperty();
         Assertions.assertEquals("uuid:b429d411-e628-45ca-b932-d2c77fbe6cd3", xmpMediaManagementSchema.getInstanceID());
