@@ -505,7 +505,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
 
     /**
      * Sets the range for this color space.
-     * @param range the new range for the a component
+     * @param range the new range for the component
      * @param n the component to set the range for
      */
     public void setRangeForComponent(PDRange range, int n)
