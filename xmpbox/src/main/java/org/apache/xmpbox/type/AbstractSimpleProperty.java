@@ -98,7 +98,7 @@ public abstract class AbstractSimpleProperty extends AbstractField
     @Override
     public String toString()
     {
-        return "[" + this.getClass().getSimpleName() + ":" + getStringValue() + "]";
+        return "[" + getPropertyName() + "=" + this.getClass().getSimpleName() + ":" + getStringValue() + "]";
     }
 
     /**
