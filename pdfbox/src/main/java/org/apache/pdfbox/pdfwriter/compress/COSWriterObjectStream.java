@@ -113,22 +113,22 @@ public class COSWriterObjectStream
         stream.setInt(COSName.N, objectCount);
         // Prepare the compressible objects for writing.
         List<Long> objectNumbers = new ArrayList<>(objectCount);
-        List<byte[]> objectsBuffer = new ArrayList<>(objectCount);
+        List<ByteArrayOutputStream> objectsBuffer = new ArrayList<>(objectCount);
         for (int i = 0; i < objectCount; i++)
         {
-            try (ByteArrayOutputStream partialOutput = new ByteArrayOutputStream())
+            try (ByteArrayOutputStream partialOutput = new DirectAccessByteArrayOutputStream())
             {
                 objectNumbers.add(preparedKeys.get(i).getNumber());
                 COSBase base = preparedObjects.get(i);
                 writeObject(partialOutput, base, true);
-                objectsBuffer.add(partialOutput.toByteArray());
+                objectsBuffer.add(partialOutput);
             }
         }
 
         // Deduce the object stream byte offset map.
         byte[] offsetsMapBuffer;
         long nextObjectOffset = 0;
-        try (ByteArrayOutputStream partialOutput = new ByteArrayOutputStream())
+        try (ByteArrayOutputStream partialOutput = new DirectAccessByteArrayOutputStream())
         {
             for (int i = 0; i < objectNumbers.size(); i++)
             {
@@ -138,7 +138,7 @@ public class COSWriterObjectStream
                 partialOutput.write(
                         String.valueOf(nextObjectOffset).getBytes(StandardCharsets.ISO_8859_1));
                 partialOutput.write(COSWriter.SPACE);
-                nextObjectOffset += objectsBuffer.get(i).length;
+                nextObjectOffset += objectsBuffer.get(i).size();
             }
             offsetsMapBuffer = partialOutput.toByteArray();
         }
@@ -148,9 +148,9 @@ public class COSWriterObjectStream
         {
             output.write(offsetsMapBuffer);
             stream.setInt(COSName.FIRST, offsetsMapBuffer.length);
-            for (byte[] rawObject : objectsBuffer)
+            for (ByteArrayOutputStream rawObject : objectsBuffer)
             {
-                output.write(rawObject);
+                output.write(rawObject.toByteArray());
             }
         }
         return stream;
@@ -384,7 +384,23 @@ public class COSWriterObjectStream
      */
     private void writeCOSNull(OutputStream output) throws IOException
     {
-        output.write("null".getBytes(StandardCharsets.ISO_8859_1));
+        output.write(COSNull.NULL_BYTES);
         output.write(COSWriter.SPACE);
+    }
+    
+    /**
+     * Reuse the underlying byte array instead of copying it.
+     * 
+     * This is a private class as reusing the byte array may have some unwanted side effects.
+     * 
+     */
+    private class DirectAccessByteArrayOutputStream extends ByteArrayOutputStream
+    {
+        
+        @Override
+        public byte[] toByteArray()
+        {
+            return buf;
+        }
     }
 }
