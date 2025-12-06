@@ -1681,8 +1681,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             return;
         }
+        PDGraphicsState graphicsState = getGraphicsState();
         TransparencyGroup group
-                = new TransparencyGroup(form, false, getGraphicsState().getCurrentTransformationMatrix(), null);
+                = new TransparencyGroup(form, false, graphicsState.getCurrentTransformationMatrix(), null);
         BufferedImage image = group.getImage();
         if (image == null)
         {
@@ -1690,7 +1691,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return;
         }
 
-        graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
+        graphics.setComposite(graphicsState.getNonStrokingJavaComposite());
         setClip();
 
         // both the DPI xform and the CTM were already applied to the group, so all we do
@@ -1715,7 +1716,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             graphics.translate(x * xformScalingFactorX, y * xformScalingFactorY);
         }
 
-        PDSoftMask softMask = getGraphicsState().getSoftMask();
+        PDSoftMask softMask = graphicsState.getSoftMask();
         if (softMask != null)
         {
             Paint awtPaint = new TexturePaint(image,
