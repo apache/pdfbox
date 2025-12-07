@@ -575,6 +575,19 @@ public class DomXmpParser
                 throw new XmpParsingException(ErrorType.InvalidType, "Parsing of structured type failed", ex);
             }
             loadAttributes(af, liElement);
+            if (af instanceof AbstractStructuredType)
+            {
+                PropertiesDescription pm;
+                if (type.isStructured())
+                {
+                    pm = tm.getStructuredPropMapping(type);
+                }
+                else
+                {
+                    pm = tm.getDefinedDescriptionByNamespace(liElement.getNamespaceURI());
+                }
+                af = tryParseAttributesAsProperties(xmp, liElement, tm, (AbstractStructuredType) af, pm, null);
+            }
             return af;
         }
     }
@@ -614,7 +627,7 @@ public class DomXmpParser
         if (liDescriptionElementChildren.isEmpty())
         {
             // The list is empty
-            return null;
+            return tryParseAttributesAsProperties(xmp, liDescriptionElement, tm, null, null, descriptor);
         }
         // Instantiate abstract structured type with hint from first element
         Element firstLiDescriptionElementChild = liDescriptionElementChildren.get(0);
@@ -704,6 +717,7 @@ public class DomXmpParser
             }
 
         }
+        ast = tryParseAttributesAsProperties(xmp, liDescriptionElement, tm, ast, pm, descriptor);
         nsFinder.pop();
         return ast;
     }
@@ -952,6 +966,95 @@ public class DomXmpParser
         {
             throw new XmpParsingException(ErrorType.InvalidType, "Failed to retrieve property definition for " + prop, e);
         }
+    }
+
+    /**
+     * This attempts to run the same logic as in parseLiDescription() but with simple attributes
+     * that will be treated like children. This is inspired by loadAttributes() and
+     * parseDescriptionRootAttr(). This solves the problem in PDFBOX-3882 where properties appear as
+     * attributes in places lower than the descriptor root.
+     *
+     * @param xmp
+     * @param liElement
+     * @param tm
+     * @param ast An AbstractStructuredType object, can be null.
+     * @param pm A PropertiesDescription object, must be set if ast is not null.
+     * @param qName QName of the parent, will be used if instanciating an AbstractStructuredType
+     * object, must be set if ast is not null.
+     * @return An AbstractStructuredType, possibly created here if it was null as parameter.
+     * @throws XmpParsingException
+     */
+    private AbstractStructuredType tryParseAttributesAsProperties(XMPMetadata xmp, Element liElement,
+            TypeMapping tm, AbstractStructuredType ast, PropertiesDescription pm, QName qName) throws XmpParsingException
+    {
+        NamedNodeMap attributes = liElement.getAttributes();
+        if (attributes == null)
+        {
+            return ast;
+        }
+        for (int i = 0; i < attributes.getLength(); ++i)
+        {
+            Attr attr = (Attr) attributes.item(i);
+            if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix()))
+            {
+                // do nothing
+            }
+            else if (XmpConstants.DEFAULT_RDF_PREFIX.equals(attr.getPrefix())
+                    && XmpConstants.ABOUT_NAME.equals(attr.getLocalName()))
+            {
+                // do nothing (maybe later?)
+            }
+            else if (XMLConstants.XML_NS_URI.equals(attr.getNamespaceURI()))
+            {
+                // do nothing
+            }
+            else if (XmpConstants.DEFAULT_RDF_PREFIX.equals(attr.getPrefix()))
+            {
+                // other rdf stuff, e.g. rdf:parseType
+            }
+            else
+            {
+                if (ast == null && attr.getNamespaceURI() != null) // What to do if attr.getNamespaceURI() is null?
+                {
+                    // like in parseLiDescription():
+                    // Instantiate abstract structured type with hint from first element
+                    QName attrQName = new QName(attr.getNamespaceURI(), attr.getLocalName(), attr.getPrefix());
+                    PropertyType ctype = checkPropertyDefinition(xmp, attrQName);
+                    // PDFBOX-2318, PDFBOX-6106: Default to text if no type is found
+                    if (ctype == null)
+                    {
+                        if (strictParsing)
+                        {
+                            throw new XmpParsingException(ErrorType.InvalidType, "No type defined for {" + attr.getNamespaceURI() + "}"
+                                    + attr.getLocalName());
+                        }
+                        else
+                        {
+                            ctype = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
+                        }
+                    }
+                    Types tt = ctype.type();
+                    ast = instanciateStructured(tm, tt, qName.getLocalPart(), attr.getNamespaceURI());
+                    if (tt.isStructured())
+                    {
+                        pm = tm.getStructuredPropMapping(tt);
+                    }
+                    else
+                    {
+                        pm = tm.getDefinedDescriptionByNamespace(attr.getNamespaceURI());
+                    }
+                }
+                if (ast != null && pm != null && attr.getNamespaceURI() != null)
+                {
+                    PropertyType type = pm.getPropertyType(attr.getLocalName());
+                    AbstractSimpleProperty asp = tm.instanciateSimpleProperty(
+                            attr.getNamespaceURI(), attr.getPrefix(), attr.getLocalName(),
+                            attr.getValue(), type.type());
+                    ast.getContainer().addProperty(asp);
+                }
+            }
+        }
+        return ast;
     }
 
     protected static class NamespaceFinder
