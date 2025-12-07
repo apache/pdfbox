@@ -267,7 +267,7 @@ public final class PDFPrintable implements Printable
             // rasterize to bitmap (optional)
             Graphics2D printerGraphics = null;
             BufferedImage image = null;
-            if (dpi > 0 || dpi == RASTERIZE_DPI_AUTO)
+            if (rasterDpi > 0)
             {
                 LOG.debug("dpi set to {}", rasterDpi);
                 float dpiScale = rasterDpi / 72;
