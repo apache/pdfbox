@@ -24,12 +24,17 @@ package org.apache.xmpbox.xml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.XMPMediaManagementSchema;
+import org.apache.xmpbox.schema.XMPSchema;
 import org.apache.xmpbox.schema.XMPageTextSchema;
+import org.apache.xmpbox.type.AbstractField;
 import org.apache.xmpbox.type.ArrayProperty;
+import org.apache.xmpbox.type.DefinedStructuredType;
 import org.apache.xmpbox.type.DimensionsType;
+import org.apache.xmpbox.type.PDFASchemaType;
 import org.apache.xmpbox.type.ResourceEventType;
 import org.apache.xmpbox.type.ResourceRefType;
 
@@ -268,5 +273,36 @@ class DomXmpParserTest
         DimensionsType dim = (DimensionsType) pageTextSchema.getProperty(XMPageTextSchema.MAX_PAGE_SIZE);
         Assertions.assertEquals("DimensionsType{4.0 x 3.0 inch}", dim.toString());
         Assertions.assertEquals("[NPages=IntegerType:7]", pageTextSchema.getProperty(XMPageTextSchema.N_PAGES).toString());
+    }
+
+
+    /**
+     * PDFBOX-3882: Test attributes being used as properties to define an extension schema. Also
+     * verify the content of the actual extension schema.
+     *
+     * @throws IOException
+     * @throws XmpParsingException 
+     */
+    @Test
+    void testPDFBox3882() throws IOException, XmpParsingException
+    {
+        try (InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/xml/PDFBOX-3882-dematbox.xml"))
+        {
+            DomXmpParser dxp = new DomXmpParser();
+            dxp.setStrictParsing(false);
+            XMPMetadata xmp = dxp.parse(is);
+            List<AbstractField> allProperties = xmp.getPDFExtensionSchema().getSchemasProperty().getAllProperties();
+            Assertions.assertEquals(1, allProperties.size());
+            PDFASchemaType pdfExtensionSchema = (PDFASchemaType) allProperties.get(0);
+            Assertions.assertEquals("http://www.sagemcom.com/documents/xmlns/dematbox", pdfExtensionSchema.getNamespaceURI());
+            Assertions.assertEquals("dematbox", pdfExtensionSchema.getPrefixValue());
+            XMPSchema extensionSchema = xmp.getSchema(pdfExtensionSchema.getNamespaceURI());
+            Assertions.assertEquals(pdfExtensionSchema.getNamespaceURI(), extensionSchema.getNamespace());
+            Assertions.assertEquals(pdfExtensionSchema.getPrefixValue(), extensionSchema.getPrefix());
+            ArrayProperty pageInfoProp = (ArrayProperty) extensionSchema.getProperty("PageInfo");
+            DefinedStructuredType dst = (DefinedStructuredType) pageInfoProp.getAllProperties().get(0);
+            Assertions.assertEquals("[number=IntegerType:1]", dst.getProperty("number").toString());
+            Assertions.assertEquals("[origNumber=IntegerType:1]", dst.getProperty("origNumber").toString());            
+        }
     }
 }
