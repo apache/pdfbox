@@ -37,6 +37,7 @@ import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.RenderDestination;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * Prints pages from a PDF document using any page size or scaling mode.
@@ -213,7 +214,7 @@ public final class PDFPrintable implements Printable
             float rasterDpi = dpi;
             if (rasterDpi == RASTERIZE_DPI_AUTO)
             {
-                rasterDpi = (float) graphics2D.getTransform().getScaleX() * 72.0f;
+                rasterDpi = (float) new Matrix(graphics2D.getTransform()).getScalingFactorX() * 72.0f;
                 LOG.debug("auto raster dpi: {}, g2d: {}, g2d transform: {}", rasterDpi, graphics2D, graphics2D.getTransform());
             }
 
