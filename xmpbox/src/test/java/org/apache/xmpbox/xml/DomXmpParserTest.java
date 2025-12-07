@@ -153,7 +153,8 @@ public class DomXmpParserTest
     /**
      * Test PageTextSchema and XMPMediaManagementSchema.
      *
-     * @throws XmpParsingException 
+     * @throws XmpParsingException
+     * @throws UnsupportedEncodingException
      */
     @Test
     public void testPageTextSchema() throws XmpParsingException, UnsupportedEncodingException
@@ -197,5 +198,69 @@ public class DomXmpParserTest
         assertEquals("proof:pdf", xmpMediaManagementSchema.getRenditionClass());
         assertEquals("adobe:docid:indd:db084a4d-dbb2-11dc-ac34-beb3cc4028ec", xmpMediaManagementSchema.getDocumentID());
         assertEquals("adobe:docid:indd:fa7c6589-9f4a-11dc-9641-af983df728d7", derivedFromProperty.getDocumentID());
+    }
+
+    /**
+     * PDFBOX-3882: Test PageTextSchema with dimensions mixed as children or attributes.
+     *
+     * @throws XmpParsingException
+     * @throws UnsupportedEncodingException
+     */
+    @Test
+    public void testPageTextSchema2() throws XmpParsingException, UnsupportedEncodingException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
+                    "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" +
+                    "	<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "           <rdf:Description xmlns:xmpTPg=\"http://ns.adobe.com/xap/1.0/t/pg/\"" +
+                    "                            xmlns:stDim=\"http://ns.adobe.com/xap/1.0/sType/Dimensions#\"" +
+                    "		                 rdf:about=\"\">\n" +
+                    "			<xmpTPg:MaxPageSize>\n" +
+                    "				<rdf:Description stDim:w=\"4\" stDim:h=\"3\">\n" +
+                    "					<stDim:unit>inch</stDim:unit>\n" +
+                    "				</rdf:Description>\n" +
+                    "			</xmpTPg:MaxPageSize>\n" +
+                    "			<xmpTPg:NPages>7</xmpTPg:NPages>\n" +
+                    "		</rdf:Description>\n" +
+                    "	</rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end=\"r\"?>";
+        DomXmpParser xmpParser = new DomXmpParser();
+        XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
+        XMPageTextSchema pageTextSchema = xmp.getPageTextSchema();
+        DimensionsType dim = (DimensionsType) pageTextSchema.getProperty(XMPageTextSchema.MAX_PAGE_SIZE);
+        assertEquals("DimensionsType{4.0 x 3.0 inch}", dim.toString());
+        assertEquals("[NPages=IntegerType:7]", pageTextSchema.getProperty(XMPageTextSchema.N_PAGES).toString());
+    }
+
+    /**
+     * PDFBOX-3882: Test PageTextSchema with dimensions as attributes only.
+     *
+     * @throws XmpParsingException
+     * @throws UnsupportedEncodingException
+     */
+    @Test
+    public void testPageTextSchema3() throws XmpParsingException, UnsupportedEncodingException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
+                    "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" +
+                    "	<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "           <rdf:Description xmlns:xmpTPg=\"http://ns.adobe.com/xap/1.0/t/pg/\"" +
+                    "                            xmlns:stDim=\"http://ns.adobe.com/xap/1.0/sType/Dimensions#\"" +
+                    "		                 rdf:about=\"\">\n" +
+                    "			<xmpTPg:MaxPageSize>\n" +
+                    "				<rdf:Description stDim:w=\"4\" stDim:h=\"3\" stDim:unit=\"inch\"/>\n" +
+                    "			</xmpTPg:MaxPageSize>\n" +
+                    "			<xmpTPg:NPages>7</xmpTPg:NPages>\n" +
+                    "		</rdf:Description>\n" +
+                    "	</rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end=\"r\"?>";
+        DomXmpParser xmpParser = new DomXmpParser();
+        XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
+        XMPageTextSchema pageTextSchema = xmp.getPageTextSchema();
+        DimensionsType dim = (DimensionsType) pageTextSchema.getProperty(XMPageTextSchema.MAX_PAGE_SIZE);
+        assertEquals("DimensionsType{4.0 x 3.0 inch}", dim.toString());
+        assertEquals("[NPages=IntegerType:7]", pageTextSchema.getProperty(XMPageTextSchema.N_PAGES).toString());
     }
 }
