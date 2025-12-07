@@ -54,7 +54,6 @@ class DomXmpParserTest
         try (InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/xml/PDFBOX-5649.xml"))
         {
             DomXmpParser dxp = new DomXmpParser();
-            dxp.setStrictParsing(false);
             XMPMetadata xmp = dxp.parse(fis);
             Assertions.assertNotNull(xmp);
         }
@@ -66,7 +65,6 @@ class DomXmpParserTest
         try (InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/xml/PDFBOX-5835.xml"))
         {
             DomXmpParser dxp = new DomXmpParser();
-            dxp.setStrictParsing(false);
             XMPMetadata xmp = dxp.parse(fis);
             Assertions.assertEquals("A", xmp.getPDFAIdentificationSchema().getConformance());
             Assertions.assertEquals((Integer) 3, xmp.getPDFAIdentificationSchema().getPart());
@@ -289,7 +287,6 @@ class DomXmpParserTest
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/xml/PDFBOX-3882-dematbox.xml"))
         {
             DomXmpParser dxp = new DomXmpParser();
-            dxp.setStrictParsing(false);
             XMPMetadata xmp = dxp.parse(is);
             List<AbstractField> allProperties = xmp.getPDFExtensionSchema().getSchemasProperty().getAllProperties();
             Assertions.assertEquals(1, allProperties.size());
