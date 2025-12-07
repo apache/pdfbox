@@ -308,14 +308,13 @@ class DomXmpParserTest
 
     /**
      * PDFBOX-3882: Test ResourceEventType properties as attributes instead of properties (call of
-     * tryParseAttributesAsProperties() the the end of parseLiElement())
+     * tryParseAttributesAsProperties() at the end of parseLiElement())
      *
      * @throws XmpParsingException
      */
     @Test
     void testPDFBox3882_2() throws XmpParsingException
     {
-        
         // data modified from XMP data in the JPEG file in Apache Tika JpegParserTest.testJPEGXMPMM()
         String s = "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
                     "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"\n" +
@@ -395,7 +394,6 @@ class DomXmpParserTest
         assertEquals("xmp.iid:49E997338D4911E1AB62EBF9B374B234", xmpMediaManagementSchema.getInstanceID());
         assertEquals("xmp.did:49E997348D4911E1AB62EBF9B374B234", xmpMediaManagementSchema.getDocumentID());
         assertEquals("xmp.did:01801174072068118A6D9A879C818256", xmpMediaManagementSchema.getOriginalDocumentID());
-        System.out.println("MediaManagementSchema all: " + xmpMediaManagementSchema.getAllProperties());
         PhotoshopSchema photoshopSchema = xmp.getPhotoshopSchema();
         assertEquals("2012-05-03T09:34:50-04:00\tFile i1222b.jpg opened\n", photoshopSchema.getHistory());
         ArrayProperty ancestorsProperty = (ArrayProperty) photoshopSchema.getProperty("DocumentAncestors");
@@ -404,6 +402,7 @@ class DomXmpParserTest
         assertEquals("adobe:docid:photoshop:11d3ec5a-c131-11d8-9274-ec65c7d7e0c6", ((TextType) ancestors.get(0)).getStringValue());
         assertEquals("adobe:docid:photoshop:aadc7027-309c-11d8-9596-9cf45d2f630b", ((TextType) ancestors.get(1)).getStringValue());
         assertEquals("adobe:docid:photoshop:c7961c59-6e0f-11d8-87b7-d67539df12d8", ((TextType) ancestors.get(2)).getStringValue());
-        ResourceRefType derivedFromProperty = xmpMediaManagementSchema.getDerivedFromProperty(); //TODO doesn't work yet?!
+        // xmpMediaManagementSchema.getDerivedFromProperty() doesn't work.
+        // However the PDFLib XMP validator considers this file to be invalid, so lets not bother more
     }
 }
