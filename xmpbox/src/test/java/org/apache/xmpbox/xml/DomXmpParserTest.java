@@ -28,12 +28,14 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.xmpbox.schema.PhotoshopSchema;
 import org.apache.xmpbox.schema.XMPMediaManagementSchema;
 import org.apache.xmpbox.schema.XMPSchema;
 import org.apache.xmpbox.schema.XMPageTextSchema;
 import org.apache.xmpbox.type.AbstractField;
 import org.apache.xmpbox.type.ArrayProperty;
+import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.type.DefinedStructuredType;
 import org.apache.xmpbox.type.DimensionsType;
 import org.apache.xmpbox.type.PDFASchemaType;
@@ -406,5 +408,101 @@ class DomXmpParserTest
         assertEquals("adobe:docid:photoshop:c7961c59-6e0f-11d8-87b7-d67539df12d8", ((TextType) ancestors.get(2)).getStringValue());
         // xmpMediaManagementSchema.getDerivedFromProperty() doesn't work.
         // However the PDFLib XMP validator considers this file to be invalid, so lets not bother more
+    }
+
+    /**
+     * PDFBOX-5292: Test whether inline extension schema is detected.
+     *
+     * @throws XmpParsingException 
+     */
+    @Test
+    void testPDFBox5292() throws XmpParsingException, BadFieldValueException
+    {
+        String s = "<?xpacket begin=\"ï»¿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
+                    "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Adobe XMP Core 5.6-c015 84.159810, 2016/09/10-02:41:30        \">\n" +
+                    "    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "        <rdf:Description rdf:about=\"\"\n" +
+                    "                         xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\"\n" +
+                    "                         xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n" +
+                    "                         xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\"\n" +
+                    "                         xmlns:pdfaid=\"http://www.aiim.org/pdfa/ns/id/\"\n" +
+                    "                         xmlns:pdfaExtension=\"http://www.aiim.org/pdfa/ns/extension/\"\n" +
+                    "                         xmlns:pdfaSchema=\"http://www.aiim.org/pdfa/ns/schema#\"\n" +
+                    "                         xmlns:pdfaProperty=\"http://www.aiim.org/pdfa/ns/property#\"\n" +
+                    "                         xmlns:example=\"http://ns.example.org/default/1.0/\">\n" +
+                    "            <xmp:CreateDate>2021-05-21T11:42:49+01:00</xmp:CreateDate>\n" +
+                    "            <xmp:ModifyDate>2021-05-21T11:47:16+02:00</xmp:ModifyDate>\n" +
+                    "            <xmp:MetadataDate>2021-05-21T11:47:16+02:00</xmp:MetadataDate>\n" +
+                    "            <dc:format>application/pdf</dc:format>\n" +
+                    "            <dc:title>\n" +
+                    "                <rdf:Alt>\n" +
+                    "                    <rdf:li xml:lang=\"x-default\">Inline XMP Extension PoC</rdf:li>\n" +
+                    "                </rdf:Alt>\n" +
+                    "            </dc:title>\n" +
+                    "            <dc:creator>\n" +
+                    "                <rdf:Seq>\n" +
+                    "                    <rdf:li>DSO</rdf:li>\n" +
+                    "                </rdf:Seq>\n" +
+                    "            </dc:creator>\n" +
+                    "            <dc:description>\n" +
+                    "                <rdf:Alt>\n" +
+                    "                    <rdf:li xml:lang=\"x-default\">Inline XMP Extension PoC</rdf:li>\n" +
+                    "                </rdf:Alt>\n" +
+                    "            </dc:description>\n" +
+                    "            <pdf:Keywords/>\n" +
+                    "            <pdfaid:part>2</pdfaid:part>\n" +
+                    "            <pdfaid:conformance>A</pdfaid:conformance>\n" +
+                    "            <example:Data>Example</example:Data>\n" +
+                    "            <pdfaExtension:schemas>\n" +
+                    "                <rdf:Bag>\n" +
+                    "                    <rdf:li rdf:parseType=\"Resource\">\n" +
+                    "                        <pdfaSchema:schema>Simple Schema</pdfaSchema:schema>\n" +
+                    "                        <pdfaSchema:namespaceURI>http://ns.example.org/default/1.0/</pdfaSchema:namespaceURI>\n" +
+                    "                        <pdfaSchema:prefix>example</pdfaSchema:prefix>\n" +
+                    "                        <pdfaSchema:property>\n" +
+                    "                            <rdf:Seq>\n" +
+                    "                                <rdf:li rdf:parseType=\"Resource\">\n" +
+                    "                                    <pdfaProperty:name>Data</pdfaProperty:name>\n" +
+                    "                                    <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+                    "                                    <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+                    "                                    <pdfaProperty:description>Example Data</pdfaProperty:description>\n" +
+                    "                                </rdf:li>\n" +
+                    "                            </rdf:Seq>\n" +
+                    "                        </pdfaSchema:property>\n" +
+                    "                    </rdf:li>\n" +
+                    "                    <rdf:li rdf:parseType=\"Resource\">\n" +
+                    "                        <pdfaSchema:namespaceURI>http://www.aiim.org/pdfa/ns/id/</pdfaSchema:namespaceURI>\n" +
+                    "                        <pdfaSchema:prefix>pdfaid</pdfaSchema:prefix>\n" +
+                    "                        <pdfaSchema:schema>PDF/A ID Schema</pdfaSchema:schema>\n" +
+                    "                        <pdfaSchema:property>\n" +
+                    "                            <rdf:Seq>\n" +
+                    "                                <rdf:li rdf:parseType=\"Resource\">\n" +
+                    "                                    <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+                    "                                    <pdfaProperty:description>Part of PDF/A standard</pdfaProperty:description>\n" +
+                    "                                    <pdfaProperty:name>part</pdfaProperty:name>\n" +
+                    "                                    <pdfaProperty:valueType>Integer</pdfaProperty:valueType>\n" +
+                    "                                </rdf:li>\n" +
+                    "                                <rdf:li rdf:parseType=\"Resource\">\n" +
+                    "                                    <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+                    "                                    <pdfaProperty:description>Conformance level of PDF/A standard</pdfaProperty:description>\n" +
+                    "                                    <pdfaProperty:name>conformance</pdfaProperty:name>\n" +
+                    "                                    <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+                    "                                </rdf:li>\n" +
+                    "                            </rdf:Seq>\n" +
+                    "                        </pdfaSchema:property>\n" +
+                    "                    </rdf:li>\n" +
+                    "                </rdf:Bag>\n" +
+                    "            </pdfaExtension:schemas>\n" +
+                    "        </rdf:Description>\n" +
+                    "    </rdf:RDF>\n" +
+                    "</x:xmpmeta>\n" +
+                    "\n" +
+                    "<?xpacket end=\"w\"?>";
+        DomXmpParser xmpParser = new DomXmpParser();
+        XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
+        PDFAIdentificationSchema pdfaIdSchema = xmp.getPDFAIdentificationSchema();
+        assertEquals(2, pdfaIdSchema.getPart());
+        String dataValue = xmp.getSchema("http://ns.example.org/default/1.0/").getUnqualifiedTextPropertyValue("Data");
+        assertEquals("Example", dataValue);
     }
 }
