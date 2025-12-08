@@ -184,25 +184,17 @@ public class DomXmpParser
         Element rdfRdf = findDescriptionsParent(root);
         nsFinder.push(rdfRdf); // PDFBOX-6099: push namespaces in rdf:RDF
         List<Element> descriptions = DomHelper.getElementChildren(rdfRdf);
-        List<Element> dataDescriptions = new ArrayList<Element>(descriptions.size());
         for (Element description : descriptions)
         {
-            Element first = DomHelper.getFirstChildElement(description);
-            if (first != null && "pdfaExtension".equals(first.getPrefix()))
-            {
-                PdfaExtensionHelper.validateNaming(xmp, description);
-                parseDescriptionRoot(xmp, description);
-            }
-            else
-            {
-                dataDescriptions.add(description);
-            }
+            PdfaExtensionHelper.validateNaming(xmp, description);
+            parseSchemaExtensions(xmp, description);
         }
 
         // find schema description
         PdfaExtensionHelper.populateSchemaMapping(xmp);
+
         // parse data description
-        for (Element description : dataDescriptions)
+        for (Element description : descriptions)
         {
             parseDescriptionRoot(xmp, description);
         }
@@ -210,6 +202,50 @@ public class DomXmpParser
         nsFinder.pop();
 
         return xmp;
+    }
+
+    private boolean isSchemaExtensionProperty(final Element element)
+    {
+        return element != null && "pdfaExtension".equals(element.getPrefix());
+    }
+
+    private void parseSchemaExtensions(final XMPMetadata xmp, final Element description) throws XmpParsingException
+    {
+        final TypeMapping tm = xmp.getTypeMapping();
+        nsFinder.push(description);
+        try
+        {
+            List<Element> schemaExtensions = new ArrayList<Element>();
+            for (Element element : DomHelper.getElementChildren(description))
+            {
+                if (isSchemaExtensionProperty(element))
+                {
+                    schemaExtensions.add(element);
+                }
+            }
+            for (final Element schemaExtension : schemaExtensions)
+            {
+                final String namespace = schemaExtension.getNamespaceURI();
+                if (!tm.isDefinedSchema(schemaExtension.getNamespaceURI()))
+                {
+                    throw new XmpParsingException(ErrorType.NoSchema,
+                            "This namespace is not a schema or a structured type : " + namespace);
+                }
+                PropertyType type = checkPropertyDefinition(xmp, DomHelper.getQName(schemaExtension));
+                final XMPSchema schema = tm.getSchemaFactory(namespace).createXMPSchema(xmp, schemaExtension.getPrefix());
+                loadAttributes(schema, description);
+                ComplexPropertyContainer container = schema.getContainer();
+                createProperty(xmp, schemaExtension, type, container);
+            }
+        }
+        catch (XmpSchemaException e)
+        {
+            throw new XmpParsingException(ErrorType.Undefined, "Parsing failed", e);
+        }
+        finally
+        {
+            nsFinder.pop();
+        }
     }
 
     private void parseDescriptionRoot(XMPMetadata xmp, Element description) throws XmpParsingException
@@ -313,6 +349,10 @@ public class DomXmpParser
             {
                 throw new XmpParsingException(ErrorType.NoSchema,
                         "This namespace is not a schema or a structured type : " + namespace);
+            }
+            if (isSchemaExtensionProperty(property))
+            {
+                continue;
             }
             XMPSchema schema = xmp.getSchema(namespace);
             if (schema == null)
@@ -887,7 +927,7 @@ public class DomXmpParser
             return;
         }
         
-        for (int i = 0; i < nl.getLength(); i++) 
+        for (int i = 0; i < nl.getLength(); i++)
         {
             Node node = nl.item(i);
             if (node instanceof Comment)
