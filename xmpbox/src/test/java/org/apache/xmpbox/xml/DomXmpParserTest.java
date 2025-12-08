@@ -306,7 +306,7 @@ public class DomXmpParserTest
      * @throws XmpParsingException
      */
     @Test
-    public void testPDFBox3882_2() throws XmpParsingException
+    public void testPDFBox3882_2() throws XmpParsingException, UnsupportedEncodingException
     {
         // data modified from XMP data in the JPEG file in Apache Tika JpegParserTest.testJPEGXMPMM()
         String s = "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
