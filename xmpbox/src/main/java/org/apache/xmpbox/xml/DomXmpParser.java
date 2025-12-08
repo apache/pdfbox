@@ -186,7 +186,6 @@ public class DomXmpParser
         List<Element> descriptions = DomHelper.getElementChildren(rdfRdf);
         for (Element description : descriptions)
         {
-            PdfaExtensionHelper.validateNaming(xmp, description);
             parseSchemaExtensions(xmp, description);
         }
 
@@ -222,6 +221,10 @@ public class DomXmpParser
                 {
                     schemaExtensions.add(element);
                 }
+            }
+            if (!schemaExtensions.isEmpty())
+            {
+                PdfaExtensionHelper.validateNaming(xmp, description);
             }
             for (final Element schemaExtension : schemaExtensions)
             {
