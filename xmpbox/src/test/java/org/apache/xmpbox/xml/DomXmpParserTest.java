@@ -23,7 +23,6 @@ package org.apache.xmpbox.xml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.List;
 
@@ -363,7 +362,7 @@ public class DomXmpParserTest
                     "</x:xmpmeta>\n" +
                     "<?xpacket end=\"w\"?>";
         DomXmpParser xmpParser = new DomXmpParser();
-        XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
+        XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
         XMPMediaManagementSchema xmpMediaManagementSchema = xmp.getXMPMediaManagementSchema();
         ArrayProperty historyProperty = xmpMediaManagementSchema.getHistoryProperty();
         List<AbstractField> historyProperties = historyProperty.getAllProperties();
