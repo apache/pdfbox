@@ -183,7 +183,6 @@ public class DomXmpParser
         List<Element> descriptions = DomHelper.getElementChildren(rdfRdf);
         for (Element description : descriptions)
         {
-            PdfaExtensionHelper.validateNaming(xmp, description);
             parseSchemaExtensions(xmp, description);
         }
 
@@ -216,6 +215,10 @@ public class DomXmpParser
                     .stream()
                     .filter(this::isSchemaExtensionProperty)
                     .collect(Collectors.toList());
+            if (!schemaExtensions.isEmpty())
+            {
+                PdfaExtensionHelper.validateNaming(xmp, description);
+            }
             for (final Element schemaExtension : schemaExtensions)
             {
                 final String namespace = schemaExtension.getNamespaceURI();
