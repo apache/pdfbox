@@ -1164,7 +1164,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             return;
         }
-        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+        PDGraphicsState graphicsState = getGraphicsState();
+        Matrix ctm = graphicsState.getCurrentTransformationMatrix();
         AffineTransform at = ctm.createAffineTransform();
 
         if (!pdImage.getInterpolate())
@@ -1194,12 +1195,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
         }
 
-        graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
+        graphics.setComposite(graphicsState.getNonStrokingJavaComposite());
         setClip();
 
         if (pdImage.isStencil())
         {
-            if (getGraphicsState().getNonStrokingColor().getColorSpace() instanceof PDPattern)
+            if (graphicsState.getNonStrokingColor().getColorSpace() instanceof PDPattern)
             {
                 // The earlier code for stencils (see "else") doesn't work with patterns because the
                 // CTM is not taken into consideration.
@@ -1578,9 +1579,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             LOG.error("shading " + shadingName + " does not exist in resources dictionary");
             return;
         }
-        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+        PDGraphicsState graphicsState = getGraphicsState();
+        Matrix ctm = graphicsState.getCurrentTransformationMatrix();
 
-        graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
+        graphics.setComposite(graphicsState.getNonStrokingJavaComposite());
         Shape savedClip = graphics.getClip();
         graphics.setClip(null);
         lastClips = null;
@@ -1589,10 +1591,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // need to do it here and not in shading getRaster() because it may have been rotated
         PDRectangle bbox = shading.getBBox();
         Area area;
+        Area currentClippingPath = graphicsState.getCurrentClippingPath();
         if (bbox != null)
         {
             area = new Area(bbox.transform(ctm));
-            area.intersect(getGraphicsState().getCurrentClippingPath());
+            area.intersect(currentClippingPath);
         }
         else
         {
@@ -1604,18 +1607,18 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 bounds.add(new Point2D.Double(Math.ceil(bounds.getMaxX() + 1),
                         Math.ceil(bounds.getMaxY() + 1)));
                 area = new Area(bounds);
-                area.intersect(getGraphicsState().getCurrentClippingPath());
+                area.intersect(currentClippingPath);
             }
             else
             {
-                area = getGraphicsState().getCurrentClippingPath();
+                area = currentClippingPath;
             }
         }
         if (!area.isEmpty())
         {
             // creating Paint is sometimes a costly operation, so avoid if possible
             Paint paint = shading.toPaint(ctm);
-            paint = applySoftMaskToPaint(paint, getGraphicsState().getSoftMask());
+            paint = applySoftMaskToPaint(paint, graphicsState.getSoftMask());
             graphics.setPaint(paint);
             graphics.fill(area);
         }
