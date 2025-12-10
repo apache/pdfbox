@@ -69,6 +69,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
@@ -2036,14 +2037,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private boolean hasBlendMode(PDTransparencyGroup group, Set<COSBase> groupsDone)
     {
-        if (groupsDone.contains(group.getCOSObject()))
+        COSStream groupCOSStream = group.getCOSObject();
+        if (groupsDone.contains(groupCOSStream))
         {
             // The group is being processed. Avoid endless recursion.
             return false;
         }
-        groupsDone.add(group.getCOSObject());
+        groupsDone.add(groupCOSStream);
 
-        Boolean val = blendModeMap.get(group.getCOSObject());
+        Boolean val = blendModeMap.get(groupCOSStream);
         if (val != null)
         {
             return val;
@@ -2052,7 +2054,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         PDResources resources = group.getResources();
         if (resources == null)
         {
-            blendModeMap.put(group.getCOSObject(), false);
+            blendModeMap.put(groupCOSStream, false);
             return false;
         }
         for (COSName name : resources.getExtGStateNames())
@@ -2065,7 +2067,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             BlendMode blendMode = extGState.getBlendMode();
             if (blendMode != BlendMode.NORMAL)
             {
-                blendModeMap.put(group.getCOSObject(), true);
+                blendModeMap.put(groupCOSStream, true);
                 return true;
             }
         }
@@ -2085,12 +2087,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             if (xObject instanceof PDTransparencyGroup &&
                 hasBlendMode((PDTransparencyGroup)xObject, groupsDone))
             {
-                blendModeMap.put(group.getCOSObject(), true);
+                blendModeMap.put(groupCOSStream, true);
                 return true;
             }
         }
 
-        blendModeMap.put(group.getCOSObject(), false);
+        blendModeMap.put(groupCOSStream, false);
         return false;
     }
 
