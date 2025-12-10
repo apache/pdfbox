@@ -92,6 +92,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
+import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroupAttributes;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
@@ -1907,7 +1908,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             height = maxY - minY;
 
             // FIXME - color space
-            if (isGray(form.getGroup().getColorSpace(form.getResources())))
+            PDTransparencyGroupAttributes group = form.getGroup();
+            if (isGray(group.getColorSpace(form.getResources())))
             {
                 image = create2ByteGrayAlphaImage(width, height);
             }
@@ -1916,7 +1918,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             }
 
-            boolean needsBackdrop = !isSoftMask && !form.getGroup().isIsolated() &&
+            boolean needsBackdrop = !isSoftMask && !group.isIsolated() &&
                 hasBlendMode(form, new HashSet<COSBase>());
             BufferedImage backdropImage = null;
             // Position of this group in parent group's coordinates
