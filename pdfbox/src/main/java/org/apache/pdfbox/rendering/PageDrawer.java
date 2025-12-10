@@ -610,12 +610,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return parentPaint;
         }
         PDColor backdropColor = null;
-        if (COSName.LUMINOSITY.equals(softMask.getSubType()))
+        COSName subType = softMask.getSubType();
+        PDTransparencyGroup form = softMask.getGroup();
+        if (COSName.LUMINOSITY.equals(subType))
         {
             COSArray backdropColorArray = softMask.getBackdropColor();
             if (backdropColorArray != null)
             {
-                PDTransparencyGroup form = softMask.getGroup();
                 PDColorSpace colorSpace = form.getGroup().getColorSpace(form.getResources());
                 if (colorSpace != null &&
                     colorSpace.getNumberOfComponents() == backdropColorArray.size()) // PDFBOX-5795
@@ -624,7 +625,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 }
             }
         }
-        TransparencyGroup transparencyGroup = new TransparencyGroup(softMask.getGroup(), true, 
+        TransparencyGroup transparencyGroup = new TransparencyGroup(form, true, 
                 softMask.getInitialTransformationMatrix(), backdropColor);
         BufferedImage image = transparencyGroup.getImage();
         if (image == null)
@@ -634,11 +635,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return parentPaint;
         }
         BufferedImage gray = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-        if (COSName.ALPHA.equals(softMask.getSubType()))
+        if (COSName.ALPHA.equals(subType))
         {
             gray.setData(image.getAlphaRaster());
         }
-        else if (COSName.LUMINOSITY.equals(softMask.getSubType()))
+        else if (COSName.LUMINOSITY.equals(subType))
         {
             Graphics g = gray.getGraphics();
             g.drawImage(image, 0, 0, null);
@@ -646,7 +647,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         else
         {
-            throw new IOException("Invalid soft mask subtype.");
+            throw new IOException("Invalid soft mask subtype: " + subType);
         }
         gray = adjustImage(gray);
         
