@@ -22,8 +22,6 @@
 package org.apache.xmpbox;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -31,7 +29,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
@@ -57,19 +54,6 @@ public final class DateConverter
     public static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder().parseCaseInsensitive()
             .append(DateTimeFormatter.ISO_LOCAL_DATE_TIME).parseLenient().appendOffset("+HH:MM", "Z").parseStrict()
             .toFormatter();
-
-    // The Date format is supposed to be the PDF_DATE_FORMAT, but not all PDF
-    // documents
-    // will use that date, so I have added a couple other potential formats
-    // to try if the original one does not work.
-    private static final SimpleDateFormat[] POTENTIAL_FORMATS = new SimpleDateFormat[] {
-            new SimpleDateFormat("EEEE, dd MMM yyyy hh:mm:ss a"),
-            new SimpleDateFormat("EEEE, MMM dd, yyyy hh:mm:ss a"),
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz"),
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"),
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S")
-        };
 
     /**
      * According to check-style, Utility classes should not have a public or default constructor.
@@ -202,32 +186,7 @@ public final class DateConverter
             }
             catch (NumberFormatException e)
             {
-
-                // remove the arbitrary : in the timezone. SimpleDateFormat can't handle it
-                if (date.charAt(date.length() - 3) == ':' && 
-                    (date.charAt(date.length() - 6) == '+' || date.charAt(date.length() - 6) == '-'))
-                {
-                    // that's a timezone string, remove the :
-                    date = date.substring(0, date.length() - 3) + date.substring(date.length() - 2);
-                }
-                for (int i = 0; (retval == null) && (i < POTENTIAL_FORMATS.length); i++)
-                {
-                    try
-                    {
-                        Date utilDate = POTENTIAL_FORMATS[i].parse(date);
-                        retval = new GregorianCalendar();
-                        retval.setTime(utilDate);
-                    }
-                    catch (ParseException pe)
-                    {
-                        // ignore and move to next potential format
-                    }
-                }
-                if (retval == null)
-                {
-                    // we didn't find a valid date format so throw an exception
-                    throw new IOException("Error converting date:" + date, e);
-                }
+                throw new IOException("Error converting date:" + date, e);
             }
         }
         return retval;
