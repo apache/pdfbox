@@ -24,6 +24,7 @@ package org.apache.xmpbox;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.text.SimpleDateFormat;
@@ -147,6 +148,9 @@ public class DateConverterTest
         assertEquals(14, convDate.get(Calendar.HOUR_OF_DAY));
         assertEquals(41, convDate.get(Calendar.MINUTE));
         assertEquals(38, convDate.get(Calendar.SECOND));
+
+        assertNull(DateConverter.toCalendar(null));
+        assertNull(DateConverter.toCalendar(""));
     }
     
     /**
@@ -162,6 +166,16 @@ public class DateConverterTest
     {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         Calendar cal = DateConverter.toCalendar("2015-02-02T16:37:19.192Z");
+        assertEquals(dateFormat.format(cal.getTime()), 
+                    dateFormat.format(DateConverter.toCalendar(DateConverter.toISO8601(cal,true)).getTime())
+                );
+
+        cal = DateConverter.toCalendar("2015-02-02T16:37:19.192+09:09");
+        assertEquals(dateFormat.format(cal.getTime()), 
+                    dateFormat.format(DateConverter.toCalendar(DateConverter.toISO8601(cal,true)).getTime())
+                );
+
+        cal = DateConverter.toCalendar("2015-02-02T16:37:19.192+10:10");
         assertEquals(dateFormat.format(cal.getTime()), 
                     dateFormat.format(DateConverter.toCalendar(DateConverter.toISO8601(cal,true)).getTime())
                 );
