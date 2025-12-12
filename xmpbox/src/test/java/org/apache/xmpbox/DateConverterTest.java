@@ -26,6 +26,7 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.text.SimpleDateFormat;
@@ -157,6 +158,9 @@ class DateConverterTest
         assertEquals(DateConverter.toCalendar(testString1).toInstant(),
                 LocalDateTime.parse(testString1, ISO_LOCAL_DATE_TIME).atZone(ZoneId.of("UTC"))
                         .toInstant());
+
+        assertNull(DateConverter.toCalendar(null));
+        assertNull(DateConverter.toCalendar(""));
     }
     
     /**
@@ -172,6 +176,16 @@ class DateConverterTest
     {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         Calendar cal = DateConverter.toCalendar("2015-02-02T16:37:19.192Z");
+        assertEquals(dateFormat.format(cal.getTime()), 
+                    dateFormat.format(DateConverter.toCalendar(DateConverter.toISO8601(cal,true)).getTime())
+                );
+
+        cal = DateConverter.toCalendar("2015-02-02T16:37:19.192+09:09");
+        assertEquals(dateFormat.format(cal.getTime()), 
+                    dateFormat.format(DateConverter.toCalendar(DateConverter.toISO8601(cal,true)).getTime())
+                );
+
+        cal = DateConverter.toCalendar("2015-02-02T16:37:19.192+10:10");
         assertEquals(dateFormat.format(cal.getTime()), 
                     dateFormat.format(DateConverter.toCalendar(DateConverter.toISO8601(cal,true)).getTime())
                 );
