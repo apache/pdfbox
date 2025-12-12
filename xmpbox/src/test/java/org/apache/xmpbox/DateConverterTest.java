@@ -73,7 +73,7 @@ class DateConverterTest
         assertEquals(2015, convDate.get(Calendar.YEAR));
         assertEquals(1, convDate.get(Calendar.MONTH)); // 0-based
         assertEquals(3, convDate.get(Calendar.DAY_OF_MONTH));
-        assertEquals(10, convDate.get(Calendar.HOUR));
+        assertEquals(10, convDate.get(Calendar.HOUR_OF_DAY));
         assertEquals(11, convDate.get(Calendar.MINUTE));
         assertEquals(12, convDate.get(Calendar.SECOND));
 
@@ -81,7 +81,7 @@ class DateConverterTest
         assertEquals(2015, convDate.get(Calendar.YEAR));
         assertEquals(1, convDate.get(Calendar.MONTH)); // 0-based
         assertEquals(3, convDate.get(Calendar.DAY_OF_MONTH));
-        assertEquals(10, convDate.get(Calendar.HOUR));
+        assertEquals(10, convDate.get(Calendar.HOUR_OF_DAY));
         assertEquals(11, convDate.get(Calendar.MINUTE));
         assertEquals(12, convDate.get(Calendar.SECOND));
 
@@ -89,7 +89,7 @@ class DateConverterTest
         assertEquals(2015, convDate.get(Calendar.YEAR));
         assertEquals(1, convDate.get(Calendar.MONTH)); // 0-based
         assertEquals(3, convDate.get(Calendar.DAY_OF_MONTH));
-        assertEquals(10, convDate.get(Calendar.HOUR));
+        assertEquals(10, convDate.get(Calendar.HOUR_OF_DAY));
         assertEquals(11, convDate.get(Calendar.MINUTE));
         assertEquals(12, convDate.get(Calendar.SECOND));
         assertEquals(5 * 3600 * 1000, convDate.get(Calendar.ZONE_OFFSET));
@@ -99,7 +99,7 @@ class DateConverterTest
         assertEquals(2015, convDate.get(Calendar.YEAR));
         assertEquals(1, convDate.get(Calendar.MONTH)); // 0-based
         assertEquals(3, convDate.get(Calendar.DAY_OF_MONTH));
-        assertEquals(10, convDate.get(Calendar.HOUR));
+        assertEquals(10, convDate.get(Calendar.HOUR_OF_DAY));
         assertEquals(11, convDate.get(Calendar.MINUTE));
         assertEquals(12, convDate.get(Calendar.SECOND));
         assertEquals(-5 * 3600 * 1000, convDate.get(Calendar.ZONE_OFFSET));
