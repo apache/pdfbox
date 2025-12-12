@@ -54,8 +54,14 @@ public class DateConverterTest
         Calendar jaxbCal;
 
         // Test partial dates
-        Calendar convDate = DateConverter.toCalendar("2015-02-02");
+        Calendar convDate = DateConverter.toCalendar("2015");
         assertEquals(2015, convDate.get(Calendar.YEAR));
+        convDate = DateConverter.toCalendar("2015-05");
+        assertEquals(4, convDate.get(Calendar.MONTH));
+        convDate = DateConverter.toCalendar("2015-05-02");
+        assertEquals(2015, convDate.get(Calendar.YEAR));
+        assertEquals(4, convDate.get(Calendar.MONTH));
+        assertEquals(2, convDate.get(Calendar.DAY_OF_MONTH));
 
         convDate = DateConverter.toCalendar("D:2015-02-02");
         assertEquals(2015, convDate.get(Calendar.YEAR));
@@ -64,7 +70,7 @@ public class DateConverterTest
         assertEquals(2015, convDate.get(Calendar.YEAR));
         assertEquals(1, convDate.get(Calendar.MONTH)); // 0-based
         assertEquals(3, convDate.get(Calendar.DAY_OF_MONTH));
-        assertEquals(10, convDate.get(Calendar.HOUR));
+        assertEquals(10, convDate.get(Calendar.HOUR_OF_DAY));
         assertEquals(11, convDate.get(Calendar.MINUTE));
         assertEquals(12, convDate.get(Calendar.SECOND));
 
@@ -72,7 +78,7 @@ public class DateConverterTest
         assertEquals(2015, convDate.get(Calendar.YEAR));
         assertEquals(1, convDate.get(Calendar.MONTH)); // 0-based
         assertEquals(3, convDate.get(Calendar.DAY_OF_MONTH));
-        assertEquals(10, convDate.get(Calendar.HOUR));
+        assertEquals(10, convDate.get(Calendar.HOUR_OF_DAY));
         assertEquals(11, convDate.get(Calendar.MINUTE));
         assertEquals(12, convDate.get(Calendar.SECOND));
 
@@ -133,6 +139,14 @@ public class DateConverterTest
         assertEquals(time, DateConverter.toISO8601(jaxbCal, true));
         convDate = DateConverter.toCalendar(time);
         assertEquals(dateFormat.format(jaxbCal.getTime()), dateFormat.format(convDate.getTime()));
+
+        convDate = DateConverter.toCalendar("2024-04-09T14:41:38");
+        assertEquals(2024, convDate.get(Calendar.YEAR));
+        assertEquals(3, convDate.get(Calendar.MONTH)); // 0-based
+        assertEquals(9, convDate.get(Calendar.DAY_OF_MONTH));
+        assertEquals(14, convDate.get(Calendar.HOUR_OF_DAY));
+        assertEquals(41, convDate.get(Calendar.MINUTE));
+        assertEquals(38, convDate.get(Calendar.SECOND));
     }
     
     /**
