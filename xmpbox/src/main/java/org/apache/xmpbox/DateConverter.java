@@ -93,7 +93,14 @@ public final class DateConverter
 
                 if (Pattern.matches("^\\d{4}-\\d{2}-\\d{2}T.*", date))
                 {
-                    return fromISO8601(date);
+                    try
+                    {
+                        return fromISO8601(date);
+                    }
+                    catch (DateTimeParseException ex)
+                    {
+                        throw new IOException(ex);
+                    }
                 }
                 if (date.startsWith("D:"))
                 {

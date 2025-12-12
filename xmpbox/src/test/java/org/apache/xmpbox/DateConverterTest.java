@@ -109,7 +109,13 @@ class DateConverterTest
         convDate = DateConverter.toCalendar("2025-09-03T15:43:47.989082+00:00");
         assertEquals(989, convDate.get(Calendar.MILLISECOND));
 
+        // test some bad strings
         assertThrows(IOException.class, () -> DateConverter.toCalendar("123"));
+        assertThrows(IOException.class, () -> DateConverter.toCalendar("2008-12-31T19:48:30+19:00"));
+        assertThrows(IOException.class, () -> DateConverter.toCalendar("2008-12-31T19:48:30-19:00"));
+        assertThrows(IOException.class, () -> DateConverter.toCalendar("2008-12-02T21:04:0Z"));
+        assertThrows(IOException.class, () -> DateConverter.toCalendar("0-01-01T00:00:00Z"));
+        assertThrows(IOException.class, () -> DateConverter.toCalendar("2009-03-16T01:15:19-0-4:00"));
 
         // Test missing seconds
         assertEquals(DateConverter.toCalendar("2015-12-08T12:07:00-05:00"),
