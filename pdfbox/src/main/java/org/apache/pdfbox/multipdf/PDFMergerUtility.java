@@ -29,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -91,6 +92,8 @@ public class PDFMergerUtility
      * Log instance.
      */
     private static final Logger LOG = LogManager.getLogger(PDFMergerUtility.class);
+
+    private static final Pattern pattern = Pattern.compile("\\d+");
 
     private final List<Object> sources;
     private String destinationFileName;
@@ -1302,7 +1305,7 @@ public class PDFMergerUtility
                 if (fieldName != null && fieldName.startsWith(prefix))
                 {
                     String suffix = fieldName.substring(prefixLength);
-                    if (suffix.matches("\\d+"))
+                    if (pattern.matcher(suffix).find())
                     {
                         nextFieldNum = Math.max(nextFieldNum, Integer.parseInt(suffix) + 1);
                     }
