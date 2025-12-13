@@ -38,6 +38,7 @@ import org.apache.xmpbox.type.ArrayProperty;
 import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.type.DefinedStructuredType;
 import org.apache.xmpbox.type.DimensionsType;
+import org.apache.xmpbox.type.LayerType;
 import org.apache.xmpbox.type.PDFASchemaType;
 import org.apache.xmpbox.type.ResourceEventType;
 import org.apache.xmpbox.type.ResourceRefType;
@@ -315,7 +316,7 @@ class DomXmpParserTest
      * @throws XmpParsingException
      */
     @Test
-    void testPDFBox3882_2() throws XmpParsingException
+    void testPDFBox3882_2() throws XmpParsingException, BadFieldValueException
     {
         // data modified from XMP data in the JPEG file in Apache Tika JpegParserTest.testJPEGXMPMM()
         String s = "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
@@ -367,6 +368,12 @@ class DomXmpParserTest
                     "				</rdf:Bag>\n" +
                     "			</photoshop:DocumentAncestors>\n" +
                     "			<photoshop:DateCreated>2012-04-30T12:54:48Z</photoshop:DateCreated>\n" +
+                    "			<photoshop:TextLayers>\n" +
+                    "				<rdf:Seq>\n" +
+                    "                               <rdf:li photoshop:LayerName=\"Name1\" photoshop:LayerText=\"Text1\"/>\n" +
+                    "                               <rdf:li photoshop:LayerName=\"Name2\" photoshop:LayerText=\"Text2\"/>\n" +
+                    "				</rdf:Seq>\n" +
+                    "			</photoshop:TextLayers>\n" +
                     "		</rdf:Description>\n" +
                     "	</rdf:RDF>\n" +
                     "</x:xmpmeta>\n" +
@@ -398,6 +405,12 @@ class DomXmpParserTest
         assertEquals("xmp.did:49E997348D4911E1AB62EBF9B374B234", xmpMediaManagementSchema.getDocumentID());
         assertEquals("xmp.did:01801174072068118A6D9A879C818256", xmpMediaManagementSchema.getOriginalDocumentID());
         PhotoshopSchema photoshopSchema = xmp.getPhotoshopSchema();
+        List<LayerType> textLayers = photoshopSchema.getTextLayers();
+        assertEquals(2, textLayers.size());
+        assertEquals("Name1", textLayers.get(0).getLayerName());
+        assertEquals("Text1", textLayers.get(0).getLayerText());
+        assertEquals("Name2", textLayers.get(1).getLayerName());
+        assertEquals("Text2", textLayers.get(1).getLayerText());
         assertEquals("2012-04-30T12:54:48+00:00", photoshopSchema.getDateCreated());
         assertEquals("2012-05-03T09:34:50-04:00\tFile i1222b.jpg opened\n", photoshopSchema.getHistory());
         ArrayProperty ancestorsProperty = photoshopSchema.getDocumentAncestorsProperty();
