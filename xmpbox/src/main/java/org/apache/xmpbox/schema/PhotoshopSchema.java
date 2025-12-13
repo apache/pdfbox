@@ -117,12 +117,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public URIType getAncestorIDProperty()
     {
-        return (URIType) getProperty(ANCESTORID);
+        return getPropertyAs(ANCESTORID, URIType.class);
     }
 
     public String getAncestorID()
     {
-        TextType tt = ((TextType) getProperty(ANCESTORID));
+        TextType tt = getAncestorIDProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -139,12 +139,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public TextType getAuthorsPositionProperty()
     {
-        return (TextType) getProperty(AUTHORS_POSITION);
+        return getPropertyAs(AUTHORS_POSITION, TextType.class);
     }
 
     public String getAuthorsPosition()
     {
-        TextType tt = ((TextType) getProperty(AUTHORS_POSITION));
+        TextType tt = getAuthorsPositionProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -161,12 +161,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public TextType getCaptionWriterProperty()
     {
-        return (TextType) getProperty(CAPTION_WRITER);
+        return getPropertyAs(CAPTION_WRITER, TextType.class);
     }
 
     public String getCaptionWriter()
     {
-        TextType tt = ((TextType) getProperty(CAPTION_WRITER));
+        TextType tt = getCaptionWriterProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -183,12 +183,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public TextType getCategoryProperty()
     {
-        return (TextType) getProperty(CATEGORY);
+        return getPropertyAs(CATEGORY, TextType.class);
     }
 
     public String getCategory()
     {
-        TextType tt = ((TextType) getProperty(CATEGORY));
+        TextType tt = getCategoryProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -205,12 +205,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public TextType getCityProperty()
     {
-        return (TextType) getProperty(CITY);
+        return getPropertyAs(CITY, TextType.class);
     }
 
     public String getCity()
     {
-        TextType tt = ((TextType) getProperty(CITY));
+        TextType tt = getCityProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -227,12 +227,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public IntegerType getColorModeProperty()
     {
-        return (IntegerType) getProperty(COLOR_MODE);
+        return getPropertyAs(COLOR_MODE, IntegerType.class);
     }
 
     public Integer getColorMode()
     {
-        IntegerType tt = ((IntegerType) getProperty(COLOR_MODE));
+        IntegerType tt = getColorModeProperty();
         return tt == null ? null : tt.getValue();
     }
 
@@ -249,12 +249,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public TextType getCountryProperty()
     {
-        return (TextType) getProperty(COUNTRY);
+        return getPropertyAs(COUNTRY, TextType.class);
     }
 
     public String getCountry()
     {
-        TextType tt = ((TextType) getProperty(COUNTRY));
+        TextType tt = getCountryProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -271,12 +271,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public TextType getCreditProperty()
     {
-        return (TextType) getProperty(CREDIT);
+        return getPropertyAs(CREDIT, TextType.class);
     }
 
     public String getCredit()
     {
-        TextType tt = ((TextType) getProperty(CREDIT));
+        TextType tt = getCreditProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -293,12 +293,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public DateType getDateCreatedProperty()
     {
-        return (DateType) getProperty(DATE_CREATED);
+        return getPropertyAs(DATE_CREATED, DateType.class);
     }
 
     public String getDateCreated()
     {
-        TextType tt = ((TextType) getProperty(DATE_CREATED));
+        TextType tt = ((TextType) getProperty(DATE_CREATED)); //TODO cast looks highly suspicious
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -320,7 +320,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public ArrayProperty getDocumentAncestorsProperty()
     {
-        return (ArrayProperty) getProperty(DOCUMENT_ANCESTORS);
+        return getPropertyAs(DOCUMENT_ANCESTORS, ArrayProperty.class);
     }
 
     public List<String> getDocumentAncestors()
@@ -330,12 +330,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public TextType getHeadlineProperty()
     {
-        return (TextType) getProperty(HEADLINE);
+        return getPropertyAs(HEADLINE, TextType.class);
     }
 
     public String getHeadline()
     {
-        TextType tt = ((TextType) getProperty(HEADLINE));
+        TextType tt = getHeadlineProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -352,12 +352,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public TextType getHistoryProperty()
     {
-        return (TextType) getProperty(HISTORY);
+        return getPropertyAs(HISTORY, TextType.class);
     }
 
     public String getHistory()
     {
-        TextType tt = ((TextType) getProperty(HISTORY));
+        TextType tt = getHistoryProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -374,12 +374,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public TextType getICCProfileProperty()
     {
-        return (TextType) getProperty(ICC_PROFILE);
+        return getPropertyAs(ICC_PROFILE, TextType.class);
     }
 
     public String getICCProfile()
     {
-        TextType tt = ((TextType) getProperty(ICC_PROFILE));
+        TextType tt = getICCProfileProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -396,12 +396,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public TextType getInstructionsProperty()
     {
-        return (TextType) getProperty(INSTRUCTIONS);
+        return getPropertyAs(INSTRUCTIONS, TextType.class);
     }
 
     public String getInstructions()
     {
-        TextType tt = ((TextType) getProperty(INSTRUCTIONS));
+        TextType tt = getInstructionsProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -419,12 +419,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public TextType getSourceProperty()
     {
-        return (TextType) getProperty(SOURCE);
+        return getPropertyAs(SOURCE, TextType.class);
     }
 
     public String getSource()
     {
-        TextType tt = ((TextType) getProperty(SOURCE));
+        TextType tt = getSourceProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -441,12 +441,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public TextType getStateProperty()
     {
-        return (TextType) getProperty(STATE);
+        return getPropertyAs(STATE, TextType.class);
     }
 
     public String getState()
     {
-        TextType tt = ((TextType) getProperty(STATE));
+        TextType tt = getStateProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -463,12 +463,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public TextType getSupplementalCategoriesProperty()
     {
-        return (TextType) getProperty(SUPPLEMENTAL_CATEGORIES);
+        return getPropertyAs(SUPPLEMENTAL_CATEGORIES, TextType.class);
     }
 
     public String getSupplementalCategories()
     {
-        TextType tt = ((TextType) getProperty(SUPPLEMENTAL_CATEGORIES));
+        TextType tt = getSupplementalCategoriesProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -522,12 +522,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public TextType getTransmissionReferenceProperty()
     {
-        return (TextType) getProperty(TRANSMISSION_REFERENCE);
+        return getPropertyAs(TRANSMISSION_REFERENCE, TextType.class);
     }
 
     public String getTransmissionReference()
     {
-        TextType tt = ((TextType) getProperty(TRANSMISSION_REFERENCE));
+        TextType tt = getTransmissionReferenceProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -544,12 +544,12 @@ public class PhotoshopSchema extends XMPSchema
 
     public IntegerType getUrgencyProperty()
     {
-        return (IntegerType) getProperty(URGENCY);
+        return getPropertyAs(URGENCY, IntegerType.class);
     }
 
     public Integer getUrgency()
     {
-        IntegerType tt = ((IntegerType) getProperty(URGENCY));
+        IntegerType tt = getUrgencyProperty();
         return tt == null ? null : tt.getValue();
     }
 
