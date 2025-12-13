@@ -393,7 +393,7 @@ public class DomXmpParserTest
         PhotoshopSchema photoshopSchema = xmp.getPhotoshopSchema();
         assertEquals("2012-04-30T12:54:48+00:00", photoshopSchema.getDateCreated());
         assertEquals("2012-05-03T09:34:50-04:00\tFile i1222b.jpg opened\n", photoshopSchema.getHistory());
-        ArrayProperty ancestorsProperty = (ArrayProperty) photoshopSchema.getProperty("DocumentAncestors");
+        ArrayProperty ancestorsProperty = photoshopSchema.getDocumentAncestorsProperty();
         List<AbstractField> ancestors = ancestorsProperty.getAllProperties();
         assertEquals(3, ancestors.size());
         assertEquals("adobe:docid:photoshop:11d3ec5a-c131-11d8-9274-ec65c7d7e0c6", ((TextType) ancestors.get(0)).getStringValue());
