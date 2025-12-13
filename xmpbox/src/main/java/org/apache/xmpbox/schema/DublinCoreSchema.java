@@ -25,7 +25,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.xmpbox.XMPMetadata;
-import org.apache.xmpbox.type.AbstractField;
 import org.apache.xmpbox.type.ArrayProperty;
 import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.MIMEType;
@@ -771,11 +770,5 @@ public class DublinCoreSchema extends XMPSchema
     public void removeType(String type)
     {
         removeUnqualifiedBagValue(TYPE, type);
-    }
-
-    private <T> T getPropertyAs(String name, Class<T> type)
-    {
-        AbstractField property = getProperty(name);
-        return type.isInstance(property) ? type.cast(property) : null;
     }
 }
