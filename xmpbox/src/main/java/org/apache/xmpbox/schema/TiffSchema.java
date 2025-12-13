@@ -125,7 +125,7 @@ public class TiffSchema extends XMPSchema
      */
     public ProperNameType getArtistProperty()
     {
-        return (ProperNameType) getProperty(ARTIST);
+        return getPropertyAs(ARTIST, ProperNameType.class);
     }
 
     /**
@@ -134,7 +134,7 @@ public class TiffSchema extends XMPSchema
      */
     public String getArtist()
     {
-        ProperNameType tt = (ProperNameType) getProperty(ARTIST);
+        ProperNameType tt = getArtistProperty();
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -154,7 +154,7 @@ public class TiffSchema extends XMPSchema
      */
     public ArrayProperty getImageDescriptionProperty()
     {
-        return (ArrayProperty) getProperty(IMAGE_DESCRIPTION);
+        return getPropertyAs(IMAGE_DESCRIPTION, ArrayProperty.class);
     }
 
     /**
@@ -202,7 +202,7 @@ public class TiffSchema extends XMPSchema
      */
     public ArrayProperty getCopyRightProperty()
     {
-        return (ArrayProperty) getProperty(COPYRIGHT);
+        return getPropertyAs(COPYRIGHT, ArrayProperty.class);
     }
 
     /**

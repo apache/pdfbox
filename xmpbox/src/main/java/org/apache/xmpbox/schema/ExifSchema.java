@@ -294,7 +294,7 @@ public class ExifSchema extends XMPSchema
      */
     public ArrayProperty getUserCommentProperty()
     {
-        return (ArrayProperty) getProperty(USER_COMMENT);
+        return getPropertyAs(USER_COMMENT, ArrayProperty.class);
     }
 
     /**
