@@ -298,8 +298,8 @@ public class PhotoshopSchema extends XMPSchema
 
     public String getDateCreated()
     {
-        TextType tt = ((TextType) getProperty(DATE_CREATED)); //TODO cast looks highly suspicious
-        return tt == null ? null : tt.getStringValue();
+        DateType dt = getDateCreatedProperty();
+        return dt == null ? null : dt.getStringValue();
     }
 
     public void setDateCreated(String text)
