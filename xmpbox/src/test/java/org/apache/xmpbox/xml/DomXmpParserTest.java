@@ -391,7 +391,6 @@ public class DomXmpParserTest
         assertEquals(54, ret1.getWhen().get(Calendar.MINUTE));
         assertEquals(4, ret1.getWhen().get(Calendar.SECOND));
         assertEquals(2012, ret2.getWhen().get(Calendar.YEAR));
-        assertEquals(2012, ret2.getWhen().get(Calendar.YEAR));
         assertEquals(54, ret2.getWhen().get(Calendar.MINUTE));
         assertEquals(48, ret2.getWhen().get(Calendar.SECOND));
         assertEquals("xmp.iid:49E997338D4911E1AB62EBF9B374B234", xmpMediaManagementSchema.getInstanceID());
