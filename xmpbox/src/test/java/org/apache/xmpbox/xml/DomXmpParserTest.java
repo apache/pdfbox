@@ -359,12 +359,15 @@ public class DomXmpParserTest
                     "					<rdf:li>adobe:docid:photoshop:c7961c59-6e0f-11d8-87b7-d67539df12d8</rdf:li>\n" +
                     "				</rdf:Bag>\n" +
                     "			</photoshop:DocumentAncestors>\n" +
+                    "			<photoshop:DateCreated>2012-04-30T12:54:48Z</photoshop:DateCreated>\n" +
                     "		</rdf:Description>\n" +
                     "	</rdf:RDF>\n" +
                     "</x:xmpmeta>\n" +
                     "<?xpacket end=\"w\"?>";
         DomXmpParser xmpParser = new DomXmpParser();
         XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
+        PhotoshopSchema photoshopSchema = xmp.getPhotoshopSchema();
+        assertEquals("2012-04-30T12:54:48+00:00", photoshopSchema.getDateCreated());
         XMPMediaManagementSchema xmpMediaManagementSchema = xmp.getXMPMediaManagementSchema();
         ArrayProperty historyProperty = xmpMediaManagementSchema.getHistoryProperty();
         List<AbstractField> historyProperties = historyProperty.getAllProperties();
