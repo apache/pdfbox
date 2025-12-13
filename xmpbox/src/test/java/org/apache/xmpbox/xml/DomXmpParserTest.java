@@ -375,8 +375,6 @@ class DomXmpParserTest
                     "<?xpacket end=\"w\"?>";
         DomXmpParser xmpParser = new DomXmpParser();
         XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
-        PhotoshopSchema photoshopSchema = xmp.getPhotoshopSchema();
-        assertEquals("2012-04-30T12:54:48+00:00", photoshopSchema.getDateCreated());
         XMPMediaManagementSchema xmpMediaManagementSchema = xmp.getXMPMediaManagementSchema();
         ArrayProperty historyProperty = xmpMediaManagementSchema.getHistoryProperty();
         List<AbstractField> historyProperties = historyProperty.getAllProperties();
@@ -402,6 +400,7 @@ class DomXmpParserTest
         assertEquals("xmp.did:49E997348D4911E1AB62EBF9B374B234", xmpMediaManagementSchema.getDocumentID());
         assertEquals("xmp.did:01801174072068118A6D9A879C818256", xmpMediaManagementSchema.getOriginalDocumentID());
         PhotoshopSchema photoshopSchema = xmp.getPhotoshopSchema();
+        assertEquals("2012-04-30T12:54:48+00:00", photoshopSchema.getDateCreated());
         assertEquals("2012-05-03T09:34:50-04:00\tFile i1222b.jpg opened\n", photoshopSchema.getHistory());
         ArrayProperty ancestorsProperty = (ArrayProperty) photoshopSchema.getProperty("DocumentAncestors");
         List<AbstractField> ancestors = ancestorsProperty.getAllProperties();
