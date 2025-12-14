@@ -245,20 +245,26 @@ public abstract class PDColorSpace implements COSObjectable
             throws IOException
     {
         PDColorSpace cs;
-        if (resources != null && resources.getResourceCache() != null)
+        if (resources != null)
         {
             ResourceCache resourceCache = resources.getResourceCache();
-            cs = resourceCache.getColorSpace(colorSpace);
-            if (cs != null)
+            if (resourceCache != null)
             {
-                return cs;
+                cs = resourceCache.getColorSpace(colorSpace);
+                if (cs != null)
+                {
+                    return cs;
+                }
+            }
+            cs = create(colorSpace.getObject(), resources);
+            if (resourceCache != null && cs != null)
+            {
+                resourceCache.put(colorSpace, cs);
             }
         }
-        cs = create(colorSpace.getObject(), resources);
-        if (resources != null && resources.getResourceCache() != null && cs != null)
+        else
         {
-            ResourceCache resourceCache = resources.getResourceCache();
-            resourceCache.put(colorSpace, cs);
+            cs = create(colorSpace.getObject();
         }
         return cs;
     }
