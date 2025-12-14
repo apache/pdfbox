@@ -169,13 +169,13 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      * a newspaper, we want to extract the first column and then the second column. In this example the PDF would have 2
      * beads(or articles), one for each column. The size of the charactersByArticle would be 5, because not all text on
      * the screen will fall into one of the articles. The five divisions are shown below
-     *
-     * Text before first article
-     * first article text
-     * text between first article and second article
-     * second article text
-     * text after second article
-     *
+     * <ol>
+     * <li>Text before first article</li>
+     * <li>first article text</li>
+     * <li>text between first article and second article</li>
+     * <li>second article text</li>
+     * <li>text after second article</li>
+     *</ol>
      * Most PDFs won't have any beads, so charactersByArticle will contain a single entry.
      */
     protected ArrayList<List<TextPosition>> charactersByArticle = new ArrayList<>();
