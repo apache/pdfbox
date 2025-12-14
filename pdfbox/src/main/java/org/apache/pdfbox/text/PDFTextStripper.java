@@ -1195,7 +1195,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     }
 
     /**
-     * By default the text stripper will attempt to remove text that overlapps each other. Word paints the same
+     * By default the text stripper will attempt to remove text that overlaps each other. Word paints the same
      * character several times in order to make it look bold. By setting this to false all text will be extracted, which
      * means that certain sections will be duplicated, but better performance will be noticed.
      *
