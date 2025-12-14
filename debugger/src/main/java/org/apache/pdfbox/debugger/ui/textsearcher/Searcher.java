@@ -164,6 +164,7 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
         else
         {
             searchPanel.updateCounterLabel(0, 0);
+            totalMatch = 0;
         }
     }
 
