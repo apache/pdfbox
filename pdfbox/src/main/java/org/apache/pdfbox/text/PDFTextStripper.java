@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -1884,7 +1883,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      */
     private List<WordWithTextPositions> normalize(List<LineItem> line)
     {
-        List<WordWithTextPositions> normalized = new LinkedList<WordWithTextPositions>();
+        List<WordWithTextPositions> normalized = new ArrayList<WordWithTextPositions>();
         StringBuilder lineBuilder = new StringBuilder();
         List<TextPosition> wordPositions = new ArrayList<TextPosition>();
 
