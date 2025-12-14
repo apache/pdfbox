@@ -1811,7 +1811,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     {
         if (listOfPatterns == null)
         {
-            listOfPatterns = new ArrayList<>();
+            listOfPatterns = new ArrayList<>(LIST_ITEM_EXPRESSIONS.length);
             for (String expression : LIST_ITEM_EXPRESSIONS)
             {
                 Pattern p = Pattern.compile(expression);
