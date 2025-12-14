@@ -20,7 +20,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
 /**
- * This optional dictionary provides the URL for a RFC3161 time-stamping server server, and whether
+ * This optional dictionary provides the URL for a RFC3161 time-stamping server, and whether
  * the timestamp is required for the signature.
  *
  * @author Thomas Chojecki
