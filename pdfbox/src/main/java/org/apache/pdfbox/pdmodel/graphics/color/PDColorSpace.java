@@ -264,7 +264,7 @@ public abstract class PDColorSpace implements COSObjectable
         }
         else
         {
-            cs = create(colorSpace.getObject();
+            cs = create(colorSpace.getObject());
         }
         return cs;
     }
