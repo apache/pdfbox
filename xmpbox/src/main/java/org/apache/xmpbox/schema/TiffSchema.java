@@ -67,10 +67,10 @@ public class TiffSchema extends XMPSchema
     @PropertyType(type = Types.Integer, card = Cardinality.Simple)
     public static final String PLANAR_CONFIGURATION = "PlanarConfiguration";
 
-    @PropertyType(type = Types.Integer, card = Cardinality.Simple)
+    @PropertyType(type = Types.Integer, card = Cardinality.Seq)
     public static final String YCB_CR_SUB_SAMPLING = "YCbCrSubSampling";
 
-    @PropertyType(type = Types.Integer, card = Cardinality.Seq)
+    @PropertyType(type = Types.Integer, card = Cardinality.Simple)
     public static final String YCB_CR_POSITIONING = "YCbCrPositioning";
 
     @PropertyType(type = Types.Rational, card = Cardinality.Simple)
