@@ -1858,14 +1858,15 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
             throws IOException
     {
         int numberOfStrings = line.size();
-        for (int i = 0; i < numberOfStrings; i++)
+        int i = 0;
+        for (WordWithTextPositions word : line)
         {
-            WordWithTextPositions word = line.get(i);
             writeString(word.getText(), word.getTextPositions());
             if (i < numberOfStrings - 1)
             {
                 writeWordSeparator();
             }
+            ++i;
         }
     }
 
