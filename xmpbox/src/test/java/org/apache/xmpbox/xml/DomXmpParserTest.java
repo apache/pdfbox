@@ -660,7 +660,7 @@ public class DomXmpParserTest
         }
         catch (XmpParsingException ex)
         {
-            assertEquals("Excepted xpacket 'end' attribute (must be present and placed in first)", ex.getMessage());
+            assertEquals("Expected xpacket 'end' attribute (must be present and placed in first)", ex.getMessage());
         }
     }
 
@@ -682,7 +682,7 @@ public class DomXmpParserTest
         }
         catch (XmpParsingException ex)
         {
-            assertEquals("Excepted xpacket 'end' attribute with value 'r' or 'w' ", ex.getMessage());
+            assertEquals("Expected xpacket 'end' attribute with value 'r' or 'w' ", ex.getMessage());
         }
     }
 
