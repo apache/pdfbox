@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.xmpbox.schema.PhotoshopSchema;
 import org.apache.xmpbox.schema.XMPMediaManagementSchema;
@@ -518,5 +519,42 @@ class DomXmpParserTest
         assertEquals(2, pdfaIdSchema.getPart());
         String dataValue = xmp.getSchema("http://ns.example.org/default/1.0/").getUnqualifiedTextPropertyValue("Data");
         assertEquals("Example", dataValue);
+    }
+
+    /**
+     * Test that a Seq / Mag mixup gets detected in strict mode and gets read in lenient mode.
+     * @throws XmpParsingException 
+     */
+    @Test
+    void testLenientBagSeqMixup() throws XmpParsingException
+    {
+        String s = "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
+                    "<?adobe-xap-filters esc=\"CRLF\"?>\n" +
+                    "<x:xmpmeta xmlns:x='adobe:ns:meta/'>\n" +
+                    "	<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n" +
+                    "		<rdf:Description xmlns:dc='http://purl.org/dc/elements/1.1/'\n" +
+                    "		                 dc:format='application/pdf'>\n" +
+                    "			<dc:subject>\n" +
+                    "				<rdf:Seq>\n" +
+                    "					<rdf:li>Important subject</rdf:li>\n" +
+                    "					<rdf:li>Unimportant subject</rdf:li>\n" +
+                    "				</rdf:Seq>\n" +
+                    "			</dc:subject>\n" +
+                    "		</rdf:Description>\n" +
+                    "	</rdf:RDF>\n" +
+                    "</x:xmpmeta>\n" +
+                    "<?xpacket end='w'?>";
+        XmpParsingException ex = assertThrows(
+                XmpParsingException.class,
+                () -> new DomXmpParser().parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("Invalid array type, expecting Bag and found Seq [prefix=dc; name=subject]", ex.getMessage());
+        DomXmpParser xmpParser = new DomXmpParser();
+        xmpParser.setStrictParsing(false);
+        XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
+        DublinCoreSchema dublinCoreSchema = xmp.getDublinCoreSchema();
+        List<String> subjects = dublinCoreSchema.getSubjects();
+        assertEquals(2, subjects.size());
+        assertEquals("Important subject", subjects.get(0));
+        assertEquals("Unimportant subject", subjects.get(1));
     }
 }
