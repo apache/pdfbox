@@ -647,7 +647,7 @@ class DomXmpParserTest
         XmpParsingException ex = assertThrows(
                 XmpParsingException.class,
                 () -> xmpParser.parse(s.getBytes(StandardCharsets.UTF_8)));
-        assertEquals("Excepted xpacket 'end' attribute (must be present and placed in first)", ex.getMessage());
+        assertEquals("Expected xpacket 'end' attribute (must be present and placed in first)", ex.getMessage());
     }
 
     @Test
@@ -665,7 +665,7 @@ class DomXmpParserTest
         XmpParsingException ex = assertThrows(
                 XmpParsingException.class,
                 () -> xmpParser.parse(s.getBytes(StandardCharsets.UTF_8)));
-        assertEquals("Excepted xpacket 'end' attribute with value 'r' or 'w' ", ex.getMessage());
+        assertEquals("Expected xpacket 'end' attribute with value 'r' or 'w' ", ex.getMessage());
     }
 
     @Test

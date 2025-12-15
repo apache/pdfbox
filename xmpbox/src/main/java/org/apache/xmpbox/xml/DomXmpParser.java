@@ -836,7 +836,7 @@ public class DomXmpParser
             if (end != 'r' && end != 'w')
             {
                 throw new XmpParsingException(ErrorType.XpacketBadEnd,
-                        "Excepted xpacket 'end' attribute with value 'r' or 'w' ");
+                        "Expected xpacket 'end' attribute with value 'r' or 'w' ");
             }
             else
             {
@@ -847,7 +847,7 @@ public class DomXmpParser
         {
             // should find end='r/w'
             throw new XmpParsingException(ErrorType.XpacketBadEnd,
-                    "Excepted xpacket 'end' attribute (must be present and placed in first)");
+                    "Expected xpacket 'end' attribute (must be present and placed in first)");
         }
     }
 
