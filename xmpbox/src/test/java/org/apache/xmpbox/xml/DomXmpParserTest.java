@@ -545,13 +545,14 @@ class DomXmpParserTest
                     "	</rdf:RDF>\n" +
                     "</x:xmpmeta>\n" +
                     "<?xpacket end='w'?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
         XmpParsingException ex = assertThrows(
                 XmpParsingException.class,
-                () -> new DomXmpParser().parse(s.getBytes(StandardCharsets.UTF_8)));
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
         assertEquals("Invalid array type, expecting Bag and found Seq [prefix=dc; name=subject]", ex.getMessage());
-        DomXmpParser xmpParser = new DomXmpParser();
-        xmpParser.setStrictParsing(false);
-        XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
+        final DomXmpParser xmpParser2 = new DomXmpParser();
+        xmpParser2.setStrictParsing(false);
+        XMPMetadata xmp = xmpParser2.parse(s.getBytes(StandardCharsets.UTF_8));
         DublinCoreSchema dublinCoreSchema = xmp.getDublinCoreSchema();
         List<String> subjects = dublinCoreSchema.getSubjects();
         assertEquals(2, subjects.size());
@@ -575,13 +576,14 @@ class DomXmpParserTest
                     "		</rdf:Description>\n" +
                     "	</rdf:RDF>\n" +
                     "</x:xmpmeta><?xpacket end=\"r\"?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
         XmpParsingException ex = assertThrows(
                 XmpParsingException.class,
-                () -> new DomXmpParser().parse(s.getBytes(StandardCharsets.UTF_8)));
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
         assertEquals("No type defined for {http://ns.adobe.com/xap/1.0/sType/Dimensions#}X", ex.getMessage());
-        DomXmpParser xmpParser = new DomXmpParser();
-        xmpParser.setStrictParsing(false);
-        XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
+        final DomXmpParser xmpParser2 = new DomXmpParser();
+        xmpParser2.setStrictParsing(false);
+        XMPMetadata xmp = xmpParser2.parse(s.getBytes(StandardCharsets.UTF_8));
         XMPageTextSchema pageTextSchema = xmp.getPageTextSchema();
         DimensionsType dim = (DimensionsType) pageTextSchema.getProperty(XMPageTextSchema.MAX_PAGE_SIZE);
         assertEquals("DimensionsType{null x null null}", dim.toString());
@@ -603,13 +605,14 @@ class DomXmpParserTest
                     "	                 pdf:Author=\"edocslib\"/>\n" +
                     "</rdf:RDF>\n" +
                     "<?xpacket end='r'?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
         XmpParsingException ex = assertThrows(
                 XmpParsingException.class,
-                () -> new DomXmpParser().parse(s.getBytes(StandardCharsets.UTF_8)));
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
         assertEquals("No type defined for {http://ns.adobe.com/pdf/1.3/}Author", ex.getMessage());
-        DomXmpParser xmpParser = new DomXmpParser();
-        xmpParser.setStrictParsing(false);
-        XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
+        final DomXmpParser xmpParser2 = new DomXmpParser();
+        xmpParser2.setStrictParsing(false);
+        XMPMetadata xmp = xmpParser2.parse(s.getBytes(StandardCharsets.UTF_8));
         AdobePDFSchema adobePDFSchema = xmp.getAdobePDFSchema();
         TextType tt = (TextType) adobePDFSchema.getProperty("Author");
         assertEquals("[Author=TextType:edocslib]", tt.toString());
@@ -624,9 +627,10 @@ class DomXmpParserTest
                     "	<rdf:RDF xmlns:iX=\"http://ns.adobe.com/iX/1.0/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
                     "	</rdf:RDF>\n" +
                     "</x:xapmeta><?xpacket end='w'?>";
+        final DomXmpParser xmpParser = new DomXmpParser();
         XmpParsingException ex = assertThrows(
                 XmpParsingException.class,
-                () -> new DomXmpParser().parse(s.getBytes(StandardCharsets.UTF_8)));
+                () -> xmpParser.parse(s.getBytes(StandardCharsets.UTF_8)));
         assertEquals("Expecting local name 'xmpmeta' and found 'xapmeta'", ex.getMessage());
     }
 
@@ -641,9 +645,10 @@ class DomXmpParserTest
                     "        </rdf:Description>\n" +
                     "    </rdf:RDF>\n" +
                     "</x:xmpmeta><?xpacket ends=\"w\" ?>";
+        final DomXmpParser xmpParser = new DomXmpParser();
         XmpParsingException ex = assertThrows(
                 XmpParsingException.class,
-                () -> new DomXmpParser().parse(s.getBytes(StandardCharsets.UTF_8)));
+                () -> xmpParser.parse(s.getBytes(StandardCharsets.UTF_8)));
         assertEquals("Excepted xpacket 'end' attribute (must be present and placed in first)", ex.getMessage());
     }
 
@@ -658,9 +663,10 @@ class DomXmpParserTest
                     "        </rdf:Description>\n" +
                     "    </rdf:RDF>\n" +
                     "</x:xmpmeta><?xpacket end=\"k\" ?>";
+        final DomXmpParser xmpParser = new DomXmpParser();
         XmpParsingException ex = assertThrows(
                 XmpParsingException.class,
-                () -> new DomXmpParser().parse(s.getBytes(StandardCharsets.UTF_8)));
+                () -> xmpParser.parse(s.getBytes(StandardCharsets.UTF_8)));
         assertEquals("Excepted xpacket 'end' attribute with value 'r' or 'w' ", ex.getMessage());
     }
 
@@ -671,9 +677,10 @@ class DomXmpParserTest
                     "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\" ?>" + 
                     "  <x:xmpmeta xmlns:x=\"adobe:ns:meta/\"/>\n" +
                     "<?xpacket end=\"w\" ?>";
+        final DomXmpParser xmpParser = new DomXmpParser();
         XmpParsingException ex = assertThrows(
                 XmpParsingException.class,
-                () -> new DomXmpParser().parse(s.getBytes(StandardCharsets.UTF_8)));
+                () -> xmpParser.parse(s.getBytes(StandardCharsets.UTF_8)));
         assertEquals("No rdf description found in xmp", ex.getMessage());
     }
 }
