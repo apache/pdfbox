@@ -522,7 +522,7 @@ public class DomXmpParser
                     + whatFound
                     + " [prefix=" + prefix + "; name=" + name + "]");
         }
-        if (!bagOrSeq.getLocalName().equals(type.card().name()))
+        if (strictParsing && !bagOrSeq.getLocalName().equals(type.card().name()))
         {
             // not the good array type
             throw new XmpParsingException(ErrorType.Format, "Invalid array type, expecting " + type.card()
