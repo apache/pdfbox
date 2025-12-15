@@ -311,7 +311,6 @@ public class DomXmpParser
             PropertyType type = checkPropertyDefinition(xmp,
                     new QName(attr.getNamespaceURI(), attr.getLocalName()));
 
-            // PDFBOX-2318, PDFBOX-6106: Default to text if no type is found
             if (type == null)
             {
                 if (strictParsing)
@@ -321,6 +320,7 @@ public class DomXmpParser
                 }
                 else
                 {
+                    // PDFBOX-2318, PDFBOX-6106: Default to text if no type is found
                     type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
                 }
             }
@@ -1058,18 +1058,11 @@ public class DomXmpParser
                     // Instantiate abstract structured type with hint from first element
                     QName attrQName = new QName(attr.getNamespaceURI(), attr.getLocalName(), attr.getPrefix());
                     PropertyType ctype = checkPropertyDefinition(xmp, attrQName);
-                    // PDFBOX-2318, PDFBOX-6106: Default to text if no type is found
+                    // this is the type of the AbstractStructuredType, not of the element(s)
                     if (ctype == null)
                     {
-                        if (strictParsing)
-                        {
-                            throw new XmpParsingException(ErrorType.InvalidType, "No type defined for {" + attr.getNamespaceURI() + "}"
-                                    + attr.getLocalName());
-                        }
-                        else
-                        {
-                            ctype = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
-                        }
+                        throw new XmpParsingException(ErrorType.NoType,
+                            "Property '" + attrQName.getLocalPart() + "' not defined in " + attrQName.getNamespaceURI());
                     }
                     Types tt = ctype.type();
                     ast = instanciateStructured(tm, tt, qName.getLocalPart(), attr.getNamespaceURI());
@@ -1085,6 +1078,19 @@ public class DomXmpParser
                 if (ast != null && pm != null && attr.getNamespaceURI() != null)
                 {
                     PropertyType type = pm.getPropertyType(attr.getLocalName());
+                    if (type == null)
+                    {
+                        if (strictParsing)
+                        {
+                            throw new XmpParsingException(ErrorType.InvalidType, "No type defined for {" + attr.getNamespaceURI() + "}"
+                                    + attr.getLocalName());
+                        }
+                        else
+                        {
+                            // PDFBOX-2318, PDFBOX-6106: Default to text if no type is found
+                            type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
+                        }
+                    }
                     AbstractSimpleProperty asp = tm.instanciateSimpleProperty(
                             attr.getNamespaceURI(), attr.getPrefix(), attr.getLocalName(),
                             attr.getValue(), type.type());

@@ -558,6 +558,37 @@ class DomXmpParserTest
         assertEquals("Important subject", subjects.get(0));
         assertEquals("Unimportant subject", subjects.get(1));
     }
+    
+    @Test
+    void testBadAttr() throws XmpParsingException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
+                    "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" +
+                    "	<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "           <rdf:Description xmlns:xmpTPg=\"http://ns.adobe.com/xap/1.0/t/pg/\"" +
+                    "                            xmlns:stDim=\"http://ns.adobe.com/xap/1.0/sType/Dimensions#\"" +
+                    "		                 rdf:about=\"\">\n" +
+                    "			<xmpTPg:MaxPageSize>\n" +
+                    "				<rdf:Description stDim:X=\"4\" stDim:Y=\"3\" stDim:Z=\"inch\"/>\n" +
+                    "			</xmpTPg:MaxPageSize>\n" +
+                    "		</rdf:Description>\n" +
+                    "	</rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end=\"r\"?>";
+        XmpParsingException ex = assertThrows(
+                XmpParsingException.class,
+                () -> new DomXmpParser().parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("No type defined for {http://ns.adobe.com/xap/1.0/sType/Dimensions#}X", ex.getMessage());
+        DomXmpParser xmpParser = new DomXmpParser();
+        xmpParser.setStrictParsing(false);
+        XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
+        XMPageTextSchema pageTextSchema = xmp.getPageTextSchema();
+        DimensionsType dim = (DimensionsType) pageTextSchema.getProperty(XMPageTextSchema.MAX_PAGE_SIZE);
+        assertEquals("DimensionsType{null x null null}", dim.toString());
+        assertEquals("[X=TextType:4]", dim.getProperty("X").toString());
+        assertEquals("[Y=TextType:3]", dim.getProperty("Y").toString());
+        assertEquals("[Z=TextType:inch]", dim.getProperty("Z").toString());
+    }
 
     @Test
     void testBadType() throws XmpParsingException
