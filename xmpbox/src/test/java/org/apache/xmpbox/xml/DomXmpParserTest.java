@@ -27,6 +27,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.AdobePDFSchema;
 import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.xmpbox.schema.PhotoshopSchema;
@@ -553,5 +554,117 @@ public class DomXmpParserTest
         assertEquals(2, subjects.size());
         assertEquals("Important subject", subjects.get(0));
         assertEquals("Unimportant subject", subjects.get(1));
+    }
+
+    @Test
+    public void testBadType() throws XmpParsingException, UnsupportedEncodingException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
+                    "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n" +
+                    "         xmlns:iX=\"http://ns.adobe.com/iX/1.0/\">\n" +
+                    "	<rdf:Description xmlns=\"http://ns.adobe.com/pdf/1.3/\"\n" +
+                    "	                 xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\"\n" +
+                    "	                 about=\"\"\n" +
+                    "	                 pdf:Author=\"edocslib\"/>\n" +
+                    "</rdf:RDF>\n" +
+                    "<?xpacket end='r'?>";
+        try
+        {
+            new DomXmpParser().parse(s.getBytes("utf-8"));
+            fail("XmpParsingException expected");
+        }
+        catch (XmpParsingException ex)
+        {
+            assertEquals("No type defined for {http://ns.adobe.com/pdf/1.3/}Author", ex.getMessage());
+        }
+        DomXmpParser xmpParser = new DomXmpParser();
+        xmpParser.setStrictParsing(false);
+        XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
+        AdobePDFSchema adobePDFSchema = xmp.getAdobePDFSchema();
+        TextType tt = (TextType) adobePDFSchema.getProperty("Author");
+        assertEquals("[Author=TextType:edocslib]", tt.toString());
+    }
+
+    @Test
+    public void testBadLocalName() throws XmpParsingException, UnsupportedEncodingException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?><?adobe-xap-filters esc=\"CR\"?>\n" +
+                    "<x:xapmeta xmlns:x=\"adobe:ns:meta/\">\n" +
+                    "	<rdf:RDF xmlns:iX=\"http://ns.adobe.com/iX/1.0/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "	</rdf:RDF>\n" +
+                    "</x:xapmeta><?xpacket end='w'?>";
+        try
+        {
+            new DomXmpParser().parse(s.getBytes("utf-8"));
+            fail("XmpParsingException expected");
+        }
+        catch (XmpParsingException ex)
+        {
+            assertEquals("Expecting local name 'xmpmeta' and found 'xapmeta'", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testBadXPacketEnd1() throws XmpParsingException, UnsupportedEncodingException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\" ?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" +
+                    "    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "        <rdf:Description xmlns:dc=\"http://purl.org/dc/elements/1.1/\" rdf:about=\"\">\n" +
+                    "            <dc:format>application/pdf</dc:format>\n" +
+                    "        </rdf:Description>\n" +
+                    "    </rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket ends=\"w\" ?>";
+        try
+        {
+            new DomXmpParser().parse(s.getBytes("utf-8"));
+            fail("XmpParsingException expected");
+        }
+        catch (XmpParsingException ex)
+        {
+            assertEquals("Excepted xpacket 'end' attribute (must be present and placed in first)", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testBadXPacketEnd2() throws XmpParsingException, UnsupportedEncodingException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\" ?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" +
+                    "    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "        <rdf:Description xmlns:dc=\"http://purl.org/dc/elements/1.1/\" rdf:about=\"\">\n" +
+                    "            <dc:format>application/pdf</dc:format>\n" +
+                    "        </rdf:Description>\n" +
+                    "    </rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end=\"k\" ?>";
+        try
+        {
+            new DomXmpParser().parse(s.getBytes("utf-8"));
+            fail("XmpParsingException expected");
+        }
+        catch (XmpParsingException ex)
+        {
+            assertEquals("Excepted xpacket 'end' attribute with value 'r' or 'w' ", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testNoRdfChildren() throws XmpParsingException, UnsupportedEncodingException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\" ?>" + 
+                    "  <x:xmpmeta xmlns:x=\"adobe:ns:meta/\"/>\n" +
+                    "<?xpacket end=\"w\" ?>";
+        try
+        {
+            new DomXmpParser().parse(s.getBytes("utf-8"));
+            fail("XmpParsingException expected");
+        }
+        catch (XmpParsingException ex)
+        {
+            assertEquals("No rdf description found in xmp", ex.getMessage());
+        }
     }
 }
