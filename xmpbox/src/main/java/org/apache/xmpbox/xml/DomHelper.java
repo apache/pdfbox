@@ -105,6 +105,13 @@ public final class DomHelper
         return new QName(element.getNamespaceURI(), element.getLocalName(), element.getPrefix());
     }
 
+    /**
+     * 
+     * @param element
+     * @return
+     * @deprecated This will be removed in 4.0.
+     */
+    @Deprecated
     public static boolean isRdfDescription(Element element)
     {
         return (XmpConstants.DEFAULT_RDF_PREFIX.equals(element.getPrefix()) && XmpConstants.DESCRIPTION_NAME
