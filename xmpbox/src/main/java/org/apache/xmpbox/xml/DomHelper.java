@@ -104,12 +104,6 @@ public final class DomHelper
         return new QName(element.getNamespaceURI(), element.getLocalName(), element.getPrefix());
     }
 
-    public static boolean isRdfDescription(Element element)
-    {
-        return (XmpConstants.DEFAULT_RDF_PREFIX.equals(element.getPrefix()) && XmpConstants.DESCRIPTION_NAME
-                .equals(element.getLocalName()));
-    }
-
     public static boolean isParseTypeResource(Element element)
     {
         Attr parseType = element.getAttributeNodeNS(XmpConstants.RDF_NAMESPACE, XmpConstants.PARSE_TYPE);
