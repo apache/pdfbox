@@ -753,7 +753,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      * 
      * @param indirectObjects a list of already found indirect objects.
      * 
-     * @deprecated, use {@link #getIndirectObjectKeys(Collection)} instead
+     * @deprecated, will be removed in 4.0
      */
     public void getIndirectObjectKeys(List<COSObjectKey> indirectObjects)
     {
@@ -768,6 +768,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      * 
      * @param indirectObjects a collection of already found indirect objects.
      * 
+     * @deprecated, will be removed in 4.0
      */
     public void getIndirectObjectKeys(Collection<COSObjectKey> indirectObjects)
     {
@@ -817,6 +818,72 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
                 indirectObjects.add(indirectObjectKey);
             }
         }
+    }
+
+    /**
+     * Resets the object key of all indirect objects numbers within this array and all included dictionaries and arrays.
+     * It is used to avoid overlapping object numbers when importing an existing page to another pdf.
+     * 
+     * Expert use only. This might trigger some unwanted side effects.
+     * 
+     * @param indirectObjects a collection of already found indirect objects.
+     * 
+     * @return the updated collection of indirect objects
+     */
+    protected Collection<COSObjectKey> resetObjectKeys(Collection<COSObjectKey> indirectObjects)
+    {
+        if (indirectObjects == null)
+        {
+            return indirectObjects;
+        }
+        COSObjectKey key = getKey();
+        if (key != null)
+        {
+            // avoid endless recursions
+            if (indirectObjects.contains(key))
+            {
+                return indirectObjects;
+            }
+            indirectObjects.add(key);
+            // reset key
+            setKey(null);
+        }
+        for (COSBase cosBase : objects)
+        {
+            if (cosBase == null)
+            {
+                continue;
+            }
+            COSObjectKey indirectObjectKey = cosBase instanceof COSObject ? cosBase.getKey() : null;
+            if (indirectObjectKey != null)
+            {
+                if (indirectObjects.contains(indirectObjectKey))
+                {
+                    continue;
+                }
+                // dereference object first
+                COSBase dereferencedObject = ((COSObject) cosBase).getObject();
+                // reset key
+                cosBase.setKey(null);
+                cosBase = dereferencedObject;
+            }
+            if (cosBase instanceof COSDictionary)
+            {
+                // descend to included dictionary to reset all included indirect objects
+                ((COSDictionary) cosBase).resetObjectKeys(indirectObjects);
+            }
+            else if (cosBase instanceof COSArray)
+            {
+                // descend to included array to reset all included indirect objects
+                ((COSArray) cosBase).resetObjectKeys(indirectObjects);
+            }
+            else if (indirectObjectKey != null)
+            {
+                // add key for all indirect objects other than COSDictionary/COSArray
+                indirectObjects.add(indirectObjectKey);
+            }
+        }
+        return indirectObjects;
     }
 
     // wrap indirect objects

@@ -23,12 +23,15 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObjectKey;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.multipdf.PageExtractor;
 import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -145,6 +148,32 @@ class COSWriterTest
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             pdDocument.saveIncremental(out);
             return out.toByteArray();
+        }
+    }
+
+    @Test
+    void testPDFBox5752() throws IOException, URISyntaxException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] emptyPDF = IOUtils.toByteArray(
+                new URI("https://issues.apache.org/jira/secure/attachment/13066015/empty.pdf")
+                        .toURL().openStream());
+        byte[] roboPDF = IOUtils.toByteArray(
+                new URI("https://issues.apache.org/jira/secure/attachment/13066016/roboto-14.pdf")
+                        .toURL().openStream());
+        try (PDDocument targetDoc = Loader.loadPDF(emptyPDF);
+                PDDocument doc2 = Loader.loadPDF(roboPDF))
+        {
+            PDPage sourcePage = doc2.getPage(0);
+            targetDoc.importPage(sourcePage);
+            targetDoc.save(baos);
+        }
+        try (PDDocument targetDoc = Loader.loadPDF(baos.toByteArray()))
+        {
+            assertNotNull(targetDoc.getDocumentCatalog().getStructureTreeRoot());
+            PDResources res = targetDoc.getPage(1).getResources();
+            assertEquals("BCDEEE+Roboto-Regular", res.getFont(COSName.getPDFName("F1")).getName());
+            assertEquals("BCDFEE+Roboto-Regular", res.getFont(COSName.getPDFName("F2")).getName());
         }
     }
 
