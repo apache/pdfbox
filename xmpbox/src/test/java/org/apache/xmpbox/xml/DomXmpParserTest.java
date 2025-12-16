@@ -703,4 +703,58 @@ public class DomXmpParserTest
             assertEquals("No rdf description found in xmp", ex.getMessage());
         }
     }
+
+    @Test
+    public void testTextInsteadOfArray() throws XmpParsingException, UnsupportedEncodingException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
+                    "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"\n" +
+                    "           x:xmptk=\"3.1-701\">\n" +
+                    "	<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "		<rdf:Description xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n" +
+                    "		                 rdf:about=\"\">\n" +
+                    "			<dc:title>Title</dc:title>\n" +
+                    "		</rdf:Description>\n" +
+                    "	</rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end=\"w\"?>";
+        try
+        {
+            new DomXmpParser().parse(s.getBytes("utf-8"));
+            fail("XmpParsingException expected");
+        }
+        catch (XmpParsingException ex)
+        {
+            assertEquals("Invalid array definition, expecting Alt and found Text [prefix=dc; name=title]", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testPropertyNotDefined() throws XmpParsingException, UnsupportedEncodingException
+    {
+        // While "Fired" does exist as a type, it's not the correct syntax, the PDFLib XMP validator complains too.
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
+                    "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"\n" +
+                    "           x:xmptk=\"XMP toolkit 3.0-28, framework 1.6\">\n" +
+                    "	<rdf:RDF xmlns:iX=\"http://ns.adobe.com/iX/1.0/\"\n" +
+                    "	         xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "		<rdf:Description xmlns:exif=\"http://ns.adobe.com/exif/1.0/\"\n" +
+                    "		                 rdf:about=\"uuid:d9974396-53ee-11d9-9542-81b7ec7f4613\">\n" +
+                    "			<exif:Flash rdf:parseType=\"Resource\">\n" +
+                    "				<exif:Fired>False</exif:Fired>\n" +
+                    "			</exif:Flash>\n" +
+                    "		</rdf:Description>\n" +
+                    "	</rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end='w'?>";
+        try
+        {
+            new DomXmpParser().parse(s.getBytes("utf-8"));
+            fail("XmpParsingException expected");
+        }
+        catch (XmpParsingException ex)
+        {
+            assertEquals("Property 'Fired' not defined in http://ns.adobe.com/exif/1.0/", ex.getMessage());
+        }
+    }
 }
