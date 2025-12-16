@@ -772,18 +772,18 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
 
     /**
      * Collects all indirect objects numbers within this COSArray and all included dictionaries. It is used to avoid
-     * mixed up object numbers when importing an existing page to another pdf.
+     * overlapping object numbers when importing an existing page to another pdf.
      * 
      * Expert use only. You might run into an endless recursion if choosing a wrong starting point.
      * 
      * @param indirectObjects a collection of already found indirect objects.
      * 
      */
-    public void getIndirectObjectKeys(Collection<COSObjectKey> indirectObjects)
+    protected Collection<COSObjectKey> resetObjectKeys(Collection<COSObjectKey> indirectObjects)
     {
         if (indirectObjects == null)
         {
-            return;
+            return indirectObjects;
         }
         COSObjectKey key = getKey();
         if (key != null)
@@ -791,9 +791,11 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
             // avoid endless recursions
             if (indirectObjects.contains(key))
             {
-                return;
+                return indirectObjects;
             }
             indirectObjects.add(key);
+            // reset key
+            setKey(null);
         }
         for (COSBase cosBase : objects)
         {
@@ -808,18 +810,21 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
                 {
                     continue;
                 }
-                // dereference object
-                cosBase = ((COSObject) cosBase).getObject();
+                // dereference object first
+                COSBase dereferencedObject = ((COSObject) cosBase).getObject();
+                // reset key
+                cosBase.setKey(null);
+                cosBase = dereferencedObject;
             }
             if (cosBase instanceof COSDictionary)
             {
-                // descend to included dictionary to collect all included indirect objects
-                ((COSDictionary) cosBase).getIndirectObjectKeys(indirectObjects);
+                // descend to included dictionary to reset all included indirect objects
+                ((COSDictionary) cosBase).resetObjectKeys(indirectObjects);
             }
             else if (cosBase instanceof COSArray)
             {
-                // descend to included array to collect all included indirect objects
-                ((COSArray) cosBase).getIndirectObjectKeys(indirectObjects);
+                // descend to included array to reset all included indirect objects
+                ((COSArray) cosBase).resetObjectKeys(indirectObjects);
             }
             else if (indirectObjectKey != null)
             {
@@ -827,6 +832,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
                 indirectObjects.add(indirectObjectKey);
             }
         }
+        return indirectObjects;
     }
 
     // wrap indirect objects

@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -45,7 +44,6 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSUpdateInfo;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
@@ -152,9 +150,6 @@ public class PDDocument implements Closeable
     // to make sure only one signature is added
     private boolean signatureAdded = false;
 
-    // cache for the key of all imported indirect objects
-    private final Collection<COSObjectKey> indirectObjectKeys = new HashSet<>();
-
     /**
      * Creates an empty PDF document.
      * You need to add at least one page for the document to be valid.
@@ -240,7 +235,6 @@ public class PDDocument implements Closeable
     public void addPage(PDPage page)
     {
         getPages().add(page);
-        setHighestImportedObjectNumber(page);
     }
 
     /**
@@ -703,6 +697,8 @@ public class PDDocument implements Closeable
         importedPage.getCOSObject().removeItem(COSName.PARENT);
         PDStream dest = new PDStream(this, page.getContents(), COSName.FLATE_DECODE);
         importedPage.setContents(dest);
+        // reset imported object keys to avoid overlapping object numbers
+        importedPage.getCOSObject().resetImportedObjectKeys();
         addPage(importedPage);
         importedPage.setCropBox(new PDRectangle(page.getCropBox().getCOSArray()));
         importedPage.setMediaBox(new PDRectangle(page.getMediaBox().getCOSArray()));
@@ -713,21 +709,6 @@ public class PDDocument implements Closeable
             LOG.warn("call importedPage.setResources(page.getResources()) to do this");
         }
         return importedPage;
-    }
-
-    /**
-     * Determine the highest object number from the imported page to avoid mixed up numbers when saving the new pdf.
-     * 
-     * @param importedPage the imported page.
-     */
-    private void setHighestImportedObjectNumber(PDPage importedPage)
-    {
-        importedPage.getCOSObject().getIndirectObjectKeys(indirectObjectKeys);
-        long highestImportedNumber = indirectObjectKeys.stream().map(COSObjectKey::getNumber)
-                .max(Long::compare).orElse(0L);
-        long highestXRefObjectNumber = getDocument().getHighestXRefObjectNumber();
-        getDocument().setHighestXRefObjectNumber(
-                Math.max(highestXRefObjectNumber, highestImportedNumber));
     }
 
     /**
