@@ -622,6 +622,31 @@ class DomXmpParserTest
     }
 
     @Test
+    void testBadType2() throws XmpParsingException, BadFieldValueException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
+                    "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"\n" +
+                    "           x:xmptk=\"3.1.1-111\">\n" +
+                    "	<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "		<rdf:Description xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\"\n" +
+                    "		                 rdf:about=\"\">\n" +
+                    "			<pdf:Bad>Value</pdf:Bad>\n" +
+                    "		</rdf:Description>\n" +
+                    "	</rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end=\"r\"?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
+        XmpParsingException ex = assertThrows(
+                XmpParsingException.class,
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("No type defined for {http://ns.adobe.com/pdf/1.3/}Bad", ex.getMessage());
+        final DomXmpParser xmpParser2 = new DomXmpParser();
+        xmpParser2.setStrictParsing(false);
+        XMPMetadata xmp = xmpParser2.parse(s.getBytes(StandardCharsets.UTF_8));
+        assertEquals("Value", xmp.getAdobePDFSchema().getUnqualifiedTextPropertyValue("Bad"));
+    }
+
+    @Test
     void testBadLocalName() throws XmpParsingException
     {
         String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
