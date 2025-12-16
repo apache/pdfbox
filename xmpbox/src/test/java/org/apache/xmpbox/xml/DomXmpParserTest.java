@@ -886,7 +886,7 @@ public class DomXmpParserTest
         DomXmpParser xmpParser1 = new DomXmpParser();
         XMPMetadata xmp1 = xmpParser1.parse(s.getBytes("utf-8"));
         XMPSchema uaSchema1 = xmp1.getSchema("http://www.aiim.org/pdfua/ns/id/");
-        assertEquals(1l, uaSchema1.getIntegerPropertyValueAsSimple("part"));
+        assertEquals((Integer) 1, uaSchema1.getIntegerPropertyValueAsSimple("part"));
         XmpSerializer serializer = new XmpSerializer();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         // make sure that nothing is lost in serialization
@@ -894,6 +894,6 @@ public class DomXmpParserTest
         DomXmpParser xmpParser2 = new DomXmpParser();
         XMPMetadata xmp2 = xmpParser2.parse(baos.toByteArray());
         XMPSchema uaSchema2  = xmp2.getSchema("http://www.aiim.org/pdfua/ns/id/");
-        assertEquals(1l, uaSchema2.getIntegerPropertyValueAsSimple("part"));
+        assertEquals((Integer) 1, uaSchema2.getIntegerPropertyValueAsSimple("part"));
     }
 }
