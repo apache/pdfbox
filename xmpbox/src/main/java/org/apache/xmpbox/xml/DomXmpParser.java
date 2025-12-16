@@ -687,8 +687,13 @@ public class DomXmpParser
             // The list is empty
             return tryParseAttributesAsProperties(xmp, liDescriptionElement, tm, null, null, descriptor);
         }
-        // Instantiate abstract structured type with hint from first element
         Element firstLiDescriptionElementChild = liDescriptionElementChildren.get(0);
+        if ("rdf:Description".equals(firstLiDescriptionElementChild.getTagName()))
+        {
+            // PDFBOX-6126: "<rdf:Description" as child of "<rdf:li"
+            return parseLiDescription(xmp, descriptor, firstLiDescriptionElementChild);
+        }
+        // Instantiate abstract structured type with hint from first element
         nsFinder.push(firstLiDescriptionElementChild);
         QName qName = DomHelper.getQName(firstLiDescriptionElementChild);
         PropertyType ctype = checkPropertyDefinition(xmp, qName);

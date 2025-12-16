@@ -21,11 +21,13 @@
 
 package org.apache.xmpbox.xml;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.List;
+import javax.xml.transform.TransformerException;
 
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.AdobePDFSchema;
@@ -789,5 +791,75 @@ class DomXmpParserTest
                 XmpParsingException.class,
                 () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
         assertEquals("This namespace is not from a schema: http://ns.adobe.com/xap/1.0/sType/Job#", ex.getMessage());
+    }
+
+    @Test
+    void testPDFBOX6126() throws XmpParsingException, BadFieldValueException, TransformerException
+    {
+        // XMP originally from PDFBOX-4325, had this exception:
+        // Cannot find a definition for the namespace http://www.w3.org/1999/02/22-rdf-syntax-ns#, property: rdf:Description
+        // Cause: "<rdf:Description" as child of <rdf:li .
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
+                    "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"\n" +
+                    "           x:xmptk=\"Adobe XMP Core 5.1.0-jc003\">\n" +
+                    "	<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "		<rdf:Description xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n" +
+                    "		                 xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\"\n" +
+                    "		                 xmlns:pdfaExtension=\"http://www.aiim.org/pdfa/ns/extension/\"\n" +
+                    "		                 xmlns:pdfaProperty=\"http://www.aiim.org/pdfa/ns/property#\"\n" +
+                    "		                 xmlns:pdfaSchema=\"http://www.aiim.org/pdfa/ns/schema#\"\n" +
+                    "		                 xmlns:pdfaid=\"http://www.aiim.org/pdfa/ns/id/\"\n" +
+                    "		                 xmlns:pdfuaid=\"http://www.aiim.org/pdfua/ns/id/\"\n" +
+                    "		                 xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\"\n" +
+                    "		                 dc:format=\"application/pdf\"\n" +
+                    "		                 pdf:Producer=\"iText® 5.5.13 ©2000-2018 iText Group NV (AGPL-version)\"\n" +
+                    "		                 pdfaid:conformance=\"B\"\n" +
+                    "		                 pdfaid:part=\"1\"\n" +
+                    "		                 rdf:about=\"\"\n" +
+                    "		                 xmp:CreateDate=\"2018-09-24T09:00:57+02:00\"\n" +
+                    "		                 xmp:ModifyDate=\"2018-09-24T09:00:57+02:00\">\n" +
+                    "			<pdfaExtension:schemas>\n" +
+                    "				<rdf:Bag>\n" +
+                    "					<rdf:li rdf:parseType=\"Resource\">\n" +
+                    "						<rdf:Description pdfaSchema:namespaceURI=\"http://www.aiim.org/pdfua/ns/id/\"\n" +
+                    "						                 pdfaSchema:prefix=\"pdfuaid\"\n" +
+                    "						                 pdfaSchema:schema=\"PDF/UA identification schema\">\n" +
+                    "							<pdfaSchema:property>\n" +
+                    "								<rdf:Seq>\n" +
+                    "									<rdf:li pdfaProperty:category=\"internal\"\n" +
+                    "									        pdfaProperty:description=\"PDF/UA version identifier\"\n" +
+                    "									        pdfaProperty:name=\"part\"\n" +
+                    "									        pdfaProperty:valueType=\"Integer\"/>\n" +
+                    "									<rdf:li pdfaProperty:category=\"internal\"\n" +
+                    "									        pdfaProperty:description=\"PDF/UA amendment identifier\"\n" +
+                    "									        pdfaProperty:name=\"amd\"\n" +
+                    "									        pdfaProperty:valueType=\"Text\"/>\n" +
+                    "									<rdf:li pdfaProperty:category=\"internal\"\n" +
+                    "									        pdfaProperty:description=\"PDF/UA corrigenda identifier\"\n" +
+                    "									        pdfaProperty:name=\"corr\"\n" +
+                    "									        pdfaProperty:valueType=\"Text\"/>\n" +
+                    "								</rdf:Seq>\n" +
+                    "							</pdfaSchema:property>\n" +
+                    "						</rdf:Description>\n" +
+                    "					</rdf:li>\n" +
+                    "				</rdf:Bag>\n" +
+                    "			</pdfaExtension:schemas>\n" +
+                    "			<pdfuaid:part>1</pdfuaid:part>\n" +
+                    "		</rdf:Description>\n" +
+                    "	</rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end=\"w\"?>";
+        DomXmpParser xmpParser1 = new DomXmpParser();
+        XMPMetadata xmp1 = xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8));
+        XMPSchema uaSchema1 = xmp1.getSchema("http://www.aiim.org/pdfua/ns/id/");
+        assertEquals(1, uaSchema1.getIntegerPropertyValueAsSimple("part"));
+        XmpSerializer serializer = new XmpSerializer();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        // make sure that nothing is lost in serialization
+        serializer.serialize(xmp1, baos, true);
+        DomXmpParser xmpParser2 = new DomXmpParser();
+        XMPMetadata xmp2 = xmpParser2.parse(baos.toByteArray());
+        XMPSchema uaSchema2  = xmp2.getSchema("http://www.aiim.org/pdfua/ns/id/");
+        assertEquals(1, uaSchema2.getIntegerPropertyValueAsSimple("part"));
     }
 }
