@@ -30,6 +30,7 @@ import java.util.List;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.AdobePDFSchema;
 import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.schema.ExifSchema;
 import org.apache.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.xmpbox.schema.PhotoshopSchema;
 import org.apache.xmpbox.schema.XMPMediaManagementSchema;
@@ -728,5 +729,38 @@ class DomXmpParserTest
                 XmpParsingException.class,
                 () -> xmpParser.parse(s.getBytes(StandardCharsets.UTF_8)));
         assertEquals("Property 'Fired' not defined in http://ns.adobe.com/exif/1.0/", ex.getMessage());
+    }
+
+    @Test
+    void testBadAttr2() throws XmpParsingException
+    {
+        // File from image on page 14 from file 006054.pdf
+        // exif:Flash is a structured type.
+        // However the PDFLib XMP validator approves the file.
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
+                    "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"\n" +
+                    "           x:xmptk=\"XMP toolkit 2.9.1-13, framework 1.6\">\n" +
+                    "	<rdf:RDF xmlns:iX=\"http://ns.adobe.com/iX/1.0/\"\n" +
+                    "	         xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "		<rdf:Description xmlns:exif=\"http://ns.adobe.com/exif/1.0/\"\n" +
+                    "		                 exif:FNumber=\"36/10\"\n" +
+                    "		                 exif:FileSource=\"3\"\n" +
+                    "		                 exif:Flash=\"1\"\n" +
+                    "		                 rdf:about=\"\">\n" +
+                    "		</rdf:Description>\n" +
+                    "	</rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end='r'?>";
+        
+        final DomXmpParser xmpParser1 = new DomXmpParser();
+        XmpParsingException ex = assertThrows(
+                XmpParsingException.class,
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("The type 'Flash' in 'exif:Flash=1' is a structured type, but attributes are simple types", ex.getMessage());
+        final DomXmpParser xmpParser2 = new DomXmpParser();
+        xmpParser2.setStrictParsing(false);
+        XMPMetadata xmp = xmpParser2.parse(s.getBytes(StandardCharsets.UTF_8));
+        ExifSchema exifSchema = (ExifSchema) xmp.getSchema(ExifSchema.class);
+        assertEquals("[Flash=TextType:1]", exifSchema.getProperty(ExifSchema.FLASH).toString());
     }
 }
