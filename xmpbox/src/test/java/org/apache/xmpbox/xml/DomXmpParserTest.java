@@ -828,7 +828,7 @@ public class DomXmpParserTest
     }
 
     @Test
-    void testPDFBOX6126() throws XmpParsingException, BadFieldValueException, TransformerException, UnsupportedEncodingException
+    public void testPDFBOX6126() throws XmpParsingException, BadFieldValueException, TransformerException, UnsupportedEncodingException
     {
         // XMP originally from PDFBOX-4325, had this exception:
         // Cannot find a definition for the namespace http://www.w3.org/1999/02/22-rdf-syntax-ns#, property: rdf:Description
