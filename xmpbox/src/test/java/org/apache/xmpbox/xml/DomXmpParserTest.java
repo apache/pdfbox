@@ -794,4 +794,34 @@ public class DomXmpParserTest
         ExifSchema exifSchema = (ExifSchema) xmp.getSchema(ExifSchema.class);
         assertEquals("[Flash=TextType:1]", exifSchema.getProperty(ExifSchema.FLASH).toString());
     }
+
+    @Test
+    public void testBadSchema() throws XmpParsingException, UnsupportedEncodingException
+    {
+        // from file 130841.pdf
+        // structured type used like a schema
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?><?adobe-xap-filters esc=\"CRLF\"?>\n" +
+                    "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"\n" +
+                    "           x:xmptk=\"XMP toolkit\">\n" +
+                    "	<rdf:RDF xmlns:iX=\"http://ns.adobe.com/iX/1.0/\"\n" +
+                    "	         xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "		<rdf:Description xmlns:stJob=\"http://ns.adobe.com/xap/1.0/sType/Job#\"\n" +
+                    "		                 rdf:about=\"uuid\"\n" +
+                    "		                 stJob:id=\"jobid\"\n" +
+                    "		                 stJob:name=\"some name\">\n" +
+                    "			<stJob:URL>https://pdfbox.apache.org</stJob:URL>\n" +
+                    "		</rdf:Description>\n" +
+                    "	</rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end='w'?>";
+        try
+        {
+            new DomXmpParser().parse(s.getBytes("utf-8"));
+            fail("XmpParsingException expected");
+        }
+        catch (XmpParsingException ex)
+        {
+            assertEquals("This namespace is not from a schema: http://ns.adobe.com/xap/1.0/sType/Job#", ex.getMessage());
+        }
+    }
 }

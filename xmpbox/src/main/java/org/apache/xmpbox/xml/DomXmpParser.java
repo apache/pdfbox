@@ -232,7 +232,7 @@ public class DomXmpParser
                 if (!tm.isDefinedSchema(schemaExtension.getNamespaceURI()))
                 {
                     throw new XmpParsingException(ErrorType.NoSchema,
-                            "This namespace is not a schema or a structured type : " + namespace);
+                            "This namespace is not from a schema: " + namespace);
                 }
                 PropertyType type = checkPropertyDefinition(xmp, DomHelper.getQName(schemaExtension));
                 final XMPSchema schema = tm.getSchemaFactory(namespace).createXMPSchema(xmp, schemaExtension.getPrefix());
@@ -365,7 +365,7 @@ public class DomXmpParser
             if (!tm.isDefinedSchema(namespace))
             {
                 throw new XmpParsingException(ErrorType.NoSchema,
-                        "This namespace is not a schema or a structured type : " + namespace);
+                        "This namespace is not from a schema: " + namespace);
             }
             if (isSchemaExtensionProperty(property))
             {
