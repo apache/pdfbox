@@ -323,6 +323,20 @@ public class DomXmpParser
                     type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
                 }
             }
+            else if (!type.type().isSimple())
+            {
+                if (strictParsing)
+                {
+                    throw new XmpParsingException(ErrorType.InvalidType, "The type '" +
+                            type.type().name() + "' in '" + attr.getPrefix() + ":" + attr.getLocalName() + "=" + attr.getValue()
+                            + "' is a structured type, but attributes are simple types");
+                }
+                else
+                {
+                    // PDFBOX-6125: Default to text
+                    type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
+                }
+            }
 
             try
             {
@@ -1093,6 +1107,20 @@ public class DomXmpParser
                         else
                         {
                             // PDFBOX-2318, PDFBOX-6106: Default to text if no type is found
+                            type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
+                        }
+                    }
+                    else if (!type.type().isSimple())
+                    {
+                        if (strictParsing)
+                        {
+                            throw new XmpParsingException(ErrorType.InvalidType, "The type '" +
+                                    type.type().name() + "' in '" + attr.getPrefix() + ":" + attr.getLocalName() + "=" + attr.getValue()
+                                    + "' is a structured type, but attributes are simple types");
+                        }
+                        else
+                        {
+                            // PDFBOX-6125: Default to text
                             type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
                         }
                     }

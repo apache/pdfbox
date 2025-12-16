@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.AdobePDFSchema;
 import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.schema.ExifSchema;
 import org.apache.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.xmpbox.schema.PhotoshopSchema;
 import org.apache.xmpbox.schema.XMPMediaManagementSchema;
@@ -756,5 +757,41 @@ public class DomXmpParserTest
         {
             assertEquals("Property 'Fired' not defined in http://ns.adobe.com/exif/1.0/", ex.getMessage());
         }
+    }
+
+    @Test
+    public void testBadAttr2() throws XmpParsingException, UnsupportedEncodingException
+    {
+        // File from image on page 14 from file 006054.pdf
+        // exif:Flash is a structured type.
+        // However the PDFLib XMP validator approves the file.
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
+                    "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"\n" +
+                    "           x:xmptk=\"XMP toolkit 2.9.1-13, framework 1.6\">\n" +
+                    "	<rdf:RDF xmlns:iX=\"http://ns.adobe.com/iX/1.0/\"\n" +
+                    "	         xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "		<rdf:Description xmlns:exif=\"http://ns.adobe.com/exif/1.0/\"\n" +
+                    "		                 exif:FNumber=\"36/10\"\n" +
+                    "		                 exif:FileSource=\"3\"\n" +
+                    "		                 exif:Flash=\"1\"\n" +
+                    "		                 rdf:about=\"\">\n" +
+                    "		</rdf:Description>\n" +
+                    "	</rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end='r'?>";
+        try
+        {
+            new DomXmpParser().parse(s.getBytes("utf-8"));
+            fail("XmpParsingException expected");
+        }
+        catch (XmpParsingException ex)
+        {
+            assertEquals("The type 'Flash' in 'exif:Flash=1' is a structured type, but attributes are simple types", ex.getMessage());
+        }
+        final DomXmpParser xmpParser2 = new DomXmpParser();
+        xmpParser2.setStrictParsing(false);
+        XMPMetadata xmp = xmpParser2.parse(s.getBytes("utf-8"));
+        ExifSchema exifSchema = (ExifSchema) xmp.getSchema(ExifSchema.class);
+        assertEquals("[Flash=TextType:1]", exifSchema.getProperty(ExifSchema.FLASH).toString());
     }
 }
