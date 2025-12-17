@@ -45,8 +45,6 @@ class TestSimpleMetadataProperties
 
     /**
      * Check the detection of a bad type
-     * 
-     * @throws IllegalArgumentException
      */
     @Test
     void testBooleanBadTypeDetection()
@@ -58,8 +56,6 @@ class TestSimpleMetadataProperties
 
     /**
      * Check the detection of a bad type
-     * 
-     * @throws IllegalArgumentException
      */
     @Test
     void testDateBadTypeDetection()
@@ -67,12 +63,13 @@ class TestSimpleMetadataProperties
         assertThrows(IllegalArgumentException.class, () -> {
 	        new DateType(parent, null, "test", "date", "Bad Date");
 	    });
+        DateType date = new DateType(parent, null, "test", "date", "");
+        assertThrows(IllegalArgumentException.class, () -> date.setValue(null));
+        assertThrows(IllegalArgumentException.class, () -> date.setValue(3));
     }
 
     /**
      * Check the detection of a bad type
-     * 
-     * @throws IllegalArgumentException
      */
     @Test
     void testIntegerBadTypeDetection()
@@ -84,11 +81,9 @@ class TestSimpleMetadataProperties
 
     /**
      * Check the detection of a bad type
-     * 
-     * @throws IllegalArgumentException
      */
     @Test
-    void testRealBadTypeDetection() throws Exception
+    void testRealBadTypeDetection()
     {
         assertThrows(IllegalArgumentException.class, () -> {
 	        new RealType(parent, null, "test", "real", "Not a real");
@@ -97,11 +92,9 @@ class TestSimpleMetadataProperties
 
     /**
      * Check the detection of a bad type
-     * 
-     * @throws IllegalArgumentException
      */
     @Test
-    void testTextBadTypeDetection() throws Exception
+    void testTextBadTypeDetection()
     {
         Calendar calendar = Calendar.getInstance();
         assertThrows(IllegalArgumentException.class, () -> {
@@ -115,7 +108,7 @@ class TestSimpleMetadataProperties
      * @throws Exception
      */
     @Test
-    void testElementAndObjectSynchronization() throws Exception
+    void testElementAndObjectSynchronization()
     {
         boolean boolv = true;
         Calendar datev = Calendar.getInstance();
@@ -138,11 +131,9 @@ class TestSimpleMetadataProperties
 
     /**
      * Check the creation from string attributes
-     * 
-     * @throws Exception
      */
     @Test
-    void testCreationFromString() throws Exception
+    void testCreationFromString()
     {
         String boolv = "False";
         String datev = "2010-03-22T14:33:11+01:00";
@@ -165,11 +156,9 @@ class TestSimpleMetadataProperties
 
     /**
      * Check creation when a namespace is specified
-     * 
-     * @throws Exception
      */
     @Test
-    void testObjectCreationWithNamespace() throws Exception
+    void testObjectCreationWithNamespace()
     {
         String ns = "http://www.test.org/pdfa/";
         BooleanType bool = parent.getTypeMapping().createBoolean(ns, "test", "boolean", true);
@@ -187,26 +176,10 @@ class TestSimpleMetadataProperties
     }
 
     /**
-     * Throw IllegalArgumentException
-     * 
-     * @throws IllegalArgumentException
-     */
-    @Test
-    void testExceptionWithCause() throws Exception
-    {
-        Throwable throwable = new Throwable();
-        assertThrows(IllegalArgumentException.class, () -> {
-	        throw new IllegalArgumentException("TEST", throwable);
-	    });
-    }
-
-    /**
      * Check if attributes management works
-     * 
-     * @throws Exception
      */
     @Test
-    void testAttribute() throws Exception
+    void testAttribute()
     {
 
         IntegerType integer = new IntegerType(parent, null, "test", "integer", 1);
