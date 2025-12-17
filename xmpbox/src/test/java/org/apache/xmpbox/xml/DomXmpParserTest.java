@@ -51,6 +51,7 @@ import org.apache.xmpbox.type.TextType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
@@ -816,6 +817,80 @@ class DomXmpParserTest
         XMPMetadata xmp4 = xmpParser4.parse(baos.toByteArray());
         DublinCoreSchema dublinCoreSchema = xmp4.getDublinCoreSchema();
         assertEquals("[creator=TextType:Creator]", dublinCoreSchema.getProperty(DublinCoreSchema.CREATOR).toString());
+    }
+
+    /**
+     * Test empty attribute where an array is expected. The attribute is skipped in lenient mode.
+     *
+     * @throws XmpParsingException
+     * @throws TransformerException
+     * @throws BadFieldValueException 
+     */
+    @Test
+    void testBadAttr4() throws XmpParsingException, TransformerException, BadFieldValueException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+"<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d' bytes='1206'?><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" >\n" +
+"    <rdf:Description xmlns=\"http://purl.org/dc/elements/1.1/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" about=\"\" dc:creator=\"\">\n" +
+"        <dc:coverage>Coverage</dc:coverage>\n" +
+"    </rdf:Description>\n" +
+"</rdf:RDF><?xpacket end='r'?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
+        XmpParsingException ex = assertThrows(XmpParsingException.class,
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("The type 'Text' in 'dc:creator=' is a structured or array type, but attributes are simple types", ex.getMessage());
+        DomXmpParser xmpParser2 = new DomXmpParser();
+        xmpParser2.setStrictParsing(false);
+        XMPMetadata xmp2 = xmpParser2.parse(s.getBytes(StandardCharsets.UTF_8));
+        DublinCoreSchema dublinCoreSchema2 = xmp2.getDublinCoreSchema();
+        assertEquals("Coverage", dublinCoreSchema2.getCoverage());
+        assertNull(dublinCoreSchema2.getProperty(DublinCoreSchema.CREATOR));
+        XmpSerializer serializer = new XmpSerializer();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        serializer.serialize(xmp2, baos, true);
+        DomXmpParser xmpParser3 = new DomXmpParser();
+        xmpParser3.setStrictParsing(false);
+        XMPMetadata xmp3 = xmpParser3.parse(baos.toByteArray());
+        DublinCoreSchema dublinCoreSchema3 = xmp3.getDublinCoreSchema();
+        assertEquals("Coverage", dublinCoreSchema3.getCoverage());
+        assertNull(dublinCoreSchema2.getProperty(DublinCoreSchema.CREATOR));
+    }
+
+    /**
+     * Test empty attribute where an LangAlt is expected. The attribute is skipped in lenient mode.
+     *
+     * @throws XmpParsingException
+     * @throws TransformerException
+     * @throws BadFieldValueException 
+     */
+    @Test
+    void testBadAttr5() throws XmpParsingException, TransformerException, BadFieldValueException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+"<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d' bytes='987'?><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:iX=\"http://ns.adobe.com/iX/1.0/\">\n" +
+"    <rdf:Description xmlns=\"http://purl.org/dc/elements/1.1/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" about=\"\" dc:title=\"\" dc:coverage=\"COVER\"/>\n" +
+"</rdf:RDF><?xpacket end='r'?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
+        XmpParsingException ex = assertThrows(XmpParsingException.class,
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("The type 'LangAlt' in 'dc:title=' is a structured or array type, but attributes are simple types", ex.getMessage());
+        DomXmpParser xmpParser2 = new DomXmpParser();
+        xmpParser2.setStrictParsing(false);
+        XMPMetadata xmp2 = xmpParser2.parse(s.getBytes(StandardCharsets.UTF_8));
+        DublinCoreSchema dublinCoreSchema2 = xmp2.getDublinCoreSchema();
+        assertNull(dublinCoreSchema2.getTitle());
+        assertNull(dublinCoreSchema2.getProperty(DublinCoreSchema.TITLE));
+        assertEquals("COVER", dublinCoreSchema2.getCoverage());
+        XmpSerializer serializer = new XmpSerializer();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        serializer.serialize(xmp2, baos, true);
+        DomXmpParser xmpParser3 = new DomXmpParser();
+        xmpParser3.setStrictParsing(false);
+        XMPMetadata xmp3 = xmpParser3.parse(baos.toByteArray());
+        DublinCoreSchema dublinCoreSchema3 = xmp3.getDublinCoreSchema();
+        assertNull(dublinCoreSchema3.getTitle());
+        assertNull(dublinCoreSchema3.getProperty(DublinCoreSchema.TITLE));
+        assertEquals("COVER", dublinCoreSchema3.getCoverage());
     }
 
     @Test
