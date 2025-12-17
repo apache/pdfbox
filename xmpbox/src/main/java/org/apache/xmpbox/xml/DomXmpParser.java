@@ -192,6 +192,24 @@ public class DomXmpParser
         // Now, parse the content of root
         Element rdfRdf = findDescriptionsParent(root);
         nsFinder.push(rdfRdf); // PDFBOX-6099: push namespaces in rdf:RDF
+
+        // PDFBOX-6127: look for non standard namespaces (similar to PDFBOX-2378)
+        if (!strictParsing)
+        {
+            NamedNodeMap nnm = rdfRdf.getAttributes();
+            if (nnm != null)
+            {
+                for (int i = 0; i < nnm.getLength(); i++)
+                {
+                    Attr attr = (Attr) nnm.item(i);
+                    if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix()))
+                    {
+                        maybeAddNonStandardNamespace(xmp, attr);
+                    }
+                }
+            }
+        }
+
         List<Element> descriptions = DomHelper.getElementChildren(rdfRdf);
         for (Element description : descriptions)
         {
@@ -210,6 +228,23 @@ public class DomXmpParser
         nsFinder.pop();
 
         return xmp;
+    }
+
+    private void maybeAddNonStandardNamespace(XMPMetadata xmp, Attr attr)
+    {
+        // xmlns:prefix="namespace"
+        TypeMapping tm = xmp.getTypeMapping();
+        String namespace = attr.getValue();
+        if (!XmpConstants.RDF_NAMESPACE.equals(namespace) &&
+            !tm.isStructuredTypeNamespace(namespace) &&
+            xmp.getSchema(namespace) == null && tm.getSchemaFactory(namespace) == null)
+        {
+            // PDFBOX-5128 / PDFBOX-6127: Add the schema on the fly if it can't be found
+            // PDFBOX-5649: But only if the namespace isn't already known
+            // because this adds a namespace without property descriptions
+            // PDFBOX-6127: never rdf
+            tm.addNewNameSpace(namespace, attr.getLocalName());
+        }
     }
 
     private boolean isSchemaExtensionProperty(final Element element)
@@ -279,14 +314,9 @@ public class DomXmpParser
                 }
                 else if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix()))
                 {
-                    String namespace = attr.getValue();
-                    if (!strictParsing && !tm.isStructuredTypeNamespace(namespace) &&
-                         xmp.getSchema(namespace) == null && tm.getSchemaFactory(namespace) == null)
+                    if (!strictParsing)
                     {
-                        // PDFBOX-5128: Add the schema on the fly if it can't be found
-                        // PDFBOX-5649: But only if the namespace isn't already known
-                        // because this adds a namespace without property descriptions
-                        tm.addNewNameSpace(namespace, attr.getLocalName());
+                        maybeAddNonStandardNamespace(xmp, attr);
                     }
                 }
                 else
