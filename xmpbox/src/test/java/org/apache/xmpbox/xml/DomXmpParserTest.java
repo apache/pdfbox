@@ -914,4 +914,37 @@ class DomXmpParserTest
         XMPSchema uaSchema2  = xmp2.getSchema("http://www.aiim.org/pdfua/ns/id/");
         assertEquals(1, uaSchema2.getIntegerPropertyValueAsSimple("part"));
     }
+
+    @Test
+    void testNonStandardURIinRDF() throws XmpParsingException, TransformerException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+"<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Adobe XMP Core 4.2.1-c041 52.342996, 2008/05/07-20:48:00        \">\n" +
+"    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+"        <rdf:Description xmlns:pdfx=\"http://ns.adobe.com/pdfx/1.3/\" rdf:about=\"\">\n" +
+"            <pdfx:XPressPrivate>private</pdfx:XPressPrivate>\n" +
+"        </rdf:Description>\n" +
+"    </rdf:RDF>\n" +
+"</x:xmpmeta><?xpacket end=\"w\"?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
+        XmpParsingException ex = assertThrows(XmpParsingException.class,
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("Cannot find a definition for the namespace http://ns.adobe.com/pdfx/1.3/, property: pdfx:XPressPrivate", ex.getMessage());
+        DomXmpParser xmpParser2 = new DomXmpParser();
+        xmpParser2.setStrictParsing(false);
+        XMPMetadata xmp2 = xmpParser2.parse(s.getBytes(StandardCharsets.UTF_8));
+        XMPSchema schema2 = xmp2.getSchema("http://ns.adobe.com/pdfx/1.3/");
+        assertEquals("[XPressPrivate=TextType:private]", schema2.getProperty("XPressPrivate").toString());
+        XmpSerializer serializer = new XmpSerializer();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        serializer.serialize(xmp2, baos, true);
+        final DomXmpParser xmpParser3 = new DomXmpParser();
+        ex = assertThrows(XmpParsingException.class, () -> xmpParser3.parse(baos.toByteArray()));
+        assertEquals("Cannot find a definition for the namespace http://ns.adobe.com/pdfx/1.3/, property: pdfx:XPressPrivate", ex.getMessage());
+        DomXmpParser xmpParser4 = new DomXmpParser();
+        xmpParser4.setStrictParsing(false);
+        XMPMetadata xmp4 = xmpParser4.parse(baos.toByteArray());
+        XMPSchema schema4 = xmp4.getSchema("http://ns.adobe.com/pdfx/1.3/");
+        assertEquals("[XPressPrivate=TextType:private]", schema4.getProperty("XPressPrivate").toString());
+    }
 }
