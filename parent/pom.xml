@@ -56,7 +56,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <bouncycastle.version>1.83</bouncycastle.version>
-    <log4j2.version>2.25.2</log4j2.version>
+    <log4j2.version>2.25.3</log4j2.version>
     <!-- can't update to 6.0.0, needs jdk17 -->
     <junit.version>5.13.4</junit.version>
     <jbig2.version>3.0.4</jbig2.version>
