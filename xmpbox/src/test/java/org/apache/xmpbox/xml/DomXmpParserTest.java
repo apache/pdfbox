@@ -829,7 +829,7 @@ class DomXmpParserTest
      * @throws BadFieldValueException 
      */
     @Test
-    void testBadAttr4() throws XmpParsingException, TransformerException, BadFieldValueException
+    void testBadAttr4() throws XmpParsingException, TransformerException
     {
         String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
 "<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d' bytes='1206'?><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" >\n" +
@@ -1030,10 +1030,9 @@ class DomXmpParserTest
      *
      * @throws XmpParsingException
      * @throws TransformerException
-     * @throws BadFieldValueException 
      */
     @Test
-    void testBadProp() throws XmpParsingException, TransformerException, BadFieldValueException
+    void testBadProp() throws XmpParsingException, TransformerException
     {
         String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
 "<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d' bytes='1506'?><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:iX=\"http://ns.adobe.com/iX/1.0/\">\n" +
