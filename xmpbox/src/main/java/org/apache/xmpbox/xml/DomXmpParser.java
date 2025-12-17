@@ -366,7 +366,7 @@ public class DomXmpParser
                     type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
                 }
             }
-            else if (!type.type().isSimple() || type.card().isArray())
+            else if (!type.type().isSimple() || type.card().isArray() || type.type() == Types.LangAlt)
             {
                 if (strictParsing)
                 {
@@ -376,7 +376,12 @@ public class DomXmpParser
                 }
                 else
                 {
-                    // PDFBOX-6125: Default to text
+                    // PDFBOX-6125: Default to text or skip
+                    if (attr.getValue() == null || attr.getValue().isEmpty())
+                    {
+                        schema.removeAttribute(attr.getLocalName());
+                        return;
+                    }
                     type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
                 }
             }
@@ -1159,7 +1164,7 @@ public class DomXmpParser
                             type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
                         }
                     }
-                    else if (!type.type().isSimple() || type.card().isArray())
+                    else if (!type.type().isSimple() || type.card().isArray() || type.type() == Types.LangAlt)
                     {
                         if (strictParsing)
                         {
@@ -1169,7 +1174,11 @@ public class DomXmpParser
                         }
                         else
                         {
-                            // PDFBOX-6125: Default to text
+                            // PDFBOX-6125: Default to text or skip
+                            if (attr.getValue() == null || attr.getValue().isEmpty())
+                            {
+                                continue;
+                            }
                             type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
                         }
                     }
