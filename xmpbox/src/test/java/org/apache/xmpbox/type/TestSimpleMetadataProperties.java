@@ -45,8 +45,6 @@ class TestSimpleMetadataProperties
 
     /**
      * Check the detection of a bad type
-     * 
-     * @throws IllegalArgumentException
      */
     @Test
     void testBooleanBadTypeDetection()
@@ -58,8 +56,6 @@ class TestSimpleMetadataProperties
 
     /**
      * Check the detection of a bad type
-     * 
-     * @throws IllegalArgumentException
      */
     @Test
     void testDateBadTypeDetection()
@@ -67,12 +63,13 @@ class TestSimpleMetadataProperties
         assertThrows(IllegalArgumentException.class, () -> {
             new DateType(parent, null, "test", "date", "Bad Date");
         });
+        DateType date = new DateType(parent, null, "test", "date", "");
+        assertThrows(IllegalArgumentException.class, () -> date.setValue(null));
+        assertThrows(IllegalArgumentException.class, () -> date.setValue(3));
     }
 
     /**
      * Check the detection of a bad type
-     * 
-     * @throws IllegalArgumentException
      */
     @Test
     void testIntegerBadTypeDetection()
@@ -84,8 +81,6 @@ class TestSimpleMetadataProperties
 
     /**
      * Check the detection of a bad type
-     * 
-     * @throws IllegalArgumentException
      */
     @Test
     void testRealBadTypeDetection()
@@ -97,8 +92,6 @@ class TestSimpleMetadataProperties
 
     /**
      * Check the detection of a bad type
-     * 
-     * @throws IllegalArgumentException
      */
     @Test
     void testTextBadTypeDetection()
@@ -176,20 +169,6 @@ class TestSimpleMetadataProperties
         assertEquals(ns, integer.getNamespace());
         assertEquals(ns, real.getNamespace());
         assertEquals(ns, text.getNamespace());
-    }
-
-    /**
-     * Throw IllegalArgumentException
-     * 
-     * @throws IllegalArgumentException
-     */
-    @Test
-    void testExceptionWithCause()
-    {
-        Throwable throwable = new Throwable();
-        assertThrows(IllegalArgumentException.class, () -> {
-            throw new IllegalArgumentException("TEST", throwable);
-        });
     }
 
     /**
