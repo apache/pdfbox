@@ -542,18 +542,26 @@ public class DomXmpParser
         if (bagOrSeq == null)
         {
             // not an array
-            String whatFound = "nothing";
             Node firstChild = property.getFirstChild();
+            if (!strictParsing)
+            {
+                if (firstChild == null)
+                {
+                    // PDFBOX-6125: ignore
+                    return;
+                }
+                if (firstChild instanceof Text)
+                {
+                    // PDFBOX-6125: Default to text in lenient mode
+                    // Improvement idea in the future: create an array and add the text item.
+                    manageSimpleType(xmp, property, Types.Text, container);
+                    return;
+                }
+            }
+            String whatFound = "nothing";
             if (firstChild != null)
             {
                 whatFound = firstChild instanceof Text ? "Text" : firstChild.getClass().getName();
-            }
-            if (!strictParsing && firstChild instanceof Text)
-            {
-                // Default to text in lenient mode
-                // Improvement idea in the future: create an array and add the text item.
-                manageSimpleType(xmp, property, Types.Text, container);
-                return;
             }
             throw new XmpParsingException(ErrorType.Format, "Invalid array definition, expecting " + type.card()
                     + " and found "
