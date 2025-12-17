@@ -1022,4 +1022,44 @@ class DomXmpParserTest
         XMPSchema schema4 = xmp4.getSchema("http://ns.adobe.com/pdfx/1.3/");
         assertEquals("[XPressPrivate=TextType:private]", schema4.getProperty("XPressPrivate").toString());
     }
+
+    /**
+     * Test empty property where an LangAlt is expected. The property is skipped in lenient mode.
+     *
+     * @throws XmpParsingException
+     * @throws TransformerException
+     * @throws BadFieldValueException 
+     */
+    @Test
+    void testBadProp() throws XmpParsingException, TransformerException, BadFieldValueException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+"<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d' bytes='1506'?><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:iX=\"http://ns.adobe.com/iX/1.0/\">\n" +
+"    <rdf:Description xmlns=\"http://purl.org/dc/elements/1.1/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" about=\"\">\n" +
+"        <dc:creator/>\n" +
+"        <dc:coverage>Cover</dc:coverage>\n" +
+"    </rdf:Description>\n" +
+"</rdf:RDF><?xpacket end='r'?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
+        XmpParsingException ex = assertThrows(XmpParsingException.class,
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("Invalid array definition, expecting Seq and found nothing [prefix=dc; name=creator]", ex.getMessage());
+        DomXmpParser xmpParser2 = new DomXmpParser();
+        xmpParser2.setStrictParsing(false);
+        XMPMetadata xmp2 = xmpParser2.parse(s.getBytes(StandardCharsets.UTF_8));
+        DublinCoreSchema dublinCoreSchema2 = xmp2.getDublinCoreSchema();
+        assertNull(dublinCoreSchema2.getCreators());
+        assertNull(dublinCoreSchema2.getProperty(DublinCoreSchema.CREATOR));
+        assertEquals("Cover", dublinCoreSchema2.getCoverage());
+        XmpSerializer serializer = new XmpSerializer();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        serializer.serialize(xmp2, baos, true);
+        DomXmpParser xmpParser3 = new DomXmpParser();
+        xmpParser3.setStrictParsing(false);
+        XMPMetadata xmp3 = xmpParser3.parse(baos.toByteArray());
+        DublinCoreSchema dublinCoreSchema3 = xmp3.getDublinCoreSchema();
+        assertNull(dublinCoreSchema3.getCreators());
+        assertNull(dublinCoreSchema3.getProperty(DublinCoreSchema.CREATOR));
+        assertEquals("Cover", dublinCoreSchema3.getCoverage());
+    }
 }
