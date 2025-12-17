@@ -41,15 +41,13 @@ public class TestSimpleMetadataProperties
     protected XMPMetadata parent;
 
     @Before
-    public void resetDocument() throws Exception
+    public void resetDocument()
     {
         parent = XMPMetadata.createXMPMetadata();
     }
 
     /**
      * Check the detection of a bad type
-     * 
-     * @throws IllegalArgumentException
      */
     @Test(expected = IllegalArgumentException.class)
     public void testBooleanBadTypeDetection()
@@ -59,8 +57,6 @@ public class TestSimpleMetadataProperties
 
     /**
      * Check the detection of a bad type
-     * 
-     * @throws IllegalArgumentException
      */
     @Test(expected = IllegalArgumentException.class)
     public void testDateBadTypeDetection()
@@ -70,8 +66,26 @@ public class TestSimpleMetadataProperties
 
     /**
      * Check the detection of a bad type
-     * 
-     * @throws IllegalArgumentException
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testDateBadTypeDetection2()
+    {
+        DateType date = new DateType(parent, null, "test", "date", "");
+        date.setValue(null);
+    }
+
+    /**
+     * Check the detection of a bad type
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testDateBadTypeDetection3()
+    {
+        DateType date = new DateType(parent, null, "test", "date", "");
+        date.setValue(3);
+    }
+
+    /**
+     * Check the detection of a bad type
      */
     @Test(expected = IllegalArgumentException.class)
     public void testIntegerBadTypeDetection()
@@ -81,33 +95,27 @@ public class TestSimpleMetadataProperties
 
     /**
      * Check the detection of a bad type
-     * 
-     * @throws IllegalArgumentException
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testRealBadTypeDetection() throws Exception
+    public void testRealBadTypeDetection()
     {
         new RealType(parent, null, "test", "real", "Not a real");
     }
 
     /**
      * Check the detection of a bad type
-     * 
-     * @throws IllegalArgumentException
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testTextBadTypeDetection() throws Exception
+    public void testTextBadTypeDetection()
     {
         new TextType(parent, null, "test", "text", Calendar.getInstance());
     }
 
     /**
      * Check if information between objects and the element generated are equals
-     * 
-     * @throws Exception
      */
     @Test
-    public void testElementAndObjectSynchronization() throws Exception
+    public void testElementAndObjectSynchronization()
     {
         boolean boolv = true;
         Calendar datev = Calendar.getInstance();
@@ -130,11 +138,9 @@ public class TestSimpleMetadataProperties
 
     /**
      * Check the creation from string attributes
-     * 
-     * @throws Exception
      */
     @Test
-    public void testCreationFromString() throws Exception
+    public void testCreationFromString()
     {
         String boolv = "False";
         String datev = "2010-03-22T14:33:11+01:00";
@@ -157,11 +163,9 @@ public class TestSimpleMetadataProperties
 
     /**
      * Check creation when a namespace is specified
-     * 
-     * @throws Exception
      */
     @Test
-    public void testObjectCreationWithNamespace() throws Exception
+    public void testObjectCreationWithNamespace()
     {
         String ns = "http://www.test.org/pdfa/";
         BooleanType bool = parent.getTypeMapping().createBoolean(ns, "test", "boolean", true);
@@ -179,23 +183,10 @@ public class TestSimpleMetadataProperties
     }
 
     /**
-     * Throw IllegalArgumentException
-     * 
-     * @throws IllegalArgumentException
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void testExceptionWithCause() throws Exception
-    {
-        throw new IllegalArgumentException("TEST", new Throwable());
-    }
-
-    /**
      * Check if attributes management works
-     * 
-     * @throws Exception
      */
     @Test
-    public void testAttribute() throws Exception
+    public void testAttribute()
     {
 
         IntegerType integer = new IntegerType(parent, null, "test", "integer", 1);
