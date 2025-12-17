@@ -335,13 +335,13 @@ public class DomXmpParser
                     type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
                 }
             }
-            else if (!type.type().isSimple())
+            else if (!type.type().isSimple() || type.card().isArray())
             {
                 if (strictParsing)
                 {
                     throw new XmpParsingException(ErrorType.InvalidType, "The type '" +
                             type.type().name() + "' in '" + attr.getPrefix() + ":" + attr.getLocalName() + "=" + attr.getValue()
-                            + "' is a structured type, but attributes are simple types");
+                            + "' is a structured or array type, but attributes are simple types");
                 }
                 else
                 {
@@ -1134,13 +1134,13 @@ public class DomXmpParser
                             type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
                         }
                     }
-                    else if (!type.type().isSimple())
+                    else if (!type.type().isSimple() || type.card().isArray())
                     {
                         if (strictParsing)
                         {
                             throw new XmpParsingException(ErrorType.InvalidType, "The type '" +
                                     type.type().name() + "' in '" + attr.getPrefix() + ":" + attr.getLocalName() + "=" + attr.getValue()
-                                    + "' is a structured type, but attributes are simple types");
+                                    + "' is a structured or array type, but attributes are simple types");
                         }
                         else
                         {

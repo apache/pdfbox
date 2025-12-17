@@ -817,13 +817,53 @@ public class DomXmpParserTest
         }
         catch (XmpParsingException ex)
         {
-            assertEquals("The type 'Flash' in 'exif:Flash=1' is a structured type, but attributes are simple types", ex.getMessage());
+            assertEquals("The type 'Flash' in 'exif:Flash=1' is a structured or array type, but attributes are simple types", ex.getMessage());
         }
         final DomXmpParser xmpParser2 = new DomXmpParser();
         xmpParser2.setStrictParsing(false);
         XMPMetadata xmp = xmpParser2.parse(s.getBytes("utf-8"));
         ExifSchema exifSchema = (ExifSchema) xmp.getSchema(ExifSchema.class);
         assertEquals("[Flash=TextType:1]", exifSchema.getProperty(ExifSchema.FLASH).toString());
+    }
+
+    @Test
+    public void testBadAttr3() throws XmpParsingException, TransformerException, UnsupportedEncodingException
+    {
+        // test text in attribute which should have been an array property
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+"<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d' bytes='1064'?><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+"    <rdf:Description xmlns=\"http://purl.org/dc/elements/1.1/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" about=\"\" dc:creator=\"Creator\" />\n" +
+"</rdf:RDF><?xpacket end='r'?>";
+        try
+        {
+            new DomXmpParser().parse(s.getBytes("utf-8"));
+            fail("XmpParsingException expected");
+        }
+        catch (XmpParsingException ex)
+        {
+            assertEquals("The type 'Text' in 'dc:creator=Creator' is a structured or array type, but attributes are simple types", ex.getMessage());
+        }
+        DomXmpParser xmpParser2 = new DomXmpParser();
+        xmpParser2.setStrictParsing(false);
+        XMPMetadata xmp2 = xmpParser2.parse(s.getBytes("utf-8"));
+        XmpSerializer serializer = new XmpSerializer();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        // make sure that nothing is lost in serialization
+        serializer.serialize(xmp2, baos, true);
+        try
+        {
+            new DomXmpParser().parse(baos.toByteArray());
+            fail("XmpParsingException expected");
+        }
+        catch (XmpParsingException ex)
+        {
+            assertEquals("Invalid array definition, expecting Seq and found Text [prefix=dc; name=creator]", ex.getMessage());
+        }
+        DomXmpParser xmpParser4 = new DomXmpParser();
+        xmpParser4.setStrictParsing(false);
+        XMPMetadata xmp4 = xmpParser4.parse(baos.toByteArray());
+        DublinCoreSchema dublinCoreSchema = xmp4.getDublinCoreSchema();
+        assertEquals("[creator=TextType:Creator]", dublinCoreSchema.getProperty(DublinCoreSchema.CREATOR).toString());
     }
 
     @Test
