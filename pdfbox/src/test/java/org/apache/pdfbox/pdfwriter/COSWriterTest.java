@@ -23,8 +23,10 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Paths;
 
 import org.apache.pdfbox.Loader;
@@ -153,13 +155,18 @@ class COSWriterTest
     @Test
     void testPDFBox5752() throws IOException, URISyntaxException
     {
+        URL emptyURL = new URI(
+                "https://issues.apache.org/jira/secure/attachment/13066015/empty.pdf").toURL();
+        URL roboURL = new URI(
+                "https://issues.apache.org/jira/secure/attachment/13066016/roboto-14.pdf").toURL();
+        byte[] emptyPDF = null;
+        byte[] roboPDF = null;
+        try (InputStream isEmpty = emptyURL.openStream(); InputStream isRobo = roboURL.openStream())
+        {
+            emptyPDF = isEmpty.readAllBytes();
+            roboPDF = isRobo.readAllBytes();
+        }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] emptyPDF = new URI(
-                "https://issues.apache.org/jira/secure/attachment/13066015/empty.pdf").toURL()
-                        .openStream().readAllBytes();
-        byte[] roboPDF = new URI(
-                "https://issues.apache.org/jira/secure/attachment/13066016/roboto-14.pdf").toURL()
-                        .openStream().readAllBytes();
         try (PDDocument targetDoc = Loader.loadPDF(emptyPDF);
                 PDDocument doc2 = Loader.loadPDF(roboPDF))
         {
