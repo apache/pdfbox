@@ -96,11 +96,23 @@ public class DomXmpParser
         }
     }
 
+    /**
+     * Tell if strict parsing mode is enabled.
+     *
+     * @return Whether strict parsing mode is enabled or not.
+     */
     public boolean isStrictParsing()
     {
         return strictParsing;
     }
 
+    /**
+     * Enable or disable strict parsing mode.
+     *
+     * @param strictParsing Whether to be strict when parsing XMP: true (the default) means that
+     * malformed XMP will result in an exception, false means that if malformed content is
+     * encountered, the parser will continue its work if possible.
+     */
     public void setStrictParsing(boolean strictParsing)
     {
         this.strictParsing = strictParsing;
