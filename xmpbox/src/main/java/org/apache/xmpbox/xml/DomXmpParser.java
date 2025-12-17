@@ -543,6 +543,13 @@ public class DomXmpParser
             {
                 whatFound = firstChild instanceof Text ? "Text" : firstChild.getClass().getName();
             }
+            if (!strictParsing && firstChild instanceof Text)
+            {
+                // Default to text in lenient mode
+                // Improvement idea in the future: create an array and add the text item.
+                manageSimpleType(xmp, property, Types.Text, container);
+                return;
+            }
             throw new XmpParsingException(ErrorType.Format, "Invalid array definition, expecting " + type.card()
                     + " and found "
                     + whatFound
