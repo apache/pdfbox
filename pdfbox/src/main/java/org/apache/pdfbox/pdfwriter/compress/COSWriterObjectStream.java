@@ -398,7 +398,7 @@ public class COSWriterObjectStream
     {
         
         @Override
-        public byte[] toByteArray()
+        public synchronized byte[] toByteArray()
         {
             return buf;
         }
