@@ -152,8 +152,14 @@ class COSWriterTest
         }
     }
 
+    /**
+     * Test if overlapping object numbers are eliminated when merging pdfs.
+     * 
+     * @throws IOException
+     * @throws URISyntaxException
+     */
     @Test
-    void testPDFBox5752() throws IOException, URISyntaxException
+    void testPDFBox6036() throws IOException, URISyntaxException
     {
         URL emptyURL = new URI(
                 "https://issues.apache.org/jira/secure/attachment/13066015/empty.pdf").toURL();
@@ -166,21 +172,39 @@ class COSWriterTest
             emptyPDF = isEmpty.readAllBytes();
             roboPDF = isRobo.readAllBytes();
         }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        // write merge result using compressed streams
+        ByteArrayOutputStream baosCompressed = new ByteArrayOutputStream();
         try (PDDocument targetDoc = Loader.loadPDF(emptyPDF);
                 PDDocument doc2 = Loader.loadPDF(roboPDF))
         {
             PDPage sourcePage = doc2.getPage(0);
             targetDoc.importPage(sourcePage);
-            targetDoc.save(baos);
+            targetDoc.save(baosCompressed);
         }
-        try (PDDocument targetDoc = Loader.loadPDF(baos.toByteArray()))
+        try (PDDocument targetDoc = Loader.loadPDF(baosCompressed.toByteArray()))
         {
             assertNotNull(targetDoc.getDocumentCatalog().getStructureTreeRoot());
             PDResources res = targetDoc.getPage(1).getResources();
             assertEquals("BCDEEE+Roboto-Regular", res.getFont(COSName.getPDFName("F1")).getName());
             assertEquals("BCDFEE+Roboto-Regular", res.getFont(COSName.getPDFName("F2")).getName());
         }
+        // write merge result without compressed streams
+        ByteArrayOutputStream baosUncompressed = new ByteArrayOutputStream();
+        try (PDDocument targetDoc = Loader.loadPDF(emptyPDF);
+                PDDocument doc2 = Loader.loadPDF(roboPDF))
+        {
+            PDPage sourcePage = doc2.getPage(0);
+            targetDoc.importPage(sourcePage);
+            targetDoc.save(baosUncompressed, CompressParameters.NO_COMPRESSION);
+        }
+        try (PDDocument targetDoc = Loader.loadPDF(baosUncompressed.toByteArray()))
+        {
+            assertNotNull(targetDoc.getDocumentCatalog().getStructureTreeRoot());
+            PDResources res = targetDoc.getPage(1).getResources();
+            assertEquals("BCDEEE+Roboto-Regular", res.getFont(COSName.getPDFName("F1")).getName());
+            assertEquals("BCDFEE+Roboto-Regular", res.getFont(COSName.getPDFName("F2")).getName());
+        }
+
     }
 
 }
