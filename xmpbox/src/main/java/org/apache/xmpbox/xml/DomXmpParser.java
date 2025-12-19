@@ -536,15 +536,22 @@ public class DomXmpParser
             Element inner = DomHelper.getFirstChildElement(property);
             if (inner != null)
             {
-                nsFinder.push(inner);
-                AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), inner);
-                if (ast == null)
+                try
                 {
-                    throw new XmpParsingException(ErrorType.Format, "inner element should contain child elements : "
-                            + inner);
+                    nsFinder.push(inner);
+                    AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), inner);
+                    if (ast == null)
+                    {
+                        throw new XmpParsingException(ErrorType.Format, "inner element should contain child elements : "
+                                + inner);
+                    }
+                    ast.setPrefix(prefix);
+                    container.addProperty(ast);
                 }
-                ast.setPrefix(prefix);
-                container.addProperty(ast);
+                finally
+                {
+                    nsFinder.pop();
+                }
             }
         }
     }
