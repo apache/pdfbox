@@ -1,5 +1,5 @@
 /*****************************************************************************
- * 
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -7,16 +7,16 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- * 
+ *
  ****************************************************************************/
 
 package org.apache.xmpbox.xml;
@@ -53,6 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -178,7 +179,7 @@ class DomXmpParserTest
     /**
      * Test PageTextSchema and XMPMediaManagementSchema.
      *
-     * @throws XmpParsingException 
+     * @throws XmpParsingException
      */
     @Test
     void testPageTextSchema() throws XmpParsingException
@@ -291,7 +292,7 @@ class DomXmpParserTest
      * verify the content of the actual extension schema.
      *
      * @throws IOException
-     * @throws XmpParsingException 
+     * @throws XmpParsingException
      */
     @Test
     void testPDFBox3882() throws IOException, XmpParsingException
@@ -311,7 +312,7 @@ class DomXmpParserTest
             ArrayProperty pageInfoProp = (ArrayProperty) extensionSchema.getProperty("PageInfo");
             DefinedStructuredType dst = (DefinedStructuredType) pageInfoProp.getAllProperties().get(0);
             assertEquals("[number=IntegerType:1]", dst.getProperty("number").toString());
-            assertEquals("[origNumber=IntegerType:1]", dst.getProperty("origNumber").toString());            
+            assertEquals("[origNumber=IntegerType:1]", dst.getProperty("origNumber").toString());
         }
     }
 
@@ -431,7 +432,7 @@ class DomXmpParserTest
     /**
      * PDFBOX-5292: Test whether inline extension schema is detected.
      *
-     * @throws XmpParsingException 
+     * @throws XmpParsingException
      */
     @Test
     void testPDFBox5292() throws XmpParsingException, BadFieldValueException
@@ -526,7 +527,7 @@ class DomXmpParserTest
 
     /**
      * Test that a Seq / Mag mixup gets detected in strict mode and gets read in lenient mode.
-     * @throws XmpParsingException 
+     * @throws XmpParsingException
      */
     @Test
     void testLenientBagSeqMixup() throws XmpParsingException
@@ -561,7 +562,7 @@ class DomXmpParserTest
         assertEquals("Important subject", subjects.get(0));
         assertEquals("Unimportant subject", subjects.get(1));
     }
-    
+
     @Test
     void testBadAttr() throws XmpParsingException
     {
@@ -701,7 +702,7 @@ class DomXmpParserTest
     void testNoRdfChildren() throws XmpParsingException
     {
         String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
-                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\" ?>" + 
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\" ?>" +
                     "  <x:xmpmeta xmlns:x=\"adobe:ns:meta/\"/>\n" +
                     "<?xpacket end=\"w\" ?>";
         final DomXmpParser xmpParser = new DomXmpParser();
@@ -777,7 +778,6 @@ class DomXmpParserTest
                     "		</rdf:Description>\n" +
                     "	</rdf:RDF>\n" +
                     "</x:xmpmeta><?xpacket end='r'?>";
-        
         final DomXmpParser xmpParser1 = new DomXmpParser();
         XmpParsingException ex = assertThrows(
                 XmpParsingException.class,
@@ -860,7 +860,7 @@ class DomXmpParserTest
      *
      * @throws XmpParsingException
      * @throws TransformerException
-     * @throws BadFieldValueException 
+     * @throws BadFieldValueException
      */
     @Test
     void testBadAttr5() throws XmpParsingException, TransformerException, BadFieldValueException
@@ -911,7 +911,6 @@ class DomXmpParserTest
                     "		</rdf:Description>\n" +
                     "	</rdf:RDF>\n" +
                     "</x:xmpmeta><?xpacket end='w'?>";
-        
         final DomXmpParser xmpParser1 = new DomXmpParser();
         XmpParsingException ex = assertThrows(
                 XmpParsingException.class,
@@ -1059,5 +1058,89 @@ class DomXmpParserTest
         assertNull(dublinCoreSchema3.getCreators());
         assertNull(dublinCoreSchema3.getProperty(DublinCoreSchema.CREATOR));
         assertEquals("Cover", dublinCoreSchema3.getCoverage());
+    }
+
+    @Test
+    void testParseFailure() throws XmpParsingException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
+        XmpParsingException ex = assertThrows(XmpParsingException.class,
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertTrue(ex.getMessage().startsWith("Failed to parse: "));
+    }
+
+    @Test
+    void testNoXPacket() throws XmpParsingException
+    {
+        // must be "xpacket", not "packet"
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?packet begin=\"\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"3.1-701\">\n" +
+                    "</x:xmpmeta><?packet end=\"w\"?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
+        XmpParsingException ex = assertThrows(XmpParsingException.class,
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("Bad processing instruction name : packet", ex.getMessage());
+    }
+
+    @Test
+    void testDoubleEnd() throws XmpParsingException
+    {
+        String s = "<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d'?> \n" +
+                    "<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d'?> \n" +
+                    "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"\n" +
+                    "           x:xmptk=\"Adobe XMP Core 4.0-c316 44.253921, Sun Oct 01 2006 17:14:39\">\n" +
+                    "	<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "	</rdf:RDF>\n" +
+                    "</x:xmpmeta> \n" +
+                    "<?xpacket end=\"w\"?> \n" +
+                    "<?xpacket end='r'?> ";
+        final DomXmpParser xmpParser = new DomXmpParser();
+        XmpParsingException ex = assertThrows(XmpParsingException.class,
+                () -> xmpParser.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("xmp should end after xpacket end processing instruction", ex.getMessage());
+    }
+
+    @Test
+    void testBadInner() throws XmpParsingException
+    {
+        // file has "xmpMM:parseType". Changing this to "rdf:parseType" makes it work.
+        final String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Adobe XMP Core 5.2-c001 63.139439, 2010/09/27-13:37:26        \">\n" +
+                    "    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "        <rdf:Description xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\" xmlns:photoshop=\"http://ns.adobe.com/photoshop/1.0/\" xmlns:stEvt=\"http://ns.adobe.com/xap/1.0/sType/ResourceEvent#\" xmlns:stRef=\"http://ns.adobe.com/xap/1.0/sType/ResourceRef#\"  xmlns:xmpMM=\"http://ns.adobe.com/xap/1.0/mm/\" xmlns:xmpRights=\"http://ns.adobe.com/xap/1.0/rights/\">\n" +
+                    "            <xmpMM:DerivedFrom xmpMM:parseType=\"Resource\">\n" +
+                    "                <stRef:instanceID>uuid:6b838c4d-07e2-0611-2333-558805f93988</stRef:instanceID>\n" +
+                    "                <stRef:documentID>uuid:6b838c4d-07e2-0611-2333-558805f93988</stRef:documentID>\n" +
+                    "            </xmpMM:DerivedFrom>\n" +
+                    "        </rdf:Description>\n" +
+                    "    </rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end=\"w\"?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
+        XmpParsingException ex = assertThrows(XmpParsingException.class,
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("inner element should contain child elements : [stRef:instanceID: null]", ex.getMessage());
+        String s2 = s.replace("xmpMM:parseType", "rdf:parseType");
+        DomXmpParser xmpParser2 = new DomXmpParser();
+        XMPMetadata xmp2 = xmpParser2.parse(s2.getBytes(StandardCharsets.UTF_8));
+        XMPMediaManagementSchema xmpMediaManagementSchema = xmp2.getXMPMediaManagementSchema();
+        ResourceRefType derivedFromProperty = xmpMediaManagementSchema.getDerivedFromProperty();
+        assertEquals("uuid:6b838c4d-07e2-0611-2333-558805f93988", derivedFromProperty.getInstanceID());
+        assertEquals("uuid:6b838c4d-07e2-0611-2333-558805f93988", derivedFromProperty.getDocumentID());
+    }
+
+    @Test
+    void testBadRdfNameSpace() throws XmpParsingException
+    {
+        // has https in rdf namespace
+        final String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"XXX\">\n" +
+                    "    <rdf:RDF xmlns:rdf=\"https://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "    </rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end=\"w\"?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
+        XmpParsingException ex = assertThrows(XmpParsingException.class,
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("Expecting namespace 'http://www.w3.org/1999/02/22-rdf-syntax-ns#' and found 'https://www.w3.org/1999/02/22-rdf-syntax-ns#'", ex.getMessage());
     }
 }
