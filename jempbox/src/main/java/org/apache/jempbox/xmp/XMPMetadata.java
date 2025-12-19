@@ -618,7 +618,7 @@ public class XMPMetadata
                 if (name.startsWith("xmlns:") && nsMappings.containsKey(value))
                 {
                     String prefix = name.substring(6);
-                    retval.add(createXMPSchema(value, schema, prefix));
+                    addIfXMPSchemaNotExists(retval, createXMPSchema(value, schema, prefix));
                     found = true;
                 }
                 // PDFBOX-5977
@@ -627,7 +627,7 @@ public class XMPMetadata
                          name.contains(":"))
                 {
                     String prefix = name.substring(0, name.indexOf(':'));
-                    retval.add(createXMPSchema(attribute.getNamespaceURI(), schema, prefix));
+                    addIfXMPSchemaNotExists(retval, createXMPSchema(attribute.getNamespaceURI(), schema, prefix));
                     found = true;
                 }
             }
@@ -637,6 +637,24 @@ public class XMPMetadata
             }
         }
         return retval;
+    }
+
+    // Make sure that each schema is added only once, although multiple identical schemas
+    // won't hurt, because the actual values are retrieved by using DOM 
+    private void addIfXMPSchemaNotExists(List<XMPSchema> schemaList, XMPSchema schema)
+    {
+        boolean found = false;
+        for (XMPSchema sch : schemaList)
+        {
+            if (schema.getClass().isInstance(sch))
+            {
+                found = true;
+            }
+        }
+        if (!found)
+        {
+            schemaList.add(schema);
+        }
     }
 
     private XMPSchema createXMPSchema(String value, Element schemaElement, String prefix) throws IOException

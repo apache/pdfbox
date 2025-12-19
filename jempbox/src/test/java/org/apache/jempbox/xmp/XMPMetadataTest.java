@@ -151,8 +151,11 @@ public class XMPMetadataTest extends TestCase {
                     "</rdf:RDF><?xpacket end=\"r\"?>";
         XMPMetadata xmp = XMPMetadata.load(new ByteArrayInputStream(s.getBytes()));
         xmp.addXMLNSMapping(XMPSchemaPDFAId.NAMESPACE, XMPSchemaPDFAId.class);
-        XMPSchemaPDFAId schema = (XMPSchemaPDFAId) xmp.getSchemaByClass(XMPSchemaPDFAId.class);
-        assertEquals("B", schema.getConformance());
-        assertEquals((Integer) 3, schema.getPart());
+        assertEquals(2, xmp.getSchemas().size());
+        XMPSchemaPDFAId pdfAIdSchema = (XMPSchemaPDFAId) xmp.getSchemaByClass(XMPSchemaPDFAId.class);
+        XMPSchemaPDF pdfSchema = xmp.getPDFSchema();
+        assertEquals("WeasyPrint 64.1", pdfSchema.getProducer());
+        assertEquals("B", pdfAIdSchema.getConformance());
+        assertEquals((Integer) 3, pdfAIdSchema.getPart());
     }
 }
