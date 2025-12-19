@@ -1146,4 +1146,32 @@ class DomXmpParserTest
                 () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
         assertEquals("Expecting namespace 'http://www.w3.org/1999/02/22-rdf-syntax-ns#' and found 'https://www.w3.org/1999/02/22-rdf-syntax-ns#'", ex.getMessage());
     }
+
+    @Test
+    void testTypeInLiResourceElement() throws XmpParsingException
+    {
+        // <rdf:li xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#" rdf:parseType="Resource"
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" +
+                    "    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "        <rdf:Description xmlns:xmpMM=\"http://ns.adobe.com/xap/1.0/mm/\" rdf:about=\"\">\n" +
+                    "            <xmpMM:History>\n" +
+                    "                <rdf:Seq>\n" +
+                    "                    <rdf:li xmlns:stEvt=\"http://ns.adobe.com/xap/1.0/sType/ResourceEvent#\" rdf:parseType=\"Resource\">\n" +
+                    "                        <stEvt:action>created</stEvt:action>\n" +
+                    "                        <stEvt:parameters>original PDF file</stEvt:parameters>\n" +
+                    "                    </rdf:li>\n" +
+                    "                </rdf:Seq>\n" +
+                    "            </xmpMM:History>\n" +
+                    "        </rdf:Description>\n" +
+                    "    </rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end=\"w\"?>";
+        DomXmpParser xmpParser = new DomXmpParser();
+        XMPMetadata xmp2 = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
+        XMPMediaManagementSchema xmpMediaManagementSchema = xmp2.getXMPMediaManagementSchema();
+        ArrayProperty historyProperty = xmpMediaManagementSchema.getHistoryProperty();
+        ResourceEventType firstHistoryEntry = (ResourceEventType) historyProperty.getAllProperties().iterator().next();
+        assertEquals("created", firstHistoryEntry.getAction());
+        assertEquals("original PDF file", firstHistoryEntry.getParameters());
+    }
 }
