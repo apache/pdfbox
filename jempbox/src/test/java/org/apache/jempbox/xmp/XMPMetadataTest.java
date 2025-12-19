@@ -16,12 +16,14 @@
  */
 package org.apache.jempbox.xmp;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import junit.framework.TestCase;
+import org.apache.jempbox.xmp.pdfa.XMPSchemaPDFAId;
 
 import org.xml.sax.InputSource;
 
@@ -139,4 +141,18 @@ public class XMPMetadataTest extends TestCase {
         assertEquals("uuid:2c7eb5da-9210-4666-8cef-e02ef6631c5e", mediaManagementSchema.getInstanceID());
     }
 
+    public void testPDFBOX5977() throws IOException
+    {
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" " +
+                    "xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\" xmlns:pdfaid=\"http://www.aiim.org/pdfa/ns/id/\">\n" +
+                    " <rdf:Description pdfaid:conformance=\"B\" pdfaid:part=\"3\" rdf:about=\"\"/>\n" +
+                    " <rdf:Description pdf:Producer=\"WeasyPrint 64.1\" rdf:about=\"\"/>\n" +
+                    "</rdf:RDF><?xpacket end=\"r\"?>";
+        XMPMetadata xmp = XMPMetadata.load(new ByteArrayInputStream(s.getBytes()));
+        xmp.addXMLNSMapping(XMPSchemaPDFAId.NAMESPACE, XMPSchemaPDFAId.class);
+        XMPSchemaPDFAId schema = (XMPSchemaPDFAId) xmp.getSchemaByClass(XMPSchemaPDFAId.class);
+        assertEquals("B", schema.getConformance());
+        assertEquals((Integer) 3, schema.getPart());
+    }
 }

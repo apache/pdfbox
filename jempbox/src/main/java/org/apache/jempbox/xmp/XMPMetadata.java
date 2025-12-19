@@ -617,30 +617,18 @@ public class XMPMetadata
                 String value = attribute.getNodeValue();
                 if (name.startsWith("xmlns:") && nsMappings.containsKey(value))
                 {
-                    Class<?> schemaClass = nsMappings.get(value);
-                    try
-                    {
-                        Constructor<?> ctor = schemaClass
-                                .getDeclaredConstructor(new Class[] { Element.class,
-                                        String.class });
-                        retval.add((XMPSchema)ctor.newInstance(new Object[] { schema,
-                                name.substring(6) }));
-                        found = true;
-                    }
-                    catch(NoSuchMethodException e)
-                    {
-                        throw new IOException(
-                                "Error: Class "
-                                        + schemaClass.getName()
-                                        + " must have a constructor with the signature of "
-                                        + schemaClass.getName()
-                                        + "( org.w3c.dom.Element, java.lang.String )");
-                    }
-                    catch(Exception e)
-                    {
-                        e.printStackTrace();
-                        throw new IOException(e.getMessage());
-                    }
+                    String prefix = name.substring(6);
+                    retval.add(createXMPSchema(value, schema, prefix));
+                    found = true;
+                }
+                // PDFBOX-5977
+                else if (attribute.getNamespaceURI() != null && 
+                         nsMappings.containsKey(attribute.getNamespaceURI()) &&
+                         name.contains(":"))
+                {
+                    String prefix = name.substring(0, name.indexOf(':'));
+                    retval.add(createXMPSchema(attribute.getNamespaceURI(), schema, prefix));
+                    found = true;
                 }
             }
             if (!found)
@@ -649,6 +637,32 @@ public class XMPMetadata
             }
         }
         return retval;
+    }
+
+    private XMPSchema createXMPSchema(String value, Element schemaElement, String prefix) throws IOException
+    {
+        Class<?> schemaClass = nsMappings.get(value);
+        try
+        {
+            Constructor<?> ctor = schemaClass
+                    .getDeclaredConstructor(new Class[] { Element.class,
+                        String.class });
+            return (XMPSchema) ctor.newInstance(new Object[] { schemaElement, prefix });
+        }
+        catch(NoSuchMethodException e)
+        {
+            throw new IOException(
+                    "Error: Class "
+                            + schemaClass.getName()
+                            + " must have a constructor with the signature of "
+                            + schemaClass.getName()
+                            + "( org.w3c.dom.Element, java.lang.String )");
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            throw new IOException(e.getMessage());
+        }
     }
 
     /**

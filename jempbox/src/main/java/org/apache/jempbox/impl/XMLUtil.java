@@ -90,6 +90,7 @@ public class XMLUtil
             builderFactory.setFeature(
                     "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
             builderFactory.setXIncludeAware(false);
+            builderFactory.setNamespaceAware(true); // PDFBOX-5977
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
             // prevents validation messages polluting the console
             builder.setErrorHandler(null);
