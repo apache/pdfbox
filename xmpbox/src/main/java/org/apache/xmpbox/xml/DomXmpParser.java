@@ -623,7 +623,15 @@ public class DomXmpParser
     {
         if (DomHelper.isParseTypeResource(liElement))
         {
-            return parseLiDescription(xmp, descriptor, liElement);
+            try
+            {
+                nsFinder.push(liElement);
+                return parseLiDescription(xmp, descriptor, liElement);
+            }
+            finally
+            {
+                nsFinder.pop();
+            }
         }
         // will find rdf:Description
         Element liChild = DomHelper.getUniqueElementChild(liElement);
