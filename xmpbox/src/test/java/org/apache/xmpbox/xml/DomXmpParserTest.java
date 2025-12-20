@@ -50,6 +50,7 @@ import org.apache.xmpbox.type.ResourceRefType;
 import org.apache.xmpbox.type.TextType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -1173,5 +1174,92 @@ class DomXmpParserTest
         ResourceEventType firstHistoryEntry = (ResourceEventType) historyProperty.getAllProperties().iterator().next();
         assertEquals("created", firstHistoryEntry.getAction());
         assertEquals("original PDF file", firstHistoryEntry.getParameters());
+    }
+
+    @Test
+    void testLenientPdfaExtension() throws XmpParsingException
+    {
+        // First bag in pdfaExtension is incomplete.
+        final String s = 
+            "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
+            "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"\n" +
+            "           x:xmptk=\"Adobe XMP Core 4.2.1-c043 52.372728, 2009/01/18-15:08:04\">\n" +
+            "	<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+            "		<rdf:Description rdf:about=\"\"\n" +
+            "		                 xmlns:xmpMM=\"http://ns.adobe.com/xap/1.0/mm/\">\n" +
+            "			<xmpMM:DocumentID>uuid:0b306144-6a43-dcbd-6b3e-c6b6b1df873d</xmpMM:DocumentID>\n" +
+            "			<xmpMM:InstanceID>uuid:0b306144-6a43-dcbd-6b3e-c6b6b1df873d</xmpMM:InstanceID>\n" +
+            "		</rdf:Description>\n" +
+            "		<rdf:Description rdf:about=\"\"\n" +
+            "		                 xmlns:pdfaExtension=\"http://www.aiim.org/pdfa/ns/extension/\"\n" +
+            "		                 xmlns:pdfaSchema=\"http://www.aiim.org/pdfa/ns/schema#\"\n" +
+            "		                 xmlns:pdfaProperty=\"http://www.aiim.org/pdfa/ns/property#\">\n" +
+            "			<pdfaExtension:schemas>\n" +
+            "				<rdf:Bag>\n" +
+            "					<rdf:li rdf:parseType=\"Resource\">\n" +
+            "						<pdfaSchema:namespaceURI>http://ns.adobe.com/pdf/1.3/</pdfaSchema:namespaceURI>\n" +
+            "						<pdfaSchema:prefix>pdf</pdfaSchema:prefix>\n" +
+            "						<pdfaSchema:schema>Adobe PDF Schema</pdfaSchema:schema>\n" +
+            "					</rdf:li>\n" +
+            "					<rdf:li rdf:parseType=\"Resource\">\n" +
+            "						<pdfaSchema:namespaceURI>http://ns.adobe.com/xap/1.0/mm/</pdfaSchema:namespaceURI>\n" +
+            "						<pdfaSchema:prefix>xmpMM</pdfaSchema:prefix>\n" +
+            "						<pdfaSchema:schema>XMP Media Management Schema</pdfaSchema:schema>\n" +
+            "						<pdfaSchema:property>\n" +
+            "							<rdf:Seq>\n" +
+            "								<rdf:li rdf:parseType=\"Resource\">\n" +
+            "									<pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "									<pdfaProperty:description>UUID based identifier for specific incarnation of a document</pdfaProperty:description>\n" +
+            "									<pdfaProperty:name>InstanceID</pdfaProperty:name>\n" +
+            "									<pdfaProperty:valueType>URI</pdfaProperty:valueType>\n" +
+            "								</rdf:li>\n" +
+            "							</rdf:Seq>\n" +
+            "						</pdfaSchema:property>\n" +
+            "					</rdf:li>\n" +
+            "					<rdf:li rdf:parseType=\"Resource\">\n" +
+            "						<pdfaSchema:namespaceURI>http://www.aiim.org/pdfa/ns/id/</pdfaSchema:namespaceURI>\n" +
+            "						<pdfaSchema:prefix>pdfaid</pdfaSchema:prefix>\n" +
+            "						<pdfaSchema:schema>PDF/A ID Schema</pdfaSchema:schema>\n" +
+            "						<pdfaSchema:property>\n" +
+            "							<rdf:Seq>\n" +
+            "								<rdf:li rdf:parseType=\"Resource\">\n" +
+            "									<pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "									<pdfaProperty:description>Part of PDF/A standard</pdfaProperty:description>\n" +
+            "									<pdfaProperty:name>part</pdfaProperty:name>\n" +
+            "									<pdfaProperty:valueType>Integer</pdfaProperty:valueType>\n" +
+            "								</rdf:li>\n" +
+            "								<rdf:li rdf:parseType=\"Resource\">\n" +
+            "									<pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "									<pdfaProperty:description>Amendment of PDF/A standard</pdfaProperty:description>\n" +
+            "									<pdfaProperty:name>amd</pdfaProperty:name>\n" +
+            "									<pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "								</rdf:li>\n" +
+            "								<rdf:li rdf:parseType=\"Resource\">\n" +
+            "									<pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "									<pdfaProperty:description>Conformance level of PDF/A standard</pdfaProperty:description>\n" +
+            "									<pdfaProperty:name>conformance</pdfaProperty:name>\n" +
+            "									<pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "								</rdf:li>\n" +
+            "							</rdf:Seq>\n" +
+            "						</pdfaSchema:property>\n" +
+            "					</rdf:li>\n" +
+            "				</rdf:Bag>\n" +
+            "			</pdfaExtension:schemas>\n" +
+            "		</rdf:Description>\n" +
+            "	</rdf:RDF>\n" +
+            "</x:xmpmeta>\n" +
+            "<?xpacket end=\"w\"?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
+        XmpParsingException ex = assertThrows(XmpParsingException.class,
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("Missing pdfaSchema:property in type definition", ex.getMessage());
+        DomXmpParser xmpParser2 = new DomXmpParser();
+        assertTrue(xmpParser2.isStrictParsing());
+        xmpParser2.setStrictParsing(false);
+        assertFalse(xmpParser2.isStrictParsing());
+        XMPMetadata xmp2 = xmpParser2.parse(s.getBytes(StandardCharsets.UTF_8));
+        XMPMediaManagementSchema xmpMediaManagementSchema = xmp2.getXMPMediaManagementSchema();
+        assertEquals("uuid:0b306144-6a43-dcbd-6b3e-c6b6b1df873d", xmpMediaManagementSchema.getInstanceID());
+        assertEquals("uuid:0b306144-6a43-dcbd-6b3e-c6b6b1df873d", xmpMediaManagementSchema.getDocumentID());
     }
 }
