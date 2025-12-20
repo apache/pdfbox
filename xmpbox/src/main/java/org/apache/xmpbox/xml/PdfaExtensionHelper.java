@@ -94,7 +94,19 @@ public final class PdfaExtensionHelper
         }
     }
 
+    /**
+     * 
+     * @param meta
+     * @throws XmpParsingException
+     * @deprecated use {@link #populateSchemaMapping(org.apache.xmpbox.XMPMetadata, boolean)}
+     */
+    @Deprecated
     public static void populateSchemaMapping(XMPMetadata meta) throws XmpParsingException
+    {
+        populateSchemaMapping(meta, true);
+    }
+
+    public static void populateSchemaMapping(XMPMetadata meta, boolean strictParsing) throws XmpParsingException
     {
         List<XMPSchema> schems = meta.getAllSchemas();
         TypeMapping tm = meta.getTypeMapping();
@@ -117,14 +129,14 @@ public final class PdfaExtensionHelper
                 {
                     if (af instanceof PDFASchemaType)
                     {
-                        populatePDFASchemaType(meta, (PDFASchemaType) af, tm);
+                        populatePDFASchemaType(meta, (PDFASchemaType) af, tm, strictParsing);
                     } // TODO unmanaged ?
                 }
             }
         }
     }
 
-    private static void populatePDFASchemaType(XMPMetadata meta, PDFASchemaType st, TypeMapping tm)
+    private static void populatePDFASchemaType(XMPMetadata meta, PDFASchemaType st, TypeMapping tm, boolean strictParsing)
             throws XmpParsingException
     {
         String namespaceUri = st.getNamespaceURI();
@@ -158,6 +170,10 @@ public final class PdfaExtensionHelper
             }
         }
         // populate properties
+        if (properties == null && !strictParsing)
+        {
+            return;
+        }
         if (properties == null)
         {
             throw new XmpParsingException(ErrorType.RequiredProperty,

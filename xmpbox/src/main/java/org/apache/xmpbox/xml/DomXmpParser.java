@@ -202,7 +202,7 @@ public class DomXmpParser
         }
 
         // find schema description
-        PdfaExtensionHelper.populateSchemaMapping(xmp);
+        PdfaExtensionHelper.populateSchemaMapping(xmp, strictParsing);
 
         // parse data description
         for (Element description : descriptions)
