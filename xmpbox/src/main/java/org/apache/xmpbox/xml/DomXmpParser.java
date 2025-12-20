@@ -991,13 +991,10 @@ public class DomXmpParser
                 // empty description
                 throw new XmpParsingException(ErrorType.Format, "No rdf description found in xmp");
             }
-            else if (nl.getLength() > 1)
+            else if (nl.getLength() > 1 && strictParsing)
             {
                 // only expect one element
-                if (strictParsing)
-                {
-                    throw new XmpParsingException(ErrorType.Format, "More than one element found in x:xmpmeta");
-                }
+                throw new XmpParsingException(ErrorType.Format, "More than one element found in x:xmpmeta");
             }
             // find element (there may be a text before the element)
             for (int i = 0; i < nl.getLength(); ++i)
