@@ -143,7 +143,7 @@ public class DomXmpParser
         XMPMetadata xmp = null;
 
         // Start reading
-        removeComments(document);
+        removeCommentsAndBlanks(document);
         Node node = document.getFirstChild();
 
         // expect xpacket processing instruction
@@ -991,25 +991,17 @@ public class DomXmpParser
                 // empty description
                 throw new XmpParsingException(ErrorType.Format, "No rdf description found in xmp");
             }
-            else if (nl.getLength() > 1 && strictParsing)
+            else if (nl.getLength() > 1)
             {
                 // only expect one element
                 throw new XmpParsingException(ErrorType.Format, "More than one element found in x:xmpmeta");
             }
-            // find element (there may be a text before the element)
-            for (int i = 0; i < nl.getLength(); ++i)
-            {
-                if (nl.item(i) instanceof Element)
-                {
-                    rdfRdf = (Element) nl.item(i);
-                    break;
-                }
-            }
-            if (rdfRdf == null)
+            else if (!(root.getFirstChild() instanceof Element))
             {
                 // should be an element
-                throw new XmpParsingException(ErrorType.Format, "x:xmpmeta does not contains rdf:RDF element");
+                throw new XmpParsingException(ErrorType.Format, "x:xmpmeta does not contains rdf:RDF element but " + root.getFirstChild());
             } // else let's parse
+            rdfRdf = (Element) root.getFirstChild();
         }
         else
         {
@@ -1043,24 +1035,23 @@ public class DomXmpParser
     }
 
     /**
-     * Remove all the comments node in the parent element of the parameter
-     * 
-     * @param root
-     *            the first node of an element or document to clear
+     * Remove all the comments and blank nodes in the parent element of the parameter
+     *
+     * @param root the first node of an element or document to clear
      */
-    private void removeComments(Node root)
+    private void removeCommentsAndBlanks(Node root)
     {
         // will hold the nodes which are to be deleted
         List<Node> forDeletion = new ArrayList<>();
-        
+
         NodeList nl = root.getChildNodes();
-        
-        if (nl.getLength()<=1) 
+
+        if (!(root instanceof Document) && nl.getLength() <= 1)
         {
-            // There is only one node so we do not remove it
+            // There is only one node so we're done, except when Document
             return;
         }
-        
+
         for (int i = 0; i < nl.getLength(); i++)
         {
             Node node = nl.item(i);
@@ -1073,7 +1064,6 @@ public class DomXmpParser
             {
                 if (node.getTextContent().isBlank())
                 {
-                    // TODO: verify why this is necessary
                     // empty text nodes to be deleted
                     forDeletion.add(node);
                 }
@@ -1081,7 +1071,7 @@ public class DomXmpParser
             else if (node instanceof Element)
             {
                 // clean child
-                removeComments(node);
+                removeCommentsAndBlanks(node);
             } // else do nothing
         }
 
