@@ -1247,7 +1247,6 @@ class DomXmpParserTest
             "</x:xmpmeta>\n" +
             "<?xpacket end=\"w\"?>";
         final DomXmpParser xmpParser1 = new DomXmpParser();
-        xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8));
         XmpParsingException ex = assertThrows(XmpParsingException.class,
                 () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
         assertEquals("Missing pdfaSchema:property in type definition", ex.getMessage());
