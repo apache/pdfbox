@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.List;
 import javax.xml.transform.TransformerException;
@@ -34,6 +35,8 @@ import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.schema.ExifSchema;
 import org.apache.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.xmpbox.schema.PhotoshopSchema;
+import org.apache.xmpbox.schema.TiffSchema;
+import org.apache.xmpbox.schema.XMPBasicSchema;
 import org.apache.xmpbox.schema.XMPMediaManagementSchema;
 import org.apache.xmpbox.schema.XMPSchema;
 import org.apache.xmpbox.schema.XMPageTextSchema;
@@ -677,6 +680,10 @@ public class DomXmpParserTest
         {
             assertEquals("Expecting local name 'xmpmeta' and found 'xapmeta'", ex.getMessage());
         }
+        DomXmpParser xmpParser2 = new DomXmpParser();
+        xmpParser2.setStrictParsing(false);
+        XMPMetadata xmp2 = xmpParser2.parse(s.getBytes("utf-8"));
+        assertEquals(0, xmp2.getAllSchemas().size());
     }
 
     @Test
@@ -1326,5 +1333,97 @@ public class DomXmpParserTest
         XMPMediaManagementSchema xmpMediaManagementSchema = xmp2.getXMPMediaManagementSchema();
         assertEquals("uuid:0b306144-6a43-dcbd-6b3e-c6b6b1df873d", xmpMediaManagementSchema.getInstanceID());
         assertEquals("uuid:0b306144-6a43-dcbd-6b3e-c6b6b1df873d", xmpMediaManagementSchema.getDocumentID());
+    }
+
+    @Test
+    public void testNoProcessingInstruction() throws XmpParsingException, UnsupportedEncodingException, TransformerException
+    {
+        // From file 000163.pdf
+        // Coastal Services Magazine Volume 11_6 November/December
+        String s = "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Adobe XMP Core 4.1-c037 46.282696, Mon Apr 02 2007 18:36:42        \">\n" +
+                " <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                "  <rdf:Description rdf:about=\"\"\n" +
+                "    xmlns:xapMM=\"http://ns.adobe.com/xap/1.0/mm/\"\n" +
+                "    xmlns:stRef=\"http://ns.adobe.com/xap/1.0/sType/ResourceRef#\"\n" +
+                "    xmlns:tiff=\"http://ns.adobe.com/tiff/1.0/\"\n" +
+                "    xmlns:xap=\"http://ns.adobe.com/xap/1.0/\"\n" +
+                "    xmlns:exif=\"http://ns.adobe.com/exif/1.0/\"\n" +
+                "    xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n" +
+                "    xmlns:photoshop=\"http://ns.adobe.com/photoshop/1.0/\"\n" +
+                "   xapMM:DocumentID=\"uuid:F1FEDA1D7D03DA11B0F6E4B4E63B0143\"\n" +
+                "   xapMM:InstanceID=\"uuid:7A28FBF56920DA11B4BBB356C0A5C72B\"\n" +
+                "   tiff:Orientation=\"1\"\n" +
+                "   tiff:XResolution=\"3050000/10000\"\n" +
+                "   tiff:YResolution=\"3050000/10000\"\n" +
+                "   tiff:ResolutionUnit=\"2\"\n" +
+                "   tiff:NativeDigest=\"123456\"\n" +
+                "   xap:ModifyDate=\"2005-09-08T09:13:10-04:00\"\n" +
+                "   xap:CreatorTool=\"Adobe Photoshop CS2 Windows\"\n" +
+                "   xap:CreateDate=\"2005-08-02T13:47:24-04:00\"\n" +
+                "   xap:MetadataDate=\"2005-09-08T09:13:10-04:00\"\n" +
+                "   exif:ColorSpace=\"-1\"\n" +
+                "   exif:PixelXDimension=\"1525\"\n" +
+                "   exif:PixelYDimension=\"387\"\n" +
+                "   exif:NativeDigest=\"12345678\"\n" +
+                "   dc:format=\"image/tiff\"\n" +
+                "   photoshop:ColorMode=\"4\"\n" +
+                "   photoshop:ICCProfile=\"U.S. Web Coated (SWOP) v2\"\n" +
+                "   photoshop:History=\"\">\n" +
+                "   <xapMM:DerivedFrom\n" +
+                "    stRef:instanceID=\"adobe:docid:photoshop:28ff3dc5-4801-11d8-85d1-bb49d244e2ef\"\n" +
+                "    stRef:documentID=\"adobe:docid:photoshop:28ff3dc5-4801-11d8-85d1-bb49d244e2ef\"/>\n" +
+                "  </rdf:Description>\n" +
+                " </rdf:RDF>\n" +
+                "</x:xmpmeta>";
+        try
+        {
+            new DomXmpParser().parse(s.getBytes("utf-8"));
+            fail("XmpParsingException expected");
+        }
+        catch (XmpParsingException ex)
+        {
+            assertEquals("xmp should start with a processing instruction", ex.getMessage());
+        }
+        DomXmpParser xmpParser2 = new DomXmpParser();
+        xmpParser2.setStrictParsing(false);
+        XMPMetadata xmp2 = xmpParser2.parse(s.getBytes(StandardCharsets.UTF_8));
+        DublinCoreSchema dublinCoreSchema = xmp2.getDublinCoreSchema();
+        assertEquals("image/tiff", dublinCoreSchema.getFormat());
+        XMPMediaManagementSchema xmpMediaManagementSchema = xmp2.getXMPMediaManagementSchema();
+        assertEquals("uuid:F1FEDA1D7D03DA11B0F6E4B4E63B0143", xmpMediaManagementSchema.getDocumentID());
+        TiffSchema tiffSchema = (TiffSchema) xmp2.getSchema(TiffSchema.class);
+        assertEquals("[Orientation=IntegerType:1]", tiffSchema.getProperty(TiffSchema.ORIENTATION).toString());
+        PhotoshopSchema photoshopSchema = xmp2.getPhotoshopSchema();
+        assertEquals((Integer) 4, photoshopSchema.getColorMode());
+        ExifSchema exifSchema = (ExifSchema) xmp2.getSchema(ExifSchema.class);
+        assertEquals("[PixelXDimension=IntegerType:1525]", exifSchema.getProperty(ExifSchema.PIXEL_X_DIMENSION).toString());
+        XMPBasicSchema xmpBasicSchema = xmp2.getXMPBasicSchema();
+        assertEquals("Adobe Photoshop CS2 Windows", xmpBasicSchema.getCreatorTool());
+        XmpSerializer serializer = new XmpSerializer();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        serializer.serialize(xmp2, baos, true);
+        // check that there are no isolated properties
+        // (Happened before the change at the bottom of loadAttributes())
+        String s2 = baos.toString("utf-8");
+        assertFalse(s2.contains(" ColorMode="));
+        assertFalse(s2.contains(" CreateDate="));
+        assertFalse(s2.contains(" CreatorTool="));
+        assertFalse(s2.contains(" DocumentID="));
+        // now make sure that parsing again still brings the same data
+        DomXmpParser xmpParser3 = new DomXmpParser();
+        xmpParser3.setStrictParsing(false);
+        XMPMetadata xmp3 = xmpParser3.parse(baos.toByteArray());
+        DublinCoreSchema dublinCoreSchema3 = xmp3.getDublinCoreSchema();
+        assertEquals("image/tiff", dublinCoreSchema3.getFormat());
+        XMPMediaManagementSchema xmpMediaManagementSchema3 = xmp3.getXMPMediaManagementSchema();
+        assertEquals("uuid:F1FEDA1D7D03DA11B0F6E4B4E63B0143", xmpMediaManagementSchema3.getDocumentID());
+        TiffSchema tiffSchema3 = (TiffSchema) xmp3.getSchema(TiffSchema.class);
+        assertEquals("[Orientation=IntegerType:1]", tiffSchema3.getProperty(TiffSchema.ORIENTATION).toString());
+        PhotoshopSchema photoshopSchema3 = xmp3.getPhotoshopSchema();
+        assertEquals((Integer) 4, photoshopSchema3.getColorMode());
+        ExifSchema exifSchema3 = (ExifSchema) xmp3.getSchema(ExifSchema.class);
+        assertEquals("[PixelXDimension=IntegerType:1525]", exifSchema3.getProperty(ExifSchema.PIXEL_X_DIMENSION).toString());
+        XMPBasicSchema xmpBasicSchema3 = xmp3.getXMPBasicSchema();
+        assertEquals("Adobe Photoshop CS2 Windows", xmpBasicSchema3.getCreatorTool());
     }
 }

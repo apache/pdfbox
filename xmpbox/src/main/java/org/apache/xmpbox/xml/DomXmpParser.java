@@ -109,9 +109,10 @@ public class DomXmpParser
     /**
      * Enable or disable strict parsing mode.
      *
-     * @param strictParsing Whether to be strict when parsing XMP: true (the default) means that
-     * malformed XMP will result in an exception, false means that if malformed content is
-     * encountered, the parser will continue its work if possible.
+     * @param strictParsing Whether to be strict or lenient when parsing XMP. True (the default)
+     * means that malformed XMP will result in an exception, false (lenient) means that if malformed
+     * content is encountered, the parser will continue its work if possible. Use strict mode if you
+     * want to work with PDF/A files. Use lenient mode if you care more about getting metadata.
      */
     public void setStrictParsing(boolean strictParsing)
     {
@@ -151,7 +152,17 @@ public class DomXmpParser
         // expect xpacket processing instruction
         if (!(node instanceof ProcessingInstruction))
         {
-            throw new XmpParsingException(ErrorType.XpacketBadStart, "xmp should start with a processing instruction");
+            if (strictParsing)
+            {
+                throw new XmpParsingException(ErrorType.XpacketBadStart, "xmp should start with a processing instruction");
+            }
+            else
+            {
+                xmp = XMPMetadata.createXMPMetadata(XmpConstants.DEFAULT_XPACKET_BEGIN,
+                        XmpConstants.DEFAULT_XPACKET_ID, 
+                        XmpConstants.DEFAULT_XPACKET_BYTES,
+                        XmpConstants.DEFAULT_XPACKET_ENCODING);
+            }
         }
         else
         {
@@ -178,7 +189,14 @@ public class DomXmpParser
         // expect xpacket end
         if (!(node instanceof ProcessingInstruction))
         {
-            throw new XmpParsingException(ErrorType.XpacketBadEnd, "xmp should end with a processing instruction");
+            if (strictParsing)
+            {
+                throw new XmpParsingException(ErrorType.XpacketBadEnd, "xmp should end with a processing instruction");
+            }
+            else
+            {
+                xmp.setEndXPacket(XmpConstants.DEFAULT_XPACKET_END);
+            }
         }
         else
         {
@@ -191,7 +209,7 @@ public class DomXmpParser
             throw new XmpParsingException(ErrorType.XpacketBadEnd,
                     "xmp should end after xpacket end processing instruction");
         }
-        // xpacket is OK and the is no more nodes
+        // xpacket is OK and there are no more nodes
         // Now, parse the content of root
         Element rdfRdf = findDescriptionsParent(root);
         nsFinder.push(rdfRdf); // PDFBOX-6099: push namespaces in rdf:RDF
@@ -320,7 +338,7 @@ public class DomXmpParser
         {
             ComplexPropertyContainer container = schema.getContainer();
             PropertyType type = checkPropertyDefinition(xmp,
-                    new QName(attr.getNamespaceURI(), attr.getLocalName()));
+                    new QName(attr.getNamespaceURI(), attr.getLocalName(), attr.getPrefix()));
 
             if (type == null)
             {
@@ -715,8 +733,11 @@ public class DomXmpParser
                     ((XMPSchema) sp).setAboutAsSimple(attr.getValue());
                 }
             }
-            else
+            else if (XMLConstants.XML_NS_URI.equals(attr.getNamespaceURI()))
             {
+                // This part was the fallback before PDFBOX-6130, now restricted:
+                // Do not load "ordinary" attributes here because these will be handled by
+                // tryParseAttributesAsProperties() and parseDescriptionRootAttr()
                 Attribute attribute = new Attribute(XMLConstants.XML_NS_URI, attr.getLocalName(), attr.getValue());
                 sp.setAttribute(attribute);
             }
@@ -921,12 +942,20 @@ public class DomXmpParser
 
     private Element findDescriptionsParent(Element root) throws XmpParsingException
     {
-        Element rdfRdf;
+        Element rdfRdf = null;
         // check if already rdf element, as xmpmeta wrapper can be optional
         if (!XmpConstants.RDF_NAMESPACE.equals(root.getNamespaceURI()))
         {
             // always <x:xmpmeta xmlns:x="adobe:ns:meta/">
-            expectNaming(root, "adobe:ns:meta/", "x", "xmpmeta");
+            if (!strictParsing && "xapmeta".equals(root.getLocalName()))
+            {
+                // older XMP content
+                expectNaming(root, "adobe:ns:meta/", "x", "xapmeta");
+            }
+            else
+            {
+                expectNaming(root, "adobe:ns:meta/", "x", "xmpmeta");
+            }
             // should only have one child
             NodeList nl = root.getChildNodes();
             if (nl.getLength() == 0)
@@ -937,14 +966,25 @@ public class DomXmpParser
             else if (nl.getLength() > 1)
             {
                 // only expect one element
-                throw new XmpParsingException(ErrorType.Format, "More than one element found in x:xmpmeta");
+                if (strictParsing)
+                {
+                    throw new XmpParsingException(ErrorType.Format, "More than one element found in x:xmpmeta");
+                }
             }
-            else if (!(root.getFirstChild() instanceof Element))
+            // find element (there may be a text before the element)
+            for (int i = 0; i < nl.getLength(); ++i)
+            {
+                if (nl.item(i) instanceof Element)
+                {
+                    rdfRdf = (Element) nl.item(i);
+                    break;
+                }
+            }
+            if (rdfRdf == null)
             {
                 // should be an element
                 throw new XmpParsingException(ErrorType.Format, "x:xmpmeta does not contains rdf:RDF element");
             } // else let's parse
-            rdfRdf = (Element) root.getFirstChild();
         }
         else
         {
