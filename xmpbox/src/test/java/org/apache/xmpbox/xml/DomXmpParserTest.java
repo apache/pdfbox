@@ -24,7 +24,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.List;
 import javax.xml.transform.TransformerException;
@@ -1386,7 +1385,7 @@ public class DomXmpParserTest
         }
         DomXmpParser xmpParser2 = new DomXmpParser();
         xmpParser2.setStrictParsing(false);
-        XMPMetadata xmp2 = xmpParser2.parse(s.getBytes(StandardCharsets.UTF_8));
+        XMPMetadata xmp2 = xmpParser2.parse(s.getBytes("utf-8"));
         DublinCoreSchema dublinCoreSchema = xmp2.getDublinCoreSchema();
         assertEquals("image/tiff", dublinCoreSchema.getFormat());
         XMPMediaManagementSchema xmpMediaManagementSchema = xmp2.getXMPMediaManagementSchema();
