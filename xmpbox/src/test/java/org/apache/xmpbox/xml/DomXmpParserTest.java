@@ -1352,4 +1352,25 @@ class DomXmpParserTest
         XMPBasicSchema xmpBasicSchema3 = xmp3.getXMPBasicSchema();
         assertEquals("Adobe Photoshop CS2 Windows", xmpBasicSchema3.getCreatorTool());
     }
+
+    @Test
+    void testNoSchema() throws XmpParsingException
+    {
+        // From file 0075304.pdf, Centers for Medicare Medicaid Services
+        // file uses "xml:ModifyDate" instead of "xmp:ModifyDate"
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Adobe XMP Core 5.6-c016 91.163616, 2018/10/29-16:58:49        \">\n" +
+                    "    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "        <rdf:Description xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\" xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\" rdf:about=\"\">\n" +
+                    "            <xml:ModifyDate>2019-07-26'T'19:28:53.000'-04:00'</xml:ModifyDate>\n" +
+                    "            <xmp:ModifyDate>2019-07-29T15:12:07-04:00</xmp:ModifyDate>\n" +
+                    "            <pdf:Producer>iTextSharp 4.0.3 (based on iText 2.0.2)</pdf:Producer>\n" +
+                    "        </rdf:Description>\n" +
+                    "    </rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end=\"w\"?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
+        XmpParsingException ex = assertThrows(XmpParsingException.class,
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("Schema is not set in this document : http://www.w3.org/XML/1998/namespace, property: xml:ModifyDate", ex.getMessage());
+    }
 }
