@@ -1373,4 +1373,22 @@ class DomXmpParserTest
                 () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
         assertEquals("Schema is not set in this document : http://www.w3.org/XML/1998/namespace, property: xml:ModifyDate", ex.getMessage());
     }
+    
+    @Test
+    void testNoInstantiation() throws XmpParsingException
+    {
+        // Instantiation fails because of bad date
+        String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                    "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?><?adobe-xap-filters esc=\"CRLF\"?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"XMP toolkit 2.9.1-13, framework 1.6\">\n" +
+                    "    <rdf:RDF xmlns:iX=\"http://ns.adobe.com/iX/1.0/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                    "        <rdf:Description xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\" rdf:about=\"uuid:f577a812-a531-11f4-0000-2eba1231b686\">\n" +
+                    "            <xmp:CreateDate>2019-05-02T22:03:5Z</xmp:CreateDate>\n" +
+                    "        </rdf:Description>\n" +
+                    "    </rdf:RDF>\n" +
+                    "</x:xmpmeta><?xpacket end='w'?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
+        XmpParsingException ex = assertThrows(XmpParsingException.class,
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("Failed to instantiate DateType property with value 2019-05-02T22:03:5Z in xmp:CreateDate", ex.getMessage());
+    }
 }
