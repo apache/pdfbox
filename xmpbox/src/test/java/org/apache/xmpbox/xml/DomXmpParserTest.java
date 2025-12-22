@@ -1000,7 +1000,7 @@ class DomXmpParserTest
     }
 
     @Test
-    void testNonStandardURIinRDF() throws XmpParsingException, TransformerException
+    void testNonStandardURIinRDF() throws XmpParsingException, TransformerException, UnsupportedEncodingException
     {
         // PDFBOX-6127: test that non standard namespaces not recognized if in rdf:RDF,
         // which happens since the changes in XmpSerializer done in PDFBOX-2378.
@@ -1026,7 +1026,7 @@ class DomXmpParserTest
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         serializer.serialize(xmp2, baos, true);
         // make sure that there is a non standard namespace in rdf:RDF
-        assertTrue(baos.toString(StandardCharsets.UTF_8).contains("<rdf:RDF xmlns:pdfx="));
+        assertTrue(baos.toString("utf-8").contains("<rdf:RDF xmlns:pdfx="));
         final DomXmpParser xmpParser3 = new DomXmpParser();
         ex = assertThrows(XmpParsingException.class, () -> xmpParser3.parse(baos.toByteArray()));
         assertEquals("Cannot find a definition for the namespace http://ns.adobe.com/pdfx/1.3/, property: pdfx:XPressPrivate", ex.getMessage());
