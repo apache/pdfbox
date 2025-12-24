@@ -107,9 +107,9 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
         {
             throw new IOException("resource '" + resourceName + "' not found");
         }    
-        try (InputStream is = new BufferedInputStream(resourceAsStream))
+        try (resourceAsStream)
         {
-            return ICC_Profile.getInstance(is);
+            return ICC_Profile.getInstance(resourceAsStream);
         }
     }
 
