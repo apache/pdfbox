@@ -51,9 +51,11 @@ import org.w3c.dom.NamedNodeMap;
 public final class PdfaExtensionHelper
 {
 
-    public static final String CLOSED_CHOICE = "closed Choice of ";
+    private static final String CLOSED_CHOICE = "closed Choice of ";
+    private static final String CLOSED_CHOICE_U = "Closed Choice of ";
 
-    public static final String OPEN_CHOICE = "open Choice of ";
+    private static final String OPEN_CHOICE = "open Choice of ";
+    private static final String OPEN_CHOICE_U = "Open Choice of ";
 
     private PdfaExtensionHelper()
     {
@@ -263,11 +265,11 @@ public final class PdfaExtensionHelper
             return TypeMapping.createPropertyType(Types.LangAlt, Cardinality.Simple);
         }
         // else all other cases
-        if (valueType.startsWith(CLOSED_CHOICE))
+        if (valueType.startsWith(CLOSED_CHOICE) || valueType.startsWith(CLOSED_CHOICE_U))
         {
             valueType = valueType.substring(CLOSED_CHOICE.length());
         }
-        else if (valueType.startsWith(OPEN_CHOICE))
+        else if (valueType.startsWith(OPEN_CHOICE) || valueType.startsWith(OPEN_CHOICE_U))
         {
             valueType = valueType.substring(OPEN_CHOICE.length());
         }
@@ -275,7 +277,7 @@ public final class PdfaExtensionHelper
         Cardinality card = Cardinality.Simple;
         if (pos > 0)
         {
-            String scard = valueType.substring(0, pos);
+            String scard = valueType.substring(0, pos).toLowerCase();
             switch (scard)
             {
                 case "seq":
