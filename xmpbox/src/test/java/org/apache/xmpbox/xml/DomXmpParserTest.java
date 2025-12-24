@@ -1474,4 +1474,16 @@ public class DomXmpParserTest
             assertEquals("Failed to instantiate DateType property with value 2019-05-02T22:03:5Z in xmp:CreateDate", ex.getMessage());
         }
     }
+
+    @Test
+    public void testPDFBox6131() throws IOException, XmpParsingException, BadFieldValueException
+    {
+        // Contains "Open Choice of Integer" instead of "open Choice of Integer"
+        InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/xml/PDFBOX-6131-0015675.xml");
+        DomXmpParser xmpParser = new DomXmpParser();
+        XMPMetadata xmp = xmpParser.parse(is);
+        XMPSchema uaSchema = xmp.getSchema("http://www.aiim.org/pdfua/ns/id/");
+        assertEquals((Integer) 1, uaSchema.getIntegerPropertyValueAsSimple("part"));
+        is.close();
+    }
 }
