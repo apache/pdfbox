@@ -1082,17 +1082,17 @@ public class DomXmpParser
     {
         TypeMapping tm = xmp.getTypeMapping();
         // test if namespace is set in xml
-        if (!nsFinder.containsNamespace(prop.getNamespaceURI()))
+        String nsuri = prop.getNamespaceURI();
+        if (!nsFinder.containsNamespace(nsuri))
         {
             throw new XmpParsingException(ErrorType.NoSchema, "Schema is not set in this document : "
-                    + prop.getNamespaceURI() + ", property: " + prop.getPrefix() + ":" + prop.getLocalPart());
+                    + nsuri + ", property: " + prop.getPrefix() + ":" + prop.getLocalPart());
         }
         // test if namespace is defined
-        String nsuri = prop.getNamespaceURI();
         if (!tm.isDefinedNamespace(nsuri))
         {
             throw new XmpParsingException(ErrorType.NoSchema, "Cannot find a definition for the namespace "
-                    + prop.getNamespaceURI() + ", property: " + prop.getPrefix() + ":" + prop.getLocalPart());
+                    + nsuri + ", property: " + prop.getPrefix() + ":" + prop.getLocalPart());
         }
         try
         {
