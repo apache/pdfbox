@@ -45,6 +45,8 @@ import org.apache.xmpbox.schema.XMPBasicSchema;
 import org.apache.xmpbox.schema.XMPMediaManagementSchema;
 import org.apache.xmpbox.schema.XMPSchema;
 import org.apache.xmpbox.type.BadFieldValueException;
+import org.apache.xmpbox.type.DateType;
+import org.apache.xmpbox.type.DefinedStructuredType;
 import org.apache.xmpbox.type.ThumbnailType;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpParsingException;
@@ -188,6 +190,14 @@ class DeserializationTest
             assertEquals(Integer.valueOf(216), thumb.getWidth());
             assertEquals("JPEG", thumb.getFormat());
             assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
+
+            // Check the extension schema (also serves as example on how to retrieve)
+            XMPSchema acmeMailSchema = metadata.getSchema("http://www.acme.com/ns/email/1/");
+            DateType deliveryDate = (DateType) acmeMailSchema.getProperty("Delivery-Date");
+            assertEquals("2007-11-09T09:55:36+01:00", deliveryDate.getStringValue());
+            DefinedStructuredType dst = (DefinedStructuredType) acmeMailSchema.getProperty("From");
+            assertEquals("[name=TextType:John Doe]", dst.getProperty("name").toString());
+            assertEquals("[mailto=TextType:john@acme.com]", dst.getProperty("mailto").toString());
 
             checkTransform(metadata, "64755266855514150823517184659364700851455308334441170957883187622624192802093", metadata.getAllSchemas().size());
         }
