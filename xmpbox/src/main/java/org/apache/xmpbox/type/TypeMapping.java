@@ -448,6 +448,12 @@ public final class TypeMapping
             {
                 return card;
             }
+
+            @Override
+            public String toString()
+            {
+                return "{type: " + type + ", card: " + card + '}';
+            }
         };
     }
 }
