@@ -245,23 +245,23 @@ public final class TypeMapping
     /**
      * Give type of specified property in specified schema (given by its namespaceURI)
      * 
-     * @param name
+     * @param qName
      *            the property Qualified Name
      * @return Property type declared for namespace specified, null if unknown
      * @throws org.apache.xmpbox.type.BadFieldValueException if the name was not found.
      */
-    public PropertyType getSpecifiedPropertyType(QName name) throws BadFieldValueException
+    public PropertyType getSpecifiedPropertyType(QName qName) throws BadFieldValueException
     {
-        XMPSchemaFactory factory = getSchemaFactory(name.getNamespaceURI());
+        XMPSchemaFactory factory = getSchemaFactory(qName.getNamespaceURI());
         if (factory != null)
         {
             // found in schema
-            return factory.getPropertyType(name.getLocalPart());
+            return factory.getPropertyType(qName.getLocalPart());
         }
         else
         {
             // try in structured
-            Types st = structuredNamespaces.get(name.getNamespaceURI());
+            Types st = structuredNamespaces.get(qName.getNamespaceURI());
             if (st != null)
             {
                 return createPropertyType(st, Cardinality.Simple);
@@ -269,11 +269,11 @@ public final class TypeMapping
             else
             {
                 // try in defined
-                String dt = definedStructuredNamespaces.get(name.getNamespaceURI());
+                String dt = definedStructuredNamespaces.get(qName.getNamespaceURI());
                 if (dt == null)
                 {
                     // not found
-                    throw new BadFieldValueException("No descriptor found for " + name);
+                    throw new BadFieldValueException("No descriptor found for " + qName);
                 }
                 else
                 {
