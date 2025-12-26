@@ -106,6 +106,11 @@ public final class DateConverter
                 {
                     date = date.substring(2);
                 }
+                int posOfT = date.indexOf('T');
+                if (posOfT != 10 && posOfT != -1)
+                {
+                    throw new IOException("Error converting date:" + date);
+                }
 
                 date = date.replaceAll("[-:T]", "");
 
