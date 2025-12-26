@@ -1078,29 +1078,29 @@ public class DomXmpParser
         }
     }
 
-    private PropertyType checkPropertyDefinition(XMPMetadata xmp, QName prop) throws XmpParsingException
+    private PropertyType checkPropertyDefinition(XMPMetadata xmp, QName qName) throws XmpParsingException
     {
         TypeMapping tm = xmp.getTypeMapping();
         // test if namespace is set in xml
-        String nsuri = prop.getNamespaceURI();
+        String nsuri = qName.getNamespaceURI();
         if (!nsFinder.containsNamespace(nsuri))
         {
             throw new XmpParsingException(ErrorType.NoSchema, "Schema is not set in this document : "
-                    + nsuri + ", property: " + prop.getPrefix() + ":" + prop.getLocalPart());
+                    + nsuri + ", property: " + qName.getPrefix() + ":" + qName.getLocalPart());
         }
         // test if namespace is defined
         if (!tm.isDefinedNamespace(nsuri))
         {
             throw new XmpParsingException(ErrorType.NoSchema, "Cannot find a definition for the namespace "
-                    + nsuri + ", property: " + prop.getPrefix() + ":" + prop.getLocalPart());
+                    + nsuri + ", property: " + qName.getPrefix() + ":" + qName.getLocalPart());
         }
         try
         {
-            return tm.getSpecifiedPropertyType(prop);
+            return tm.getSpecifiedPropertyType(qName);
         }
         catch (BadFieldValueException e)
         {
-            throw new XmpParsingException(ErrorType.InvalidType, "Failed to retrieve property definition for " + prop, e);
+            throw new XmpParsingException(ErrorType.InvalidType, "Failed to retrieve property definition for " + qName, e);
         }
     }
 
