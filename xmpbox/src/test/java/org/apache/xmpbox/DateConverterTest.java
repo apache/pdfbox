@@ -86,9 +86,58 @@ public class DateConverterTest
         convDate = DateConverter.toCalendar("2025-09-03T15:43:47.989082+00:00");
         assertEquals(989, convDate.get(Calendar.MILLISECOND));
 
+        // test some bad strings
         try
         {
             DateConverter.toCalendar("123");
+            fail("IOException expected");
+        }
+        catch (IOException ex)
+        {
+        }
+        try
+        {
+            DateConverter.toCalendar("2008-12-31T19:48:30+19:00");
+            fail("IOException expected");
+        }
+        catch (IOException ex)
+        {
+        }
+        try
+        {
+            DateConverter.toCalendar("2008-12-31T19:48:30-19:00");
+            fail("IOException expected");
+        }
+        catch (IOException ex)
+        {
+        }
+        try
+        {
+            DateConverter.toCalendar("2008-12-02T21:04:0Z");
+            fail("IOException expected");
+        }
+        catch (IOException ex)
+        {
+        }
+        try
+        {
+            DateConverter.toCalendar("0-01-01T00:00:00Z");
+            fail("IOException expected");
+        }
+        catch (IOException ex)
+        {
+        }
+        try
+        {
+            DateConverter.toCalendar("2009-03-16T01:15:19-0-4:00");
+            fail("IOException expected");
+        }
+        catch (IOException ex)
+        {
+        }
+        try
+        {
+            DateConverter.toCalendar("0-00-00T00:00:00-04:00");
             fail("IOException expected");
         }
         catch (IOException ex)

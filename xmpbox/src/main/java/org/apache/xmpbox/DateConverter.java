@@ -101,11 +101,24 @@ public final class DateConverter
                 if (Pattern.matches("^\\d{4}-\\d{2}-\\d{2}T.*", date))
                 {
                     // Assuming ISO860 date string
-                    return fromISO8601(date);
+                    try
+                    {
+                        return fromISO8601(date);
+                    }
+                    catch (IllegalArgumentException ex)
+                    {
+                        // thrown by javax.xml.bind.DatatypeConverter.parseDateTime()
+                        throw new IOException(ex);
+                    }
                 }
                 else if (date.startsWith("D:"))
                 {
                     date = date.substring(2);
+                }
+                int posOfT = date.indexOf('T');
+                if (posOfT != 10 && posOfT != -1)
+                {
+                    throw new IOException("Error converting date:" + date);
                 }
 
                 date = date.replaceAll("[-:T]", "");
