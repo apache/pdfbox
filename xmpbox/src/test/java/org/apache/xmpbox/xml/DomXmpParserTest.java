@@ -1413,4 +1413,42 @@ class DomXmpParserTest
             assertEquals(1, uaSchema2.getIntegerPropertyValueAsSimple("part"));
         }
     }
+
+    /**
+     * This worked in 3.0.6 in lenient mode, temporarly no longer worked while doing the changes in
+     * getSpecifiedPropertyType() in PDFBOX-6133. However "photoshop:headline" should be a text, not
+     * a Seq, and it's "Headline" with a capital H. The cause is that the photoshop namespace exists
+     * both as a schema and as a type.
+     *
+     * @throws XmpParsingException
+     */
+    @Test
+    void testWrongType() throws XmpParsingException
+    {
+        // from file 000367.pdf, USAID document
+        String s =
+            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+            "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Adobe XMP Core 4.0-c316 44.253921, Sun Oct 01 2006 17:14:39\">\n" +
+                "    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                "        <rdf:Description xmlns:photoshop=\"http://ns.adobe.com/photoshop/1.0/\" rdf:about=\"\">\n" +
+                "            <photoshop:headline>\n" +
+                "                <rdf:Seq>\n" +
+                "                    <rdf:li/>\n" +
+                "                </rdf:Seq>\n" +
+                "            </photoshop:headline>\n" +
+                "        </rdf:Description>\n" +
+                "    </rdf:RDF>\n" +
+                "</x:xmpmeta><?xpacket end=\"w\"?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
+        XmpParsingException ex = assertThrows(XmpParsingException.class,
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("No type defined for {http://ns.adobe.com/photoshop/1.0/}headline", ex.getMessage());
+        final DomXmpParser xmpParser2 = new DomXmpParser();
+        xmpParser2.setStrictParsing(false);
+        XMPMetadata xmp2 = xmpParser2.parse(s.getBytes(StandardCharsets.UTF_8));
+        PhotoshopSchema photoshopSchema = xmp2.getPhotoshopSchema();
+        assertNull(photoshopSchema.getHeadline());
+        // non existant properties are treated as text, one might want to change this in the future.
+        assertEquals("[headline=TextType:]", photoshopSchema.getProperty("headline").toString());
+    }
 }
