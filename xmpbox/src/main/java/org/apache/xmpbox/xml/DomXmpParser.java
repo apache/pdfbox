@@ -794,7 +794,7 @@ public class DomXmpParser
             if (type == null)
             {
                 // not defined
-                throw new XmpParsingException(ErrorType.NoType, "Type '" + name + "' not defined in "
+                throw new XmpParsingException(ErrorType.NoType, "Type '" + prefix + ":" + name + "' not defined in "
                         + liDescriptionElementChild.getNamespaceURI());
             }
             else if (type.card().isArray())
