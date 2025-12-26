@@ -116,6 +116,7 @@ class DateConverterTest
         assertThrows(IOException.class, () -> DateConverter.toCalendar("2008-12-02T21:04:0Z"));
         assertThrows(IOException.class, () -> DateConverter.toCalendar("0-01-01T00:00:00Z"));
         assertThrows(IOException.class, () -> DateConverter.toCalendar("2009-03-16T01:15:19-0-4:00"));
+        assertThrows(IOException.class, () -> DateConverter.toCalendar("0-00-00T00:00:00-04:00"));
 
         // Test missing seconds
         assertEquals(DateConverter.toCalendar("2015-12-08T12:07:00-05:00"),
