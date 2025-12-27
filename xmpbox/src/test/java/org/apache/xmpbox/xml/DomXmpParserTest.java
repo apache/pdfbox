@@ -1539,7 +1539,7 @@ public class DomXmpParserTest
         InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/xml/PDFBOX-6131-RMR6DEEUWZO6IM3A7WKRPX33SZMBTTQZ.xml");
         DomXmpParser xmpParser = new DomXmpParser();
         XMPMetadata xmp = xmpParser.parse(is);
-        assertEquals(1, xmp.getPDFIdentificationSchema().getPart());
+        assertEquals((Integer) 1, xmp.getPDFIdentificationSchema().getPart());
         is.close();
     }
 }
