@@ -84,4 +84,9 @@ public class PropertiesDescription
         return types.get(name);
     }
 
+    @Override
+    public String toString()
+    {
+        return "PropertiesDescription{" + "types=" + types + '}';
+    }
 }
