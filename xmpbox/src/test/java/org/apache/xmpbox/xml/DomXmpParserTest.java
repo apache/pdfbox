@@ -1454,10 +1454,11 @@ class DomXmpParserTest
         // Contains "Seq Text" instead of "seq Text" and "Bag Text" instead of "bag Text"
         // from file RMR6DEEUWZO6IM3A7WKRPX33SZMBTTQZ
         // Fairfax County Office of Community Revitalization
-        InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/xml/PDFBOX-6131-RMR6DEEUWZO6IM3A7WKRPX33SZMBTTQZ.xml");
-        DomXmpParser xmpParser = new DomXmpParser();
-        XMPMetadata xmp = xmpParser.parse(is);
-        assertEquals(1, xmp.getPDFAIdentificationSchema().getPart());
-        is.close();
+        try (InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/xml/PDFBOX-6131-RMR6DEEUWZO6IM3A7WKRPX33SZMBTTQZ.xml"))
+        {
+            DomXmpParser xmpParser = new DomXmpParser();
+            XMPMetadata xmp = xmpParser.parse(is);
+            assertEquals(1, xmp.getPDFAIdentificationSchema().getPart());
+        }
     }
 }
