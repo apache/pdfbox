@@ -244,13 +244,14 @@ public final class TypeMapping
 
     /**
      * Give type of specified property in specified schema (given by its namespaceURI)
-     * 
-     * @param qName
-     *            the property Qualified Name
+     *
+     * @param qName the property Qualified Name
+     * @param parentTypeName the type name of the parent, or null if not known. This is intended to
+     * help when the field name is in several types, e.g. "Values" in exif.
      * @return Property type declared for namespace specified, null if unknown
-     * @throws org.apache.xmpbox.type.BadFieldValueException if the name was not found.
+     * @throws org.apache.xmpbox.type.BadFieldValueException if the name of a type was not found.
      */
-    public PropertyType getSpecifiedPropertyType(QName qName) throws BadFieldValueException
+    public PropertyType getSpecifiedPropertyType(QName qName, String parentTypeName) throws BadFieldValueException
     {
         XMPSchemaFactory factory = getSchemaFactory(qName.getNamespaceURI());
         if (factory != null)
