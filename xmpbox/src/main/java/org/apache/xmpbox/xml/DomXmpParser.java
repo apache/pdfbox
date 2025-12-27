@@ -264,7 +264,7 @@ public class DomXmpParser
                     throw new XmpParsingException(ErrorType.NoSchema,
                             "This namespace is not from a schema: " + namespace);
                 }
-                PropertyType type = checkPropertyDefinition(xmp, DomHelper.getQName(schemaExtension));
+                PropertyType type = checkPropertyDefinition(xmp, DomHelper.getQName(schemaExtension), null);
                 final XMPSchema schema = tm.getSchemaFactory(namespace).createXMPSchema(xmp, schemaExtension.getPrefix());
                 loadAttributes(schema, description);
                 ComplexPropertyContainer container = schema.getContainer();
@@ -338,7 +338,7 @@ public class DomXmpParser
         {
             ComplexPropertyContainer container = schema.getContainer();
             PropertyType type = checkPropertyDefinition(xmp,
-                    new QName(attr.getNamespaceURI(), attr.getLocalName(), attr.getPrefix()));
+                    new QName(attr.getNamespaceURI(), attr.getLocalName(), attr.getPrefix()), null);
 
             if (type == null)
             {
@@ -395,7 +395,7 @@ public class DomXmpParser
         {
             nsFinder.push(property);
             String namespace = property.getNamespaceURI();
-            PropertyType type = checkPropertyDefinition(xmp, DomHelper.getQName(property));
+            PropertyType type = checkPropertyDefinition(xmp, DomHelper.getQName(property), null);
             // create the container
             if (!tm.isDefinedSchema(namespace))
             {
@@ -631,7 +631,7 @@ public class DomXmpParser
             for (Element property : properties)
             {
                 String name = property.getLocalName();
-                PropertyType dtype = checkPropertyDefinition(xmp, DomHelper.getQName(property));
+                PropertyType dtype = checkPropertyDefinition(xmp, DomHelper.getQName(property), null);
                 PropertyType ptype = tm.getStructuredPropMapping(dtype.type()).getPropertyType(name);
                 // create property
                 createProperty(xmp, property, ptype, parentContainer);
@@ -744,7 +744,7 @@ public class DomXmpParser
         }
     }
 
-    private AbstractStructuredType parseLiDescription(XMPMetadata xmp, QName descriptor, Element liDescriptionElement)
+    private AbstractStructuredType parseLiDescription(XMPMetadata xmp, QName parentQName, Element liDescriptionElement)
             throws XmpParsingException
     {
         TypeMapping tm = xmp.getTypeMapping();
@@ -752,26 +752,26 @@ public class DomXmpParser
         if (liDescriptionElementChildren.isEmpty())
         {
             // The list is empty
-            return tryParseAttributesAsProperties(xmp, liDescriptionElement, tm, null, null, descriptor);
+            return tryParseAttributesAsProperties(xmp, liDescriptionElement, tm, null, null, parentQName);
         }
         Element firstLiDescriptionElementChild = liDescriptionElementChildren.get(0);
         if ("rdf:Description".equals(firstLiDescriptionElementChild.getTagName()))
         {
             // PDFBOX-6126: "<rdf:Description" as child of "<rdf:li"
-            return parseLiDescription(xmp, descriptor, firstLiDescriptionElementChild);
+            return parseLiDescription(xmp, parentQName, firstLiDescriptionElementChild);
         }
         // Instantiate abstract structured type with hint from first element
         nsFinder.push(firstLiDescriptionElementChild);
-        QName qName = DomHelper.getQName(firstLiDescriptionElementChild);
-        PropertyType ctype = checkPropertyDefinition(xmp, qName);
+        QName firstChildQName = DomHelper.getQName(firstLiDescriptionElementChild);
+        PropertyType ctype = checkPropertyDefinition(xmp, firstChildQName, parentQName.getLocalPart());
         if (ctype == null)
         {
             // PDFBOX-5649
             throw new XmpParsingException(ErrorType.NoType,
-                    "Property '" + qName.getLocalPart() + "' not defined in " + qName.getNamespaceURI());
+                    "Property '" + firstChildQName.getLocalPart() + "' not defined in " + firstChildQName.getNamespaceURI());
         }
         Types tt = ctype.type();
-        AbstractStructuredType ast = instanciateStructured(tm, tt, descriptor.getLocalPart(), firstLiDescriptionElementChild.getNamespaceURI());
+        AbstractStructuredType ast = instanciateStructured(tm, tt, parentQName.getLocalPart(), firstLiDescriptionElementChild.getNamespaceURI());
 
         ast.setNamespace(firstLiDescriptionElementChild.getNamespaceURI());
         ast.setPrefix(firstLiDescriptionElementChild.getPrefix());
@@ -805,7 +805,7 @@ public class DomXmpParser
                 List<Element> lis = DomHelper.getElementChildren(bagOrSeq);
                 for (Element element2 : lis)
                 {
-                    AbstractField ast2 = parseLiElement(xmp, descriptor, element2, type.type());
+                    AbstractField ast2 = parseLiElement(xmp, parentQName, element2, type.type());
                     if (ast2 != null)
                     {
                         array.addProperty(ast2);
@@ -847,7 +847,7 @@ public class DomXmpParser
             }
 
         }
-        ast = tryParseAttributesAsProperties(xmp, liDescriptionElement, tm, ast, pm, descriptor);
+        ast = tryParseAttributesAsProperties(xmp, liDescriptionElement, tm, ast, pm, parentQName);
         nsFinder.pop();
         return ast;
     }
@@ -1078,7 +1078,7 @@ public class DomXmpParser
         }
     }
 
-    private PropertyType checkPropertyDefinition(XMPMetadata xmp, QName qName) throws XmpParsingException
+    private PropertyType checkPropertyDefinition(XMPMetadata xmp, QName qName, String parentTypeName) throws XmpParsingException
     {
         TypeMapping tm = xmp.getTypeMapping();
         // test if namespace is set in xml
@@ -1096,7 +1096,7 @@ public class DomXmpParser
         }
         try
         {
-            return tm.getSpecifiedPropertyType(qName);
+            return tm.getSpecifiedPropertyType(qName, null);
         }
         catch (BadFieldValueException e)
         {
@@ -1155,7 +1155,7 @@ public class DomXmpParser
                     // like in parseLiDescription():
                     // Instantiate abstract structured type with hint from first element
                     QName attrQName = new QName(attr.getNamespaceURI(), attr.getLocalName(), attr.getPrefix());
-                    PropertyType ctype = checkPropertyDefinition(xmp, attrQName);
+                    PropertyType ctype = checkPropertyDefinition(xmp, attrQName, null);
                     // this is the type of the AbstractStructuredType, not of the element(s)
                     if (ctype == null)
                     {
