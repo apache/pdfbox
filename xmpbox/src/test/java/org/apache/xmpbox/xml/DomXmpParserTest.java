@@ -1077,6 +1077,37 @@ class DomXmpParserTest
     }
 
     @Test
+    void testBadProp2() throws XmpParsingException
+    {
+        // PDFBOX-6135: from file 000316.pdf, stRef:documentName isn't defined
+        String s = 
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"3.1-701\">\n" +
+                "    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                "        <rdf:Description xmlns:stRef=\"http://ns.adobe.com/xap/1.0/sType/ResourceRef#\" xmlns:xapMM=\"http://ns.adobe.com/xap/1.0/mm/\" rdf:about=\"\">\n" +
+                "            <xapMM:DocumentID>uuid:CE03288B61A6DB11A55CA11F14F48514</xapMM:DocumentID>\n" +
+                "            <xapMM:InstanceID>uuid:474647e9-680a-47dc-83d5-ba3f3a7e2a67</xapMM:InstanceID>\n" +
+                "            <xapMM:DerivedFrom rdf:parseType=\"Resource\">\n" +
+                "                <stRef:documentName>uuid:8705447f-b80d-4cc8-82f7-0ec27187edfe</stRef:documentName>\n" +
+                "                <stRef:documentID>uuid:b2f88223-2723-430d-b93c-3503ccb0e34b</stRef:documentID>\n" +
+                "            </xapMM:DerivedFrom>\n" +
+                "        </rdf:Description>\n" +
+                "    </rdf:RDF>\n" +
+                "</x:xmpmeta><?xpacket end=\"w\"?>";
+        final DomXmpParser xmpParser1 = new DomXmpParser();
+        XmpParsingException ex = assertThrows(XmpParsingException.class,
+                () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("Type 'stRef:documentName' not defined in http://ns.adobe.com/xap/1.0/sType/ResourceRef#", ex.getMessage());
+        final DomXmpParser xmpParser2 = new DomXmpParser();
+        xmpParser2.setStrictParsing(false);
+        XMPMetadata xmp2 = xmpParser2.parse(s.getBytes(StandardCharsets.UTF_8));
+        XMPMediaManagementSchema xmpMediaManagementSchema = xmp2.getXMPMediaManagementSchema();
+        ResourceRefType derived = xmpMediaManagementSchema.getDerivedFromProperty();
+        assertEquals("uuid:b2f88223-2723-430d-b93c-3503ccb0e34b", derived.getDocumentID());
+        assertEquals("[documentName=TextType:uuid:8705447f-b80d-4cc8-82f7-0ec27187edfe]", derived.getProperty("documentName").toString());
+    }
+
+    @Test
     void testParseFailure() throws XmpParsingException
     {
         String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>";
