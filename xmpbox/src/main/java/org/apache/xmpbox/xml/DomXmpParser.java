@@ -793,11 +793,15 @@ public class DomXmpParser
             PropertyType type = pm.getPropertyType(name);
             if (type == null)
             {
-                // not defined
-                throw new XmpParsingException(ErrorType.NoType, "Type '" + prefix + ":" + name + "' not defined in "
-                        + liDescriptionElementChild.getNamespaceURI());
+                if (strictParsing)
+                {
+                    throw new XmpParsingException(ErrorType.NoType, "Type '" + prefix + ":" + name + "' not defined in "
+                            + liDescriptionElementChild.getNamespaceURI());
+                }
+                // PDFBOX-6135: Default to text if no type is found
+                type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
             }
-            else if (type.card().isArray())
+            if (type.card().isArray())
             {
                 ArrayProperty array = tm.createArrayProperty(namespace, prefix, name, type.card());
                 ast.getContainer().addProperty(array);
