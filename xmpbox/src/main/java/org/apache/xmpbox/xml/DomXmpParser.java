@@ -768,7 +768,8 @@ public class DomXmpParser
         {
             // PDFBOX-5649
             throw new XmpParsingException(ErrorType.NoType,
-                    "Property '" + firstChildQName.getLocalPart() + "' not defined in " + firstChildQName.getNamespaceURI());
+                    "Property '" + firstChildQName.getPrefix() + ":" + firstChildQName.getLocalPart() +
+                            "' not defined in " + firstChildQName.getNamespaceURI());
         }
         Types tt = ctype.type();
         AbstractStructuredType ast = instanciateStructured(tm, tt, parentQName.getLocalPart(), firstLiDescriptionElementChild.getNamespaceURI());
