@@ -209,15 +209,12 @@ public class DomXmpParser
         if (!strictParsing)
         {
             NamedNodeMap nnm = rdfRdf.getAttributes();
-            if (nnm != null)
+            for (int i = 0; i < nnm.getLength(); i++)
             {
-                for (int i = 0; i < nnm.getLength(); i++)
+                Attr attr = (Attr) nnm.item(i);
+                if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix()))
                 {
-                    Attr attr = (Attr) nnm.item(i);
-                    if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix()))
-                    {
-                        maybeAddNonStandardNamespace(xmp, attr);
-                    }
+                    maybeAddNonStandardNamespace(xmp, attr);
                 }
             }
         }
@@ -1138,10 +1135,6 @@ public class DomXmpParser
             PropertiesDescription pm, QName qName) throws XmpParsingException
     {
         NamedNodeMap attributes = liElement.getAttributes();
-        if (attributes == null)
-        {
-            return ast;
-        }
         for (int i = 0; i < attributes.getLength(); ++i)
         {
             Attr attr = (Attr) attributes.item(i);
