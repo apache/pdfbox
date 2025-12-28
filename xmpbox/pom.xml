@@ -73,6 +73,7 @@
                               <exclude>src/test/resources/org/apache/xmpbox/xml/PDFBOX-3882-dematbox.xml</exclude>
                               <exclude>src/test/resources/org/apache/xmpbox/xml/PDFBOX-6131-0015675.xml</exclude>
                               <exclude>src/test/resources/org/apache/xmpbox/xml/PDFBOX-6131-RMR6DEEUWZO6IM3A7WKRPX33SZMBTTQZ.xml</exclude>
+                              <exclude>src/test/resources/org/apache/xmpbox/xml/PDFBOX-6133-0064638.xml</exclude>
                           </excludes>
                       </configuration>
                     </plugin>
