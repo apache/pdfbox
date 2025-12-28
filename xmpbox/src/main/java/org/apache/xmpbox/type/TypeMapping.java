@@ -394,6 +394,9 @@ public final class TypeMapping
      */
     public PropertyType getSpecifiedPropertyType(QName qName, String parentTypeName) throws BadFieldValueException
     {
+        // PDFBOX-6133: the method was rewritten because of photoshop and exif,
+        // because these namespaces exist as a schema and as a type
+        // "factory" is checked in the non-schema part to keep the pre PDFBOX-6133 behavior
         XMPSchemaFactory factory = getSchemaFactory(qName.getNamespaceURI());
         if (factory != null)
         {
@@ -406,12 +409,11 @@ public final class TypeMapping
         }
         // try in structured
         List<Types> list = structuredNamespaces2.get(qName.getNamespaceURI());
-        Types st;
         if (list != null)
         {
-            st = list.get(0);
             if (list.size() == 1)
             {
+                Types st = list.get(0);
                 PropertiesDescription propDesc = structuredMappings.get(st);
                 if (factory == null || propDesc.getPropertiesNames().contains(qName.getLocalPart()))
                 {
@@ -433,19 +435,9 @@ public final class TypeMapping
                     PropertiesDescription propDesc = structuredMappings.get(type);
                     if (propDesc.getPropertiesNames().contains(qName.getLocalPart()))
                     {
-                        st = type;
-                        break;
+                        return createPropertyType(type, Cardinality.Simple);
                     }
                 }
-            }
-
-            PropertyType propertyType = createPropertyType(st, Cardinality.Simple);
-            PropertiesDescription propertiesDescription = getStructuredPropMapping(propertyType.type());
-            // PDFBOX-6133: do an additional check to make sure that the name exists.
-            // This can happen with photoshop and exif because the namespace exists as a schema and as a type
-            if (propertiesDescription.getPropertiesNames().contains(qName.getLocalPart()))
-            {
-                return propertyType;
             }
             return null;
         }
