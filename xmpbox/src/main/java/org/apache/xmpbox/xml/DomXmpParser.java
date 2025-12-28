@@ -292,7 +292,7 @@ public class DomXmpParser
                     throw new XmpParsingException(ErrorType.NoSchema,
                             "This namespace is not from a schema: " + namespace);
                 }
-                PropertyType type = checkPropertyDefinition(xmp, DomHelper.getQName(schemaExtension), null);
+                PropertyType type = checkPropertyDefinition(tm, DomHelper.getQName(schemaExtension), null);
                 final XMPSchema schema = tm.getSchemaFactory(namespace).createXMPSchema(xmp, schemaExtension.getPrefix());
                 loadAttributes(schema, description);
                 ComplexPropertyContainer container = schema.getContainer();
@@ -368,7 +368,7 @@ public class DomXmpParser
         if( schema != null )
         {
             ComplexPropertyContainer container = schema.getContainer();
-            PropertyType type = checkPropertyDefinition(xmp,
+            PropertyType type = checkPropertyDefinition(tm,
                     new QName(attr.getNamespaceURI(), attr.getLocalName(), attr.getPrefix()), null);
 
             if (type == null)
@@ -426,7 +426,7 @@ public class DomXmpParser
         {
             nsFinder.push(property);
             String namespace = property.getNamespaceURI();
-            PropertyType type = checkPropertyDefinition(xmp, DomHelper.getQName(property), null);
+            PropertyType type = checkPropertyDefinition(tm, DomHelper.getQName(property), null);
             // create the container
             if (!tm.isDefinedSchema(namespace))
             {
@@ -662,7 +662,7 @@ public class DomXmpParser
             for (Element property : properties)
             {
                 String name = property.getLocalName();
-                PropertyType dtype = checkPropertyDefinition(xmp, DomHelper.getQName(property), null);
+                PropertyType dtype = checkPropertyDefinition(tm, DomHelper.getQName(property), null);
                 PropertyType ptype = tm.getStructuredPropMapping(dtype.type()).getPropertyType(name);
                 // create property
                 createProperty(xmp, property, ptype, parentContainer);
@@ -739,7 +739,7 @@ public class DomXmpParser
                 {
                     pm = tm.getDefinedDescriptionByNamespace(liElement.getNamespaceURI(), liElement.getLocalName());
                 }
-                af = tryParseAttributesAsProperties(xmp, liElement, tm, (AbstractStructuredType) af, pm, null);
+                af = tryParseAttributesAsProperties(tm, liElement, (AbstractStructuredType) af, pm, null);
             }
             return af;
         }
@@ -783,7 +783,7 @@ public class DomXmpParser
         if (liDescriptionElementChildren.isEmpty())
         {
             // The list is empty
-            return tryParseAttributesAsProperties(xmp, liDescriptionElement, tm, null, null, parentQName);
+            return tryParseAttributesAsProperties(tm, liDescriptionElement, null, null, parentQName);
         }
         Element firstLiDescriptionElementChild = liDescriptionElementChildren.get(0);
         if ("rdf:Description".equals(firstLiDescriptionElementChild.getTagName()))
@@ -794,7 +794,7 @@ public class DomXmpParser
         // Instantiate abstract structured type with hint from first element
         nsFinder.push(firstLiDescriptionElementChild);
         QName firstChildQName = DomHelper.getQName(firstLiDescriptionElementChild);
-        PropertyType ctype = checkPropertyDefinition(xmp, firstChildQName, parentQName.getLocalPart());
+        PropertyType ctype = checkPropertyDefinition(tm, firstChildQName, parentQName.getLocalPart());
         if (ctype == null)
         {
             // PDFBOX-5649
@@ -883,7 +883,7 @@ public class DomXmpParser
             }
 
         }
-        ast = tryParseAttributesAsProperties(xmp, liDescriptionElement, tm, ast, pm, parentQName);
+        ast = tryParseAttributesAsProperties(tm, liDescriptionElement, ast, pm, parentQName);
         nsFinder.pop();
         return ast;
     }
@@ -1108,9 +1108,8 @@ public class DomXmpParser
         }
     }
 
-    private PropertyType checkPropertyDefinition(XMPMetadata xmp, QName qName, String parentTypeName) throws XmpParsingException
+    private PropertyType checkPropertyDefinition(TypeMapping tm, QName qName, String parentTypeName) throws XmpParsingException
     {
-        TypeMapping tm = xmp.getTypeMapping();
         // test if namespace is set in xml
         String nsuri = qName.getNamespaceURI();
         if (!nsFinder.containsNamespace(nsuri))
@@ -1140,18 +1139,18 @@ public class DomXmpParser
      * parseDescriptionRootAttr(). This solves the problem in PDFBOX-3882 where properties appear as
      * attributes in places lower than the descriptor root.
      *
-     * @param xmp
-     * @param liElement
      * @param tm
+     * @param liElement
      * @param ast An AbstractStructuredType object, can be null.
      * @param pm A PropertiesDescription object, must be set if ast is not null.
-     * @param qName QName of the parent, will be used if instanciating an AbstractStructuredType
+     * @param qName QName of the parent, will be used if instantiating an AbstractStructuredType
      * object, must be set if ast is not null.
      * @return An AbstractStructuredType, possibly created here if it was null as parameter.
      * @throws XmpParsingException
      */
-    private AbstractStructuredType tryParseAttributesAsProperties(XMPMetadata xmp, Element liElement,
-            TypeMapping tm, AbstractStructuredType ast, PropertiesDescription pm, QName qName) throws XmpParsingException
+    private AbstractStructuredType tryParseAttributesAsProperties(
+            TypeMapping tm, Element liElement, AbstractStructuredType ast,
+            PropertiesDescription pm, QName qName) throws XmpParsingException
     {
         NamedNodeMap attributes = liElement.getAttributes();
         if (attributes == null)
@@ -1185,7 +1184,7 @@ public class DomXmpParser
                     // like in parseLiDescription():
                     // Instantiate abstract structured type with hint from first element
                     QName attrQName = new QName(attr.getNamespaceURI(), attr.getLocalName(), attr.getPrefix());
-                    PropertyType ctype = checkPropertyDefinition(xmp, attrQName, null);
+                    PropertyType ctype = checkPropertyDefinition(tm, attrQName, null);
                     // this is the type of the AbstractStructuredType, not of the element(s)
                     if (ctype == null)
                     {
