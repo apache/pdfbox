@@ -1482,7 +1482,7 @@ class DomXmpParserTest
     }
 
     @Test
-    void testPDFBox6131_2() throws IOException, XmpParsingException, BadFieldValueException
+    void testPDFBox6131_2() throws IOException, XmpParsingException
     {
         // Contains "Seq Text" instead of "seq Text" and "Bag Text" instead of "bag Text"
         // from file RMR6DEEUWZO6IM3A7WKRPX33SZMBTTQZ
@@ -1496,7 +1496,7 @@ class DomXmpParserTest
     }
 
     @Test
-    void testPDFBox6133() throws IOException, XmpParsingException, BadFieldValueException
+    void testPDFBox6133() throws IOException, XmpParsingException
     {
         // Namespace is used both for the schema and the type,
         // and that there are two types with the same namespace
