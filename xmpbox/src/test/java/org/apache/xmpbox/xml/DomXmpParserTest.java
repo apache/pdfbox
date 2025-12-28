@@ -42,8 +42,10 @@ import org.apache.xmpbox.schema.XMPageTextSchema;
 import org.apache.xmpbox.type.AbstractField;
 import org.apache.xmpbox.type.ArrayProperty;
 import org.apache.xmpbox.type.BadFieldValueException;
+import org.apache.xmpbox.type.CFAPatternType;
 import org.apache.xmpbox.type.DefinedStructuredType;
 import org.apache.xmpbox.type.DimensionsType;
+import org.apache.xmpbox.type.FlashType;
 import org.apache.xmpbox.type.LayerType;
 import org.apache.xmpbox.type.PDFASchemaType;
 import org.apache.xmpbox.type.ResourceEventType;
@@ -776,6 +778,7 @@ public class DomXmpParserTest
     public void testPropertyNotDefined() throws XmpParsingException, UnsupportedEncodingException
     {
         // While "Fired" does exist as a type, it's not the correct syntax, the PDFLib XMP validator complains too.
+        // Surprisingly, it works since PDFBOX-6133
         String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
                     "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
                     "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"\n" +
@@ -790,15 +793,10 @@ public class DomXmpParserTest
                     "		</rdf:Description>\n" +
                     "	</rdf:RDF>\n" +
                     "</x:xmpmeta><?xpacket end='w'?>";
-        try
-        {
-            new DomXmpParser().parse(s.getBytes("utf-8"));
-            fail("XmpParsingException expected");
-        }
-        catch (XmpParsingException ex)
-        {
-            assertEquals("Property 'exif:Fired' not defined in http://ns.adobe.com/exif/1.0/", ex.getMessage());
-        }
+        final DomXmpParser xmpParser = new DomXmpParser();
+        XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
+        FlashType flash = (FlashType) xmp.getSchema(ExifSchema.class).getProperty(ExifSchema.FLASH);
+        assertEquals("[Fired=BooleanType:False]", flash.getProperty(FlashType.FIRED).toString());
     }
 
     @Test
@@ -1577,5 +1575,54 @@ public class DomXmpParserTest
         XMPMetadata xmp = xmpParser.parse(is);
         assertEquals((Integer) 1, xmp.getPDFIdentificationSchema().getPart());
         is.close();
+    }
+
+    @Test
+    public void testPDFBox6133() throws IOException, XmpParsingException, BadFieldValueException
+    {
+        // Namespace is used both for the schema and the type,
+        // and that there are two types with the same namespace
+        InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/xml/PDFBOX-6133-0064638.xml");
+            DomXmpParser xmpParser = new DomXmpParser();
+        XMPMetadata xmp = xmpParser.parse(is);
+        XMPSchema epaSchema = xmp.getSchema("http://www.epo.org/patent-bibliographic-data/1.0/");
+        assertEquals("[TotalNumberOfPages=RealType:47.0]", epaSchema.getProperty("TotalNumberOfPages").toString());
+        DefinedStructuredType pub = (DefinedStructuredType) epaSchema.getProperty("Publication");
+        assertEquals("[CountryCode=TextType:EP]", pub.getProperty("CountryCode").toString());
+        is.close();
+    }
+
+    @Test
+    public void testPropertyNotDefined2() throws XmpParsingException, UnsupportedEncodingException
+    {
+        // from file 089448.pdf, page 2, image 4
+        String s = 
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n" +
+                "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"\n" +
+                "           x:xmptk=\"Adobe XMP Core 4.0-c006 1.236519, Wed Jun 14 2006 08:31:24\">\n" +
+                "	<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                "		<rdf:Description xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n" +
+                "		                 xmlns:exif=\"http://ns.adobe.com/exif/1.0/\">\n" +
+                "			<exif:CFAPattern>\n" +
+                "				<rdf:Description>\n" +
+                "					<exif:Values>\n" +
+                "						<rdf:Seq>\n" +
+                "							<rdf:li>1</rdf:li>\n" +
+                "							<rdf:li>2</rdf:li>\n" +
+                "							<rdf:li>0</rdf:li>\n" +
+                "							<rdf:li>1</rdf:li>\n" +
+                "						</rdf:Seq>\n" +
+                "					</exif:Values>\n" +
+                "				</rdf:Description>\n" +
+                "			</exif:CFAPattern>\n" +
+                "		</rdf:Description>\n" +
+                "	</rdf:RDF>\n" +
+                "</x:xmpmeta><?xpacket end='w'?>";
+        final DomXmpParser xmpParser = new DomXmpParser();
+        XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
+        CFAPatternType cfa = (CFAPatternType) xmp.getSchema(ExifSchema.class).getProperty(ExifSchema.CFA_PATTERN);
+        ArrayProperty ap = (ArrayProperty) cfa.getProperty(CFAPatternType.VALUES);
+        assertEquals("[1, 2, 0, 1]", ap.getElementsAsString().toString());
     }
 }

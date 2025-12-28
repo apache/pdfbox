@@ -706,7 +706,7 @@ public class DomXmpParser
                 }
                 else
                 {
-                    pm = tm.getDefinedDescriptionByNamespace(liElement.getNamespaceURI());
+                    pm = tm.getDefinedDescriptionByNamespace(liElement.getNamespaceURI(), liElement.getLocalName());
                 }
                 af = tryParseAttributesAsProperties(xmp, liElement, tm, (AbstractStructuredType) af, pm, null);
             }
@@ -784,7 +784,7 @@ public class DomXmpParser
         }
         else
         {
-            pm = tm.getDefinedDescriptionByNamespace(firstLiDescriptionElementChild.getNamespaceURI());
+            pm = tm.getDefinedDescriptionByNamespace(firstLiDescriptionElementChild.getNamespaceURI(), firstLiDescriptionElementChild.getLocalName());
         }
         for (Element liDescriptionElementChild : liDescriptionElementChildren)
         {
@@ -1101,7 +1101,7 @@ public class DomXmpParser
         }
         try
         {
-            return tm.getSpecifiedPropertyType(qName, null);
+            return tm.getSpecifiedPropertyType(qName, parentTypeName);
         }
         catch (BadFieldValueException e)
         {
@@ -1175,7 +1175,7 @@ public class DomXmpParser
                     }
                     else
                     {
-                        pm = tm.getDefinedDescriptionByNamespace(attr.getNamespaceURI());
+                        pm = tm.getDefinedDescriptionByNamespace(attr.getNamespaceURI(), attr.getLocalName());
                     }
                 }
                 if (ast != null && pm != null && attr.getNamespaceURI() != null)
