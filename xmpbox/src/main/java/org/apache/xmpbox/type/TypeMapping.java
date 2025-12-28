@@ -49,22 +49,12 @@ import org.apache.xmpbox.schema.XMPPageTextSchema;
 import org.apache.xmpbox.schema.XMPRightsManagementSchema;
 import org.apache.xmpbox.schema.XMPSchema;
 import org.apache.xmpbox.schema.XMPSchemaFactory;
-import org.apache.xmpbox.schema.XmpSchemaException;
 
 public final class TypeMapping
 {
 
     // type -> property
     private Map<Types, PropertiesDescription> structuredMappings;
-
-    // ns -> type
-    // filled during init
-    @Deprecated
-    private Map<String, Types> structuredNamespaces;
-
-    // ns -> typeName
-    @Deprecated
-    private Map<String, String> definedStructuredNamespaces;
 
     // ns -> list of property descriptions
     private Map<String, List<PropertiesDescription>> definedStructuredNamespaces2;
@@ -93,7 +83,6 @@ public final class TypeMapping
     {
         // structured types
         structuredMappings = new EnumMap<>(Types.class);
-        structuredNamespaces = new HashMap<>();
         structuredNamespaces2 = new HashMap<>();
         for (Types type : Types.values())
         {
@@ -104,7 +93,6 @@ public final class TypeMapping
                 StructuredType st = clz.getAnnotation(StructuredType.class);
                 String ns = st.namespace();
                 PropertiesDescription pm = initializePropMapping(clz);
-                structuredNamespaces.put(ns, type);
                 List<Types> list = structuredNamespaces2.get(ns);
                 if (list != null)
                 {
@@ -121,7 +109,6 @@ public final class TypeMapping
         }
 
         // define structured types
-        definedStructuredNamespaces = new HashMap<>();
         definedStructuredMappings = new HashMap<>();
         definedStructuredNamespaces2 = new HashMap<>();
 
@@ -154,15 +141,7 @@ public final class TypeMapping
             list.add(pm);
             definedStructuredNamespaces2.put(ns, list);
         }
-        definedStructuredNamespaces.put(ns, typeName);
         definedStructuredMappings.put(typeName, pm);
-    }
-
-    @Deprecated
-    public PropertiesDescription getDefinedDescriptionByNamespace(String namespace)
-    {
-        String dt = definedStructuredNamespaces.get(namespace);
-        return definedStructuredMappings.get(dt);
     }
 
     /**
@@ -281,37 +260,6 @@ public final class TypeMapping
     public PropertiesDescription getStructuredPropMapping(Types type)
     {
         return structuredMappings.get(type);
-    }
-
-    /**
-     * Return the specialized schema class representation if it's known (create and add it to metadata). In other cases,
-     * return null
-     * 
-     * @param metadata
-     *            Metadata to link the new schema
-     * @param namespace
-     *            The namespace URI
-     * @param prefix The namespace prefix
-     * @return Schema representation
-     * @throws XmpSchemaException
-     *             When Instancing specified Object Schema failed
-     *
-     * @deprecated This method will be removed in 4.0. If you need it, let us know.
-     */
-    @Deprecated
-    public XMPSchema getAssociatedSchemaObject(XMPMetadata metadata, String namespace, String prefix)
-            throws XmpSchemaException
-    {
-        if (schemaMap.containsKey(namespace))
-        {
-            XMPSchemaFactory factory = schemaMap.get(namespace);
-            return factory.createXMPSchema(metadata, prefix);
-        }
-        else
-        {
-            XMPSchemaFactory factory = getSchemaFactory(namespace);
-            return factory != null ? factory.createXMPSchema(metadata, prefix) : null;
-        }
     }
 
     public XMPSchemaFactory getSchemaFactory(String namespace)
