@@ -341,22 +341,19 @@ public final class TypeMapping
             }
             return null;
         }
+        // try in defined
+        if (!definedStructuredNamespaces2.containsKey(qName.getNamespaceURI()))
+        {
+            // not found
+            if (factory != null)
+            {
+                return null; // pre PDFBOX-6133 behavior
+            }
+            throw new BadFieldValueException("No descriptor found for " + qName);
+        }
         else
         {
-            // try in defined
-            if (!definedStructuredNamespaces2.containsKey(qName.getNamespaceURI()))
-            {
-                // not found
-                if (factory != null)
-                {
-                    return null; // pre PDFBOX-6133 behavior
-                }
-                throw new BadFieldValueException("No descriptor found for " + qName);
-            }
-            else
-            {
-                return createPropertyType(Types.DefinedType, Cardinality.Simple);
-            }
+            return createPropertyType(Types.DefinedType, Cardinality.Simple);
         }
     }
 
