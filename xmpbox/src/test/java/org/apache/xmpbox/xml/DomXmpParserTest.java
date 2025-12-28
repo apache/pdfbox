@@ -765,7 +765,7 @@ class DomXmpParserTest
         XmpParsingException ex = assertThrows(
                 XmpParsingException.class,
                 () -> xmpParser.parse(s.getBytes(StandardCharsets.UTF_8)));
-        assertEquals("Property 'Fired' not defined in http://ns.adobe.com/exif/1.0/", ex.getMessage());
+        assertEquals("Property 'exif:Fired' not defined in http://ns.adobe.com/exif/1.0/", ex.getMessage());
     }
 
     @Test
