@@ -155,7 +155,6 @@ public final class TypeMapping
     public PropertiesDescription getDefinedDescriptionByNamespace(String namespace, String pdfaFieldName)
     {
         List<PropertiesDescription> propDescList = definedStructuredNamespaces2.get(namespace);
-        // gets list of type names (not to be confused with field names / property names)
         for (PropertiesDescription propDesc : propDescList)
         {
             // check whether one of these field names matches
