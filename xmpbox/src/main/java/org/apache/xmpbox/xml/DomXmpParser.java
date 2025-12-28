@@ -156,13 +156,10 @@ public class DomXmpParser
             {
                 throw new XmpParsingException(ErrorType.XpacketBadStart, "xmp should start with a processing instruction");
             }
-            else
-            {
-                xmp = XMPMetadata.createXMPMetadata(XmpConstants.DEFAULT_XPACKET_BEGIN,
-                        XmpConstants.DEFAULT_XPACKET_ID, 
-                        XmpConstants.DEFAULT_XPACKET_BYTES,
-                        XmpConstants.DEFAULT_XPACKET_ENCODING);
-            }
+            xmp = XMPMetadata.createXMPMetadata(XmpConstants.DEFAULT_XPACKET_BEGIN,
+                    XmpConstants.DEFAULT_XPACKET_ID, 
+                    XmpConstants.DEFAULT_XPACKET_BYTES,
+                    XmpConstants.DEFAULT_XPACKET_ENCODING);
         }
         else
         {
@@ -193,10 +190,7 @@ public class DomXmpParser
             {
                 throw new XmpParsingException(ErrorType.XpacketBadEnd, "xmp should end with a processing instruction");
             }
-            else
-            {
-                xmp.setEndXPacket(XmpConstants.DEFAULT_XPACKET_END);
-            }
+            xmp.setEndXPacket(XmpConstants.DEFAULT_XPACKET_END);
         }
         else
         {
@@ -347,11 +341,8 @@ public class DomXmpParser
                     throw new XmpParsingException(ErrorType.InvalidType, "No type defined for {" + attr.getNamespaceURI() + "}"
                             + attr.getLocalName());
                 }
-                else
-                {
-                    // PDFBOX-2318, PDFBOX-6106: Default to text if no type is found
-                    type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
-                }
+                // PDFBOX-2318, PDFBOX-6106: Default to text if no type is found
+                type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
             }
             else if (!type.type().isSimple() || type.card().isArray() || type.type() == Types.LangAlt)
             {
@@ -361,16 +352,13 @@ public class DomXmpParser
                             type.type().name() + "' in '" + attr.getPrefix() + ":" + attr.getLocalName() + "=" + attr.getValue()
                             + "' is a structured or array type, but attributes are simple types");
                 }
-                else
+                // PDFBOX-6125: Default to text or skip
+                if (attr.getValue() == null || attr.getValue().isEmpty())
                 {
-                    // PDFBOX-6125: Default to text or skip
-                    if (attr.getValue() == null || attr.getValue().isEmpty())
-                    {
-                        schema.removeAttribute(attr.getLocalName());
-                        return;
-                    }
-                    type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
+                    schema.removeAttribute(attr.getLocalName());
+                    return;
                 }
+                type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
             }
 
             try
@@ -436,11 +424,8 @@ public class DomXmpParser
                     throw new XmpParsingException(ErrorType.InvalidType, "No type defined for {" + namespace + "}"
                             + name);
                 }
-                else
-                {
-                    // use it as string
-                    manageSimpleType(xmp, property, Types.Text, container);
-                }
+                // use it as string
+                manageSimpleType(xmp, property, Types.Text, container);
             }
             else if (type.type() == Types.LangAlt)
             {
@@ -1128,10 +1113,6 @@ public class DomXmpParser
             PropertiesDescription pm, QName qName) throws XmpParsingException
     {
         NamedNodeMap attributes = liElement.getAttributes();
-        if (attributes == null)
-        {
-            return ast;
-        }
         for (int i = 0; i < attributes.getLength(); ++i)
         {
             Attr attr = (Attr) attributes.item(i);
@@ -1187,11 +1168,8 @@ public class DomXmpParser
                             throw new XmpParsingException(ErrorType.InvalidType, "No type defined for {" + attr.getNamespaceURI() + "}"
                                     + attr.getLocalName());
                         }
-                        else
-                        {
-                            // PDFBOX-2318, PDFBOX-6106: Default to text if no type is found
-                            type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
-                        }
+                        // PDFBOX-2318, PDFBOX-6106: Default to text if no type is found
+                        type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
                     }
                     else if (!type.type().isSimple() || type.card().isArray() || type.type() == Types.LangAlt)
                     {
@@ -1201,15 +1179,12 @@ public class DomXmpParser
                                     type.type().name() + "' in '" + attr.getPrefix() + ":" + attr.getLocalName() + "=" + attr.getValue()
                                     + "' is a structured or array type, but attributes are simple types");
                         }
-                        else
+                        // PDFBOX-6125: Default to text or skip
+                        if (attr.getValue() == null || attr.getValue().isEmpty())
                         {
-                            // PDFBOX-6125: Default to text or skip
-                            if (attr.getValue() == null || attr.getValue().isEmpty())
-                            {
-                                continue;
-                            }
-                            type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
+                            continue;
                         }
+                        type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
                     }
                     AbstractSimpleProperty asp = tm.instanciateSimpleProperty(
                             attr.getNamespaceURI(), attr.getPrefix(), attr.getLocalName(),
