@@ -797,7 +797,7 @@ public class DomXmpParserTest
         }
         catch (XmpParsingException ex)
         {
-            assertEquals("Property 'Fired' not defined in http://ns.adobe.com/exif/1.0/", ex.getMessage());
+            assertEquals("Property 'exif:Fired' not defined in http://ns.adobe.com/exif/1.0/", ex.getMessage());
         }
     }
 
