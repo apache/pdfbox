@@ -58,8 +58,6 @@ public class XmpSerializer
     private final DocumentBuilder documentBuilder;
     private Element rdf;
 
-    private boolean parseTypeResourceForLi = true;
-
     /**
      * Default constructor.
      */
@@ -202,20 +200,10 @@ public class XmpSerializer
                 // element li
                 Element estructured = doc.createElement(XmpConstants.DEFAULT_RDF_PREFIX + ":" + XmpConstants.LIST_NAME);
                 listParent.appendChild(estructured);
-                if (parseTypeResourceForLi)
-                {
-                    estructured.setAttribute("rdf:parseType", "Resource");
-                    // all properties
-                    serializeFields(doc, estructured, innerFields,resourceNS, null, true);
-                }
-                else
-                {
-                    // element description
-                    Element econtainer = doc.createElement(XmpConstants.DEFAULT_RDF_PREFIX + ":" + "Description");
-                    estructured.appendChild(econtainer);
-                    // all properties
-                    serializeFields(doc, econtainer, innerFields,resourceNS, null, true);
-                }
+                estructured.setAttribute("rdf:parseType", "Resource");
+
+                // all properties
+                serializeFields(doc, estructured, innerFields, resourceNS, null, true);
             }
             // else doesn't happen:
             // AbstractField is only extended by AbstractSimpleProperty and AbstractComplexProperty
