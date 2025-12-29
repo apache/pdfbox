@@ -204,11 +204,10 @@ public class XmpSerializer
                 // all properties
                 serializeFields(doc, estructured, innerFields,resourceNS, null, true);
             }
-            else
-            {
-                // XXX finish serialization classes
-                System.err.println(">> TODO >> " + field.getClass());
-            }
+            // else doesn't happen:
+            // AbstractField is only extended by AbstractSimpleProperty and AbstractComplexProperty
+            // AbstractComplexProperty is only extended by AbstractStructuredType and ArrayProperty
+            // And all these are handled here.
         }
     }
 
