@@ -1578,12 +1578,12 @@ public class DomXmpParserTest
     }
 
     @Test
-    public void testPDFBox6133() throws IOException, XmpParsingException, BadFieldValueException
+    public void testPDFBox6133() throws IOException, XmpParsingException, BadFieldValueException, TransformerException
     {
         // Namespace is used both for the schema and the type,
         // and that there are two types with the same namespace
         InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/xml/PDFBOX-6133-0064638.xml");
-            DomXmpParser xmpParser = new DomXmpParser();
+        DomXmpParser xmpParser = new DomXmpParser();
         XMPMetadata xmp = xmpParser.parse(is);
         XMPSchema epaSchema = xmp.getSchema("http://www.epo.org/patent-bibliographic-data/1.0/");
         assertEquals("[TotalNumberOfPages=RealType:47.0]", epaSchema.getProperty("TotalNumberOfPages").toString());
@@ -1597,6 +1597,27 @@ public class DomXmpParserTest
         ArrayProperty documentStructure = (ArrayProperty) epaSchema.getProperty("DocumentStructure");
         assertEquals(5, documentStructure.getAllProperties().size());
         DefinedStructuredType struct4 = (DefinedStructuredType) documentStructure.getAllProperties().get(4);
+        assertEquals("[DocumentSection=TextType:cited-references]", struct4.getProperty("DocumentSection").toString());
+        assertEquals("[StartPage=RealType:47.0]", struct4.getProperty("StartPage").toString());
+        assertEquals("[NumberOfPages=RealType:1.0]", struct4.getProperty("NumberOfPages").toString());
+
+        // Serialize and repeat to ensure nothing was broken in serialization
+        XmpSerializer serializer = new XmpSerializer();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        serializer.serialize(xmp, baos, true);
+        xmp = new DomXmpParser().parse(baos.toByteArray());
+        epaSchema = xmp.getSchema("http://www.epo.org/patent-bibliographic-data/1.0/");
+        assertEquals("[TotalNumberOfPages=RealType:47.0]", epaSchema.getProperty("TotalNumberOfPages").toString());
+        pub = (DefinedStructuredType) epaSchema.getProperty("Publication");
+        assertEquals("[CountryCode=TextType:EP]", pub.getProperty("CountryCode").toString());
+        classification = (ArrayProperty) epaSchema.getProperty("Classification");
+        assertEquals(4, classification.getAllProperties().size());
+        class3 = (TextType) classification.getAllProperties().get(3);
+        assertEquals("A61K 39/215 20060101ALI20160203BHEP", class3.getStringValue());
+        assertEquals("CORONAVIRUS", epaSchema.getUnqualifiedLanguagePropertyValue("Title", "de"));
+        documentStructure = (ArrayProperty) epaSchema.getProperty("DocumentStructure");
+        assertEquals(5, documentStructure.getAllProperties().size());
+        struct4 = (DefinedStructuredType) documentStructure.getAllProperties().get(4);
         assertEquals("[DocumentSection=TextType:cited-references]", struct4.getProperty("DocumentSection").toString());
         assertEquals("[StartPage=RealType:47.0]", struct4.getProperty("StartPage").toString());
         assertEquals("[NumberOfPages=RealType:1.0]", struct4.getProperty("NumberOfPages").toString());
