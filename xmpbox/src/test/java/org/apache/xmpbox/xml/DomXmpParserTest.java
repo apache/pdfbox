@@ -1580,4 +1580,116 @@ class DomXmpParserTest
         ArrayProperty ap = (ArrayProperty) cfa.getProperty(CFAPatternType.VALUES);
         assertEquals("[1, 2, 0, 1]", ap.getElementsAsString().toString());
     }
+
+    /**
+     * PDFBOX-6136: corner case of extension schema because of "xmlns="
+     *
+     * @throws XmpParsingException
+     */
+    @Test
+    void testPDFBox6136() throws XmpParsingException
+    {
+        // File 0018804.pdf (Italian parliament)
+        // xmlns="http://www.aiim.org/pdfa/ns/extension/" xmlns:pdfaExtension="http://www.aiim.org/pdfa/ns/extension/"
+        String s =
+            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+            "<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d' bytes='6865'?><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:iX=\"http://ns.adobe.com/iX/1.0/\">\n" +
+            "    <rdf:Description xmlns=\"http://www.aiim.org/pdfa/ns/extension/\" xmlns:pdfaExtension=\"http://www.aiim.org/pdfa/ns/extension/\" xmlns:pdfaProperty=\"http://www.aiim.org/pdfa/ns/property#\" xmlns:pdfaSchema=\"http://www.aiim.org/pdfa/ns/schema#\" about=\"\">\n" +
+            "        <pdfaExtension:schemas>\n" +
+            "            <rdf:Bag>\n" +
+            "                <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                    <pdfaSchema:namespaceURI>http://ns.adobe.com/pdfx/1.3/</pdfaSchema:namespaceURI>\n" +
+            "                    <pdfaSchema:prefix>pdfx</pdfaSchema:prefix>\n" +
+            "                    <pdfaSchema:schema>Adobe Document Info PDF eXtension Schema</pdfaSchema:schema>\n" +
+            "                    <pdfaSchema:property>\n" +
+            "                        <rdf:Seq>\n" +
+            "                            <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                <pdfaProperty:description>ID of PDF/X standard</pdfaProperty:description>\n" +
+            "                                <pdfaProperty:name>GTS_PDFXVersion</pdfaProperty:name>\n" +
+            "                                <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                            </rdf:li>\n" +
+            "                            <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                <pdfaProperty:description>Conformance level of PDF/X standard</pdfaProperty:description>\n" +
+            "                                <pdfaProperty:name>GTS_PDFXConformance</pdfaProperty:name>\n" +
+            "                                <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                            </rdf:li>\n" +
+            "                            <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                <pdfaProperty:description>Company creating the PDF</pdfaProperty:description>\n" +
+            "                                <pdfaProperty:name>Company</pdfaProperty:name>\n" +
+            "                                <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                            </rdf:li>\n" +
+            "                            <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                <pdfaProperty:description>Date when document was last modified</pdfaProperty:description>\n" +
+            "                                <pdfaProperty:name>SourceModified</pdfaProperty:name>\n" +
+            "                                <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                            </rdf:li>\n" +
+            "                        </rdf:Seq>\n" +
+            "                    </pdfaSchema:property>\n" +
+            "                </rdf:li>\n" +
+            "                <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                    <pdfaSchema:namespaceURI>http://ns.adobe.com/xap/1.0/mm/</pdfaSchema:namespaceURI>\n" +
+            "                    <pdfaSchema:prefix>xmpMM</pdfaSchema:prefix>\n" +
+            "                    <pdfaSchema:schema>XMP Media Management Schema</pdfaSchema:schema>\n" +
+            "                    <pdfaSchema:property>\n" +
+            "                        <rdf:Seq>\n" +
+            "                            <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                <pdfaProperty:description>UUID based identifier for specific incarnation of a document</pdfaProperty:description>\n" +
+            "                                <pdfaProperty:name>InstanceID</pdfaProperty:name>\n" +
+            "                                <pdfaProperty:valueType>URI</pdfaProperty:valueType>\n" +
+            "                            </rdf:li>\n" +
+            "                            <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                <pdfaProperty:description>The common identifier for all versions and renditions of a document.</pdfaProperty:description>\n" +
+            "                                <pdfaProperty:name>OriginalDocumentID</pdfaProperty:name>\n" +
+            "                                <pdfaProperty:valueType>URI</pdfaProperty:valueType>\n" +
+            "                            </rdf:li>\n" +
+            "                        </rdf:Seq>\n" +
+            "                    </pdfaSchema:property>\n" +
+            "                </rdf:li>\n" +
+            "                <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                    <pdfaSchema:namespaceURI>http://www.aiim.org/pdfa/ns/id/</pdfaSchema:namespaceURI>\n" +
+            "                    <pdfaSchema:prefix>pdfaid</pdfaSchema:prefix>\n" +
+            "                    <pdfaSchema:schema>PDF/A ID Schema</pdfaSchema:schema>\n" +
+            "                    <pdfaSchema:property>\n" +
+            "                        <rdf:Seq>\n" +
+            "                            <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                <pdfaProperty:description>Part of PDF/A standard</pdfaProperty:description>\n" +
+            "                                <pdfaProperty:name>part</pdfaProperty:name>\n" +
+            "                                <pdfaProperty:valueType>Integer</pdfaProperty:valueType>\n" +
+            "                            </rdf:li>\n" +
+            "                            <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                <pdfaProperty:description>Amendment of PDF/A standard</pdfaProperty:description>\n" +
+            "                                <pdfaProperty:name>amd</pdfaProperty:name>\n" +
+            "                                <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                            </rdf:li>\n" +
+            "                            <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                <pdfaProperty:description>Conformance level of PDF/A standard</pdfaProperty:description>\n" +
+            "                                <pdfaProperty:name>conformance</pdfaProperty:name>\n" +
+            "                                <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                            </rdf:li>\n" +
+            "                        </rdf:Seq>\n" +
+            "                    </pdfaSchema:property>\n" +
+            "                </rdf:li>\n" +
+            "            </rdf:Bag>\n" +
+            "        </pdfaExtension:schemas>\n" +
+            "    </rdf:Description>\n" +
+            "    <rdf:Description xmlns=\"http://www.aiim.org/pdfa/ns/id/\" xmlns:pdfaid=\"http://www.aiim.org/pdfa/ns/id/\" about=\"\">\n" +
+            "        <pdfaid:part>1</pdfaid:part>\n" +
+            "        <pdfaid:conformance>B</pdfaid:conformance>\n" +
+            "    </rdf:Description>\n" +
+            "</rdf:RDF><?xpacket end='r'?>";
+        final DomXmpParser xmpParser = new DomXmpParser();
+        xmpParser.setStrictParsing(false);
+        XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
+        assertEquals("B", xmp.getPDFAIdentificationSchema().getConformance());
+        assertEquals((Integer) 1, xmp.getPDFAIdentificationSchema().getPart());
+    }
 }
