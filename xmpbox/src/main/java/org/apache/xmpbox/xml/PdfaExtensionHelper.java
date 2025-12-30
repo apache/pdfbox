@@ -77,6 +77,11 @@ public final class PdfaExtensionHelper
     private static void checkNamespaceDeclaration(Attr attr, Class<? extends AbstractStructuredType> clz)
             throws XmpParsingException
     {
+        if (attr.getPrefix() == null)
+        {
+            // PDFBOX-6136: not relevant here
+            return;
+        }
         String prefix = attr.getLocalName();
         String namespace = attr.getValue();
         String cprefix = clz.getAnnotation(StructuredType.class).preferedPrefix();
