@@ -391,7 +391,7 @@ public class DeserializationTest
         XMPBasicSchema basic = metadata.getXMPBasicSchema();
         Assert.assertNotNull(basic.getCreateDate());
 
-        PDFAIdentificationSchema pdfaIdentificationSchema = metadata.getPDFIdentificationSchema();
+        PDFAIdentificationSchema pdfaIdentificationSchema = metadata.getPDFAIdentificationSchema();
         Assert.assertEquals("B", pdfaIdentificationSchema.getConformance());
         Assert.assertEquals(1, (int) pdfaIdentificationSchema.getPart());
 

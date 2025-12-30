@@ -63,12 +63,12 @@ public class PDFAIdentificationOthersTest
         Assert.assertEquals(conformance, pdfaid.getConformanceProperty().getStringValue());
 
         // check retrieve this schema in metadata
-        Assert.assertEquals(pdfaid, metadata.getPDFIdentificationSchema());
+        Assert.assertEquals(pdfaid, metadata.getPDFAIdentificationSchema());
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         new XmpSerializer().serialize(metadata, bos, true);
         XMPMetadata rxmp = new DomXmpParser().parse(bos.toByteArray());
-        pdfaid = rxmp.getPDFIdentificationSchema();
+        pdfaid = rxmp.getPDFAIdentificationSchema();
 
         Assert.assertEquals(versionId, pdfaid.getPart());
         Assert.assertEquals(amdId, pdfaid.getAmendment());

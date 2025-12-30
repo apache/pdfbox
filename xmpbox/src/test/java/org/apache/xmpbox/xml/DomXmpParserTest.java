@@ -71,8 +71,8 @@ public class DomXmpParserTest
         InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/xml/PDFBOX-5835.xml");
         DomXmpParser dxp = new DomXmpParser();
         XMPMetadata xmp = dxp.parse(fis);
-        assertEquals("A", xmp.getPDFIdentificationSchema().getConformance());
-        assertEquals((Integer) 3, xmp.getPDFIdentificationSchema().getPart());
+        assertEquals("A", xmp.getPDFAIdentificationSchema().getConformance());
+        assertEquals((Integer) 3, xmp.getPDFAIdentificationSchema().getPart());
         fis.close();
     }
 
@@ -91,8 +91,8 @@ public class DomXmpParserTest
                    "<?xpacket end=\"r\"?>";
         DomXmpParser xmpParser = new DomXmpParser();
         XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
-        assertEquals("B", xmp.getPDFIdentificationSchema().getConformance());
-        assertEquals((Integer) 3, xmp.getPDFIdentificationSchema().getPart());
+        assertEquals("B", xmp.getPDFAIdentificationSchema().getConformance());
+        assertEquals((Integer) 3, xmp.getPDFAIdentificationSchema().getPart());
     }
 
     /**
@@ -519,7 +519,7 @@ public class DomXmpParserTest
                     "<?xpacket end=\"w\"?>";
         DomXmpParser xmpParser = new DomXmpParser();
         XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
-        PDFAIdentificationSchema pdfaIdSchema = xmp.getPDFIdentificationSchema();
+        PDFAIdentificationSchema pdfaIdSchema = xmp.getPDFAIdentificationSchema();
         assertEquals((Integer) 2, pdfaIdSchema.getPart());
         String dataValue = xmp.getSchema("http://ns.example.org/default/1.0/").getUnqualifiedTextPropertyValue("Data");
         assertEquals("Example", dataValue);
@@ -1573,7 +1573,7 @@ public class DomXmpParserTest
         InputStream is = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/xml/PDFBOX-6131-RMR6DEEUWZO6IM3A7WKRPX33SZMBTTQZ.xml");
         DomXmpParser xmpParser = new DomXmpParser();
         XMPMetadata xmp = xmpParser.parse(is);
-        assertEquals((Integer) 1, xmp.getPDFIdentificationSchema().getPart());
+        assertEquals((Integer) 1, xmp.getPDFAIdentificationSchema().getPart());
         is.close();
     }
 
@@ -1766,7 +1766,7 @@ public class DomXmpParserTest
         final DomXmpParser xmpParser = new DomXmpParser();
         xmpParser.setStrictParsing(false);
         XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
-        assertEquals("B", xmp.getPDFIdentificationSchema().getConformance());
-        assertEquals((Integer) 1, xmp.getPDFIdentificationSchema().getPart());
+        assertEquals("B", xmp.getPDFAIdentificationSchema().getConformance());
+        assertEquals((Integer) 1, xmp.getPDFAIdentificationSchema().getPart());
     }
 }
