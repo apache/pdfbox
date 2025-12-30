@@ -1766,7 +1766,7 @@ public class DomXmpParserTest
         final DomXmpParser xmpParser = new DomXmpParser();
         xmpParser.setStrictParsing(false);
         XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
-        assertEquals("B", xmp.getPDFAIdentificationSchema().getConformance());
-        assertEquals((Integer) 1, xmp.getPDFAIdentificationSchema().getPart());
+        assertEquals("B", xmp.getPDFIdentificationSchema().getConformance());
+        assertEquals((Integer) 1, xmp.getPDFIdentificationSchema().getPart());
     }
 }
