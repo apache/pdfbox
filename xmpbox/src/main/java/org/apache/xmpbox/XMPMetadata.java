@@ -372,8 +372,22 @@ public class XMPMetadata
      * This method return null if not found.
      * 
      * @return The PDFAIdentificationSchema schema or null if not declared
+     * @deprecated call {@link #getPDFAIdentificationSchema()}
      */
+    @Deprecated
     public PDFAIdentificationSchema getPDFIdentificationSchema()
+    {
+        return getPDFAIdentificationSchema();
+    }
+
+    /**
+     * Get the PDFA Identification schema.
+     *
+     * This method return null if not found.
+     *
+     * @return The PDFAIdentificationSchema schema or null if not declared
+     */
+    public PDFAIdentificationSchema getPDFAIdentificationSchema()
     {
         return (PDFAIdentificationSchema) getSchema(PDFAIdentificationSchema.class);
     }
