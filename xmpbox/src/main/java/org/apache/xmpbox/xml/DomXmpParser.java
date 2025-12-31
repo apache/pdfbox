@@ -355,7 +355,7 @@ public class DomXmpParser
                             + "' is a structured or array type, but attributes are simple types");
                 }
                 // PDFBOX-6125: Default to text or skip
-                if (attr.getValue() == null || attr.getValue().isEmpty())
+                if (attr.getValue().isEmpty())
                 {
                     schema.removeAttribute(attr.getLocalName());
                     return;
@@ -1166,7 +1166,7 @@ public class DomXmpParser
                                 + "' is a structured or array type, but attributes are simple types");
                     }
                     // PDFBOX-6125: Default to text or skip
-                    if (attr.getValue() == null || attr.getValue().isEmpty())
+                    if (attr.getValue().isEmpty())
                     {
                         continue;
                     }
