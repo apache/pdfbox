@@ -1489,7 +1489,7 @@ public class DomXmpParserTest
     @Test
     public void testNoInstantiation() throws XmpParsingException, UnsupportedEncodingException
     {
-        // Instantiation fails because of bad date
+        // Instantiation fails because of a bad date property
         String s = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
                     "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?><?adobe-xap-filters esc=\"CRLF\"?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"XMP toolkit 2.9.1-13, framework 1.6\">\n" +
                     "    <rdf:RDF xmlns:iX=\"http://ns.adobe.com/iX/1.0/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
@@ -1506,6 +1506,30 @@ public class DomXmpParserTest
         catch (XmpParsingException ex)
         {
             assertEquals("Failed to instantiate DateType property with value 2019-05-02T22:03:5Z in xmp:CreateDate", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testNoInstantiation2() throws XmpParsingException, UnsupportedEncodingException
+    {
+        // Instantiation fails because of a bad date attribute
+        String s =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+                "<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?><?adobe-xap-filters esc=\"CRLF\"?><x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"XMP toolkit 2.9.1-13, framework 1.6\">\n" +
+                "    <rdf:RDF xmlns:iX=\"http://ns.adobe.com/iX/1.0/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                "        <rdf:Description xmlns:xap=\"http://ns.adobe.com/xap/1.0/\" xap:CreateDate=\"2016-03-09T19:47:1Z\">\n" +
+                "            <xap:CreatorTool>PrimoPDF http://www.primopdf.com</xap:CreatorTool>\n" +
+                "        </rdf:Description>\n" +
+                "    </rdf:RDF>\n" +
+                "</x:xmpmeta><?xpacket end='w'?>";
+        try
+        {
+            new DomXmpParser().parse(s.getBytes("utf-8"));
+            fail("XmpParsingException expected");
+        }
+        catch (XmpParsingException ex)
+        {
+            assertEquals("Failed to instantiate DateType property with value 2016-03-09T19:47:1Z in xap:CreateDate", ex.getMessage());
         }
     }
 
