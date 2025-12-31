@@ -1136,81 +1136,68 @@ public class DomXmpParser
         for (int i = 0; i < attributes.getLength(); ++i)
         {
             Attr attr = (Attr) attributes.item(i);
-            if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix()))
+            if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix()) ||
+                XMLConstants.XML_NS_URI.equals(attr.getNamespaceURI()) ||
+                XmpConstants.DEFAULT_RDF_PREFIX.equals(attr.getPrefix()))
             {
                 // do nothing
+                continue;
             }
-            else if (XmpConstants.DEFAULT_RDF_PREFIX.equals(attr.getPrefix())
-                    && XmpConstants.ABOUT_NAME.equals(attr.getLocalName()))
+            if (ast == null && attr.getNamespaceURI() != null) // What to do if attr.getNamespaceURI() is null?
             {
-                // do nothing (maybe later?)
-            }
-            else if (XMLConstants.XML_NS_URI.equals(attr.getNamespaceURI()))
-            {
-                // do nothing
-            }
-            else if (XmpConstants.DEFAULT_RDF_PREFIX.equals(attr.getPrefix()))
-            {
-                // other rdf stuff, e.g. rdf:parseType
-            }
-            else
-            {
-                if (ast == null && attr.getNamespaceURI() != null) // What to do if attr.getNamespaceURI() is null?
+                // like in parseLiDescription():
+                // Instantiate abstract structured type with hint from first element
+                QName attrQName = new QName(attr.getNamespaceURI(), attr.getLocalName(), attr.getPrefix());
+                PropertyType ctype = checkPropertyDefinition(tm, attrQName, null);
+                // this is the type of the AbstractStructuredType, not of the element(s)
+                if (ctype == null)
                 {
-                    // like in parseLiDescription():
-                    // Instantiate abstract structured type with hint from first element
-                    QName attrQName = new QName(attr.getNamespaceURI(), attr.getLocalName(), attr.getPrefix());
-                    PropertyType ctype = checkPropertyDefinition(tm, attrQName, null);
-                    // this is the type of the AbstractStructuredType, not of the element(s)
-                    if (ctype == null)
-                    {
-                        throw new XmpParsingException(ErrorType.NoType,
-                            "Property '" + attrQName.getLocalPart() + "' not defined in " + attrQName.getNamespaceURI());
-                    }
-                    Types tt = ctype.type();
-                    ast = instanciateStructured(tm, tt, qName.getLocalPart(), attr.getNamespaceURI());
-                    if (tt.isStructured())
-                    {
-                        pm = tm.getStructuredPropMapping(tt);
-                    }
-                    else
-                    {
-                        pm = tm.getDefinedDescriptionByNamespace(attr.getNamespaceURI(), attr.getLocalName());
-                    }
+                    throw new XmpParsingException(ErrorType.NoType,
+                        "Property '" + attrQName.getLocalPart() + "' not defined in " + attrQName.getNamespaceURI());
                 }
-                if (ast != null && pm != null && attr.getNamespaceURI() != null)
+                Types tt = ctype.type();
+                ast = instanciateStructured(tm, tt, qName.getLocalPart(), attr.getNamespaceURI());
+                if (tt.isStructured())
                 {
-                    PropertyType type = pm.getPropertyType(attr.getLocalName());
-                    if (type == null)
-                    {
-                        if (strictParsing)
-                        {
-                            throw new XmpParsingException(ErrorType.InvalidType, "No type defined for {" + attr.getNamespaceURI() + "}"
-                                    + attr.getLocalName());
-                        }
-                        // PDFBOX-2318, PDFBOX-6106: Default to text if no type is found
-                        type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
-                    }
-                    else if (!type.type().isSimple() || type.card().isArray() || type.type() == Types.LangAlt)
-                    {
-                        if (strictParsing)
-                        {
-                            throw new XmpParsingException(ErrorType.InvalidType, "The type '" +
-                                    type.type().name() + "' in '" + attr.getPrefix() + ":" + attr.getLocalName() + "=" + attr.getValue()
-                                    + "' is a structured or array type, but attributes are simple types");
-                        }
-                        // PDFBOX-6125: Default to text or skip
-                        if (attr.getValue() == null || attr.getValue().isEmpty())
-                        {
-                            continue;
-                        }
-                        type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
-                    }
-                    AbstractSimpleProperty asp = tm.instanciateSimpleProperty(
-                            attr.getNamespaceURI(), attr.getPrefix(), attr.getLocalName(),
-                            attr.getValue(), type.type());
-                    ast.getContainer().addProperty(asp);
+                    pm = tm.getStructuredPropMapping(tt);
                 }
+                else
+                {
+                    pm = tm.getDefinedDescriptionByNamespace(attr.getNamespaceURI(), attr.getLocalName());
+                }
+            }
+            if (ast != null && pm != null && attr.getNamespaceURI() != null)
+            {
+                PropertyType type = pm.getPropertyType(attr.getLocalName());
+                if (type == null)
+                {
+                    if (strictParsing)
+                    {
+                        throw new XmpParsingException(ErrorType.InvalidType, "No type defined for {" + attr.getNamespaceURI() + "}"
+                                + attr.getLocalName());
+                    }
+                    // PDFBOX-2318, PDFBOX-6106: Default to text if no type is found
+                    type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
+                }
+                else if (!type.type().isSimple() || type.card().isArray() || type.type() == Types.LangAlt)
+                {
+                    if (strictParsing)
+                    {
+                        throw new XmpParsingException(ErrorType.InvalidType, "The type '" +
+                                type.type().name() + "' in '" + attr.getPrefix() + ":" + attr.getLocalName() + "=" + attr.getValue()
+                                + "' is a structured or array type, but attributes are simple types");
+                    }
+                    // PDFBOX-6125: Default to text or skip
+                    if (attr.getValue() == null || attr.getValue().isEmpty())
+                    {
+                        continue;
+                    }
+                    type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
+                }
+                AbstractSimpleProperty asp = tm.instanciateSimpleProperty(
+                        attr.getNamespaceURI(), attr.getPrefix(), attr.getLocalName(),
+                        attr.getValue(), type.type());
+                ast.getContainer().addProperty(asp);
             }
         }
         return ast;
