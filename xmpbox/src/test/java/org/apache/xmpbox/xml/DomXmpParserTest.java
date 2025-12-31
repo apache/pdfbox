@@ -1699,7 +1699,7 @@ class DomXmpParserTest
      * @throws XmpParsingException
      */
     @Test
-    void testNamespaceInRoot() throws XmpParsingException
+    void testNamespaceInRoot() throws XmpParsingException, BadFieldValueException
     {
         String s =
             "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n" +
@@ -1735,5 +1735,7 @@ class DomXmpParserTest
             "</x:xmpmeta><?xpacket end='w'?>";
         final DomXmpParser xmpParser = new DomXmpParser();
         XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
+        XMPSchema uaSchema = xmp.getSchema("http://www.aiim.org/pdfua/ns/id/");
+        assertEquals((Integer) 1, uaSchema.getIntegerPropertyValueAsSimple("part"));
     }
 }
