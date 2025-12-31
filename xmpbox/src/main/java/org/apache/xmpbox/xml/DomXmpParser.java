@@ -1197,11 +1197,6 @@ public class DomXmpParser
                 {
                     map.put(no.getLocalName(), no.getValue());
                 }
-                else if (no.getNamespaceURI() != null && no.getPrefix() != null)
-                {
-                    // PDFBOX-5976
-                    map.put(no.getPrefix(), no.getNamespaceURI());
-                }
             }
             stack.push(map);
         }
