@@ -202,6 +202,7 @@ public class DomXmpParser
         }
         // xpacket is OK and there are no more nodes
         // Now, parse the content of root
+        nsFinder.push(root); // PDFBOX-6138: push namespaces in root
         Element rdfRdf = findDescriptionsParent(root);
         nsFinder.push(rdfRdf); // PDFBOX-6099: push namespaces in rdf:RDF
 
@@ -234,6 +235,7 @@ public class DomXmpParser
             parseDescriptionRoot(xmp, description);
         }
 
+        nsFinder.pop();
         nsFinder.pop();
 
         return xmp;
