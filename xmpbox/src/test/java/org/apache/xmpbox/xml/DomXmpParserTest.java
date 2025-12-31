@@ -1688,4 +1688,48 @@ class DomXmpParserTest
         assertEquals("B", xmp.getPDFAIdentificationSchema().getConformance());
         assertEquals((Integer) 1, xmp.getPDFAIdentificationSchema().getPart());
     }
+
+    /**
+     * PDFBOX-6138: namespaces are in the root, instead of in rdf:RDF or deeper.
+     *
+     * @throws XmpParsingException
+     */
+    @Test
+    void testNamespaceInRoot() throws XmpParsingException
+    {
+        String s =
+            "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n" +
+            "<?xpacket begin='' id='W5M0MpCehiHzreSzNTczkc9d'?>" + 
+            "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" xmlns:pdfaExtension=\"http://www.aiim.org/pdfa/ns/extension/\" " +
+            "xmlns:pdfaProperty=\"http://www.aiim.org/pdfa/ns/property#\" xmlns:pdfaSchema=\"http://www.aiim.org/pdfa/ns/schema#\" " +
+            "xmlns:pdfuaid=\"http://www.aiim.org/pdfua/ns/id/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" " +
+            "x:xmptk=\"Adobe XMP Core 5.6-c015 91.163280, 2018/06/22-11:31:03        \">\n" +
+            "    <rdf:RDF>\n" +
+            "        <rdf:Description rdf:about=\"\">\n" +
+            "            <pdfaExtension:schemas>\n" +
+            "                <rdf:Bag>\n" +
+            "                    <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                        <pdfaSchema:schema>PDF/UA Universal Accessibility Schema</pdfaSchema:schema>\n" +
+            "                        <pdfaSchema:namespaceURI>http://www.aiim.org/pdfua/ns/id/</pdfaSchema:namespaceURI>\n" +
+            "                        <pdfaSchema:prefix>pdfuaid</pdfaSchema:prefix>\n" +
+            "                        <pdfaSchema:property>\n" +
+            "                            <rdf:Seq>\n" +
+            "                                <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                                    <pdfaProperty:name>part</pdfaProperty:name>\n" +
+            "                                    <pdfaProperty:valueType>Integer</pdfaProperty:valueType>\n" +
+            "                                    <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                                    <pdfaProperty:description>Indicates, which part of ISO 14289 standard is followed</pdfaProperty:description>\n" +
+            "                                </rdf:li>\n" +
+            "                            </rdf:Seq>\n" +
+            "                        </pdfaSchema:property>\n" +
+            "                    </rdf:li>\n" +
+            "                </rdf:Bag>\n" +
+            "            </pdfaExtension:schemas>\n" +
+            "            <pdfuaid:part>1</pdfuaid:part>\n" +
+            "        </rdf:Description>\n" +
+            "    </rdf:RDF>\n" +
+            "</x:xmpmeta><?xpacket end='w'?>";
+        final DomXmpParser xmpParser = new DomXmpParser();
+        XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
+    }
 }
