@@ -255,7 +255,7 @@ public class DomXmpParser
             for (final Element schemaExtension : schemaExtensions)
             {
                 final String namespace = schemaExtension.getNamespaceURI();
-                if (!tm.isDefinedSchema(schemaExtension.getNamespaceURI()))
+                if (!tm.isDefinedSchema(namespace))
                 {
                     throw new XmpParsingException(ErrorType.NoSchema,
                             "This namespace is not from a schema: " + namespace);
