@@ -1776,7 +1776,7 @@ public class DomXmpParserTest
      * @throws XmpParsingException
      */
     @Test
-    public void testNamespaceInRoot() throws XmpParsingException, UnsupportedEncodingException
+    public void testNamespaceInRoot() throws XmpParsingException, UnsupportedEncodingException, BadFieldValueException
     {
         String s =
             "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n" +
@@ -1812,5 +1812,7 @@ public class DomXmpParserTest
             "</x:xmpmeta><?xpacket end='w'?>";
         final DomXmpParser xmpParser = new DomXmpParser();
         XMPMetadata xmp = xmpParser.parse(s.getBytes("utf-8"));
+        XMPSchema uaSchema = xmp.getSchema("http://www.aiim.org/pdfua/ns/id/");
+        assertEquals((Integer) 1, uaSchema.getIntegerPropertyValueAsSimple("part"));
     }
 }
