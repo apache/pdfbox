@@ -137,16 +137,16 @@
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <configuration>
-          <excludes>
-            <exclude>src/test/resources/org/apache/pdfbox/examples/signature/*</exclude>
-            <exclude>src/main/resources/org/apache/pdfbox/resources/pdfa/sRGB.*</exclude>
-            <exclude>src/main/resources/org/apache/pdfbox/examples/interactive/form/FillFormField.pdf</exclude>
-            <exclude>src/main/resources/org/apache/pdfbox/examples/rendering/custom-render-demo.pdf</exclude>
-            <exclude>src/test/resources/org/apache/pdfbox/examples/pdmodel/document.pdf</exclude>
+          <inputExcludes>
+            <inputExclude>src/test/resources/org/apache/pdfbox/examples/signature/*</inputExclude>
+            <inputExclude>src/main/resources/org/apache/pdfbox/resources/pdfa/sRGB.*</inputExclude>
+            <inputExclude>src/main/resources/org/apache/pdfbox/examples/interactive/form/FillFormField.pdf</inputExclude>
+            <inputExclude>src/main/resources/org/apache/pdfbox/examples/rendering/custom-render-demo.pdf</inputExclude>
+            <inputExclude>src/test/resources/org/apache/pdfbox/examples/pdmodel/document.pdf</inputExclude>
             <!-- netbeans local -->
-            <exclude>nbactions.xml</exclude>
-            <exclude>nb-configuration.xml</exclude>
-          </excludes>
+            <inputExclude>nbactions.xml</inputExclude>
+            <inputExclude>nb-configuration.xml</inputExclude>
+          </inputExcludes>
         </configuration>
       </plugin>
       <plugin>

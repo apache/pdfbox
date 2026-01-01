@@ -242,10 +242,10 @@
                     <artifactId>apache-rat-plugin</artifactId>
                     <version>0.17</version>
                     <configuration>
-                        <excludes>
-                            <exclude>release.properties</exclude>
-                            <exclude>.github/workflows/codeql-analysis.yml</exclude>
-                        </excludes>
+                        <inputExcludes>
+                            <inputExclude>release.properties</inputExclude>
+                            <inputExclude>.github/workflows/codeql-analysis.yml</inputExclude>
+                        </inputExcludes>
                     </configuration>
                 </plugin>
                 <plugin>

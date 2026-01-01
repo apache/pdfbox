@@ -82,11 +82,11 @@
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <configuration>
-            <excludes>
-                <exclude>src/main/resources/org/apache/fontbox/cmap/*</exclude>
-                <exclude>src/main/resources/org/apache/fontbox/unicode/*</exclude>
-                <exclude>src/test/resources/afm/*</exclude>
-            </excludes>
+            <inputExcludes>
+                <inputExclude>src/main/resources/org/apache/fontbox/cmap/*</inputExclude>
+                <inputExclude>src/main/resources/org/apache/fontbox/unicode/*</inputExclude>
+                <inputExclude>src/test/resources/afm/*</inputExclude>
+            </inputExcludes>
         </configuration>
       </plugin>
       <!-- download test files from JIRA and keep them in repository cache -->

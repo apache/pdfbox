@@ -55,15 +55,15 @@
               <groupId>org.apache.rat</groupId>
               <artifactId>apache-rat-plugin</artifactId>
               <configuration>
-                  <excludes>
+                  <inputExcludes>
                       <!-- already tested before -->
-                      <exclude>/pdfbox/**</exclude>
-                      <exclude>/fontbox/**</exclude>
-                      <exclude>/io/**</exclude>
-                      <exclude>/xmpbox/**</exclude>
-                      <exclude>/tools/**</exclude>
-                      <exclude>/examples/**</exclude>
-                  </excludes>
+                      <inputExclude>/pdfbox/**</inputExclude>
+                      <inputExclude>/fontbox/**</inputExclude>
+                      <inputExclude>/io/**</inputExclude>
+                      <inputExclude>/xmpbox/**</inputExclude>
+                      <inputExclude>/tools/**</inputExclude>
+                      <inputExclude>/examples/**</inputExclude>
+                  </inputExcludes>
               </configuration>
           </plugin>
       </plugins>
