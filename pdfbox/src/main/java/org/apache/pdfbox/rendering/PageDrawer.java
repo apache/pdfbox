@@ -2251,7 +2251,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             return false;
         }
-        List<Boolean> visibles = new ArrayList<Boolean>();
+        List<Boolean> visibles = new ArrayList<Boolean>(oCGs.size());
         for (PDPropertyList prop : oCGs)
         {
             visibles.add(!isHiddenOCG(prop));
