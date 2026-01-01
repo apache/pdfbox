@@ -289,16 +289,8 @@ public class DomXmpParser
             for (int i = 0; i < nnm.getLength(); i++)
             {
                 Attr attr = (Attr) nnm.item(i);
-                if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix()))
-                {
-                    // do nothing
-                }
-                else if (XmpConstants.DEFAULT_RDF_PREFIX.equals(attr.getPrefix())
-                        && XmpConstants.ABOUT_NAME.equals(attr.getLocalName()))
-                {
-                    // do nothing
-                }
-                else if (attr.getPrefix() == null && XmpConstants.ABOUT_NAME.equals(attr.getLocalName()))
+                if (XmpConstants.ABOUT_NAME.equals(attr.getLocalName()) && 
+                    attr.getPrefix() == null || XmpConstants.DEFAULT_RDF_PREFIX.equals(attr.getPrefix()))
                 {
                     // do nothing
                 }
