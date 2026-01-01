@@ -185,25 +185,21 @@ public class TextToPDF implements Callable<Integer>
             setTopMargin(margins[2]);
             setBottomMargin(margins[3]);
 
-            boolean hasUtf8BOM = false;
-            if (charset.equals(StandardCharsets.UTF_8))
-            {
-                // check for utf8 BOM
-                // FileInputStream doesn't support mark/reset
-                try (InputStream is = new FileInputStream(infile))
-                {
-                    if (is.read() == 0xEF && is.read() == 0xBB && is.read() == 0xBF)
-                    {
-                        hasUtf8BOM = true;
-                    }
-                }
-            }
             try (InputStream is = new FileInputStream(infile))
             {
-                if (hasUtf8BOM)
+                if (charset.equals(StandardCharsets.UTF_8))
                 {
-                    long skipped = is.skip(3);
-                    if (skipped != 3)
+                    try
+                    {
+                        // check for utf8 BOM
+                        // FileInputStream doesn't support mark/reset
+                        int b1 = is.read();
+                        int b2 = is.read();
+                        int b3 = is.read();
+                        //todo Here we can perform a check for file format corruption here.
+                        boolean hasUtf8BOM = b1 == 0xEF && b2 == 0xBB && b3 == 0xBF;
+                    }
+                    catch (IOException x)
                     {
                         throw new IOException("Could not skip 3 bytes, size changed?!");
                     }
