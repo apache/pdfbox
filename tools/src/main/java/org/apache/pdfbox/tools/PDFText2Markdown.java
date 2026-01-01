@@ -278,7 +278,7 @@ public class PDFText2Markdown extends PDFTextStripper
             {
                 String tag = stateList.get(i);
                 tagsBuilder.append(closeTag(tag));
-                if (endTag != null && tag.equals(endTag))
+                if (tag.equals(endTag))
                 {
                     return i;
                 }
