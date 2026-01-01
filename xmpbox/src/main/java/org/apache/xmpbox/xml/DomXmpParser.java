@@ -663,30 +663,27 @@ public class DomXmpParser
             loadAttributes(af, liElement);
             return af;
         }
+        // PDFBOX-4325: assume it is structured
+        AbstractStructuredType af;
+        try
+        {
+            af = tm.instanciateStructuredType(type, descriptor.getLocalPart());
+        }
+        catch (BadFieldValueException ex)
+        {
+            throw new XmpParsingException(ErrorType.InvalidType, "Parsing of structured type failed", ex);
+        }
+        loadAttributes(af, liElement);
+        PropertiesDescription pm;
+        if (type.isStructured())
+        {
+            pm = tm.getStructuredPropMapping(type);
+        }
         else
         {
-            // PDFBOX-4325: assume it is structured
-            AbstractStructuredType af;
-            try
-            {
-                af = tm.instanciateStructuredType(type, descriptor.getLocalPart());
-            }
-            catch (BadFieldValueException ex)
-            {
-                throw new XmpParsingException(ErrorType.InvalidType, "Parsing of structured type failed", ex);
-            }
-            loadAttributes(af, liElement);
-            PropertiesDescription pm;
-            if (type.isStructured())
-            {
-                pm = tm.getStructuredPropMapping(type);
-            }
-            else
-            {
-                pm = tm.getDefinedDescriptionByNamespace(liElement.getNamespaceURI(), liElement.getLocalName());
-            }
-            return tryParseAttributesAsProperties(tm, liElement, af, pm, null);
+            pm = tm.getDefinedDescriptionByNamespace(liElement.getNamespaceURI(), liElement.getLocalName());
         }
+        return tryParseAttributesAsProperties(tm, liElement, af, pm, null);
     }
 
     private void loadAttributes(AbstractField sp, Element element)
