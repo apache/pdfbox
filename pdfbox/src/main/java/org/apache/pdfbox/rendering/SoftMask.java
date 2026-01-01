@@ -152,6 +152,7 @@ class SoftMask implements Paint
             int[] gray = new int[4];
             Object pixelInput = null;
             int[] pixelOutput = new int[4];
+            WritableRaster raster2 = mask.getRaster();
             for (int y = 0; y < h; y++)
             {
                 for (int x = 0; x < w; x++)
@@ -165,9 +166,9 @@ class SoftMask implements Paint
                     
                     // get the alpha value from the gray mask, if within mask bounds
                     gray[0] = 0;
-                    if (x1 + x >= 0 && y1 + y >= 0 && x1 + x < mask.getWidth() && y1 + y < mask.getHeight())
+                    if (x1 + x >= 0 && y1 + y >= 0 && x1 + x < raster2.getWidth() && y1 + y < raster2.getHeight())
                     {
-                        mask.getRaster().getPixel(x1 + x, y1 + y, gray);
+                        raster2.getPixel(x1 + x, y1 + y, gray);
                         int g = gray[0];
                         if (transferFunction != null)
                         {
