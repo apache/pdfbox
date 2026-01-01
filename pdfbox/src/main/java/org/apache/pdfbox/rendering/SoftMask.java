@@ -123,8 +123,8 @@ class SoftMask implements Paint
         @Override
         public Raster getRaster(int x1, int y1, int w, int h)
         {
-            Raster raster = context.getRaster(x1, y1, w, h);
-            ColorModel rasterCM = context.getColorModel();
+            Raster contextRaster = context.getRaster(x1, y1, w, h);
+            ColorModel contextRasterColorModel = context.getColorModel();
             float[] input = null;
             Float[] map = null;
 
@@ -135,7 +135,7 @@ class SoftMask implements Paint
             }
 
             // buffer
-            WritableRaster output = getColorModel().createCompatibleWritableRaster(w, h);
+            WritableRaster outputRaster = getColorModel().createCompatibleWritableRaster(w, h);
 
             // the soft mask has its own bbox
             x1 = x1 - (int)bboxDevice.getX();
@@ -144,22 +144,23 @@ class SoftMask implements Paint
             int[] gray = new int[4];
             Object pixelInput = null;
             int[] pixelOutput = new int[4];
+            WritableRaster maskRaster = mask.getRaster();
             for (int y = 0; y < h; y++)
             {
                 for (int x = 0; x < w; x++)
                 {
-                    pixelInput = raster.getDataElements(x, y, pixelInput);
+                    pixelInput = contextRaster.getDataElements(x, y, pixelInput);
 
-                    pixelOutput[0] = rasterCM.getRed(pixelInput);
-                    pixelOutput[1] = rasterCM.getGreen(pixelInput);
-                    pixelOutput[2] = rasterCM.getBlue(pixelInput);
-                    pixelOutput[3] = rasterCM.getAlpha(pixelInput);
+                    pixelOutput[0] = contextRasterColorModel.getRed(pixelInput);
+                    pixelOutput[1] = contextRasterColorModel.getGreen(pixelInput);
+                    pixelOutput[2] = contextRasterColorModel.getBlue(pixelInput);
+                    pixelOutput[3] = contextRasterColorModel.getAlpha(pixelInput);
                     
                     // get the alpha value from the gray mask, if within mask bounds
                     gray[0] = 0;
-                    if (x1 + x >= 0 && y1 + y >= 0 && x1 + x < mask.getWidth() && y1 + y < mask.getHeight())
+                    if (x1 + x >= 0 && y1 + y >= 0 && x1 + x < maskRaster.getWidth() && y1 + y < maskRaster.getHeight())
                     {
-                        mask.getRaster().getPixel(x1 + x, y1 + y, gray);
+                        maskRaster.getPixel(x1 + x, y1 + y, gray);
                         int g = gray[0];
                         if (transferFunction != null)
                         {
@@ -195,11 +196,11 @@ class SoftMask implements Paint
                     {
                         pixelOutput[3] = Math.round(pixelOutput[3] * (bc / 255f));
                     }
-                    output.setPixel(x, y, pixelOutput);
+                    outputRaster.setPixel(x, y, pixelOutput);
                 }
             }
 
-            return output;
+            return outputRaster;
         }
 
         @Override
