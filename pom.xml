@@ -60,20 +60,20 @@
               <groupId>org.apache.rat</groupId>
               <artifactId>apache-rat-plugin</artifactId>
               <configuration>
-                  <excludes>
-                      <exclude>release.properties</exclude>
-                      <exclude>.github/workflows/codeql-analysis.yml</exclude>
+                  <inputExcludes>
+                      <inputExclude>release.properties</inputExclude>
+                      <inputExclude>.github/workflows/codeql-analysis.yml</inputExclude>
                       <!-- already tested before -->
-                      <exclude>/pdfbox/**</exclude>
-                      <exclude>/fontbox/**</exclude>
-                      <exclude>/xmpbox/**</exclude>
-                      <exclude>/tools/**</exclude>
-                      <exclude>/io/**</exclude>
-                      <exclude>/preflight/**</exclude>
-                      <exclude>/examples/**</exclude>
+                      <inputExclude>/pdfbox/**</inputExclude>
+                      <inputExclude>/fontbox/**</inputExclude>
+                      <inputExclude>/xmpbox/**</inputExclude>
+                      <inputExclude>/tools/**</inputExclude>
+                      <inputExclude>/io/**</inputExclude>
+                      <inputExclude>/preflight/**</inputExclude>
+                      <inputExclude>/examples/**</inputExclude>
                       <!-- netbeans local -->
-                      <exclude>nb-configuration.xml</exclude>
-                  </excludes>
+                      <inputExclude>nb-configuration.xml</inputExclude>
+                  </inputExcludes>
               </configuration>
           </plugin>
       </plugins>
