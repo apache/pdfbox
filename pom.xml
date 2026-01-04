@@ -56,17 +56,17 @@
               <groupId>org.apache.rat</groupId>
               <artifactId>apache-rat-plugin</artifactId>
               <configuration>
-                  <excludes>
+                  <inputExcludes>
                       <!-- already tested before -->
-                      <exclude>/pdfbox/**</exclude>
-                      <exclude>/fontbox/**</exclude>
-                      <exclude>/xmpbox/**</exclude>
-                      <exclude>/tools/**</exclude>
-                      <exclude>/preflight/**</exclude>
-                      <exclude>/examples/**</exclude>
+                      <inputExclude>/pdfbox/**</inputExclude>
+                      <inputExclude>/fontbox/**</inputExclude>
+                      <inputExclude>/xmpbox/**</inputExclude>
+                      <inputExclude>/tools/**</inputExclude>
+                      <inputExclude>/preflight/**</inputExclude>
+                      <inputExclude>/examples/**</inputExclude>
                       <!-- netbeans local -->
-                      <exclude>nb-configuration.xml</exclude>
-                  </excludes>
+                      <inputExclude>nb-configuration.xml</inputExclude>
+                  </inputExcludes>
               </configuration>
           </plugin>
       </plugins>

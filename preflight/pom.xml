@@ -117,13 +117,13 @@
 				<groupId>org.apache.rat</groupId>
 				<artifactId>apache-rat-plugin</artifactId>
 				<configuration>
-					<excludes>
-						<exclude>src/main/resources/project.version</exclude>
-						<exclude>release.properties</exclude>
-                                                <exclude>src/test/resources/PDFBOX-3741.pdf</exclude>
-                                                <exclude>src/test/resources/org/apache/pdfbox/preflight/metadata/*.pdf</exclude>
-                                                <exclude>src/test/resources/pdfa-with-annotations-square.pdf</exclude>
-					</excludes>
+					<inputExcludes>
+						<inputExclude>src/main/resources/project.version</inputExclude>
+						<inputExclude>release.properties</inputExclude>
+                                                <inputExclude>src/test/resources/PDFBOX-3741.pdf</inputExclude>
+                                                <inputExclude>src/test/resources/org/apache/pdfbox/preflight/metadata/*.pdf</inputExclude>
+                                                <inputExclude>src/test/resources/pdfa-with-annotations-square.pdf</inputExclude>
+					</inputExcludes>
 				</configuration>
 			</plugin>
             <plugin>

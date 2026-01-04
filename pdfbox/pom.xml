@@ -163,32 +163,33 @@
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
                 <configuration>
-                    <excludes>
-                        <exclude>src/main/resources/org/apache/pdfbox/resources/afm/*</exclude>
-                        <exclude>src/main/resources/org/apache/pdfbox/resources/icc/*</exclude>
-                        <exclude>src/main/resources/org/apache/pdfbox/resources/glyphlist/glyphlist.txt</exclude>
-                        <exclude>src/main/resources/org/apache/pdfbox/resources/glyphlist/zapfdingbats.txt</exclude>
-                        <exclude>src/main/resources/org/apache/pdfbox/resources/text/BidiMirroring.txt</exclude>
-                        <exclude>src/main/resources/META-INF/services/*</exclude>
-                        <exclude>src/test/resources/input/rendering/*.ai</exclude>
-                        <exclude>src/test/resources/input/*.txt</exclude>
-                        <exclude>src/test/resources/input/**/*.pdf</exclude>
-                        <exclude>src/test/resources/input/**/*.png</exclude>
-                        <exclude>src/test/resources/input/*.pdf</exclude>
-                        <exclude>src/test/resources/org/apache/**/*.pdf</exclude>
-                        <exclude>src/test/resources/output/*</exclude>
-                        <exclude>src/test/resources/org/apache/pdfbox/pdmodel/sRGB.*</exclude>
-                        <exclude>src/test/resources/org/apache/pdfbox/pdfparser/*.fdf</exclude>
-                        <exclude>release.properties</exclude>
-                        <exclude>src/test/resources/org/apache/pdfbox/encryption/*.der</exclude>
-                        <exclude>src/test/resources/org/apache/pdfbox/encryption/*.pfx</exclude>
-                        <exclude>src/test/resources/org/apache/pdfbox/encryption/*.p12</exclude>
-                        <exclude>src/test/resources/org/apache/pdfbox/filter/*.bin</exclude>
-                        <exclude>src/test/resources/org/apache/pdfbox/text/*.txt</exclude>
-                        <exclude>src/main/java/org/apache/pdfbox/filter/CCITTFaxDecoderStream.java</exclude>
-                        <exclude>src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java</exclude>
-                        <exclude>src/main/java/org/apache/pdfbox/filter/TIFFExtension.java</exclude>
-                    </excludes>
+                    <inputExcludes>
+                        <inputExclude>src/main/resources/org/apache/pdfbox/resources/afm/*</inputExclude>
+                        <inputExclude>src/main/resources/org/apache/pdfbox/resources/icc/*</inputExclude>
+                        <inputExclude>src/main/resources/org/apache/pdfbox/resources/glyphlist/glyphlist.txt</inputExclude>
+                        <inputExclude>src/main/resources/org/apache/pdfbox/resources/glyphlist/zapfdingbats.txt</inputExclude>
+                        <inputExclude>src/main/resources/org/apache/pdfbox/resources/text/BidiMirroring.txt</inputExclude>
+                        <inputExclude>src/main/resources/META-INF/services/*</inputExclude>
+                        <inputExclude>src/test/resources/input/rendering/*.ai</inputExclude>
+                        <inputExclude>src/test/resources/input/*.txt</inputExclude>
+                        <inputExclude>src/test/resources/input/**/*.pdf</inputExclude>
+                        <inputExclude>src/test/resources/input/**/*.png</inputExclude>
+                        <inputExclude>src/test/resources/input/*.pdf</inputExclude>
+                        <inputExclude>src/test/resources/org/apache/**/*.pdf</inputExclude>
+                        <inputExclude>src/test/resources/output/*</inputExclude>
+                        <inputExclude>src/test/resources/org/apache/pdfbox/pdmodel/sRGB.*</inputExclude>
+                        <inputExclude>src/test/resources/org/apache/pdfbox/pdfparser/*.fdf</inputExclude>
+                        <inputExclude>release.properties</inputExclude>
+                        <inputExclude>src/test/resources/org/apache/pdfbox/encryption/*.der</inputExclude>
+                        <inputExclude>src/test/resources/org/apache/pdfbox/encryption/*.pfx</inputExclude>
+                        <inputExclude>src/test/resources/org/apache/pdfbox/encryption/*.p12</inputExclude>
+                        <inputExclude>src/test/resources/org/apache/pdfbox/filter/*.bin</inputExclude>
+                        <inputExclude>src/test/resources/org/apache/pdfbox/text/*.txt</inputExclude>
+                        <inputExclude>src/main/java/org/apache/pdfbox/filter/CCITTFaxDecoderStream.java</inputExclude>
+                        <inputExclude>src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java</inputExclude>
+                        <inputExclude>src/main/java/org/apache/pdfbox/filter/TIFFExtension.java</inputExclude>
+                        <inputExclude>nb-configuration.xml</inputExclude>
+                    </inputExcludes>
                 </configuration>
             </plugin>
             <!-- 

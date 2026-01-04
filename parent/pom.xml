@@ -230,12 +230,12 @@
                   <artifactId>apache-rat-plugin</artifactId>
                   <version>0.17</version>
                   <configuration>
-                      <excludes>
-                          <exclude>release.properties</exclude>
+                      <inputExcludes>
+                          <inputExclude>release.properties</inputExclude>
                           <!-- netbeans local -->
-                          <exclude>nbactions.xml</exclude>
-                          <exclude>nb-configuration.xml</exclude>
-                      </excludes>
+                          <inputExclude>nbactions.xml</inputExclude>
+                          <inputExclude>nb-configuration.xml</inputExclude>
+                      </inputExcludes>
                   </configuration>
               </plugin>
               <plugin>
