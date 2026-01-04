@@ -208,7 +208,7 @@ public final class TypeMapping
                IllegalAccessException | InvocationTargetException | SecurityException |
                NoSuchMethodException e)
         {
-            throw new IllegalArgumentException("Failed to instantiate " + clz.getSimpleName() + " property with value " + value, e);
+            throw new IllegalArgumentException("Failed to instantiate " + clz.getSimpleName() + " property with value '" + value + "'", e);
         }
     }
 
