@@ -1431,7 +1431,7 @@ class DomXmpParserTest
         final DomXmpParser xmpParser1 = new DomXmpParser();
         XmpParsingException ex = assertThrows(XmpParsingException.class,
                 () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
-        assertEquals("Failed to instantiate DateType property with value 2019-05-02T22:03:5Z in xmp:CreateDate", ex.getMessage());
+        assertEquals("Failed to instantiate DateType property with value '2019-05-02T22:03:5Z' in xmp:CreateDate", ex.getMessage());
     }
 
     @Test
@@ -1450,7 +1450,7 @@ class DomXmpParserTest
         final DomXmpParser xmpParser1 = new DomXmpParser();
         XmpParsingException ex = assertThrows(XmpParsingException.class,
                 () -> xmpParser1.parse(s.getBytes(StandardCharsets.UTF_8)));
-        assertEquals("Failed to instantiate DateType property with value 2016-03-09T19:47:1Z in xap:CreateDate", ex.getMessage());
+        assertEquals("Failed to instantiate DateType property with value '2016-03-09T19:47:1Z' in xap:CreateDate", ex.getMessage());
     }
 
     @Test
