@@ -300,10 +300,7 @@ public class TextToPDF implements Callable<Integer>
                     {
                         ff = true;
                         word1 = word.substring(0, indexFF);
-                        if (indexFF < word.length())
-                        {
-                            word2 = word.substring(indexFF + 1);
-                        }
+                        word2 = word.substring(indexFF + 1);
                     }
                     // word1 is the part before ff, word2 after
                     // both can be empty
