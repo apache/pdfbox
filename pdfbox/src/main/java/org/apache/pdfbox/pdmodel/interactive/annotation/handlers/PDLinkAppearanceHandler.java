@@ -167,7 +167,7 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
     }
     
     /**
-     * Get the line with of the border.
+     * Get the line width of the border.
      * 
      * Get the width of the line used to draw a border around the annotation.
      * This may either be specified by the annotation dictionaries Border
