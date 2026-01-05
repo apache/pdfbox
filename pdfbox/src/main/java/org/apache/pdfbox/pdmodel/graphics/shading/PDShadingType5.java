@@ -161,28 +161,32 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
     {
         Point2D[] ps = new Point2D[3]; // array will be shallow-cloned in ShadedTriangle constructor
         float[][] cs = new float[3][];
-        List<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
+        List<ShadedTriangle> list = new ArrayList<ShadedTriangle>((rowNum - 1) * (numPerRow - 1));
         for (int i = 0; i < rowNum - 1; i++)
         {
             for (int j = 0; j < numPerRow - 1; j++)
             {
-                ps[0] = latticeArray[i][j].point;
-                ps[1] = latticeArray[i][j + 1].point;
-                ps[2] = latticeArray[i + 1][j].point;
+                Vertex vertex1 = latticeArray[i][j];
+                Vertex vertex2 = latticeArray[i][j + 1];
+                Vertex vertex3 = latticeArray[i + 1][j];
+                Vertex vertex4 = latticeArray[i + 1][j + 1];
+                ps[0] = vertex1.point;
+                ps[1] = vertex2.point;
+                ps[2] = vertex3.point;
 
-                cs[0] = latticeArray[i][j].color;
-                cs[1] = latticeArray[i][j + 1].color;
-                cs[2] = latticeArray[i + 1][j].color;
+                cs[0] = vertex1.color;
+                cs[1] = vertex2.color;
+                cs[2] = vertex3.color;
 
                 list.add(new ShadedTriangle(ps, cs));
 
-                ps[0] = latticeArray[i][j + 1].point;
-                ps[1] = latticeArray[i + 1][j].point;
-                ps[2] = latticeArray[i + 1][j + 1].point;
+                ps[0] = vertex2.point;
+                ps[1] = vertex3.point;
+                ps[2] = vertex4.point;
 
-                cs[0] = latticeArray[i][j + 1].color;
-                cs[1] = latticeArray[i + 1][j].color;
-                cs[2] = latticeArray[i + 1][j + 1].color;
+                cs[0] = vertex2.color;
+                cs[1] = vertex3.color;
+                cs[2] = vertex4.color;
 
                 list.add(new ShadedTriangle(ps, cs));
             }
