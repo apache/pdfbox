@@ -16,11 +16,15 @@
  */
 package org.apache.pdfbox.cos;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 
-public class COSDocumentTest
+class COSDocumentTest
 {
     @Test
     void testPDFBox6132()
@@ -29,7 +33,7 @@ public class COSDocumentTest
         Map<COSObjectKey, Long> xrefTable = new HashMap<>();
         xrefTable.put(null, 10L);
         document.addXRefTable(xrefTable);
-        document.getObjectsByType(COSName.T);
-        document.getLinearizedDictionary();
+        assertEquals(Collections.emptyList(), document.getObjectsByType(COSName.T));
+        assertNull(document.getLinearizedDictionary());
     }
 }
