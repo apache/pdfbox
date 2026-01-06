@@ -169,7 +169,7 @@ public abstract class Filter
      * @return The image reader for the format.
      * @throws MissingImageReaderException if no image reader is found.
      */
-    public static final ImageReader findRasterReader(String formatName, String errorCause)
+    public static ImageReader findRasterReader(String formatName, String errorCause)
             throws MissingImageReaderException
     {
         Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName(formatName);
