@@ -139,6 +139,7 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
         if (array != null)
         {
             float[][] pathArray = new float[array.size()][];
+            float[] emptyArray = new float[0];
             for (int i = 0; i < array.size(); ++i)
             {
                 COSBase base2 = array.getObject(i);
@@ -148,7 +149,7 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
                 }
                 else
                 {
-                    pathArray[i] = new float[0];
+                    pathArray[i] = emptyArray;
                 }
             }
             return pathArray;
