@@ -117,7 +117,7 @@ public class PDFTextStripperByArea extends PDFTextStripper
             setStartPage(getCurrentPageNo());
             setEndPage(getCurrentPageNo());
             // reset the stored text for the region so this class can be reused.
-            ArrayList<List<TextPosition>> regionCharactersByArticle = new ArrayList<List<TextPosition>>();
+            ArrayList<List<TextPosition>> regionCharactersByArticle = new ArrayList<List<TextPosition>>(1);
             regionCharactersByArticle.add( new ArrayList<TextPosition>() );
             regionCharacterList.put( regionName, regionCharactersByArticle );
             regionText.put( regionName, new StringWriter() );
