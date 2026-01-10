@@ -55,25 +55,29 @@ class TestPDFText2HTML
     void testEscapeTitle() throws IOException
     {
         PDFTextStripper stripper = new PDFText2HTML();
-        PDDocument doc = createDocument("<script>\u3042", new PDType1Font(FontName.HELVETICA),
-                "<foo>");
-        String text = stripper.getText(doc);
-       
-        Matcher m = Pattern.compile("<title>(.*?)</title>").matcher(text);
-        assertTrue(m.find());
-        assertEquals("&lt;script&gt;&#12354;", m.group(1));
-        assertTrue(text.contains("&lt;foo&gt;"));
+        try(PDDocument doc = createDocument("<script>\u3042", new PDType1Font(FontName.HELVETICA),
+                "<foo>"))
+        {
+            String text = stripper.getText(doc);
+
+            Matcher m = Pattern.compile("<title>(.*?)</title>").matcher(text);
+            assertTrue(m.find());
+            assertEquals("&lt;script&gt;&#12354;", m.group(1));
+            assertTrue(text.contains("&lt;foo&gt;"));
+        }
     }
 
     @Test
     void testStyle() throws IOException
     {
         PDFTextStripper stripper = new PDFText2HTML();
-        PDDocument doc = createDocument("t", new PDType1Font(FontName.HELVETICA_BOLD), "<bold>");
-        String text = stripper.getText(doc);
+        try(PDDocument doc = createDocument("t", new PDType1Font(FontName.HELVETICA_BOLD), "<bold>"))
+        {
+            String text = stripper.getText(doc);
 
-        Matcher bodyMatcher = Pattern.compile("<p>(.*?)</p>").matcher(text);
-        assertTrue(bodyMatcher.find(), "body p exists");
-        assertEquals("<b>&lt;bold&gt;</b>", bodyMatcher.group(1), "body p");
+            Matcher bodyMatcher = Pattern.compile("<p>(.*?)</p>").matcher(text);
+            assertTrue(bodyMatcher.find(), "body p exists");
+            assertEquals("<b>&lt;bold&gt;</b>", bodyMatcher.group(1), "body p");
+        }
     }
 }
