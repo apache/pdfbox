@@ -311,8 +311,15 @@ public final class ImageIOUtil
 
             // write
             imageOutput = ImageIO.createImageOutputStream(output);
-            writer.setOutput(imageOutput);
-            writer.write(null, new IIOImage(image, null, metadata), param);
+            if (imageOutput != null)
+            {
+                writer.setOutput(imageOutput);
+                writer.write(null, new IIOImage(image, null, metadata), param);
+            }
+            else
+            {
+                return false;
+            }
         }
         finally
         {
