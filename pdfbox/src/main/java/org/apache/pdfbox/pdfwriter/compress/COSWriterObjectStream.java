@@ -113,10 +113,10 @@ public class COSWriterObjectStream
         stream.setInt(COSName.N, objectCount);
         // Prepare the compressible objects for writing.
         List<Long> objectNumbers = new ArrayList<>(objectCount);
-        List<ByteArrayOutputStream> objectsBuffer = new ArrayList<>(objectCount);
+        List<DirectAccessByteArrayOutputStream> objectsBuffer = new ArrayList<>(objectCount);
         for (int i = 0; i < objectCount; i++)
         {
-            try (ByteArrayOutputStream partialOutput = new DirectAccessByteArrayOutputStream())
+            try (DirectAccessByteArrayOutputStream partialOutput = new DirectAccessByteArrayOutputStream())
             {
                 objectNumbers.add(preparedKeys.get(i).getNumber());
                 COSBase base = preparedObjects.get(i);
@@ -128,7 +128,7 @@ public class COSWriterObjectStream
         // Deduce the object stream byte offset map.
         byte[] offsetsMapBuffer;
         long nextObjectOffset = 0;
-        try (ByteArrayOutputStream partialOutput = new DirectAccessByteArrayOutputStream())
+        try (ByteArrayOutputStream partialOutput = new ByteArrayOutputStream())
         {
             for (int i = 0; i < objectNumbers.size(); i++)
             {
@@ -148,9 +148,9 @@ public class COSWriterObjectStream
         {
             output.write(offsetsMapBuffer);
             stream.setInt(COSName.FIRST, offsetsMapBuffer.length);
-            for (ByteArrayOutputStream rawObject : objectsBuffer)
+            for (DirectAccessByteArrayOutputStream rawObject : objectsBuffer)
             {
-                output.write(rawObject.toByteArray());
+                output.write(rawObject.getRawData(), 0, rawObject.size());
             }
         }
         return stream;
@@ -396,9 +396,13 @@ public class COSWriterObjectStream
      */
     private class DirectAccessByteArrayOutputStream extends ByteArrayOutputStream
     {
-
-        @Override
-        public synchronized byte[] toByteArray()
+        /**
+         * Gets the underlying byte array. It is most likely bigger than the real size of the stream, so that you have
+         * to take the size of the stream into account when accessing the data.
+         * 
+         * @return the underlying byte array.
+         */
+        public byte[] getRawData()
         {
             return buf;
         }
