@@ -58,6 +58,7 @@ public class TestPDFText2HTML extends TestCase
         assertTrue(m.find());
         assertEquals("&lt;script&gt;&#12354;", m.group(1));
         assertTrue(text.contains("&lt;foo&gt;"));
+        doc.close();
     }
 
     public void testStyle() throws IOException
@@ -69,5 +70,6 @@ public class TestPDFText2HTML extends TestCase
         Matcher bodyMatcher = Pattern.compile("<p>(.*?)</p>").matcher(text);
         assertTrue("body p exists", bodyMatcher.find());
         assertEquals("body p", "<b>&lt;bold&gt;</b>", bodyMatcher.group(1));
+        doc.close();
     }
 }
