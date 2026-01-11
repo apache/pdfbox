@@ -376,6 +376,10 @@ public final class JPEGFactory
         try
         {  
             ios = ImageIO.createImageOutputStream(baos);
+            if (ios == null)
+            {
+                throw new IOException("ImageIO.createImageOutputStream() returned null");
+            }
             imageWriter.setOutput(ios);
 
             // add compression
