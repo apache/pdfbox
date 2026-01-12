@@ -20,7 +20,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.BufferedInputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
@@ -185,23 +185,30 @@ public class TextToPDF implements Callable<Integer>
             setTopMargin(margins[2]);
             setBottomMargin(margins[3]);
 
-            try (InputStream is = new FileInputStream(infile))
+            try (BufferedInputStream is = new BufferedInputStream(new FileInputStream(infile)))
             {
                 if (charset.equals(StandardCharsets.UTF_8))
                 {
-                    try
+                    final int readLimit = 3;
+                    is.mark(readLimit);
+
+                    byte[] firstBytes = new byte[readLimit];
+                    if (is.read(firstBytes) != readLimit)
                     {
-                        // check for utf8 BOM
-                        // FileInputStream doesn't support mark/reset
-                        int b1 = is.read();
-                        int b2 = is.read();
-                        int b3 = is.read();
-                        //todo Here we can perform a check for file format corruption here.
-                        boolean hasUtf8BOM = b1 == 0xEF && b2 == 0xBB && b3 == 0xBF;
+                        throw new IOException("Could not read 3 bytes, size changed?!");
                     }
-                    catch (IOException x)
+
+                    if (firstBytes[0] == (byte) 0xEF &&
+                        firstBytes[1] == (byte) 0xBB &&
+                        firstBytes[2] == (byte) 0xBF)
                     {
-                        throw new IOException("Could not skip 3 bytes, size changed?!");
+                        //UTF-8 with BOM
+                        //3 bytes already read (skipped)
+                    }
+                    else
+                    {
+                        //It looks like UTF with no BOM or file was corrupted
+                        is.reset();
                     }
                 }
                 try (Reader reader = new InputStreamReader(is, charset))
