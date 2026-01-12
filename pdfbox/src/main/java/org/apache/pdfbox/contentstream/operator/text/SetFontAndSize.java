@@ -32,6 +32,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
 
 /**
  * Tf: Set text font and size.
@@ -62,13 +63,14 @@ public class SetFontAndSize extends OperatorProcessor
         }
         COSName fontName = (COSName) base0;
         float fontSize = ((COSNumber) base1).floatValue();
-        context.getGraphicsState().getTextState().setFontSize(fontSize);
         PDFont font = context.getResources().getFont(fontName);
         if (font == null)
         {
             LOG.warn("font '" + fontName.getName() + "' not found in resources");
         }
-        context.getGraphicsState().getTextState().setFont(font);
+        PDTextState textState = context.getGraphicsState().getTextState();
+        textState.setFontSize(fontSize);
+        textState.setFont(font);
     }
 
     @Override
