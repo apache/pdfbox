@@ -16,11 +16,11 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
@@ -359,25 +359,29 @@ public class TextToPDF
                     }
                 }
 
-                boolean hasUtf8BOM = false;
+                BufferedInputStream is = new BufferedInputStream(new FileInputStream(args[args.length - 1]));
                 if (charset.equals(Charsets.UTF_8))
                 {
-                    // check for utf8 BOM
-                    // FileInputStream doesn't support mark/reset
-                    InputStream is = new FileInputStream(args[args.length - 1]);
-                    if (is.read() == 0xEF && is.read() == 0xBB && is.read() == 0xBF)
+                    final int readLimit = 3;
+                    is.mark(readLimit);
+
+                    byte[] firstBytes = new byte[readLimit];
+                    if (is.read(firstBytes) != readLimit)
                     {
-                        hasUtf8BOM = true;
+                        throw new IOException("Could not read 3 bytes, size changed?!");
                     }
-                    is.close();
-                }
-                InputStream is = new FileInputStream(args[args.length - 1]);
-                if (hasUtf8BOM)
-                {
-                    long skipped = is.skip(3);
-                    if (skipped != 3)
+
+                    if (firstBytes[0] == (byte) 0xEF &&
+                        firstBytes[1] == (byte) 0xBB &&
+                        firstBytes[2] == (byte) 0xBF)
                     {
-                        throw new IOException("Could not skip 3 bytes, size changed?!");
+                        //UTF-8 with BOM
+                        //3 bytes already read (skipped)
+                    }
+                    else
+                    {
+                        //It looks like UTF with no BOM or file was corrupted
+                        is.reset();
                     }
                 }
                 Reader reader = new InputStreamReader(is, charset);
