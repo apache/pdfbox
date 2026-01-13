@@ -298,10 +298,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
         for (PDPage page : pages)
         {
-            if (page.hasContents())
-            {
-                processPage(page);
-            }
+            processPage(page);
             currentPageNo++;
         }
     }
@@ -343,6 +340,10 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 && (startBookmarkPageNumber == -1 || currentPageNo >= startBookmarkPageNumber)
                 && (endBookmarkPageNumber == -1 || currentPageNo <= endBookmarkPageNumber))
         {
+            if (!page.hasContents())
+            {
+                return;
+            }
             startPage(page);
 
             int numberOfArticleSections = 1;
