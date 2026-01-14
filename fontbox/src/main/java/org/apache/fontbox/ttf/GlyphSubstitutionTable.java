@@ -110,6 +110,11 @@ public class GlyphSubstitutionTable extends TTFTable
         LinkedHashMap<String, ScriptTable> resultScriptList = new LinkedHashMap<String, ScriptTable>(scriptCount);
         for (ScriptRecord scriptRecord : scriptRecords)
         {
+            if (resultScriptList.get(scriptRecord.scriptTag) != null)
+            {
+                // PDFBOX-6146
+                continue;
+            }
             resultScriptList.put(scriptRecord.scriptTag, scriptRecord.scriptTable);
         }
         return resultScriptList;
@@ -237,9 +242,16 @@ public class GlyphSubstitutionTable extends TTFTable
             lookups[i] = data.readUnsignedShort();
         }
         LookupTable[] lookupTables = new LookupTable[lookupCount];
+        Map<Integer, LookupTable> lookupTableMap = new HashMap<Integer, LookupTable>(); // PDFBOX-6146
         for (int i = 0; i < lookupCount; i++)
         {
-            lookupTables[i] = readLookupTable(data, offset + lookups[i]);
+            LookupTable lookupTable = lookupTableMap.get(lookups[i]);
+            if (lookupTable == null)
+            {
+                lookupTable = readLookupTable(data, offset + lookups[i]);
+                lookupTableMap.put(lookups[i], lookupTable);
+            }
+            lookupTables[i] = lookupTable;
         }
         return lookupTables;
     }
