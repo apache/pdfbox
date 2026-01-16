@@ -19,7 +19,6 @@ package org.apache.pdfbox.examples.pdmodel;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -62,7 +61,7 @@ public final class ExtractEmbeddedFiles
         }
 
         File pdfFile = new File(args[0]);
-        String directoryPath = pdfFile.getParent() + FileSystems.getDefault().getSeparator();
+        String directoryPath = pdfFile.getParent();
         try (PDDocument document = Loader.loadPDF(pdfFile))
         {
             PDDocumentNameDictionary namesDictionary =
@@ -140,8 +139,7 @@ public final class ExtractEmbeddedFiles
     private static void extractFile(String filename, PDEmbeddedFile embeddedFile, String directoryPath)
             throws IOException
     {
-        String embeddedFilename = directoryPath + filename;
-        File file = new File(embeddedFilename);
+        File file = new File(directoryPath, filename);
         File parentDir = file.getParentFile();
         if (!parentDir.exists())
         {
@@ -149,7 +147,7 @@ public final class ExtractEmbeddedFiles
             System.out.println("Creating " + parentDir);
             parentDir.mkdirs();
         }
-        System.out.println("Writing " + embeddedFilename);
+        System.out.println("Writing " + file);
         try (FileOutputStream fos = new FileOutputStream(file))
         {
             fos.write(embeddedFile.toByteArray());
