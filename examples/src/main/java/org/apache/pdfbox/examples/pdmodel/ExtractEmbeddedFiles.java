@@ -62,7 +62,7 @@ public final class ExtractEmbeddedFiles
         try
         {
             File pdfFile = new File(args[0]);
-            String directoryPath = pdfFile.getParent() + System.getProperty("file.separator");
+            String directoryPath = pdfFile.getParent();
             document = PDDocument.load(pdfFile );
             PDDocumentNameDictionary namesDictionary = 
                     new PDDocumentNameDictionary( document.getDocumentCatalog() );
@@ -143,8 +143,7 @@ public final class ExtractEmbeddedFiles
     private static void extractFile(String filename, PDEmbeddedFile embeddedFile, String directoryPath)
             throws IOException
     {
-        String embeddedFilename = directoryPath + filename;
-        File file = new File(embeddedFilename);
+        File file = new File(directoryPath, filename);
         File parentDir = file.getParentFile();
         if (!parentDir.exists())
         {
@@ -152,7 +151,7 @@ public final class ExtractEmbeddedFiles
             System.out.println("Creating " + parentDir);
             parentDir.mkdirs();
         }
-        System.out.println("Writing " + embeddedFilename);
+        System.out.println("Writing " + file);
         FileOutputStream fos = null;
         try
         {
