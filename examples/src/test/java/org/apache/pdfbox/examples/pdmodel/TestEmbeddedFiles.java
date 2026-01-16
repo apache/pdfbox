@@ -26,6 +26,7 @@ import org.apache.pdfbox.util.Charsets;
 
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 
@@ -35,6 +36,14 @@ import org.junit.Test;
  */
 public class TestEmbeddedFiles
 {
+    private static final String OUTPUT_DIR = "target/test-output";
+
+    @BeforeClass
+    public static void init() throws Exception
+    {
+        new File(OUTPUT_DIR).mkdirs();
+    }
+
     /**
      * Very basic test of embedding and extracting an attachment.
      *
@@ -43,10 +52,9 @@ public class TestEmbeddedFiles
     @Test
     public void testEmbeddedFiles() throws IOException
     {
-        String outputFile = "target/test-output/EmbeddedFile.pdf";
-        String embeddedFile = "target/test-output/Test.txt";
+        String outputFile = OUTPUT_DIR + "/EmbeddedFile.pdf";
+        String embeddedFile = OUTPUT_DIR + "/Test.txt";
 
-        new File("target/test-output").mkdirs();
         new File(outputFile).delete();
         new File(embeddedFile).delete();
         String[] args = new String[] { outputFile };
@@ -69,11 +77,9 @@ public class TestEmbeddedFiles
     @Test
     public void testExtractEmbeddedFiles() throws IOException
     {
-        String dir = "target/test-output";
-        new File(dir).mkdirs();
-        String collectionFilename = dir + "/PortableCollection.pdf";
-        String attachment1Filename = dir + "/Test1.txt";
-        String attachment2Filename = dir + "/Test2.txt";
+        String collectionFilename = OUTPUT_DIR + "/PortableCollection.pdf";
+        String attachment1Filename = OUTPUT_DIR + "/Test1.txt";
+        String attachment2Filename = OUTPUT_DIR + "/Test2.txt";
         String[] args = new String[] { collectionFilename };
         CreatePortableCollection.main(args);
         ExtractEmbeddedFiles.main(args);
