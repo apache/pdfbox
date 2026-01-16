@@ -60,6 +60,9 @@ public class TestEmbeddedFiles extends TestCase
             assertNotNull("one attachment actually exists", spec);
             assertEquals("existing file length", 17660, spec.getEmbeddedFile().getLength());
             spec = embeddedFiles.getNames().get("non-existent-file.docx");
+            assertNotNull(spec);
+            assertNull(spec.getFile());
+            assertNull(spec.getEmbeddedFile());
         }
         catch (NullPointerException e)
         {
