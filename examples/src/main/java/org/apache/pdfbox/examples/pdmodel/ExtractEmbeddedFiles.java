@@ -61,7 +61,7 @@ public final class ExtractEmbeddedFiles
         }
 
         File pdfFile = new File(args[0]);
-        String directoryPath = pdfFile.getParent();
+        String directoryPath = pdfFile.getParentFile().getCanonicalPath();
         try (PDDocument document = Loader.loadPDF(pdfFile))
         {
             PDDocumentNameDictionary namesDictionary =
@@ -141,6 +141,11 @@ public final class ExtractEmbeddedFiles
     {
         File file = new File(directoryPath, filename);
         File parentDir = file.getParentFile();
+        if (!parentDir.getCanonicalPath().startsWith(directoryPath))
+        {
+            System.err.println("Ignoring " + filename + " (different directory)");
+            return;
+        }
         if (!parentDir.exists())
         {
             // sometimes paths contain a directory
