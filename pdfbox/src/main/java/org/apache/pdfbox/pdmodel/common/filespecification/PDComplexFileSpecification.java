@@ -90,11 +90,14 @@ public class PDComplexFileSpecification extends PDFileSpecification
     }
     
     /**
-     * <p>Preferred method for getting the filename.
-     * It will determinate the recommended file name.</p>
-     * <p>First of all we try to get the unicode filename if it exist.
-     * If it doesn't exist we take a look at the DOS, MAC UNIX filenames.
-     * If no one exist the required F entry will be returned.</p>
+     * <p>
+     * Preferred method for getting the filename. It will determinate the recommended file name.
+     * <p>
+     * First of all we try to get the unicode filename if it exists. If it doesn't exist we take a
+     * look at the DOS, MAC UNIX filenames. If no one exist the required F entry will be returned.
+     * <p>
+     * <b>Be aware that the filename may contain a directory separator</b> and needs to be sanitized
+     * (CWE-22).
      *
      * @return The preferred file name.
      */
@@ -122,6 +125,8 @@ public class PDComplexFileSpecification extends PDFileSpecification
 
     /**
      * This will get the unicode file name.
+     * <b>Be aware that the filename may contain a directory separator</b> and needs to be sanitized
+     * (CWE-22).
      *
      * @return The file name.
      */
@@ -144,6 +149,8 @@ public class PDComplexFileSpecification extends PDFileSpecification
 
     /**
      * This will get the file name.
+     * <b>Be aware that the filename may contain a directory separator</b> and needs to be sanitized
+     * (CWE-22).
      *
      * @return The file name.
      */
@@ -168,6 +175,8 @@ public class PDComplexFileSpecification extends PDFileSpecification
 
     /**
      * This will get the name representing a Dos file.
+     * <b>Be aware that the filename may contain a directory separator</b> and needs to be sanitized
+     * (CWE-22).
      *
      * @return The file name.
      */
@@ -178,6 +187,8 @@ public class PDComplexFileSpecification extends PDFileSpecification
 
     /**
      * This will get the name representing a Mac file.
+     * <b>Be aware that the filename may contain a directory separator</b> and needs to be sanitized
+     * (CWE-22).
      *
      * @return The file name.
      */
@@ -188,6 +199,8 @@ public class PDComplexFileSpecification extends PDFileSpecification
 
     /**
      * This will get the name representing a Unix file.
+     * <b>Be aware that the filename may contain a directory separator</b> and needs to be sanitized
+     * (CWE-22).
      *
      * @return The file name.
      */
