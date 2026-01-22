@@ -106,7 +106,7 @@ public class GsubWorkerForDflt implements GsubWorker
                 scriptFeature.getAllGlyphIdsForSubstitution());
 
         List<List<Integer>> tokens = glyphArraySplitter.split(originalGlyphs);
-        List<Integer> gsubProcessedGlyphs = new ArrayList<>();
+        List<Integer> gsubProcessedGlyphs = new ArrayList<>(tokens.size() * 2);
 
         for (List<Integer> chunk : tokens)
         {
