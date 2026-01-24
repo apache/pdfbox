@@ -65,20 +65,23 @@ class ShadedTriangle
 
         if (degree == 2)
         {
-            if (overlaps(corner[1], corner[2]) && !overlaps(corner[0], corner[2]))
+            Point2D corner0 = corner[0];
+            Point2D corner1 = corner[1];
+            Point2D corner2 = corner[2];
+            if (overlaps(corner1, corner2) && !overlaps(corner0, corner2))
             {
-                Point p0 = new Point((int) Math.round(corner[0].getX()),
-                        (int) Math.round(corner[0].getY()));
-                Point p1 = new Point((int) Math.round(corner[2].getX()),
-                        (int) Math.round(corner[2].getY()));
+                Point p0 = new Point((int) Math.round(corner0.getX()),
+                        (int) Math.round(corner0.getY()));
+                Point p1 = new Point((int) Math.round(corner2.getX()),
+                        (int) Math.round(corner2.getY()));
                 line = new Line(p0, p1, color[0], color[2]);
             }
             else
             {
-                Point p0 = new Point((int) Math.round(corner[1].getX()),
-                        (int) Math.round(corner[1].getY()));
-                Point p1 = new Point((int) Math.round(corner[2].getX()),
-                        (int) Math.round(corner[2].getY()));
+                Point p0 = new Point((int) Math.round(corner1.getX()),
+                        (int) Math.round(corner1.getY()));
+                Point p1 = new Point((int) Math.round(corner2.getX()),
+                        (int) Math.round(corner2.getY()));
                 line = new Line(p0, p1, color[1], color[2]);
             }
         }
