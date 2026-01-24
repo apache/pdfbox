@@ -248,7 +248,7 @@ public class TTFParser
      * 
      * This method can be optimized further by skipping unused portions inside each individual table parser
      *
-     * @param font the TrueTypeFont instance holding the parsed data.
+     * @param raf the table header data stream
      * @throws IOException If there is an error parsing the TrueType font.
      */
     FontHeaders parseTableHeaders(TTFDataStream raf) throws IOException
