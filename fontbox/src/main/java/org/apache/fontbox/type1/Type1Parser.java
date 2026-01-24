@@ -246,7 +246,7 @@ final class Type1Parser
      */
     private List<Number> arrayToNumbers(List<Token> value) throws IOException
     {
-        List<Number> numbers = new ArrayList<>();
+        List<Number> numbers = new ArrayList<>(value.size());
         for (int i = 1, size = value.size() - 1; i < size; i++)
         {
             Token token = value.get(i);
