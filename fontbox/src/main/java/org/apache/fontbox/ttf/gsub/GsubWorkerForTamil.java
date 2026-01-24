@@ -200,7 +200,7 @@ public class GsubWorkerForTamil implements GsubWorker
 
     private List<Integer> getbeforeRephGlyphIds()
     {
-        List<Integer> glyphIds = new ArrayList<>(REPH_CHARS.length);
+        List<Integer> glyphIds = new ArrayList<>(BEFORE_REPH_CHARS.length);
         for (char character : BEFORE_REPH_CHARS)
         {
             glyphIds.add(getGlyphId(character));
