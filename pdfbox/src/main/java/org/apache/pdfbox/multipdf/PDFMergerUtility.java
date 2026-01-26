@@ -603,9 +603,15 @@ public class PDFMergerUtility
             else
             {
                 // search last sibling for dest, because /Last entry is sometimes wrong
+                Set<COSDictionary> visited = new HashSet<>();
                 PDOutlineItem destLastOutlineItem = destOutline.getFirstChild();
                 while (true)
                 {
+                    if (!visited.add(destLastOutlineItem.getCOSObject()))
+                    {
+                        LOG.warn("Outline ignored: " + destLastOutlineItem.getCOSObject());
+                        break; // Cycle detected
+                    }
                     PDOutlineItem outlineItem = destLastOutlineItem.getNextSibling();
                     if (outlineItem == null)
                     {
