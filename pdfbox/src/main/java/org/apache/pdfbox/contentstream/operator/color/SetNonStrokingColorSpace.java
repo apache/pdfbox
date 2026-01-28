@@ -26,6 +26,7 @@ import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
+import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 
 /**
  * cs: Sets the non-stroking color space.
@@ -58,8 +59,9 @@ public class SetNonStrokingColorSpace extends OperatorProcessor
             return;
         }
         PDColorSpace cs = context.getResources().getColorSpace((COSName) base);
-        context.getGraphicsState().setNonStrokingColorSpace(cs);
-        context.getGraphicsState().setNonStrokingColor(cs.getInitialColor());
+        PDGraphicsState graphicsState = context.getGraphicsState();
+        graphicsState.setNonStrokingColorSpace(cs);
+        graphicsState.setNonStrokingColor(cs.getInitialColor());
     }
 
     @Override
