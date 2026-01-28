@@ -74,7 +74,7 @@ public class PDFXRefStream
         stream.setLong(COSName.SIZE, size);
     
         List<Long> indexEntry = getIndexEntry();
-        COSArray indexAsArray = new COSArray();
+        COSArray indexAsArray = new COSArray(indexEntry.size());
         for ( Long i : indexEntry )
         {
             indexAsArray.add(COSInteger.get(i));
@@ -82,7 +82,7 @@ public class PDFXRefStream
         stream.setItem(COSName.INDEX, indexAsArray);
 
         int[] wEntry = getWEntry();
-        COSArray wAsArray = new COSArray();
+        COSArray wAsArray = new COSArray(wEntry.length);
         for (int j : wEntry)
         {
             wAsArray.add(COSInteger.get(j));
