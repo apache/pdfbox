@@ -193,6 +193,11 @@ public class TestCMapParser extends TestCase
 
     }
 
+    /**
+     * Test that parsing a CMap with empty byte arrays in bfrange does not throw
+     * ArrayIndexOutOfBoundsException. Empty hex strings produce zero-length byte
+     * arrays, causing increment() to be called with position -1.
+     */
     public void testBadIncrement() throws IOException
     {
         byte[] cmapData = "1 beginbfrange\n<> <> <2223>\nendbfrange".getBytes("US-ASCII");
