@@ -240,4 +240,51 @@ public class PDInlineImageTest extends TestCase
             assertEquals(0, data[i]);
         }
     }
+
+    /**
+     * Tests that getDecode() does not throw ClassCastException when the /D parameter
+     * is a non-array type (e.g., integer). Malformed PDFs may provide an integer or
+     * other type instead of a COSArray for the Decode parameter.
+     * 
+     * @throws IOException
+     */
+    public void testGetDecodeWithInvalidType() throws IOException
+    {
+        // Test 1: /D set to integer (should return null, not throw ClassCastException)
+        COSDictionary dict = new COSDictionary();
+        dict.setBoolean(COSName.IM, true);
+        dict.setInt(COSName.W, 1);
+        dict.setInt(COSName.H, 1);
+        dict.setInt(COSName.BPC, 1);
+        dict.setInt(COSName.D, 123); // wrong type: integer instead of array
+
+        byte[] data = new byte[]{0};
+        PDInlineImage inlineImage = new PDInlineImage(dict, data, null);
+        assertNull("getDecode() should return null for non-array /D value", inlineImage.getDecode());
+
+        // Test 2: /D set to valid COSArray (should still work)
+        COSDictionary dict2 = new COSDictionary();
+        dict2.setBoolean(COSName.IM, true);
+        dict2.setInt(COSName.W, 1);
+        dict2.setInt(COSName.H, 1);
+        dict2.setInt(COSName.BPC, 1);
+        COSArray decodeArray = new COSArray();
+        decodeArray.add(COSInteger.ONE);
+        decodeArray.add(COSInteger.ZERO);
+        dict2.setItem(COSName.D, decodeArray);
+
+        PDInlineImage inlineImage2 = new PDInlineImage(dict2, data, null);
+        assertNotNull("getDecode() should return array for valid /D value", inlineImage2.getDecode());
+        assertEquals(2, inlineImage2.getDecode().size());
+
+        // Test 3: /D not set (should return null)
+        COSDictionary dict3 = new COSDictionary();
+        dict3.setBoolean(COSName.IM, true);
+        dict3.setInt(COSName.W, 1);
+        dict3.setInt(COSName.H, 1);
+        dict3.setInt(COSName.BPC, 1);
+
+        PDInlineImage inlineImage3 = new PDInlineImage(dict3, data, null);
+        assertNull("getDecode() should return null when /D is not set", inlineImage3.getDecode());
+    }
 }
