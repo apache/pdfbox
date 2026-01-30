@@ -797,6 +797,10 @@ public class CMapParser
 
     private static boolean increment(byte[] data, int position, boolean useStrictMode)
     {
+        if (position < 0)
+        {
+            return false;
+        }
         if (position > 0 && (data[position] & 0xFF) == 255)
         {
             // PDFBOX-4661: avoid overflow of the last byte, all following values are undefined

@@ -26,8 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -244,5 +246,14 @@ class TestCMapParser
         assertEquals(new String(bytes, StandardCharsets.UTF_16BE), cMap.toUnicode(bytes),
                 "Indentity 0xFFFF");
 
+    }
+
+    @Test
+    void testBadIncrement() throws IOException
+    {
+        byte[] cmapData = "1 beginbfrange\n<> <> <2223>\nendbfrange".getBytes("US-ASCII");
+        CMapParser parser = new CMapParser();
+        CMap cmap = parser.parse(new RandomAccessReadBuffer(cmapData));
+        assertNotNull(cmap);
     }
 }
