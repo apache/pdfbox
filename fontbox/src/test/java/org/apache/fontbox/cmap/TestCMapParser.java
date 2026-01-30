@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.junit.jupiter.api.Test;
 
@@ -244,5 +245,19 @@ class TestCMapParser
         assertEquals(new String(bytes, StandardCharsets.UTF_16BE), cMap.toUnicode(bytes),
                 "Indentity 0xFFFF");
 
+    }
+
+    /**
+     * Test that parsing a CMap with empty byte arrays in bfrange does not throw
+     * ArrayIndexOutOfBoundsException. Empty hex strings produce zero-length byte
+     * arrays, causing increment() to be called with position -1.
+     */
+    @Test
+    void testEmptyBfrangeStartCode() throws IOException
+    {
+        byte[] cmapData = "1 beginbfrange\n<> <> <2223>\nendbfrange"
+                .getBytes(StandardCharsets.US_ASCII);
+        CMap cMap = new CMapParser().parse(new RandomAccessReadBuffer(cmapData));
+        assertNotNull(cMap, "CMap should parse without crashing");
     }
 }
