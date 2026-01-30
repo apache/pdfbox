@@ -248,6 +248,11 @@ class TestCMapParser
 
     }
 
+    /**
+     * Test that parsing a CMap with empty byte arrays in bfrange does not throw
+     * ArrayIndexOutOfBoundsException. Empty hex strings produce zero-length byte
+     * arrays, causing increment() to be called with position -1.
+     */
     @Test
     void testBadIncrement() throws IOException
     {
