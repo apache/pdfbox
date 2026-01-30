@@ -97,4 +97,33 @@ public class PfbParserTest
     {
         Type1Font.createWithPFB(new byte[0]);
     }
+
+    /**
+     * Test that a PFB with a negative size field (integer overflow) throws IOException
+     * instead of NegativeArraySizeException. A crafted 18-byte PFB with size bytes
+     * 01 00 00 FF overflows the signed int to -16777215, bypassing the upper-bound check.
+     */
+    @Test
+    public void testNegativeRecordSize()
+    {
+        try
+        {
+            // 18-byte crafted PFB: start marker 0x80, ASCII type 0x01,
+            // size field 0x01 0x00 0x00 0xFF = -16777215 as signed int
+            byte[] crashInput = {
+                (byte) 0x80, 0x01,                         // header
+                0x01, 0x00, 0x00, (byte) 0xFF,             // size: overflows to negative
+                (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,     // garbage data
+                (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+                0x27, 0x05, (byte) 0xF8, (byte) 0xFF,
+                (byte) 0xD2, 0x40
+            };
+            new PfbParser(crashInput);
+        }
+        catch (IOException ex)
+        {
+            return;
+        }
+        Assert.fail ("expected IOException");
+    }
 }

@@ -175,6 +175,10 @@ public class PfbParser
             {
                 LOG.debug("record type: " + recordType + ", segment size: " + size);
             }
+            if (size < 0)
+            {
+                throw new IOException("record size " + size + " is negative");
+            }
             if (size > pfb.length)
             {
                 // PDFBOX-6044: avoid potential OOM
