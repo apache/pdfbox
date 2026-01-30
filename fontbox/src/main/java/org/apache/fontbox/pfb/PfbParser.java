@@ -154,7 +154,7 @@ public class PfbParser
             size += in.read() << 16;
             size += in.read() << 24;
             LOG.debug("record type: {}, segment size: {}", recordType, size);
-            if (size > pfb.length)
+            if (size < 0 || size > pfb.length)
             {
                 // PDFBOX-6044: avoid potential OOM
                 throw new IOException("record size " + size + " would be larger than the input");
