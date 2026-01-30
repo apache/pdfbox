@@ -278,7 +278,12 @@ public final class PDInlineImage implements PDImage
     @Override
     public COSArray getDecode()
     {
-        return (COSArray) parameters.getDictionaryObject(COSName.D, COSName.DECODE);
+        COSBase decode = parameters.getDictionaryObject(COSName.D, COSName.DECODE);
+        if (decode instanceof COSArray)
+        {
+            return (COSArray) decode;
+        }
+        return null;
     }
 
     @Override
