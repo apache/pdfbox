@@ -1,0 +1,60 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#
+#				NOTE:	This file is used for testing only, and might change frequently and without any prior notice
+#
+# 				This file contains the raw GSUB table data that can be extracted from the Lohit-Bengali.ttf font file. The name of the file 
+#				is the name of the *feature* of the GSUB Table. 
+#				Each line of this file is formatted as:
+#            		<Comma separated list of GlyphIds that the new GlyphId would be replacing>=<The new GlyphId to be substituted>
+#
+
+67,442=164
+68,442=173
+69,442=183
+70,442=189
+71,442=200
+72,442=207
+73,442=209
+74,442=215
+75,442=217
+77,442=227
+78,442=229
+79,99,442=427
+79,442=233
+80,99,442=428
+80,442=235
+81,442=246
+82,442=253
+83,442=258
+84,442=273
+85,442=279
+87,442=313
+88,442=319
+89,442=330
+90,442=334
+91,442=349
+92,442=351
+94,442=368
+95,442=377
+96,442=391
+97,442=414
+98,442=424
+115,442=427
+116,442=428
+117,442=429
+133,442=434

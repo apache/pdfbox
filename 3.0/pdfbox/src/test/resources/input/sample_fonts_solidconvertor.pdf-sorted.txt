@@ -1,0 +1,9 @@
+﻿Courier: Toto je pokusný text s češtinou – ěščřžýáíé
+Times: Toto je pokusný text s češtinou – ěščřžýáíé
+Tahoma: Toto je pokusný text s češtinou – ěščřžýáíé
+Arial: Toto je pokusný text s češtinou – ěščřžýáíé
+Arial Narrow: Toto je pokusný text s češtinou – ěščřžýáíé
+Arial Black: Toto je pokusný text s češtinou – ěščřžýáíé
+Arial Rounded: Toto je pokusný text s češtinou – ěščřžýáíé
+Verdana: Toto je pokusný text s češtinou – ěščřžýáíé
+Sans serif: Toto je pokusný text s češtinou – ěščřžýáíé

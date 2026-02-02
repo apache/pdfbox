@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+! Licensed to the Apache Software Foundation (ASF) under one or more
+! contributor license agreements.  See the NOTICE file distributed with
+! this work for additional information regarding copyright ownership.
+! The ASF licenses this file to You under the Apache License, Version 2.0
+! (the "License"); you may not use this file except in compliance with
+! the License.  You may obtain a copy of the License at
+!
+!      http://www.apache.org/licenses/LICENSE-2.0
+!
+! Unless required by applicable law or agreed to in writing, software
+! distributed under the License is distributed on an "AS IS" BASIS,
+! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+! See the License for the specific language governing permissions and
+! limitations under the License.
+!-->
+<xfdf
+  xmlns="http://ns.adobe.com/xfdf/" xml:space="preserve">
+  <annots>
+    <highlight page="0" color="#FCED8C" date="D:20150415150319+00'00'" title="weblogic" rect="68.400000,611.570000,233.620000,680.060000" flags="print" name="366094C8-32E8-4BD2-B712-82A3C60EFF29" creationdate="D:20150415150319+00'00'" opacity="1" rotation="0" coords="68.400000,680.060000,233.620000,680.060000,68.400000,611.570000,233.620000,611.570000," />
+    <underline page="0" color="#7F19B2" date="D:20150415150324+00'00'" title="weblogic" rect="233.620000,611.570000,361.630000,680.060000" flags="print" name="2FFACE36-C6E5-4265-8138-DEEBC397DC48" creationdate="D:20150415150324+00'00'" opacity="1" rotation="0" coords="233.620000,680.060000,361.630000,680.060000,233.620000,611.570000,361.630000,611.570000," />
+    <strikeout page="0" color="#FF0000" date="D:20150415150329+00'00'" title="weblogic" rect="372.240000,611.570000,467.520000,680.060000" flags="print" name="B9BFB6E8-39BC-40DE-BDA5-E230FD7BFBC2" creationdate="D:20150415150329+00'00'" opacity="0.64" rotation="0" coords="372.240000,680.060000,467.520000,680.060000,372.240000,611.570000,467.520000,611.570000," />
+    <freetext page="0" date="D:20150415150453+00'00'" title="weblogic" rect="89.790000,520.230000,181.120000,552.230000" flags="print" name="7CAA034C-18A5-4D2B-B115-E28CBFE3C924" creationdate="D:20150415150340+00'00'" opacity="1" rotation="0" width="0" justification="left" intent="FreeText">
+      <contents-richtext>
+        <body
+          xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" style="font:12pt Helvetica; color:#197FB2;" xfa:APIVersion="Acrobat:7.0.8" xfa:spec="2.0.2">
+          <p>A free text annotation</p>
+        </body>
+      </contents-richtext>
+      <defaultappearance>/Helvetica 12 Tf 0.100 0.500 0.700 rg</defaultappearance>
+    </freetext>
+    <freetext page="0" date="D:20150415150447+00'00'" title="weblogic" rect="400.430000,487.270000,562.980000,571.310000" flags="print" name="88D147A8-CC51-4178-8102-8C63E2C90F08" creationdate="D:20150415150431+00'00'" opacity="1" rotation="0" width="2" style="solid" justification="left" intent="FreeTextCallout" head="OpenArrow" callout="400.430000,487.270000,505.670000,527.290000,505.670000,543.30000" fringe="48.000000,56.000000,0.000000,0.000000">
+      <contents-richtext>
+        <body
+          xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" style="font:12pt Helvetica; color:#D66C00;" xfa:APIVersion="Acrobat:7.0.8" xfa:spec="2.0.2">
+          <p>A callout annotation</p>
+        </body>
+      </contents-richtext>
+      <defaultappearance>/Helvetica 12 Tf 0.842 0.424 0.000 rg</defaultappearance>
+    </freetext>
+    <text page="0" color="#E533FF" date="D:20150415150510+00'00'" title="weblogic" rect="244.080000,507.380000,277.100000,540.380000" flags="print" name="D02B7B2D-4EEB-4238-BD32-F41297615A4D" creationdate="D:20150415150458+00'00'" opacity="1" rotation="0" icon="Comment">
+      <contents-richtext>
+        <body
+          xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" xfa:APIVersion="Acrobat:7.0.8" xfa:spec="2.0.2">
+          <p>A note annotation</p>
+        </body>
+      </contents-richtext>
+    </text>
+    <ink page="0" color="#1E59FF" date="D:20150415150536+00'00'" title="weblogic" rect="344.700000,352.930000,549.820000,378.510000" flags="print" name="B235EBE8-1549-4D17-8F2B-6ECD94DB3989" creationdate="D:20150415150536+00'00'" opacity="1" rotation="0" width="4">
+      <inklist>
+        <gesture>344.701508,361.968750;355.021912,369.703125;362.246216,372.796875;369.470490,375.890625;375.662720,377.437500;379.790894,377.953125;384.951111,377.953125;388.563232,376.406250;391.659363,372.281250;395.271515,366.093750;398.367615,361.968750;403.527832,357.843750;408.171997,355.781250;414.364258,354.750000;421.072510,354.750000;427.264771,354.750000;432.940979,356.296875;438.101166,358.359375;442.745361,358.875000;446.873535,359.390625;451.001678,359.390625;454.613831,359.390625;458.742004,358.359375;463.386169,355.781250;468.546387,353.718750;473.706573,353.718750;479.898834,353.718750;486.091064,353.718750;492.283295,354.234375;496.411469,355.781250;501.055664,357.843750;504.151764,358.875000;506.731873,359.906250;509.828003,360.421875;511.376068,360.937500;513.956177,362.484375;516.020264,363.515625;518.600342,364.546875;521.180420,366.093750;523.760559,366.093750;526.856689,366.093750;529.952759,366.093750;532.532898,366.093750;534.596985,364.546875;536.661072,363.515625;538.725098,363.515625;541.305237,363.515625;544.401367,363.515625;549.045532,364.546875;555.237793,369.187500</gesture>
+      </inklist>
+    </ink>
+    <line page="0" color="#76C100" date="D:20150415150554+00'00'" title="weblogic" rect="553.370000,116.100000,573.620000,246.940000" flags="print" name="DE09FE2C-826D-492C-B945-457A4FA19A37" creationdate="D:20150415150554+00'00'" opacity="1" rotation="0" width="3" start="563.490000,245.440000" end="563.490000,121.690000" head="Square" tail="Slash" interior-color="#1E59FF" />
+    <link width="0" page="2" rect="72.000000,454.270000,188.740000,467.440000" opacity="1" rotation="0" actiontype="URI" target="https://www.dropbox.com" />
+    <link width="0" page="2" rect="283.710000,418.270000,418.200000,431.440000" opacity="1" rotation="0" actiontype="URI" target="http://www.dropbox.com/tour" />
+    <link width="0" page="2" rect="72.000000,400.270000,207.090000,413.440000" opacity="1" rotation="0" actiontype="URI" target="http://www.dropbox.com/help" />
+    <link width="0" page="3" rect="271.650000,655.870000,415.870000,669.040000" opacity="1" rotation="0" actiontype="URI" target="https://www.dropbox.com/plans" />
+    <link width="0" page="3" rect="383.600000,565.870000,517.010000,579.040000" opacity="1" rotation="0" actiontype="URI" target="https://www.dropbox.com/account" />
+    <link width="0" page="3" rect="72.000000,547.870000,97.760000,561.040000" opacity="1" rotation="0" actiontype="URI" target="https://www.dropbox.com/account" />
+    <link width="0" page="3" rect="345.110000,457.870000,499.680000,471.040000" opacity="1" rotation="0" actiontype="URI" target="https://www.dropbox.com/help/26" />
+    <link width="0" page="3" rect="158.240000,205.870000,273.730000,219.040000" opacity="1" rotation="0" actiontype="URI" target="http://www.dropbox.com/anywhere" />
+    <link width="0" page="3" rect="105.110000,187.870000,217.190000,201.040000" opacity="1" rotation="0" actiontype="URI" target="http://www.dropbox.com" />
+<!-- the following one only to test PDFBOX-4345 and PDFBOX-3646. Might appear over another -->
+    <freetext page="0" date="D:20150415150448+00'00'" title="weblogic" rect="400.430000,487.270000,562.980000,571.310000" flags="print" name="88D147A8-CC51-4178-8102-8C63E2C90F09" creationdate="D:20150415150432+00'00'" opacity="1" rotation="0" width="2" style="solid" justification="left">
+      <contents-richtext>
+        <body
+          xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" style="font:12pt Helvetica; color:#D66C00;" xfa:APIVersion="Acrobat:7.0.8" xfa:spec="2.0.2">
+          <p dir="ltr">P&amp;1 <span style="text-decoration:word;font-family:Helvetica">P&amp;2</span> P&amp;3</p>
+        </body>
+      </contents-richtext>
+      <defaultappearance>/Helvetica 12 Tf 0.842 0.424 0.000 rg</defaultappearance>
+    </freetext>
+  </annots>
+</xfdf>

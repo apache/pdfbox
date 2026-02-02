@@ -1,0 +1,50 @@
+%% Licensed to the Apache Software Foundation (ASF) under one or more
+%% contributor license agreements.  See the NOTICE file distributed with
+%% this work for additional information regarding copyright ownership.
+%% The ASF licenses this file to You under the Apache License, Version 2.0
+%% (the "License"); you may not use this file except in compliance with
+%% the License.  You may obtain a copy of the License at
+%% 
+%%       http://www.apache.org/licenses/LICENSE-2.0
+%%
+%% Unless required by applicable law or agreed to in writing, software
+%% distributed under the License is distributed on an "AS IS" BASIS,
+%% WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+%% See the License for the specific language governing permissions and
+%% limitations under the License.
+%%
+%% This file isn't a valid CMap file, but it contains everything what
+%% is needed to test the CMapParser
+%%
+%%EndComments
+
+1 begincodespacerange<0000> <02FF>
+endcodespacerange
+
+2 beginbfchar
+<000A> <002A>
+<010A> <002B>
+endbfchar
+
+3 beginbfrange
+<0001> <0005> <0041>
+<0100> <0109> <0030>
+<0120> <0122> [<0050> <0052> <0054>]
+endbfrange
+
+3 begincidchar
+<0200> 512
+<0208> 520
+<020A> 522
+endcidchar
+
+2 begincidrange
+<0000> <00ff> 0
+<0100> <01ff> 256
+<0300> <0300> 300
+endcidrange
+
+endcmap
+
+%%EndResource
+%%EOF

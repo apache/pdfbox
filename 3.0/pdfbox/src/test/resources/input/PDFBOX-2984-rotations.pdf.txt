@@ -1,0 +1,12 @@
+﻿Apache PDFBox ®
+90° text matrix
+Apache PDFBox ®
+90° ctm
+Apache PDFBox ®
+180° text matrix
+Apache PDFBox ®
+180° ctm
+Apache PDFBox ®
+270° text matrix
+Apache PDFBox ®
+270° ctm

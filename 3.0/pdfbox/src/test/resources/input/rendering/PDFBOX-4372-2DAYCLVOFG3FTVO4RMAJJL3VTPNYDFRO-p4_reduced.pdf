@@ -1,0 +1,82 @@
+%PDF-1.7
+%цдья
+1 0 obj
+<<
+/Type /Catalog
+/Version /1.4
+/Pages 2 0 R
+/ViewerPreferences 3 0 R
+>>
+endobj
+2 0 obj
+<<
+/Type /Pages
+/Kids [4 0 R]
+/Count 1
+>>
+endobj
+3 0 obj
+<<
+/Direction /L2R
+>>
+endobj
+4 0 obj
+<<
+/Contents 5 0 R
+/MediaBox [0.0 0.0 595.276 595.276]
+/Parent 2 0 R
+/Resources 6 0 R
+/Type /Page
+>>
+endobj
+5 0 obj
+<<
+/Length 9
+>>
+stream
+/Fm0 Do
+
+endstream
+endobj
+6 0 obj
+<<
+/XObject 7 0 R
+>>
+endobj
+7 0 obj
+<<
+/Fm0 8 0 R
+>>
+endobj
+8 0 obj
+<<
+/Length 7
+/BBox [-16.4768 477.771 616.049 439.202]
+/Matrix [1 0 0 1 0 0]
+/Resources null
+/Subtype /Form
+>>
+stream
+/Fm0 Do
+endstream
+endobj
+xref
+0 9
+0000000000 65535 f
+0000000015 00000 n
+0000000103 00000 n
+0000000160 00000 n
+0000000197 00000 n
+0000000313 00000 n
+0000000373 00000 n
+0000000409 00000 n
+0000000441 00000 n
+trailer
+<<
+/Root 1 0 R
+/ID [<BC99C0C77FC82B57E84060F605632DC1> <BC99C0C77FC82B57E84060F605632DC1>]
+/Size 9
+>>
+startxref
+593
+%%EOF

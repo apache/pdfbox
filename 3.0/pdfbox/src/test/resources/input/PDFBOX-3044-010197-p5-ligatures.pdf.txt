@@ -1,0 +1,51 @@
+﻿1 Overview
+Heavy ion collisions at the Large Hadron Collider (LHC) provide an opportunity for an unprecedented expansion
+of the study of Quantum Chromodynamics (QCD) in systems with extremely high energy density.
+Data collected by the four experiments at the Relativistic Heavy Ion Collider provide insight into what can be ex-
+pected at the LHC. The results suggest that in heavy ion collisions at XXXX 200 GeV an equilibrated, strongly-
+coupled partonic system is formed. There is strong evidence that this dense partonic medium is highly interactive,
+perhaps best described as a quark-gluon fluid, and is also almost opaque to fast partons. In addition, many surpris-
+ingly simple empirical relationships describing the global characteristics of particle production have been found.
+An extrapolation to LHC energies suggests that the heavy ion program has significant potential for major discov-
+eries. Similar to the expectations for high energy physics, heavy ion studies at the LHC will either confirm and
+extend the theoretical picture emerging from lower beam energies or challenge and redirect our understanding of
+strongly interacting matter at extreme densities. This will be accomplished both by extending existing studies over
+a dramatic increase in energy and also by bringing to bear a broad range of novel probes (such as high X jets and
+photons, X bosons, the X states, X and X mesons, and high-mass dileptons) which are accessible only at LHC
+energies.
+In this proposal, we will show that the Compact Muon Solenoid (CMS) detector provides unique capabilities for
+focused measurements that exploit the new opportunities at the LHC. These measurements will directly address
+the fundamental science questions in the field of high density QCD. This potential was recognized by the CMS
+collaboration which has included a heavy ion group since its inception. The US component of that group played
+a key role in expanding and developing the physics program and now leads the overall effort. The apparatus
+provides unprecedented coverage for tracking and both electromagnetic and hadronic calorimetry combined with
+high precision muon identification. The detector is read out by a very fast data aquisition system and allows for
+sophisticated triggering.
+In Section 2 we will describe the science case for heavy ion physics at LHC. Based on the knowledge gained in the
+first five years of RHIC running, and our current theoretical understanding, we provide examples of measurements
+that will address the fundamental science questions in this field. A description of the CMS detector (Section 3)
+and studies of its performance in the high multiplicity heavy ion environment (Section 4) illustrate that it excels in
+exactly those categories which the experience at RHIC indicates will be most critical.
+The key component in exploiting the CMS capabilities in heavy ion collisions is the trigger system, which is crucial
+in accessing the rare probes expected to yield the most direct insights into the properties of high density strongly
+interacting matter. The general trigger strategy and overall structure of the trigger hardware are introduced in
+Sections 5 and 6. More details of the Level-1 and Higher Level Triggers are given in Sections 7 and 8. Our studies
+have led to a unique trigger strategy for CMS Pb+Pb running, where the event selection will be performed in a
+very large online CPU farm running offline reconstruction algorithms. The implementation of this strategy forms
+the core of the proposed US contribution to CMS heavy-ion operations.
+Finally, the requested funding and the proposed schedule and management plan are described in Sections 9 and
+10. This proposal asks for a total of 2 M$ for FY2007 through FY2010. The bulk of this funding will be used
+to purchase computer hardware for use in the CMS trigger, with small amounts needed for establishing a trigger
+development facility in the US. It should be noted that this contribution represents about 10% of the overall cost of
+the full DAQ system and 0.4% of the total cost of the CMS experiment.
+With the exception of 0.25 FTE technician in FY2007 for the initial setup of the trigger facility, no personnel are
+supported under this proposal. Instead all of the US CMS heavy ion physicists (profiled in Appendix A) will be
+funded by their individual group budgets. Additional operating costs to cover collaboration fees as well as the
+anticipated impact of this project on the groups’ travel expenses are discussed in Appendix B. The capital cost of
+off-line computing to support CMS heavy ion physics at US institutions is discussed in Appendix C. Additional
+hardware projects to construct the ZDC (see Appendix D) and CASTOR detectors are also part of the US CMS
+heavy ion effort but are funded through other sources.
+In summary, The US CMS heavy ion group is actively engaged in preparing to exploit the unique physics potential
+using CMS to study heavy ion collisions at the LHC. Group members have extensive experience in the relevant
+topics from several of the detectors at RHIC as well as experiments at other facilities. Consultation and cooperation
+4
