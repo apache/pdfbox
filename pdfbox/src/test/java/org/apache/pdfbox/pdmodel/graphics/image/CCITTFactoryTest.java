@@ -16,12 +16,16 @@
 package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -267,4 +271,36 @@ public class CCITTFactoryTest extends TestCase
         document.close();
     }
 
+    /**
+     * PDFBOX-6164: test support of TIFF-files with FillOrder=2
+     *
+     * @throws MalformedURLException
+     * @throws IOException
+     * @throws URISyntaxException 
+     */
+    public void testFillOrder2() throws MalformedURLException, IOException, URISyntaxException
+    {
+        InputStream is = new URI("https://issues.apache.org/jira/secure/attachment/12558110/Wing.tif").
+                toURL().openStream();
+        byte [] ba = IOUtils.toByteArray(is);
+        is.close();
+
+        PDDocument document = new PDDocument();
+        PDImageXObject ximg = CCITTFactory.createFromByteArray(document, ba);
+
+        validate(ximg, 1, 4575, 2232, "tiff", PDDeviceGray.INSTANCE.getName());
+        BufferedImage bim = ImageIO.read(new ByteArrayInputStream(ba));
+        checkIdent(bim, ximg.getOpaqueImage(null, 1));
+        PDPage page = new PDPage(PDRectangle.A4);
+        document.addPage(page);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
+        contentStream.drawImage(ximg, 0, 0, ximg.getWidth() / 8, ximg.getHeight() / 8);
+        contentStream.close();
+        document.save(testResultsDir + "/Wing.pdf");
+        document.close();
+
+        document = PDDocument.load(new File(testResultsDir, "Wing.pdf"));
+        assertEquals(1, document.getNumberOfPages());
+        document.close();
+    }
 }
