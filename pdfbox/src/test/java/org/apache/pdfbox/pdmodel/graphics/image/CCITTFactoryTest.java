@@ -16,9 +16,14 @@
 package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -28,6 +33,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -271,6 +277,43 @@ class CCITTFactoryTest
                 PDImageXObject ximage3 = CCITTFactory.createFromFile(document, new File(tiffPath));
                 validate(ximage3, 1, 344, 287, "tiff", PDDeviceGray.INSTANCE.getName());
             }
+        }
+    }
+
+    /**
+     * PDFBOX-6164: test support of TIFF-files with FillOrder=2
+     *
+     * @throws MalformedURLException
+     * @throws IOException
+     * @throws URISyntaxException 
+     */
+    @Test
+    void testFillOrder2() throws MalformedURLException, IOException, URISyntaxException
+    {
+        byte[] ba;
+        try (InputStream is = new URI("https://issues.apache.org/jira/secure/attachment/12558110/Wing.tif").
+                toURL().openStream())
+        {
+            ba = IOUtils.toByteArray(is);
+        }
+        try (PDDocument document = new PDDocument())
+        {
+            PDImageXObject ximg = CCITTFactory.createFromByteArray(document, ba);
+            validate(ximg, 1, 4575, 2232, "tiff", PDDeviceGray.INSTANCE.getName());
+            BufferedImage bim = ImageIO.read(new ByteArrayInputStream(ba));
+            checkIdent(bim, ximg.getOpaqueImage(null, 1));
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false))
+            {
+                contentStream.drawImage(ximg, 0, 0, ximg.getWidth() / 8, ximg.getHeight() / 8);
+            }
+            document.save(TESTRESULTSDIR + "/Wing.pdf");
+        }
+
+        try (PDDocument document = Loader.loadPDF(new File(TESTRESULTSDIR, "Wing.pdf")))
+        {
+            assertEquals(1, document.getNumberOfPages());
         }
     }
 }
