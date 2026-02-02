@@ -104,7 +104,7 @@
           </plugin>
           <plugin>
               <artifactId>maven-compiler-plugin</artifactId>
-              <version>3.14.1</version>
+              <version>3.15.0</version>
           <!-- fails with maven 3.6.0 on jdk 6, works with 3.2.1, 3.5.0 and 3.5.2 -->
           <configuration>
               <showDeprecation>true</showDeprecation>
