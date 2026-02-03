@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -286,8 +287,11 @@ class CCITTFactoryTest
     @Test
     void testFillOrder2() throws IOException, URISyntaxException
     {
-        byte[] ba = new URI("https://issues.apache.org/jira/secure/attachment/12558110/Wing.tif").
-                toURL().openStream().readAllBytes();
+        byte[] ba;
+        try (InputStream is = new URI("https://issues.apache.org/jira/secure/attachment/12558110/Wing.tif").toURL().openStream())
+        {
+            ba = is.readAllBytes();
+        }
         PDDocument document = new PDDocument();
         PDImageXObject ximg = CCITTFactory.createFromByteArray(document, ba);
 
