@@ -609,7 +609,7 @@ public class PDFMergerUtility
                 {
                     if (!visited.add(destLastOutlineItem.getCOSObject()))
                     {
-                        LOG.warn("Outline ignored: " + destLastOutlineItem.getCOSObject());
+                        LOG.warn("Outline ignored:  {}", destLastOutlineItem.getCOSObject());
                         break; // Cycle detected
                     }
                     PDOutlineItem outlineItem = destLastOutlineItem.getNextSibling();
