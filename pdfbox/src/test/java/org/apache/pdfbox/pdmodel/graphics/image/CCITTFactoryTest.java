@@ -23,7 +23,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -274,11 +273,10 @@ public class CCITTFactoryTest extends TestCase
     /**
      * PDFBOX-6164: test support of TIFF-files with FillOrder=2
      *
-     * @throws MalformedURLException
      * @throws IOException
      * @throws URISyntaxException 
      */
-    public void testFillOrder2() throws MalformedURLException, IOException, URISyntaxException
+    public void testFillOrder2() throws IOException, URISyntaxException
     {
         InputStream is = new URI("https://issues.apache.org/jira/secure/attachment/12558110/Wing.tif").
                 toURL().openStream();
