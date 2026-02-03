@@ -145,6 +145,7 @@ public class CCITTFactoryTest extends TestCase
         
         document.close();  
         imageReader.dispose();
+        is.close();
     }
 
     public void testCreateFromBufferedImage() throws IOException
