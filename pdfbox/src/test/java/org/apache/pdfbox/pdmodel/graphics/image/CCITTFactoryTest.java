@@ -119,47 +119,47 @@ class CCITTFactoryTest
     {
         String tiffPath = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4multi.tif";
         
-        ImageInputStream is = ImageIO.createImageInputStream(new File(tiffPath));
-        ImageReader imageReader = ImageIO.getImageReaders(is).next();
-        imageReader.setInput(is);
-        int countTiffImages = imageReader.getNumImages(true);
-        assertTrue(countTiffImages > 1);
-        
-        try (PDDocument document = new PDDocument())
+        try (ImageInputStream is = ImageIO.createImageInputStream(new File(tiffPath)))
         {
-            int pdfPageNum = 0;
-            while (true)
+            ImageReader imageReader = ImageIO.getImageReaders(is).next();
+            imageReader.setInput(is);
+            int countTiffImages = imageReader.getNumImages(true);
+            assertTrue(countTiffImages > 1);
+            try (PDDocument document = new PDDocument())
             {
-                PDImageXObject ximage = CCITTFactory.createFromFile(document, new File(tiffPath), pdfPageNum);
-                if (ximage == null)
+                int pdfPageNum = 0;
+                while (true)
                 {
-                    break;
+                    PDImageXObject ximage = CCITTFactory.createFromFile(document, new File(tiffPath), pdfPageNum);
+                    if (ximage == null)
+                    {
+                        break;
+                    }
+                    BufferedImage bim = imageReader.read(pdfPageNum);
+                    validate(ximage, 1, bim.getWidth(), bim.getHeight(), "tiff", PDDeviceGray.INSTANCE.getName());
+                    checkIdent(bim, ximage.getOpaqueImage(null, 1));
+                    PDPage page = new PDPage(PDRectangle.A4);
+                    float fX = ximage.getWidth() / page.getMediaBox().getWidth();
+                    float fY = ximage.getHeight() / page.getMediaBox().getHeight();
+                    float factor = Math.max(fX, fY);
+                    document.addPage(page);
+                    try (PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false))
+                    {
+                        contentStream.drawImage(ximage, 0, 0, ximage.getWidth() / factor, ximage.getHeight() / factor);
+                    }
+                    ++pdfPageNum;
                 }
-                BufferedImage bim = imageReader.read(pdfPageNum);
-                validate(ximage, 1, bim.getWidth(), bim.getHeight(), "tiff", PDDeviceGray.INSTANCE.getName());
-                checkIdent(bim, ximage.getOpaqueImage(null, 1));
-                PDPage page = new PDPage(PDRectangle.A4);
-                float fX = ximage.getWidth() / page.getMediaBox().getWidth();
-                float fY = ximage.getHeight() / page.getMediaBox().getHeight();
-                float factor = Math.max(fX, fY);
-                document.addPage(page);
-                try (PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false))
-                {
-                    contentStream.drawImage(ximage, 0, 0, ximage.getWidth() / factor, ximage.getHeight() / factor);
-                }
-                ++pdfPageNum;
+                
+                assertEquals(countTiffImages, pdfPageNum);
+                
+                document.save(TESTRESULTSDIR + "/multitiff.pdf");
             }
-            
-            assertEquals(countTiffImages, pdfPageNum);
-            
-            document.save(TESTRESULTSDIR + "/multitiff.pdf");
+            try (PDDocument document = Loader.loadPDF(new File(TESTRESULTSDIR, "multitiff.pdf"), (String) null))
+            {
+                assertEquals(countTiffImages, document.getNumberOfPages());
+            }
+            imageReader.dispose();
         }
-        
-        try (PDDocument document = Loader.loadPDF(new File(TESTRESULTSDIR, "multitiff.pdf"), (String) null))
-        {
-            assertEquals(countTiffImages, document.getNumberOfPages());
-        }  
-        imageReader.dispose();
     }
 
     @Test
