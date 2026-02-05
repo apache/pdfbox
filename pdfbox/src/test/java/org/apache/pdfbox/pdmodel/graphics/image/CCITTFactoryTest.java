@@ -239,9 +239,11 @@ class CCITTFactoryTest
         String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
         File copiedTiffFile = new File(TESTRESULTSDIR, "ccittg3.tif");
         Files.copy(new File(tiffG3Path).toPath(), copiedTiffFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        PDDocument document = new PDDocument();
-        CCITTFactory.createFromFile(document, copiedTiffFile);
-        assertTrue(copiedTiffFile.delete());
+        try (PDDocument document = new PDDocument())
+        {
+            CCITTFactory.createFromFile(document, copiedTiffFile);
+            assertTrue(copiedTiffFile.delete());
+        }
     }
 
     /**
@@ -255,9 +257,11 @@ class CCITTFactoryTest
         String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
         File copiedTiffFile = new File(TESTRESULTSDIR, "ccittg3n.tif");
         Files.copy(new File(tiffG3Path).toPath(), copiedTiffFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        PDDocument document = new PDDocument();
-        CCITTFactory.createFromFile(document, copiedTiffFile, 0);
-        assertTrue(copiedTiffFile.delete());
+        try (PDDocument document = new PDDocument())
+        {
+            CCITTFactory.createFromFile(document, copiedTiffFile, 0);
+            assertTrue(copiedTiffFile.delete());
+        }
     }
 
     /**
