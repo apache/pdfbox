@@ -238,9 +238,11 @@ class CCITTFactoryTest
         String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
         File copiedTiffFile = new File(TESTRESULTSDIR, "ccittg3.tif");
         Files.copy(new File(tiffG3Path).toPath(), copiedTiffFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        PDDocument document = new PDDocument();
-        CCITTFactory.createFromFile(document, copiedTiffFile);
-        assertTrue(copiedTiffFile.delete());
+        try (PDDocument document = new PDDocument())
+        {
+            CCITTFactory.createFromFile(document, copiedTiffFile);
+            assertTrue(copiedTiffFile.delete());
+        }
     }
 
     /**
@@ -254,9 +256,11 @@ class CCITTFactoryTest
         String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
         File copiedTiffFile = new File(TESTRESULTSDIR, "ccittg3n.tif");
         Files.copy(new File(tiffG3Path).toPath(), copiedTiffFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        PDDocument document = new PDDocument();
-        CCITTFactory.createFromFile(document, copiedTiffFile, 0);
-        assertTrue(copiedTiffFile.delete());
+        try (PDDocument document = new PDDocument())
+        {
+            CCITTFactory.createFromFile(document, copiedTiffFile, 0);
+            assertTrue(copiedTiffFile.delete());
+        }
     }
 
     /**
@@ -292,23 +296,24 @@ class CCITTFactoryTest
         {
             ba = is.readAllBytes();
         }
-        PDDocument document = new PDDocument();
-        PDImageXObject ximg = CCITTFactory.createFromByteArray(document, ba);
-
-        validate(ximg, 1, 4575, 2232, "tiff", PDDeviceGray.INSTANCE.getName());
-        BufferedImage bim = ImageIO.read(new ByteArrayInputStream(ba));
-        checkIdent(bim, ximg.getOpaqueImage(null, 1));
-        PDPage page = new PDPage(PDRectangle.A4);
-        document.addPage(page);
-        try (PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false))
+        try (PDDocument document = new PDDocument())
         {
-            contentStream.drawImage(ximg, 0, 0, ximg.getWidth() / 8, ximg.getHeight() / 8);
+            PDImageXObject ximg = CCITTFactory.createFromByteArray(document, ba);
+            validate(ximg, 1, 4575, 2232, "tiff", PDDeviceGray.INSTANCE.getName());
+            BufferedImage bim = ImageIO.read(new ByteArrayInputStream(ba));
+            checkIdent(bim, ximg.getOpaqueImage(null, 1));
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false))
+            {
+                contentStream.drawImage(ximg, 0, 0, ximg.getWidth() / 8, ximg.getHeight() / 8);
+            }
+            document.save(TESTRESULTSDIR + "/Wing.pdf");
         }
-        document.save(TESTRESULTSDIR + "/Wing.pdf");
-        document.close();
 
-        document = Loader.loadPDF(new File(TESTRESULTSDIR, "Wing.pdf"));
-        assertEquals(1, document.getNumberOfPages());
-        document.close();
+        try (PDDocument document = Loader.loadPDF(new File(TESTRESULTSDIR, "Wing.pdf")))
+        {
+            assertEquals(1, document.getNumberOfPages());
+        }
     }
 }
