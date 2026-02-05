@@ -220,6 +220,7 @@ public class CCITTFactoryTest extends TestCase
         PDDocument document = new PDDocument();
         CCITTFactory.createFromFile(document, copiedTiffFile);
         assertTrue(copiedTiffFile.delete());
+        document.close();
     }
 
     /**
@@ -235,6 +236,7 @@ public class CCITTFactoryTest extends TestCase
         PDDocument document = new PDDocument();
         CCITTFactory.createFromFile(document, copiedTiffFile, 0);
         assertTrue(copiedTiffFile.delete());
+        document.close();
     }
 
     private void copyFile(File source, File dest) throws IOException
