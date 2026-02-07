@@ -109,6 +109,7 @@ public class PDFCloneUtilityTest extends TestCase
         // save and reload PDF, so that one can see that the files are legit
         dstDoc.save(TESTDIR + CLONEDST);
         dstDoc.close();
+        srcDoc.close();
         PDDocument doc1 = PDDocument.load(new File(TESTDIR + CLONESRC));
         assertEquals(1, doc1.getNumberOfPages());
         doc1.close();
