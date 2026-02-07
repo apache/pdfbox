@@ -86,54 +86,56 @@ class PDFCloneUtilityTest
 
         new File(TESTDIR).mkdirs();
 
-        PDDocument srcDoc = new PDDocument();
-        PDPage pdPage = new PDPage();
-        srcDoc.addPage(pdPage);
-        try (PDPageContentStream pdPageContentStream1 = new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, false))
+        try(PDDocument srcDoc = new PDDocument())
         {
-            pdPageContentStream1.setNonStrokingColor(Color.black);
-            pdPageContentStream1.addRect(100, 600, 300, 100);
-            pdPageContentStream1.fill();
-        }
-        try (PDPageContentStream pdPageContentStream2 = new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, false))
-        {
-            pdPageContentStream2.setNonStrokingColor(Color.red);
-            pdPageContentStream2.addRect(100, 500, 300, 100);
-            pdPageContentStream2.fill();
-        }
-        try (PDPageContentStream pdPageContentStream3 = new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, false))
-        {
-            pdPageContentStream3.setNonStrokingColor(Color.yellow);
-            pdPageContentStream3.addRect(100, 400, 300, 100);
-            pdPageContentStream3.fill();
-        }
+            PDPage pdPage = new PDPage();
+            srcDoc.addPage(pdPage);
+            try (PDPageContentStream pdPageContentStream1 = new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, false))
+            {
+                pdPageContentStream1.setNonStrokingColor(Color.black);
+                pdPageContentStream1.addRect(100, 600, 300, 100);
+                pdPageContentStream1.fill();
+            }
+            try (PDPageContentStream pdPageContentStream2 = new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, false))
+            {
+                pdPageContentStream2.setNonStrokingColor(Color.red);
+                pdPageContentStream2.addRect(100, 500, 300, 100);
+                pdPageContentStream2.fill();
+            }
+            try (PDPageContentStream pdPageContentStream3 = new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, false))
+            {
+                pdPageContentStream3.setNonStrokingColor(Color.yellow);
+                pdPageContentStream3.addRect(100, 400, 300, 100);
+                pdPageContentStream3.fill();
+            }
 
-        srcDoc.save(TESTDIR + CLONESRC);
-        PDFMergerUtility merger = new PDFMergerUtility();
-        try (PDDocument dstDoc = new PDDocument())
-        {
-            // this calls PDFCloneUtility.cloneForNewDocument(),
-            // which would fail before the fix in PDFBOX-2052
-            merger.appendDocument(dstDoc, srcDoc);
-            
-            // save and reload PDF, so that one can see that the files are legit
-            dstDoc.save(TESTDIR + CLONEDST);
-        }
-        try (PDDocument doc = Loader.loadPDF(new File(TESTDIR + CLONESRC)))
-        {
-            assertEquals(1, doc.getNumberOfPages());
-        }
-        try (PDDocument doc = Loader.loadPDF(new File(TESTDIR + CLONESRC), (String) null))
-        {
-            assertEquals(1, doc.getNumberOfPages());
-        }
-        try (PDDocument doc = Loader.loadPDF(new File(TESTDIR + CLONEDST)))
-        {
-            assertEquals(1, doc.getNumberOfPages());
-        }
-        try (PDDocument doc = Loader.loadPDF(new File(TESTDIR + CLONEDST), (String) null))
-        {
-            assertEquals(1, doc.getNumberOfPages());
+            srcDoc.save(TESTDIR + CLONESRC);
+            PDFMergerUtility merger = new PDFMergerUtility();
+            try (PDDocument dstDoc = new PDDocument())
+            {
+                // this calls PDFCloneUtility.cloneForNewDocument(),
+                // which would fail before the fix in PDFBOX-2052
+                merger.appendDocument(dstDoc, srcDoc);
+
+                // save and reload PDF, so that one can see that the files are legit
+                dstDoc.save(TESTDIR + CLONEDST);
+            }
+            try (PDDocument doc = Loader.loadPDF(new File(TESTDIR + CLONESRC)))
+            {
+                assertEquals(1, doc.getNumberOfPages());
+            }
+            try (PDDocument doc = Loader.loadPDF(new File(TESTDIR + CLONESRC), (String) null))
+            {
+                assertEquals(1, doc.getNumberOfPages());
+            }
+            try (PDDocument doc = Loader.loadPDF(new File(TESTDIR + CLONEDST)))
+            {
+                assertEquals(1, doc.getNumberOfPages());
+            }
+            try (PDDocument doc = Loader.loadPDF(new File(TESTDIR + CLONEDST), (String) null))
+            {
+                assertEquals(1, doc.getNumberOfPages());
+            }
         }
     }
 
