@@ -448,111 +448,104 @@ class LosslessFactoryTest
 
     private void doBitmaskTransparencyTest(int imageType, String pdfFilename) throws IOException
     {
-        PDDocument document = new PDDocument();
-
-        int width = 257;
-        int height = 256;
-
-        // create an ARGB image
-        BufferedImage argbImage = new BufferedImage(width, height, imageType);
-
-        // from there, create an image with Transparency.BITMASK
-        Graphics2D g = argbImage.createGraphics();
-        GraphicsConfiguration gc = g.getDeviceConfiguration();
-        argbImage = gc.createCompatibleImage(width, height, Transparency.BITMASK);
-        g.dispose();
-        // create a red rectangle
-        g = argbImage.createGraphics();
-        g.setColor(Color.red);
-        g.fillRect(0, 0, width, height);
-        g.dispose();
-
-        Random random = new Random();
-        random.setSeed(12345);
-        // create a transparency cross: only pixels in the 
-        // interval max/2 - max/8 ... max/2 + max/8 will be visible
-        int startX = width / 2 - width / 8;
-        int endX = width / 2 + width / 8;
-        int startY = height / 2 - height / 8;
-        int endY = height / 2 + height / 8;
-        for (int x = 0; x < width; ++x)
+        File pdfFile;
+        try (PDDocument document = new PDDocument())
         {
-            for (int y = 0; y < height; ++y)
+            int width = 257;
+            int height = 256;
+            // create an ARGB image
+            BufferedImage argbImage = new BufferedImage(width, height, imageType);
+            // from there, create an image with Transparency.BITMASK
+            Graphics2D g = argbImage.createGraphics();
+            GraphicsConfiguration gc = g.getDeviceConfiguration();
+            argbImage = gc.createCompatibleImage(width, height, Transparency.BITMASK);
+            g.dispose();
+            // create a red rectangle
+            g = argbImage.createGraphics();
+            g.setColor(Color.red);
+            g.fillRect(0, 0, width, height);
+            g.dispose();
+            Random random = new Random();
+            random.setSeed(12345);
+            // create a transparency cross: only pixels in the
+            // interval max/2 - max/8 ... max/2 + max/8 will be visible
+            int startX = width / 2 - width / 8;
+            int endX = width / 2 + width / 8;
+            int startY = height / 2 - height / 8;
+            int endY = height / 2 + height / 8;
+            for (int x = 0; x < width; ++x)
             {
-                // create pseudorandom alpha values, but those within the cross
-                // must be >= 128 and those outside must be < 128
-                int alpha;
-                if ((x >= startX && x <= endX) || y >= startY && y <= endY)
+                for (int y = 0; y < height; ++y)
                 {
-                    alpha = 128 + random.nextInt(128);
-                    assertTrue(alpha >= 128);
-                    argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | (alpha << 24));
-                    assertEquals(255, argbImage.getRGB(x, y) >>> 24);
-                }
-                else
-                {
-                    alpha = random.nextInt(128);
-                    assertTrue(alpha < 128);
-                    argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | (alpha << 24));
-                    assertEquals(0, argbImage.getRGB(x, y) >>> 24);
+                    // create pseudorandom alpha values, but those within the cross
+                    // must be >= 128 and those outside must be < 128
+                    int alpha;
+                    if ((x >= startX && x <= endX) || y >= startY && y <= endY)
+                    {
+                        alpha = 128 + random.nextInt(128);
+                        assertTrue(alpha >= 128);
+                        argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | (alpha << 24));
+                        assertEquals(255, argbImage.getRGB(x, y) >>> 24);
+                    }
+                    else
+                    {
+                        alpha = random.nextInt(128);
+                        assertTrue(alpha < 128);
+                        argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | (alpha << 24));
+                        assertEquals(0, argbImage.getRGB(x, y) >>> 24);
+                    }
                 }
             }
-        }
-
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, argbImage);
-        validate(ximage, 8, width, height, "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(argbImage, ximage.getImage());
-        checkIdentRGB(argbImage, ximage.getOpaqueImage(null, 1));
-
-        assertNotNull(ximage.getSoftMask());
-        validate(ximage.getSoftMask(), 1, width, height, "png", PDDeviceGray.INSTANCE.getName());
-        assertEquals(2, colorCount(ximage.getSoftMask().getImage()));
-
-        // check whether the mask is a b/w cross
-        BufferedImage maskImage = ximage.getSoftMask().getImage();
-        
-        // avoid multiple of 8 to test padding
-        assertNotEquals(0, maskImage.getWidth() % 8);
-
-        assertEquals(Transparency.OPAQUE, maskImage.getTransparency());
-        for (int x = 0; x < width; ++x)
-        {
-            for (int y = 0; y < height; ++y)
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, argbImage);
+            validate(ximage, 8, width, height, "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(argbImage, ximage.getImage());
+            checkIdentRGB(argbImage, ximage.getOpaqueImage(null, 1));
+            assertNotNull(ximage.getSoftMask());
+            validate(ximage.getSoftMask(), 1, width, height, "png", PDDeviceGray.INSTANCE.getName());
+            assertEquals(2, colorCount(ximage.getSoftMask().getImage()));
+            // check whether the mask is a b/w cross
+            BufferedImage maskImage = ximage.getSoftMask().getImage();
+            // avoid multiple of 8 to test padding
+            assertNotEquals(0, maskImage.getWidth() % 8);
+            assertEquals(Transparency.OPAQUE, maskImage.getTransparency());
+            for (int x = 0; x < width; ++x)
             {
-                if ((x >= startX && x <= endX) || y >= startY && y <= endY)
+                for (int y = 0; y < height; ++y)
                 {
-                    assertEquals(0xFFFFFF, maskImage.getRGB(x, y) & 0xFFFFFF);
-                }
-                else
-                {
-                    assertEquals(0, maskImage.getRGB(x, y) & 0xFFFFFF);
+                    if ((x >= startX && x <= endX) || y >= startY && y <= endY)
+                    {
+                        assertEquals(0xFFFFFF, maskImage.getRGB(x, y) & 0xFFFFFF);
+                    }
+                    else
+                    {
+                        assertEquals(0, maskImage.getRGB(x, y) & 0xFFFFFF);
+                    }
                 }
             }
+            // This part isn't really needed because this test doesn't break
+            // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
+            // if something goes wrong in the future and we want to have a PDF to open.
+            // Create a rectangle
+            BufferedImage rectImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            g = rectImage.createGraphics();
+            g.setColor(Color.blue);
+            g.fillRect(0, 0, width, height);
+            g.dispose();
+            PDImageXObject ximage2 = LosslessFactory.createFromImage(document, rectImage);
+            PDPage page = new PDPage();
+            document.addPage(page);
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false))
+            {
+                contentStream.drawImage(ximage2, 150, 300, ximage2.getWidth(), ximage2.getHeight());
+                contentStream.drawImage(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
+            }
+            pdfFile = new File(TESTRESULTSDIR, pdfFilename);
+            document.save(pdfFile);
         }
-
-        // This part isn't really needed because this test doesn't break
-        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
-        // if something goes wrong in the future and we want to have a PDF to open.
-        // Create a rectangle
-        BufferedImage rectImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        g = rectImage.createGraphics();
-        g.setColor(Color.blue);
-        g.fillRect(0, 0, width, height);
-        g.dispose();
-        PDImageXObject ximage2 = LosslessFactory.createFromImage(document, rectImage);
-
-        PDPage page = new PDPage();
-        document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
-        contentStream.drawImage(ximage2, 150, 300, ximage2.getWidth(), ximage2.getHeight());
-        contentStream.drawImage(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
-        contentStream.close();
-        File pdfFile = new File(TESTRESULTSDIR, pdfFilename);
-        document.save(pdfFile);
-        document.close();
-        document = Loader.loadPDF(pdfFile, (String) null);
-        new PDFRenderer(document).renderImage(0);
-        document.close();
+        try (PDDocument document = Loader.loadPDF(pdfFile, (String) null))
+        {
+            new PDFRenderer(document).renderImage(0);
+        }
     }
 
     /**
@@ -607,46 +600,52 @@ class LosslessFactoryTest
     @Test
     void testCreateLosslessFromImageINT_BGR() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
-
-        BufferedImage imgBgr = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_BGR);
-        Graphics2D graphics = imgBgr.createGraphics();
-        graphics.drawImage(image, 0, 0, null);
-
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, imgBgr);
-        validate(ximage, 8, imgBgr.getWidth(), imgBgr.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(image, ximage.getImage());
+        try (PDDocument document = new PDDocument())
+        {
+            BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
+            
+            BufferedImage imgBgr = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_BGR);
+            Graphics2D graphics = imgBgr.createGraphics();
+            graphics.drawImage(image, 0, 0, null);
+            
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, imgBgr);
+            validate(ximage, 8, imgBgr.getWidth(), imgBgr.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(image, ximage.getImage());
+        }
     }
 
     @Test
     void testCreateLosslessFromImageINT_RGB() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
-
-        BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics2D graphics = imgRgb.createGraphics();
-        graphics.drawImage(image, 0, 0, null);
-
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
-        validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(image, ximage.getImage());
+        try (PDDocument document = new PDDocument())
+        {
+            BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
+            
+            BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D graphics = imgRgb.createGraphics();
+            graphics.drawImage(image, 0, 0, null);
+            
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
+            validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(image, ximage.getImage());
+        }
     }
 
     @Test
     void testCreateLosslessFromImageBYTE_3BGR() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
-
-        BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-        Graphics2D graphics = imgRgb.createGraphics();
-        graphics.drawImage(image, 0, 0, null);
-
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
-        validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(image, ximage.getImage());
+        try (PDDocument document = new PDDocument())
+        {
+            BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
+            
+            BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+            Graphics2D graphics = imgRgb.createGraphics();
+            graphics.drawImage(image, 0, 0, null);
+            
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
+            validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(image, ximage.getImage());
+        }
     }
 
     @Test
