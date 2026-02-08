@@ -144,35 +144,37 @@ class LosslessFactoryTest
     @Test
     void testCreateLosslessFromImageINT_ARGB() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
-
-        // create an ARGB image
-        int w = image.getWidth();
-        int h = image.getHeight();
-        BufferedImage argbImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        Graphics ag = argbImage.getGraphics();
-        ag.drawImage(image, 0, 0, null);
-        ag.dispose();
-
-        for (int x = 0; x < argbImage.getWidth(); ++x)
+        try(PDDocument document = new PDDocument())
         {
-            for (int y = 0; y < argbImage.getHeight(); ++y)
+            BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
+
+            // create an ARGB image
+            int w = image.getWidth();
+            int h = image.getHeight();
+            BufferedImage argbImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            Graphics ag = argbImage.getGraphics();
+            ag.drawImage(image, 0, 0, null);
+            ag.dispose();
+
+            for (int x = 0; x < argbImage.getWidth(); ++x)
             {
-                argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | ((y / 10 * 10) << 24));
+                for (int y = 0; y < argbImage.getHeight(); ++y)
+                {
+                    argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | ((y / 10 * 10) << 24));
+                }
             }
+
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, argbImage);
+            validate(ximage, 8, argbImage.getWidth(), argbImage.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(argbImage, ximage.getImage());
+            checkIdentRGB(argbImage, ximage.getOpaqueImage(null, 1));
+
+            assertNotNull(ximage.getSoftMask());
+            validate(ximage.getSoftMask(), 8, argbImage.getWidth(), argbImage.getHeight(), "png", PDDeviceGray.INSTANCE.getName());
+            assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
+
+            doWritePDF(document, ximage, TESTRESULTSDIR, "intargb.pdf");
         }
-
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, argbImage);
-        validate(ximage, 8, argbImage.getWidth(), argbImage.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(argbImage, ximage.getImage());
-        checkIdentRGB(argbImage, ximage.getOpaqueImage(null, 1));
-
-        assertNotNull(ximage.getSoftMask());
-        validate(ximage.getSoftMask(), 8, argbImage.getWidth(), argbImage.getHeight(), "png", PDDeviceGray.INSTANCE.getName());
-        assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
-
-        doWritePDF(document, ximage, TESTRESULTSDIR, "intargb.pdf");
     }
 
     /**
@@ -208,45 +210,47 @@ class LosslessFactoryTest
     @Test
     void testCreateLosslessFromImage4BYTE_ABGR() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
-
-        // create an ARGB image
-        int w = image.getWidth();
-        int h = image.getHeight();
-        BufferedImage argbImage = new BufferedImage(w, h, BufferedImage.TYPE_4BYTE_ABGR);
-        Graphics ag = argbImage.getGraphics();
-        ag.drawImage(image, 0, 0, null);
-        ag.dispose();
-
-        for (int x = 0; x < argbImage.getWidth(); ++x)
+        try(PDDocument document = new PDDocument())
         {
-            for (int y = 0; y < argbImage.getHeight(); ++y)
+            BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
+
+            // create an ARGB image
+            int w = image.getWidth();
+            int h = image.getHeight();
+            BufferedImage argbImage = new BufferedImage(w, h, BufferedImage.TYPE_4BYTE_ABGR);
+            Graphics ag = argbImage.getGraphics();
+            ag.drawImage(image, 0, 0, null);
+            ag.dispose();
+
+            for (int x = 0; x < argbImage.getWidth(); ++x)
             {
-                argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | ((y / 10 * 10) << 24));
+                for (int y = 0; y < argbImage.getHeight(); ++y)
+                {
+                    argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | ((y / 10 * 10) << 24));
+                }
             }
+
+            // extra for PDFBOX-3181: check for exception due to different sizes of
+            // alphaRaster.getSampleModel().getWidth()
+            // and
+            // alphaRaster.getWidth()
+            // happens with image returned by BufferedImage.getSubimage()
+            argbImage = argbImage.getSubimage(1, 1, argbImage.getWidth() - 2, argbImage.getHeight() - 2);
+            w -= 2;
+            h -= 2;
+
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, argbImage);
+
+            validate(ximage, 8, w, h, "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(argbImage, ximage.getImage());
+            checkIdentRGB(argbImage, ximage.getOpaqueImage(null, 1));
+
+            assertNotNull(ximage.getSoftMask());
+            validate(ximage.getSoftMask(), 8, w, h, "png", PDDeviceGray.INSTANCE.getName());
+            assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
+
+            doWritePDF(document, ximage, TESTRESULTSDIR, "4babgr.pdf");
         }
-
-        // extra for PDFBOX-3181: check for exception due to different sizes of 
-        // alphaRaster.getSampleModel().getWidth()
-        // and
-        // alphaRaster.getWidth()
-        // happens with image returned by BufferedImage.getSubimage()
-        argbImage = argbImage.getSubimage(1, 1, argbImage.getWidth() - 2, argbImage.getHeight() - 2);
-        w -= 2;
-        h -= 2;
-
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, argbImage);
-
-        validate(ximage, 8, w, h, "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(argbImage, ximage.getImage());
-        checkIdentRGB(argbImage, ximage.getOpaqueImage(null, 1));
-
-        assertNotNull(ximage.getSoftMask());
-        validate(ximage.getSoftMask(), 8, w, h, "png", PDDeviceGray.INSTANCE.getName());
-        assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
-
-        doWritePDF(document, ximage, TESTRESULTSDIR, "4babgr.pdf");
     }
 
     /**
@@ -259,34 +263,36 @@ class LosslessFactoryTest
     @Test
     void testCreateLosslessFromImageUSHORT_555_RGB() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
-
-        // create an USHORT_555_RGB image
-        int w = image.getWidth();
-        int h = image.getHeight();
-        BufferedImage rgbImage = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_555_RGB);
-        Graphics ag = rgbImage.getGraphics();
-        ag.drawImage(image, 0, 0, null);
-        ag.dispose();
-
-        for (int x = 0; x < rgbImage.getWidth(); ++x)
+        try(PDDocument document = new PDDocument())
         {
-            for (int y = 0; y < rgbImage.getHeight(); ++y)
+            BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
+
+            // create an USHORT_555_RGB image
+            int w = image.getWidth();
+            int h = image.getHeight();
+            BufferedImage rgbImage = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_555_RGB);
+            Graphics ag = rgbImage.getGraphics();
+            ag.drawImage(image, 0, 0, null);
+            ag.dispose();
+
+            for (int x = 0; x < rgbImage.getWidth(); ++x)
             {
-                rgbImage.setRGB(x, y, (rgbImage.getRGB(x, y) & 0xFFFFFF) | ((y / 10 * 10) << 24));
+                for (int y = 0; y < rgbImage.getHeight(); ++y)
+                {
+                    rgbImage.setRGB(x, y, (rgbImage.getRGB(x, y) & 0xFFFFFF) | ((y / 10 * 10) << 24));
+                }
             }
+
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, rgbImage);
+
+            validate(ximage, 8, w, h, "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(rgbImage, ximage.getImage());
+            checkIdentRGB(rgbImage, ximage.getOpaqueImage(null, 1));
+
+            assertNull(ximage.getSoftMask());
+
+            doWritePDF(document, ximage, TESTRESULTSDIR, "ushort555rgb.pdf");
         }
-
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, rgbImage);
-
-        validate(ximage, 8, w, h, "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(rgbImage, ximage.getImage());
-        checkIdentRGB(rgbImage, ximage.getOpaqueImage(null, 1));
-
-        assertNull(ximage.getSoftMask());
-
-        doWritePDF(document, ximage, TESTRESULTSDIR, "ushort555rgb.pdf");
     }
 
     /**
@@ -298,24 +304,26 @@ class LosslessFactoryTest
     @Test
     void testCreateLosslessFromTransparentGIF() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResource("gif.gif"));
-        
-        assertEquals(Transparency.BITMASK, image.getColorModel().getTransparency());
+        try(PDDocument document = new PDDocument())
+        {
+            BufferedImage image = ImageIO.read(this.getClass().getResource("gif.gif"));
 
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
+            assertEquals(Transparency.BITMASK, image.getColorModel().getTransparency());
 
-        int w = image.getWidth();
-        int h = image.getHeight();
-        validate(ximage, 8, w, h, "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(image, ximage.getImage());
-        checkIdentRGB(image, ximage.getOpaqueImage(null, 1));
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
 
-        assertNotNull(ximage.getSoftMask());
-        validate(ximage.getSoftMask(), 1, w, h, "png", PDDeviceGray.INSTANCE.getName());
-        assertEquals(2, colorCount(ximage.getSoftMask().getImage()));
+            int w = image.getWidth();
+            int h = image.getHeight();
+            validate(ximage, 8, w, h, "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(image, ximage.getImage());
+            checkIdentRGB(image, ximage.getOpaqueImage(null, 1));
 
-        doWritePDF(document, ximage, TESTRESULTSDIR, "gif.pdf");
+            assertNotNull(ximage.getSoftMask());
+            validate(ximage.getSoftMask(), 1, w, h, "png", PDDeviceGray.INSTANCE.getName());
+            assertEquals(2, colorCount(ximage.getSoftMask().getImage()));
+
+            doWritePDF(document, ximage, TESTRESULTSDIR, "gif.pdf");
+        }
     }
 
     /**
@@ -328,25 +336,27 @@ class LosslessFactoryTest
     @Test
     void testCreateLosslessFromTransparent1BitGIF() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResource("gif-1bit-transparent.gif"));
+        try(PDDocument document = new PDDocument())
+        {
+            BufferedImage image = ImageIO.read(this.getClass().getResource("gif-1bit-transparent.gif"));
 
-        assertEquals(Transparency.BITMASK, image.getColorModel().getTransparency());
-        assertEquals(BufferedImage.TYPE_BYTE_BINARY, image.getType());
+            assertEquals(Transparency.BITMASK, image.getColorModel().getTransparency());
+            assertEquals(BufferedImage.TYPE_BYTE_BINARY, image.getType());
 
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
 
-        int w = image.getWidth();
-        int h = image.getHeight();
-        validate(ximage, 8, w, h, "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(image, ximage.getImage());
-        checkIdentRGB(image, ximage.getOpaqueImage(null, 1));
+            int w = image.getWidth();
+            int h = image.getHeight();
+            validate(ximage, 8, w, h, "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(image, ximage.getImage());
+            checkIdentRGB(image, ximage.getOpaqueImage(null, 1));
 
-        assertNotNull(ximage.getSoftMask());
-        validate(ximage.getSoftMask(), 1, w, h, "png", PDDeviceGray.INSTANCE.getName());
-        assertEquals(2, colorCount(ximage.getSoftMask().getImage()));
+            assertNotNull(ximage.getSoftMask());
+            validate(ximage.getSoftMask(), 1, w, h, "png", PDDeviceGray.INSTANCE.getName());
+            assertEquals(2, colorCount(ximage.getSoftMask().getImage()));
 
-        doWritePDF(document, ximage, TESTRESULTSDIR, "gif-1bit-transparent.pdf");
+            doWritePDF(document, ximage, TESTRESULTSDIR, "gif-1bit-transparent.pdf");
+        }
     }
 
     /**
@@ -357,13 +367,15 @@ class LosslessFactoryTest
     @Test
     void testCreateLosslessFromGovdocs032163() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(new File("target/imgs", "PDFBOX-4184-032163.jpg"));
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
-        validate(ximage, 8, image.getWidth(), image.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(image, ximage.getImage());
+        try(PDDocument document = new PDDocument())
+        {
+            BufferedImage image = ImageIO.read(new File("target/imgs", "PDFBOX-4184-032163.jpg"));
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
+            validate(ximage, 8, image.getWidth(), image.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(image, ximage.getImage());
 
-        doWritePDF(document, ximage, TESTRESULTSDIR, "PDFBOX-4184-032163.pdf");
+            doWritePDF(document, ximage, TESTRESULTSDIR, "PDFBOX-4184-032163.pdf");
+        }
     }
 
     /**
@@ -561,118 +573,133 @@ class LosslessFactoryTest
     @Test
     void testCreateLosslessFromImageCMYK() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
-
-        final ColorSpace targetCS;
-        try (InputStream is = this.getClass().getResourceAsStream("/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc"))
+        try(PDDocument document = new PDDocument())
         {
-            targetCS = new ICC_ColorSpace(ICC_Profile.getInstance(is));
+            BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
+
+            final ColorSpace targetCS;
+            try (InputStream is = this.getClass().getResourceAsStream("/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc"))
+            {
+                targetCS = new ICC_ColorSpace(ICC_Profile.getInstance(is));
+            }
+            ColorConvertOp op = new ColorConvertOp(image.getColorModel().getColorSpace(), targetCS, null);
+            BufferedImage imageCMYK = op.filter(image, null);
+
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, imageCMYK);
+            validate(ximage, 8, imageCMYK.getWidth(), imageCMYK.getHeight(), "png", "ICCBased");
+
+            doWritePDF(document, ximage, TESTRESULTSDIR, "cmyk.pdf");
+
+            // still slight difference of 1 color level
+            //checkIdent(imageCMYK, ximage.getImage());
         }
-        ColorConvertOp op = new ColorConvertOp(image.getColorModel().getColorSpace(), targetCS, null);
-        BufferedImage imageCMYK = op.filter(image, null);
-
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, imageCMYK);
-        validate(ximage, 8, imageCMYK.getWidth(), imageCMYK.getHeight(), "png", "ICCBased");
-
-        doWritePDF(document, ximage, TESTRESULTSDIR, "cmyk.pdf");
-        
-        // still slight difference of 1 color level
-        //checkIdent(imageCMYK, ximage.getImage());
     }
 
     @Test
     void testCreateLosslessFrom16Bit() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
+        try(PDDocument document = new PDDocument())
+        {
+            BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
 
-        ColorSpace targetCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-        int dataBufferType = DataBuffer.TYPE_USHORT;
-        final ColorModel colorModel = new ComponentColorModel(targetCS, false, false,
-                ColorModel.OPAQUE, dataBufferType);
-        WritableRaster targetRaster = Raster.createInterleavedRaster(dataBufferType, image.getWidth(), image.getHeight(),
-                targetCS.getNumComponents(), new Point(0, 0));
-        BufferedImage img16Bit = new BufferedImage(colorModel, targetRaster, false,
-                new Hashtable<>());
-        ColorConvertOp op = new ColorConvertOp(image.getColorModel().getColorSpace(), targetCS, null);
-        op.filter(image, img16Bit);
+            ColorSpace targetCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+            int dataBufferType = DataBuffer.TYPE_USHORT;
+            final ColorModel colorModel = new ComponentColorModel(targetCS, false, false,
+                    ColorModel.OPAQUE, dataBufferType);
+            WritableRaster targetRaster = Raster.createInterleavedRaster(dataBufferType, image.getWidth(), image.getHeight(),
+                    targetCS.getNumComponents(), new Point(0, 0));
+            BufferedImage img16Bit = new BufferedImage(colorModel, targetRaster, false,
+                    new Hashtable<>());
+            ColorConvertOp op = new ColorConvertOp(image.getColorModel().getColorSpace(), targetCS, null);
+            op.filter(image, img16Bit);
 
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, img16Bit);
-        validate(ximage, 16, img16Bit.getWidth(), img16Bit.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(image, ximage.getImage());
-        doWritePDF(document, ximage, TESTRESULTSDIR, "misc-16bit.pdf");
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, img16Bit);
+            validate(ximage, 16, img16Bit.getWidth(), img16Bit.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(image, ximage.getImage());
+            doWritePDF(document, ximage, TESTRESULTSDIR, "misc-16bit.pdf");
+        }
     }
 
     @Test
     void testCreateLosslessFromImageINT_BGR() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
+        try(PDDocument document = new PDDocument())
+        {
+            BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
 
-        BufferedImage imgBgr = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_BGR);
-        Graphics2D graphics = imgBgr.createGraphics();
-        graphics.drawImage(image, 0, 0, null);
+            BufferedImage imgBgr = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_BGR);
+            Graphics2D graphics = imgBgr.createGraphics();
+            graphics.drawImage(image, 0, 0, null);
 
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, imgBgr);
-        validate(ximage, 8, imgBgr.getWidth(), imgBgr.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(image, ximage.getImage());
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, imgBgr);
+            validate(ximage, 8, imgBgr.getWidth(), imgBgr.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(image, ximage.getImage());
+            graphics.dispose();
+        }
     }
 
     @Test
     void testCreateLosslessFromImageINT_RGB() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
+        try(PDDocument document = new PDDocument())
+        {
+            BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
 
-        BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics2D graphics = imgRgb.createGraphics();
-        graphics.drawImage(image, 0, 0, null);
+            BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D graphics = imgRgb.createGraphics();
+            graphics.drawImage(image, 0, 0, null);
 
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
-        validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(image, ximage.getImage());
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
+            validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(image, ximage.getImage());
+            graphics.dispose();
+        }
     }
 
     @Test
     void testCreateLosslessFromImageBYTE_3BGR() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
+        try(PDDocument document = new PDDocument())
+        {
+            BufferedImage image = ImageIO.read(this.getClass().getResource("png.png"));
 
-        BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-        Graphics2D graphics = imgRgb.createGraphics();
-        graphics.drawImage(image, 0, 0, null);
+            BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+            Graphics2D graphics = imgRgb.createGraphics();
+            graphics.drawImage(image, 0, 0, null);
 
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
-        validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(image, ximage.getImage());
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
+            validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(image, ximage.getImage());
+            graphics.dispose();
+        }
     }
 
     @Test
     void testCreateLosslessFrom16BitPNG() throws IOException
     {
-        PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(new File("target/imgs", "PDFBOX-4184-16bit.png"));
+        try(PDDocument document = new PDDocument())
+        {
+            BufferedImage image = ImageIO.read(new File("target/imgs", "PDFBOX-4184-16bit.png"));
 
-        assertEquals(64, image.getColorModel().getPixelSize());
-        assertEquals(Transparency.TRANSLUCENT, image.getColorModel().getTransparency());
-        assertEquals(4, image.getRaster().getNumDataElements());
-        assertEquals(java.awt.image.DataBuffer.TYPE_USHORT, image.getRaster().getDataBuffer().getDataType());
+            assertEquals(64, image.getColorModel().getPixelSize());
+            assertEquals(Transparency.TRANSLUCENT, image.getColorModel().getTransparency());
+            assertEquals(4, image.getRaster().getNumDataElements());
+            assertEquals(java.awt.image.DataBuffer.TYPE_USHORT, image.getRaster().getDataBuffer().getDataType());
 
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
+            PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
 
-        int w = image.getWidth();
-        int h = image.getHeight();
-        validate(ximage, 16, w, h, "png", PDDeviceRGB.INSTANCE.getName());
-        checkIdent(image, ximage.getImage());
-        checkIdentRGB(image, ximage.getOpaqueImage(null, 1));
-        checkIdentRaw(image, ximage);
+            int w = image.getWidth();
+            int h = image.getHeight();
+            validate(ximage, 16, w, h, "png", PDDeviceRGB.INSTANCE.getName());
+            checkIdent(image, ximage.getImage());
+            checkIdentRGB(image, ximage.getOpaqueImage(null, 1));
+            checkIdentRaw(image, ximage);
 
-        assertNotNull(ximage.getSoftMask());
-        validate(ximage.getSoftMask(), 16, w, h, "png", PDDeviceGray.INSTANCE.getName());
-        assertEquals(35, colorCount(ximage.getSoftMask().getImage()));
+            assertNotNull(ximage.getSoftMask());
+            validate(ximage.getSoftMask(), 16, w, h, "png", PDDeviceGray.INSTANCE.getName());
+            assertEquals(35, colorCount(ximage.getSoftMask().getImage()));
 
-        doWritePDF(document, ximage, TESTRESULTSDIR, "png16bit.pdf");
+            doWritePDF(document, ximage, TESTRESULTSDIR, "png16bit.pdf");
+        }
     }
 }
