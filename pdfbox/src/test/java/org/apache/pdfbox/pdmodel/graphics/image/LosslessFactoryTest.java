@@ -593,6 +593,7 @@ public class LosslessFactoryTest extends TestCase
         PDImageXObject ximage = LosslessFactory.createFromImage(document, imgBgr);
         validate(ximage, 8, imgBgr.getWidth(), imgBgr.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
         checkIdent(image, ximage.getImage());
+        document.close();
     }
 
     public void testCreateLosslessFromImageINT_RGB() throws IOException
@@ -607,6 +608,7 @@ public class LosslessFactoryTest extends TestCase
         PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
         validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
         checkIdent(image, ximage.getImage());
+        document.close();
     }
 
     public void testCreateLosslessFromImageBYTE_3BGR() throws IOException
@@ -621,6 +623,7 @@ public class LosslessFactoryTest extends TestCase
         PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
         validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
         checkIdent(image, ximage.getImage());
+        document.close();
     }
 
     public void testCreateLosslessFrom16BitPNG() throws IOException
