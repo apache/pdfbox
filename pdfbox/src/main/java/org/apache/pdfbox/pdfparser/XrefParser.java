@@ -52,7 +52,7 @@ public class XrefParser
      * Collects all Xref/trailer objects and resolves them into single
      * object using startxref reference. 
      */
-    private XrefTrailerResolver xrefTrailerResolver = new XrefTrailerResolver();
+    private final XrefTrailerResolver xrefTrailerResolver = new XrefTrailerResolver();
 
     private final COSParser parser;
     private final RandomAccessRead source;
