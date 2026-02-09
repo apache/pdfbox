@@ -422,6 +422,8 @@ public class TestFontEmbedding extends TestCase
         assertTrue(embeddingIsPermitted);
 
         // no test for 1111
+        
+        doc.close();
     }
 
     /**
