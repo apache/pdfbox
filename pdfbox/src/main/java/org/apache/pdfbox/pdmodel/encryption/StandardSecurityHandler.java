@@ -147,8 +147,10 @@ public final class StandardSecurityHandler extends SecurityHandler
             throw new IOException("Decryption material is not compatible with the document");
         }
         
+        int encryptionVersion = encryption.getVersion();
         // This is only used with security version 4 and 5.
-        if (encryption.getVersion() >= 4) {
+        if (encryptionVersion >= 4)
+        {
 	        setStreamFilterName(encryption.getStreamFilterName());
 	        setStringFilterName(encryption.getStringFilterName());
         }
@@ -163,9 +165,9 @@ public final class StandardSecurityHandler extends SecurityHandler
 
         int dicPermissions = encryption.getPermissions();
         int dicRevision = encryption.getRevision();
-        int dicLength = encryption.getVersion() == 1 ? 5 : encryption.getLength() / 8;
-        
-        if (encryption.getVersion() == 4 || encryption.getVersion() == 5)
+        int dicLength = encryptionVersion == 1 ? 5 : encryption.getLength() / 8;
+
+        if (encryptionVersion == 4 || encryptionVersion == 5)
         {
             // detect whether AES encryption is used. This assumes that the encryption algo is 
             // stored in the PDCryptFilterDictionary
