@@ -135,10 +135,14 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             setKeyLength(defaultCryptFilterDictionary.getLength());
             setDecryptMetadata(defaultCryptFilterDictionary.isEncryptMetaData());
         }
-        else if (encryption.getLength() != 0)
+        else
         {
-            setKeyLength(encryption.getLength());
-            setDecryptMetadata(encryption.isEncryptMetaData());
+            int encryptionLength = encryption.getLength();
+            if (encryptionLength != 0)
+            {
+                setKeyLength(encryptionLength);
+                setDecryptMetadata(encryption.isEncryptMetaData());
+            }
         }
 
         PublicKeyDecryptionMaterial material = (PublicKeyDecryptionMaterial) decryptionMaterial;
