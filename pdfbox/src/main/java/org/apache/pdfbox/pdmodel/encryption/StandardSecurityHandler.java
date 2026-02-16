@@ -152,8 +152,10 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             throw new IOException("Decryption material is not compatible with the document");
         }
         
+        int encryptionVersion = encryption.getVersion();
         // This is only used with security version 4 and 5.
-        if (encryption.getVersion() >= REVISION_4) {
+        if (encryptionVersion >= REVISION_4)
+        {
             setStreamFilterName(encryption.getStreamFilterName());
             setStringFilterName(encryption.getStringFilterName());
         }
@@ -168,9 +170,9 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
 
         int dicPermissions = encryption.getPermissions();
         int dicRevision = encryption.getRevision();
-        int dicLength = encryption.getVersion() == 1 ? 5 : encryption.getLength() / 8;
+        int dicLength = encryptionVersion == 1 ? 5 : encryption.getLength() / 8;
         
-        if (encryption.getVersion() == REVISION_4 || encryption.getVersion() == REVISION_5)
+        if (encryptionVersion == REVISION_4 || encryptionVersion == REVISION_5)
         {
             // detect whether AES encryption is used. This assumes that the encryption algo is 
             // stored in the PDCryptFilterDictionary
