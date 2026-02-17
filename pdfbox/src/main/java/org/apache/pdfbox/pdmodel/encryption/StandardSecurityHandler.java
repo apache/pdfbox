@@ -236,34 +236,29 @@ public final class StandardSecurityHandler extends SecurityHandler
         AccessPermission currentAccessPermission;
 
         byte[] encryptedKey;
-        byte[] passwordBytes;
+        byte[] passwordBytes = password.getBytes(passwordCharset);
         boolean isOwnerPassword;
-        if( isOwnerPassword(password.getBytes(passwordCharset), userKey, ownerKey,
+        if (isOwnerPassword(passwordBytes, userKey, ownerKey,
                                  dicPermissions, documentIDBytes, dicRevision,
                                  dicLength, encryptMetadata) )
         {
             currentAccessPermission = AccessPermission.getOwnerAccessPermission();
             setCurrentAccessPermission(currentAccessPermission);
             
-            if (dicRevision == 6 || dicRevision == 5)
+            if (dicRevision != 5 && dicRevision != 6)
             {
-                passwordBytes = password.getBytes(passwordCharset);
-            }
-            else
-            {
-                passwordBytes = getUserPassword(password.getBytes(passwordCharset),
+                passwordBytes = getUserPassword(passwordBytes,
                         ownerKey, dicRevision, dicLength );
             }
             isOwnerPassword = true;
         }
-        else if( isUserPassword(password.getBytes(passwordCharset), userKey, ownerKey,
+        else if (isUserPassword(passwordBytes, userKey, ownerKey,
                            dicPermissions, documentIDBytes, dicRevision,
                            dicLength, encryptMetadata) )
         {
             currentAccessPermission = new AccessPermission(dicPermissions);
             currentAccessPermission.setReadOnly();
             setCurrentAccessPermission(currentAccessPermission);
-            passwordBytes = password.getBytes(passwordCharset);
             isOwnerPassword = false;
         }
         else
