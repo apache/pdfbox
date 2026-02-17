@@ -63,6 +63,7 @@ public class TestEmbeddedFiles extends TestCase
             assertNotNull(spec);
             assertNull(spec.getFile());
             assertNull(spec.getEmbeddedFile());
+            doc.close();
         }
         catch (NullPointerException e)
         {
@@ -108,7 +109,7 @@ public class TestEmbeddedFiles extends TestCase
 
         assertTrue("unix",
                 byteArrayContainsLC("unix embedded", unixFile.toByteArray(), "ISO-8859-1"));
-
+        doc.close();
     }
 
     private boolean byteArrayContainsLC(String target, byte[] bytes, String encoding)
