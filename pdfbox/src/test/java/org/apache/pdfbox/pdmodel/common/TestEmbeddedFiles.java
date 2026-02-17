@@ -44,12 +44,10 @@ class TestEmbeddedFiles
     {
         PDEmbeddedFile embeddedFile = null;
         boolean ok = false;
-        try
+        try (PDDocument doc = Loader
+                .loadPDF(RandomAccessReadBuffer.createBufferFromStream(TestEmbeddedFiles.class
+                        .getResourceAsStream("null_PDComplexFileSpecification.pdf"))))
         {
-            PDDocument doc = Loader
-                    .loadPDF(RandomAccessReadBuffer.createBufferFromStream(TestEmbeddedFiles.class
-                            .getResourceAsStream("null_PDComplexFileSpecification.pdf")));
-
             PDDocumentCatalog catalog = doc.getDocumentCatalog();
             PDDocumentNameDictionary names = catalog.getNames();
             assertEquals(2, names.getEmbeddedFiles().getNames().size(), "expected two files");
@@ -87,34 +85,34 @@ class TestEmbeddedFiles
         PDEmbeddedFile dosFile = null;
         PDEmbeddedFile unixFile = null;
 
-        PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
-                TestEmbeddedFiles.class.getResourceAsStream("testPDF_multiFormatEmbFiles.pdf")));
-
-        PDDocumentCatalog catalog = doc.getDocumentCatalog();
-        PDDocumentNameDictionary names = catalog.getNames();
-        PDEmbeddedFilesNameTreeNode treeNode = names.getEmbeddedFiles();
-        List<PDNameTreeNode<PDComplexFileSpecification>> kids = treeNode.getKids();
-        for (PDNameTreeNode<PDComplexFileSpecification> kid : kids)
+        try (PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
+                TestEmbeddedFiles.class.getResourceAsStream("testPDF_multiFormatEmbFiles.pdf"))))
         {
-            Map<String, PDComplexFileSpecification> tmpNames = kid.getNames();
-            COSObjectable obj = tmpNames.get("My first attachment");
+            PDDocumentCatalog catalog = doc.getDocumentCatalog();
+            PDDocumentNameDictionary names = catalog.getNames();
+            PDEmbeddedFilesNameTreeNode treeNode = names.getEmbeddedFiles();
+            List<PDNameTreeNode<PDComplexFileSpecification>> kids = treeNode.getKids();
+            for (PDNameTreeNode<PDComplexFileSpecification> kid : kids)
+            {
+                Map<String, PDComplexFileSpecification> tmpNames = kid.getNames();
+                COSObjectable obj = tmpNames.get("My first attachment");
+                
+                PDComplexFileSpecification spec = (PDComplexFileSpecification) obj;
+                nonOSFile = spec.getEmbeddedFile();
+                macFile = spec.getEmbeddedFileMac();
+                dosFile = spec.getEmbeddedFileDos();
+                unixFile = spec.getEmbeddedFileUnix();
+            }
             
-            PDComplexFileSpecification spec = (PDComplexFileSpecification) obj;
-            nonOSFile = spec.getEmbeddedFile();
-            macFile = spec.getEmbeddedFileMac();
-            dosFile = spec.getEmbeddedFileDos();
-            unixFile = spec.getEmbeddedFileUnix();
+            assertTrue(byteArrayContainsLC("non os specific", nonOSFile.toByteArray(), "ISO-8859-1"),
+                    "non os specific");
+            assertTrue(byteArrayContainsLC("mac embedded", macFile.toByteArray(), "ISO-8859-1"), "mac");
+            
+            assertTrue(byteArrayContainsLC("dos embedded", dosFile.toByteArray(), "ISO-8859-1"), "dos");
+            
+            assertTrue(byteArrayContainsLC("unix embedded", unixFile.toByteArray(), "ISO-8859-1"),
+                    "unix");
         }
-
-        assertTrue(byteArrayContainsLC("non os specific", nonOSFile.toByteArray(), "ISO-8859-1"),
-                "non os specific");
-        assertTrue(byteArrayContainsLC("mac embedded", macFile.toByteArray(), "ISO-8859-1"), "mac");
-
-        assertTrue(byteArrayContainsLC("dos embedded", dosFile.toByteArray(), "ISO-8859-1"), "dos");
-
-        assertTrue(byteArrayContainsLC("unix embedded", unixFile.toByteArray(), "ISO-8859-1"),
-                "unix");
-
     }
 
     private boolean byteArrayContainsLC(String target, byte[] bytes, String encoding)
