@@ -25,9 +25,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.interactive.form.PlainText.Paragraph;
-import org.apache.pdfbox.pdmodel.interactive.form.PlainText.TextAttribute;
-import org.apache.pdfbox.pdmodel.interactive.form.PlainText.Word;
 
 /**
  * A block of text.
