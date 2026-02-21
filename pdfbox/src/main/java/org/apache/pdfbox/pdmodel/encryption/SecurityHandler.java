@@ -444,6 +444,28 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
     /**
      * This will dispatch to the correct method.
      *
+     * @param string The string to decrypt.
+     * @param objNum The object number.
+     * @param genNum The object generation Number.
+     *
+     * @return the encrypted/decrypted COS object
+     */
+    public COSBase decrypt(COSString string, long objNum, long genNum)
+    {
+        // PDFBOX-4477: only cache strings and streams, this improves speed and memory footprint
+        if (objects.contains(string))
+        {
+            return string;
+        }
+        // replace the given COSString object with the encrypted/decrypted version
+        COSBase decryptedString = decryptString(string, objNum, genNum);
+        objects.add(decryptedString);
+        return decryptedString;
+    }
+
+    /**
+     * This will dispatch to the correct method.
+     *
      * @param obj The object to decrypt.
      * @param objNum The object number.
      * @param genNum The object generation Number.
@@ -457,16 +479,9 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
         // PDFBOX-4477: only cache strings and streams, this improves speed and memory footprint
         if (obj instanceof COSString)
         {
-            if (objects.contains(obj))
-            {
-                return obj;
-            }
-            // replace the given COSString object with the encrypted/decrypted version
-            COSBase decryptedString = decryptString((COSString) obj, objNum, genNum);
-            objects.add(decryptedString);
-            return decryptedString;
+            return decrypt((COSString)obj, objNum, genNum);
         }
-        if (obj instanceof COSStream)
+        else if (obj instanceof COSStream)
         {
             if (objects.contains(obj))
             {
@@ -477,11 +492,11 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
         }
         else if (obj instanceof COSDictionary)
         {
-            decryptDictionary((COSDictionary) obj, objNum, genNum);
+            return decrypt((COSDictionary) obj, objNum, genNum);
         }
         else if (obj instanceof COSArray)
         {
-            decryptArray((COSArray) obj, objNum, genNum);
+            return decrypt((COSArray) obj, objNum, genNum);
         }
         return obj;
     }
@@ -536,7 +551,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
                 return;
             }
         }
-        decryptDictionary(stream, objNum, genNum);
+        decrypt(stream, objNum, genNum);
         // the input and the output stream of a still encrypted COSStream aren't no longer based
         // on the same object so that it is safe to omit the intermediate ByteArrayStream
         try (InputStream encryptedStream = stream.createRawInputStream(); //
@@ -589,14 +604,16 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      * @param objNum The object number.
      * @param genNum The object generation number.
      *
+     * @return the encrypted/decrypted COS object
+     *
      * @throws IOException If there is an error creating a new string.
      */
-    private void decryptDictionary(COSDictionary dictionary, long objNum, long genNum) throws IOException
+    private COSBase decrypt(COSDictionary dictionary, long objNum, long genNum) throws IOException
     {
         if (dictionary.getItem(COSName.CF) != null)
         {
             // PDFBOX-2936: avoid orphan /CF dictionaries found in US govt "I-" files
-            return;
+            return dictionary;
         }
         COSName type = dictionary.getCOSName(COSName.TYPE);
         boolean isSignature = COSName.SIG.equals(type) || COSName.DOC_TIME_STAMP.equals(type) ||
@@ -613,11 +630,21 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
             }
             COSBase value = entry.getValue();
             // within a dictionary only the following kind of COS objects have to be decrypted
-            if (value instanceof COSString || value instanceof COSArray || value instanceof COSDictionary)
+            if (value instanceof COSString)
             {
-                entry.setValue(decrypt(value, objNum, genNum));
+                entry.setValue(decrypt((COSString)value, objNum, genNum));
+            }
+            else if (value instanceof COSArray)
+            {
+                entry.setValue(decrypt((COSArray) value, objNum, genNum));
+            }
+            else if (value instanceof COSDictionary)
+            {
+                entry.setValue(decrypt((COSDictionary)value, objNum, genNum));
             }
         }
+
+        return dictionary;
     }
 
     /**
@@ -678,14 +705,18 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      * @param objNum The object number.
      * @param genNum The object generation number.
      *
+     * @return the encrypted/decrypted COS object
+     *
      * @throws IOException If there is an error accessing the data.
      */
-    private void decryptArray(COSArray array, long objNum, long genNum) throws IOException
+    private COSBase decrypt(COSArray array, long objNum, long genNum) throws IOException
     {
         for (int i = 0; i < array.size(); i++)
         {
             array.set(i, decrypt(array.get(i), objNum, genNum));
         }
+
+        return array;
     }
 
     /**
