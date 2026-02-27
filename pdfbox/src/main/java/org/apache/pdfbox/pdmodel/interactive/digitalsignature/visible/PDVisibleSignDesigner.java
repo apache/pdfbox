@@ -53,6 +53,7 @@ public class PDVisibleSignDesigner
     private AffineTransform affineTransform = new AffineTransform();
     private float imageSizeInPercents;
     private int rotation = 0;
+    private boolean useCustomCoordinates = false;
 
     /**
      * Constructor.
@@ -350,6 +351,26 @@ public class PDVisibleSignDesigner
     public PDVisibleSignDesigner yAxis(float yAxis)
     {
         this.yAxis = yAxis;
+        return this;
+    }
+
+    /**
+     * @return true if custom coordinates are used
+     */
+    public boolean isUseCustomCoordinates()
+    {
+        return useCustomCoordinates;
+    }
+
+    /**
+     * Sets whether to use custom coordinates.
+     * 
+     * @param useCustomCoordinates
+     * @return Visible Signature Configuration Object
+     */
+    public PDVisibleSignDesigner useCustomCoordinates(boolean useCustomCoordinates)
+    {
+        this.useCustomCoordinates = useCustomCoordinates;
         return this;
     }
 
