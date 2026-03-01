@@ -813,10 +813,10 @@ final class SampledImageReader
                     return decode;
                 }
             }
+            LOG.error("decode array " + cosDecode + " not compatible with color space, using default");
         }
 
         // use color space default
-        LOG.error("decode array " + cosDecode + " not compatible with color space, using default");
         return pdImage.getColorSpace().getDefaultDecode(pdImage.getBitsPerComponent());
     }
 }
