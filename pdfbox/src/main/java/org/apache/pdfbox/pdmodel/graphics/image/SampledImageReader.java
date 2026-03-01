@@ -782,44 +782,40 @@ final class SampledImageReader
     private static float[] getDecodeArray(PDImage pdImage) throws IOException
     {
         final COSArray cosDecode = pdImage.getDecode();
-        float[] decode = null;
 
         if (cosDecode != null)
         {
             int numberOfComponents = pdImage.getColorSpace().getNumberOfComponents();
-            if (cosDecode.size() != numberOfComponents * 2)
+            if (cosDecode.size() >= numberOfComponents * 2)
             {
-                if (pdImage.isStencil() && cosDecode.size() >= 2
-                        && cosDecode.get(0) instanceof COSNumber
-                        && cosDecode.get(1) instanceof COSNumber)
+                boolean error = false;
+                float[] decode = new float[numberOfComponents * 2];
+                for (int i = 0; i < decode.length; ++i)
                 {
-                    float decode0 = ((COSNumber) cosDecode.get(0)).floatValue();
-                    float decode1 = ((COSNumber) cosDecode.get(1)).floatValue();
-                    if (decode0 >= 0 && decode0 <= 1 && decode1 >= 0 && decode1 <= 1)
+                    COSBase base = cosDecode.get(i);
+                    if (base instanceof COSNumber)
                     {
-                        LOG.warn("decode array " + cosDecode
-                                + " not compatible with color space, using the first two entries");
-                        return new float[]
-                        {
-                            decode0, decode1
-                        };
+                        decode[i] = ((COSNumber) base).floatValue();
+                    }
+                    else
+                    {
+                        error = true;
+                        break;
                     }
                 }
-                LOG.error("decode array " + cosDecode
-                        + " not compatible with color space, using default");
-            }
-            else
-            {
-                decode = cosDecode.toFloatArray();
+                if (pdImage.isStencil() && (decode[0] < 0 || decode[0] > 1 || decode[1] < 0 || decode[1] > 1))
+                {
+                    error = true;
+                }
+                if (!error)
+                {
+                    return decode;
+                }
             }
         }
 
         // use color space default
-        if (decode == null)
-        {
-            return pdImage.getColorSpace().getDefaultDecode(pdImage.getBitsPerComponent());
-        }
-
-        return decode;
+        LOG.error("decode array " + cosDecode + " not compatible with color space, using default");
+        return pdImage.getColorSpace().getDefaultDecode(pdImage.getBitsPerComponent());
     }
 }
