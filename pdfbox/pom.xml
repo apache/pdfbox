@@ -97,7 +97,7 @@
             <version>${jbig2.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- can't use 5.*, doesn't support jdk8 -->
+        <!-- can't use 5.*, doesn't support jdk11 -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
