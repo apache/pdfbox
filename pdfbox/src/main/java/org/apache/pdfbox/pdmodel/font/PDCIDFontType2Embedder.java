@@ -309,7 +309,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         }
 
         InputStream input = new ByteArrayInputStream(bytes);
-        PDStream stream = new PDStream(document, input, bytes.length < 20 ? null : COSName.FLATE_DECODE);
+        PDStream stream = new PDStream(document, input, COSName.FLATE_DECODE);
 
         fontDescriptor.setCIDSet(stream);
     }
