@@ -103,11 +103,14 @@ public class PDType0Font extends PDFont implements PDVectorFont
      * Loads a TTF to be embedded into a document as a Type 0 font.
      *
      * @param doc The PDF document that will hold the embedded font.
-     * @param ttf A TrueType font.
+     * @param ttf A TrueType font. Passing an OpenTypeFont font object is possible, but not
+     * recommended (see exceptions).
      * @param embedSubset True if the font will be subset before embedding. Set this to false when
      * creating a font for AcroForm.
      * @return A Type0 font with a CIDFontType2 descendant.
      * @throws IOException If there is an error reading the font stream.
+     * @throws UnsupportedOperationException if embedSubset is true for an OTF font
+     * @throws IllegalStateException if an OTF font is used but GID != CID
      */
     public static PDType0Font load(PDDocument doc, TrueTypeFont ttf, boolean embedSubset)
             throws IOException
@@ -160,10 +163,13 @@ public class PDType0Font extends PDFont implements PDVectorFont
      * Loads a TTF to be embedded into a document as a vertical Type 0 font.
      *
      * @param doc The PDF document that will hold the embedded font.
-     * @param ttf A TrueType font.
+     * @param ttf A TrueType font. Passing an OpenTypeFont font object is possible, but not
+     * recommended (see exceptions).
      * @param embedSubset True if the font will be subset before embedding
      * @return A Type0 font with a CIDFontType2 descendant.
      * @throws IOException If there is an error reading the font stream.
+     * @throws UnsupportedOperationException if embedSubset is true for an OTF font
+     * @throws IllegalStateException if an OTF font is used but GID != CID
      */
     public static PDType0Font loadVertical(PDDocument doc, TrueTypeFont ttf, boolean embedSubset)
             throws IOException
