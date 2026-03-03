@@ -250,7 +250,8 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             }
 
             byte[] mdResult;
-            if (encryption.getVersion() == 4 || encryption.getVersion() == 5)
+            int encryptionVersion = encryption.getVersion();
+            if (encryptionVersion == 4 || encryptionVersion == 5)
             {
                 if (!isDecryptMetadata())
                 {
@@ -259,7 +260,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
                     sha1Input = Arrays.copyOf(sha1Input, sha1Input.length + 4);
                     System.arraycopy(new byte[]{ (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff}, 0, sha1Input, sha1Input.length - 4, 4);
                 }
-                if (encryption.getVersion() == 4)
+                if (encryptionVersion == 4)
                 {
                     mdResult = MessageDigests.getSHA1().digest(sha1Input);
                 }
