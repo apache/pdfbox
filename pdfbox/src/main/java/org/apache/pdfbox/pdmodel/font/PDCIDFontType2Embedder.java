@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFCharset;
+import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.ttf.CFFTable;
 
 import org.apache.logging.log4j.Logger;
@@ -239,8 +240,8 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         {
             return;
         }
-        CFFCIDFont cff = (CFFCIDFont) cffTable.getFont();
-        if (cff == null)
+        CFFFont cff = cffTable.getFont();
+        if (!(cff instanceof CFFCIDFont))
         {
             return;
         }
@@ -308,7 +309,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         }
 
         InputStream input = new ByteArrayInputStream(bytes);
-        PDStream stream = new PDStream(document, input, COSName.FLATE_DECODE);
+        PDStream stream = new PDStream(document, input, bytes.length < 20 ? null : COSName.FLATE_DECODE);
 
         fontDescriptor.setCIDSet(stream);
     }
