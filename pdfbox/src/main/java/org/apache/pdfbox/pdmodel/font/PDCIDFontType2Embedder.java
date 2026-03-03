@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFCharset;
+import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.ttf.CFFTable;
 import org.apache.fontbox.ttf.GlyphData;
 import org.apache.fontbox.ttf.GlyphTable;
@@ -239,8 +240,8 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         {
             return;
         }
-        CFFCIDFont cff = (CFFCIDFont) cffTable.getFont();
-        if (cff == null)
+        CFFFont cff = cffTable.getFont();
+        if (!(cff instanceof CFFCIDFont))
         {
             return;
         }
