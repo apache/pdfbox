@@ -56,7 +56,7 @@ public class TTFParser
     /**
      * Parse a RandomAccessRead and return a TrueType font.
      *
-     * @param randomAccessRead The RandomAccessREad to be read from. It will be closed before returning.
+     * @param randomAccessRead The RandomAccessRead to be read from. It will be closed before returning.
      * @return A TrueType font.
      * @throws IOException If there is an error parsing the TrueType font.
      */
