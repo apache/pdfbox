@@ -28,9 +28,13 @@ import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.cff.CFFCIDFont;
+import org.apache.fontbox.cff.CFFCharset;
+import org.apache.fontbox.ttf.CFFTable;
 import org.apache.fontbox.ttf.GlyphData;
 import org.apache.fontbox.ttf.GlyphTable;
 import org.apache.fontbox.ttf.HorizontalMetricsTable;
+import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.ttf.VerticalHeaderTable;
 import org.apache.fontbox.ttf.VerticalMetricsTable;
@@ -214,10 +218,46 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             buildVerticalMetrics(cidFont);
         }
 
+        if (ttf instanceof OpenTypeFont && !needsSubset())
+        {
+            checkForCidGidIdentity();
+        }
+
         // CIDToGIDMap
         cidFont.setItem(COSName.CID_TO_GID_MAP, COSName.IDENTITY);
 
         return cidFont;
+    }
+
+    private void checkForCidGidIdentity() throws IOException
+    {
+        // PDFBOX-6172: if somebody is using a not subsetted otf font, check whether cid == gid
+        // (subsetted will fail anyway)
+        OpenTypeFont otf = (OpenTypeFont) ttf;
+        CFFTable cffTable = otf.getCFF();
+        if (cffTable == null)
+        {
+            return;
+        }
+        CFFCIDFont cff = (CFFCIDFont) cffTable.getFont();
+        if (cff == null)
+        {
+            return;
+        }
+        CFFCharset charset = cff.getCharset();
+        if (charset == null)
+        {
+            return;
+        }
+        int glyphCount = otf.getNumberOfGlyphs();
+        for (int gid = 0; gid < glyphCount; gid++)
+        {
+            int cid = charset.getCIDForGID(gid);
+            if (gid != cid)
+            {
+                throw new IllegalStateException("CID and GID not identical: CID " + cid + " != GID " + gid + ", use a ttf font instead");
+            }
+        }
     }
 
     private void addNameTag(String tag)
