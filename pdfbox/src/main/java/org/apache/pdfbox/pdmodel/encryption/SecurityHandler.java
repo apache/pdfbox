@@ -442,7 +442,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
     }
 
     /**
-     * This will dispatch to the correct method.
+     * This will decrypt a string if it is not in set of the objects.
      *
      * @param string The string to decrypt.
      * @param objNum The object number.
@@ -450,7 +450,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @return the encrypted/decrypted COS object
      */
-    public COSBase decrypt(COSString string, long objNum, long genNum)
+    private COSBase decryptStringIfAbsent(COSString string, long objNum, long genNum)
     {
         // PDFBOX-4477: only cache strings and streams, this improves speed and memory footprint
         if (objects.contains(string))
@@ -479,26 +479,41 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
         // PDFBOX-4477: only cache strings and streams, this improves speed and memory footprint
         if (obj instanceof COSString)
         {
-            return decrypt((COSString)obj, objNum, genNum);
+            return decryptStringIfAbsent((COSString)obj, objNum, genNum);
         }
         else if (obj instanceof COSStream)
         {
-            if (objects.contains(obj))
-            {
-                return obj;
-            }
-            objects.add(obj);
-            decryptStream((COSStream) obj, objNum, genNum);
+            return decryptStreamIfAbsent((COSStream)obj, objNum, genNum);
         }
         else if (obj instanceof COSDictionary)
         {
-            return decrypt((COSDictionary) obj, objNum, genNum);
+            return decryptDictionary((COSDictionary) obj, objNum, genNum);
         }
         else if (obj instanceof COSArray)
         {
-            return decrypt((COSArray) obj, objNum, genNum);
+            return decryptArray((COSArray) obj, objNum, genNum);
         }
         return obj;
+    }
+
+    /**
+     * This will decrypt a stream if it is not in set of the objects.
+     *
+     * @param stream The stream to decrypt.
+     * @param objNum The object number.
+     * @param genNum The object generation Number.
+     *
+     * @return the encrypted/decrypted COS object
+     */
+    private COSBase decryptStreamIfAbsent(COSStream stream, long objNum, long genNum) throws IOException
+    {
+        if (!objects.contains(stream))
+        {
+            objects.add(stream);
+            decryptStream(stream, objNum, genNum);
+        }
+
+        return stream;
     }
 
     /**
@@ -551,7 +566,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
                 return;
             }
         }
-        decrypt(stream, objNum, genNum);
+        decryptDictionary(stream, objNum, genNum);
         // the input and the output stream of a still encrypted COSStream aren't no longer based
         // on the same object so that it is safe to omit the intermediate ByteArrayStream
         try (InputStream encryptedStream = stream.createRawInputStream(); //
@@ -608,7 +623,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @throws IOException If there is an error creating a new string.
      */
-    private COSBase decrypt(COSDictionary dictionary, long objNum, long genNum) throws IOException
+    private COSBase decryptDictionary(COSDictionary dictionary, long objNum, long genNum) throws IOException
     {
         if (dictionary.getItem(COSName.CF) != null)
         {
@@ -632,15 +647,19 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
             // within a dictionary only the following kind of COS objects have to be decrypted
             if (value instanceof COSString)
             {
-                entry.setValue(decrypt((COSString)value, objNum, genNum));
+                entry.setValue(decryptStringIfAbsent((COSString)value, objNum, genNum));
             }
             else if (value instanceof COSArray)
             {
-                entry.setValue(decrypt((COSArray) value, objNum, genNum));
+                entry.setValue(decryptArray((COSArray) value, objNum, genNum));
+            }
+            else if (value instanceof COSStream)
+            {
+                entry.setValue(decryptStreamIfAbsent((COSStream)value, objNum, genNum));
             }
             else if (value instanceof COSDictionary)
             {
-                entry.setValue(decrypt((COSDictionary)value, objNum, genNum));
+                entry.setValue(decryptDictionary((COSDictionary)value, objNum, genNum));
             }
         }
 
@@ -709,7 +728,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @throws IOException If there is an error accessing the data.
      */
-    private COSBase decrypt(COSArray array, long objNum, long genNum) throws IOException
+    private COSBase decryptArray(COSArray array, long objNum, long genNum) throws IOException
     {
         for (int i = 0; i < array.size(); i++)
         {
