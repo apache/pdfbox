@@ -20,6 +20,7 @@ Bug
 
 [PDFBOX-2378] - XMPBox removes namespaces on serialization
 [PDFBOX-3882] - False negative on PDFA-1b validation : missing field type
+[PDFBOX-5049] - PlainText.Paragraph.getLines extremely slow on long lines
 [PDFBOX-5288] - Valid PDF/A 1B is rejected
 [PDFBOX-5369] - PDDocument.saveIncremental () and stack exhaustion
 [PDFBOX-6036] - StackOverflowError in COSWriterCompressionPool for large number of bookmarks
@@ -64,6 +65,9 @@ Bug
 [PDFBOX-6144] - "render" command line utility ignores "page" parameter
 [PDFBOX-6146] - OutOfMemoryError when trying to extract text from pdf
 [PDFBOX-6153] - Catch cycles in outlines
+[PDFBOX-6165] - Rendered text missing
+[PDFBOX-6171] - Inverted images due to enlarged decode array
+[PDFBOX-6172] - PDF displays garbled characters in Adobe Reader but renders correctly in web browsers
 
 New Feature
 
@@ -82,13 +86,13 @@ Improvement
 [PDFBOX-6114] - Improve PDF/A extension schema validation with missing fields names
 [PDFBOX-6123] - Support Seq / Bag mixup in lenient mode
 [PDFBOX-6130] - Parse xmp files in lenient mode that have no processing instructions
+[PDFBOX-6164] - Support TIFF-files with FillOrder=2 conversion to PDF
 
 Task
 
 [PDFBOX-6089] - Remove / deprecate unused parts of PDIndexed
 [PDFBOX-6139] - modernize rat exclusions
 [PDFBOX-6140] - Run regression tests for 3.0.7
-
 
 Release Contents
 ----------------

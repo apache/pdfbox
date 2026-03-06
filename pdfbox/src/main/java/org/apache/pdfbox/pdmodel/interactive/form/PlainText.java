@@ -207,20 +207,26 @@ class PlainText
                     // single word does not fit into width
                     // PDFBOX-6082: at least 1 character
                     wordNeedsSplit = true;
-                    while (true)
-                    {
-                        splitOffset--;
 
-                        String substring = word.substring(0, splitOffset);
-                        float substringWidth = font.getStringWidth(substring) * scale;
-                        if (substringWidth < width)
-                        {
-                            word = substring;
-                            wordWidth = font.getStringWidth(word) * scale;
-                            lineWidth = wordWidth;
-                            break;
-                        }
-                    }
+                    // PDFBOX-5049:  The original approach was to decrement splitOffset
+                    // until the substring fits, but this can be very expensive for long words and 
+                    // narrow widths (e.g. a long URL in a narrow column).
+                    // 
+                    // Optimization: instead of decrementing splitOffset one step at a time and
+                    // calling getStringWidth on progressively shorter substrings:
+                    //   - compute the scaled width of every individual character once
+                    //   - build a prefix-sum array
+                    //   - binary-search for the largest prefix that fits
+                    // 
+                    // TODO: The special case in PDFBOX-5049 should be handled by not generating an appearance
+                    // stream at all as the the height of the text box is only 1pt and the text is not visible.
+
+                    float[] prefixWidth = buildPrefixWidths(word, font, scale);
+                    splitOffset = findMaxFittingChars(prefixWidth, width);
+
+                    word      = word.substring(0, splitOffset);
+                    wordWidth = prefixWidth[splitOffset];
+                    lineWidth  = wordWidth;
                 }
 
                 AttributedString as = new AttributedString(word);
@@ -242,6 +248,72 @@ class PlainText
             textLine.setWidth(textLine.calculateWidth(font, fontSize));
             textLines.add(textLine);
             return textLines;
+        }
+
+        /**
+         * Build the prefix-sum array of scaled character widths for the given word.
+         *
+         * @param word  the word to measure.
+         * @param font  the font used to obtain glyph advance widths.
+         * @param scale {@code fontSize / FONTSCALE}, pre-computed by the caller.
+         * @return the {@code float[word.length() + 1]} prefix-sum array.
+         * @throws IOException if the font cannot provide a glyph width.
+         */
+        private static float[] buildPrefixWidths(String word, PDFont font, float scale)
+                throws IOException
+        {
+            int wordLen = word.length();
+            float[] prefixWidth = new float[wordLen + 1];
+            int i = 0;
+            while (i < wordLen)
+            {
+                int codePoint = word.codePointAt(i);
+                int charCount = Character.charCount(codePoint);
+                // Measure this code point as a single string (handles surrogate pairs).
+                float cpWidth = font.getStringWidth(word.substring(i, i + charCount)) * scale;
+                // Propagate the cumulative width across all Java chars of this code point.
+                for (int j = 0; j < charCount; j++)
+                {
+                    prefixWidth[i + j + 1] = prefixWidth[i + j] + (j == 0 ? cpWidth : 0f);
+                }
+                i += charCount;
+            }
+            return prefixWidth;
+        }
+
+        /**
+         * Find the maximum number of Java chars from a prefix-width array that fit
+         * within the given available width.
+         * <p>
+         * Binary search over the pre-computed {@code prefixWidth} array.
+         * The result is always at least {@code 1} so that the caller is guaranteed to
+         * make forward progress (PDFBOX-6082).
+         * </p>
+         *
+         * @param prefixWidth array as returned by {@link #buildPrefixWidths}; length is
+         *                    {@code wordLength + 1}.
+         * @param width       the available line width in the same unit as the widths stored
+         *                    in {@code prefixWidth}.
+         * @return the largest index {@code k >= 1} such that {@code prefixWidth[k] < width},
+         *         or {@code 1} if even a single character exceeds the available width.
+         */
+        private static int findMaxFittingChars(float[] prefixWidth, float width)
+        {
+            int lo = 1;
+            int hi = prefixWidth.length - 1;
+            while (lo < hi)
+            {
+                int mid = (lo + hi + 1) >>> 1; // upper-mid to avoid infinite loop
+                if (prefixWidth[mid] < width)
+                {
+                    lo = mid;
+                }
+                else
+                {
+                    hi = mid - 1;
+                }
+            }
+            return lo;
         }
     }
 

@@ -134,10 +134,14 @@ public final class PublicKeySecurityHandler extends SecurityHandler<PublicKeyPro
             setKeyLength(defaultCryptFilterDictionary.getLength());
             setDecryptMetadata(defaultCryptFilterDictionary.isEncryptMetaData());
         }
-        else if (encryption.getLength() != 0)
+        else
         {
-            setKeyLength(encryption.getLength());
-            setDecryptMetadata(encryption.isEncryptMetaData());
+            int encryptionLength = encryption.getLength();
+            if (encryptionLength != 0)
+            {
+                setKeyLength(encryptionLength);
+                setDecryptMetadata(encryption.isEncryptMetaData());
+            }
         }
 
         PublicKeyDecryptionMaterial material = (PublicKeyDecryptionMaterial) decryptionMaterial;
@@ -245,7 +249,8 @@ public final class PublicKeySecurityHandler extends SecurityHandler<PublicKeyPro
             }
 
             byte[] mdResult;
-            if (encryption.getVersion() == 4 || encryption.getVersion() == 5)
+            int encryptionVersion = encryption.getVersion();
+            if (encryptionVersion == 4 || encryptionVersion == 5)
             {
                 if (!isDecryptMetadata())
                 {
@@ -254,7 +259,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler<PublicKeyPro
                     sha1Input = Arrays.copyOf(sha1Input, sha1Input.length + 4);
                     System.arraycopy(new byte[]{ (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff}, 0, sha1Input, sha1Input.length - 4, 4);
                 }
-                if (encryption.getVersion() == 4)
+                if (encryptionVersion == 4)
                 {
                     mdResult = MessageDigests.getSHA1().digest(sha1Input);
                 }

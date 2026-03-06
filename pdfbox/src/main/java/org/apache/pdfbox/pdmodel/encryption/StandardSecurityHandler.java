@@ -152,8 +152,10 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             throw new IOException("Decryption material is not compatible with the document");
         }
         
+        int encryptionVersion = encryption.getVersion();
         // This is only used with security version 4 and 5.
-        if (encryption.getVersion() >= REVISION_4) {
+        if (encryptionVersion >= REVISION_4)
+        {
 	        setStreamFilterName(encryption.getStreamFilterName());
 	        setStringFilterName(encryption.getStringFilterName());
         }
@@ -168,9 +170,9 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
 
         int dicPermissions = encryption.getPermissions();
         int dicRevision = encryption.getRevision();
-        int dicLength = encryption.getVersion() == 1 ? 5 : encryption.getLength() / 8;
+        int dicLength = encryptionVersion == 1 ? 5 : encryption.getLength() / 8;
         
-        if (encryption.getVersion() == REVISION_4 || encryption.getVersion() == REVISION_5)
+        if (encryptionVersion == REVISION_4 || encryptionVersion == REVISION_5)
         {
             // detect whether AES encryption is used. This assumes that the encryption algo is 
             // stored in the PDCryptFilterDictionary
@@ -239,34 +241,29 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         AccessPermission currentAccessPermission;
 
         byte[] encryptedKey;
-        byte[] passwordBytes;
+        byte[] passwordBytes = password.getBytes(passwordCharset);
         boolean isOwnerPassword;
-        if( isOwnerPassword(password.getBytes(passwordCharset), userKey, ownerKey,
+        if (isOwnerPassword(passwordBytes, userKey, ownerKey,
                                  dicPermissions, documentIDBytes, dicRevision,
                                  dicLength, encryptMetadata) )
         {
             currentAccessPermission = AccessPermission.getOwnerAccessPermission();
             setCurrentAccessPermission(currentAccessPermission);
             
-            if (dicRevision == REVISION_5 || dicRevision == REVISION_6)
+            if (dicRevision != REVISION_5 && dicRevision != REVISION_6)
             {
-                passwordBytes = password.getBytes(passwordCharset);
-            }
-            else
-            {
-                passwordBytes = getUserPassword234(password.getBytes(passwordCharset),
+                passwordBytes = getUserPassword234(passwordBytes,
                         ownerKey, dicRevision, dicLength );
             }
             isOwnerPassword = true;
         }
-        else if( isUserPassword(password.getBytes(passwordCharset), userKey, ownerKey,
+        else if (isUserPassword(passwordBytes, userKey, ownerKey,
                            dicPermissions, documentIDBytes, dicRevision,
                            dicLength, encryptMetadata) )
         {
             currentAccessPermission = new AccessPermission(dicPermissions);
             currentAccessPermission.setReadOnly();
             setCurrentAccessPermission(currentAccessPermission);
-            passwordBytes = password.getBytes(passwordCharset);
             isOwnerPassword = false;
         }
         else
