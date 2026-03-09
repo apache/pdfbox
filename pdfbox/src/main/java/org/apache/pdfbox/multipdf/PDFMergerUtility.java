@@ -1357,7 +1357,7 @@ public class PDFMergerUtility
                 boolean skip = false;
                 for (PDOutputIntent dstOI : dstOutputIntents)
                 {
-                    if (dstOI.getOutputConditionIdentifier().equals(srcOCI))
+                    if (srcOCI.equals(dstOI.getOutputConditionIdentifier()))
                     {
                         skip = true;
                         break;
