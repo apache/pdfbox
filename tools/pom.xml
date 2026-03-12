@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
-    <version>2.0.36-SNAPSHOT</version>
+    <version>2.0.36</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
@@ -38,9 +38,9 @@
   <inceptionYear>2002</inceptionYear>
 
   <scm>
-    <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/2.0/tools</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/2.0/tools</developerConnection>
-    <url>https://svn.apache.org/viewvc/pdfbox/branches/2.0/tools</url>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/tags/2.0.36/tools</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/tags/2.0.36/tools</developerConnection>
+    <url>https://svn.apache.org/viewvc/pdfbox/tags/2.0.36/tools</url>
   </scm>
 
   <dependencies>
