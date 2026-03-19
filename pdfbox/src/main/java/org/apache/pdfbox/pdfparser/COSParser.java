@@ -1840,6 +1840,7 @@ public class COSParser extends BaseParser implements ICOSParser
             {
                 int ch1 = source.read();
                 int ch2 = source.read();
+
                 // Prior to PDF v1.2, the # was not a special character. Also,
                 // it has been observed that various PDF tools do not follow the
                 // spec with respect to the # escape, even though they report
@@ -1884,7 +1885,7 @@ public class COSParser extends BaseParser implements ICOSParser
             source.rewind(1);
         }
 
-        return COSName.getPDFName(decodeBuffer(buffer));
+        return COSName.getPDFName(buffer.toByteArray());
     }
 
     private static boolean isHexDigit(char ch)

@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.ref.Cleaner;
 import java.lang.ref.WeakReference;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,7 +36,7 @@ import org.apache.pdfbox.util.Hex;
 public final class COSName extends COSBase implements Comparable<COSName>
 {
     // using ConcurrentHashMap because this can be accessed by multiple threads
-    private static final Map<String, WeakReference<COSName>> NAME_MAP = //
+    private static final Map<ByteBuffer, WeakReference<COSName>> NAME_MAP = //
             new ConcurrentHashMap<>(8192);
     private static final Cleaner CLEANER = Cleaner.create();
 
@@ -673,18 +675,59 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName ZA_DB = getPDFName("ZaDb");
 
     // fields
-    private final String name;
 
     /**
-     * This will get a COSName object with that name.
-     * 
-     * @param aName The name of the object.
-     * 
-     * @return A COSName with the specified name.
+     * <p>Per PDF 32000-1:2008 §7.3.5: Beginning with PDF 1.2 a name object is an atomic symbol 
+     * uniquely defined by a sequence of any characters (8-bit values) except null 
+     * (character code 0).</p>
+     */
+    private final byte[] nameBytes;
+
+
+    /**
+     * Returns a {@code COSName} whose byte sequence is the UTF-8 encoding of {@code aName}.
+     *
+     * <p>This is the standard factory for names defined in Java source code (e.g. the static
+     * constants above). All well-formed PDF names defined by the spec are ASCII, so the UTF-8
+     * encoding is a transparent identity transform for those cases.</p>
+     *
+     * @param aName the name string; must not be {@code null}
+     * @return a canonicalised {@code COSName} instance
      */
     public static COSName getPDFName(String aName)
     {
-        WeakReference<COSName> weakRef = NAME_MAP.get(aName);
+        return getPDFName(aName.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Returns a {@code COSName} whose byte sequence is exactly {@code bytes}.
+     *
+     * <p>This is the preferred factory when constructing a name directly from a PDF byte stream
+     * (i.e. after the parser has stripped the leading {@code /} and expanded all {@code #XX}
+     * escape sequences). Using this method preserves the spec-correct, byte-level identity of the
+     * name even when the bytes are not valid UTF-8.</p>
+     *
+     * <p>Null bytes (0x00) are rejected; the spec explicitly excludes them.</p>
+     *
+     * @param bytes the raw decoded byte sequence; must not be {@code null} and must not contain 0x00
+     * @return a canonicalised {@code COSName} instance
+     * @throws IllegalArgumentException if {@code bytes} contains a null byte
+     */
+    public static COSName getPDFName(byte[] bytes)
+    {
+        for (byte b : bytes)
+        {
+            if (b == 0)
+            {
+                throw new IllegalArgumentException(
+                        "PDF name bytes must not contain null (0x00) characters");
+            }
+        }
+
+        // Wrap for lookup only to avoid unnecessary copying of the byte array for the key.
+        ByteBuffer lookupKey = ByteBuffer.wrap(bytes);
+        
+        WeakReference<COSName> weakRef = NAME_MAP.get(lookupKey);
         COSName name = weakRef != null ? weakRef.get() : null;
 
         if (name == null)
@@ -694,13 +737,19 @@ public final class COSName extends COSBase implements Comparable<COSName>
             // Use double checked locking to make the code thread safe.
             synchronized (NAME_MAP)
             {
-                weakRef = NAME_MAP.get(aName);
+                weakRef = NAME_MAP.get(lookupKey);
                 name = weakRef != null ? weakRef.get() : null;
                 if (name == null)
                 {
-                    name = new COSName(aName);
-                    CLEANER.register(name, () -> NAME_MAP.remove(aName));
-                    NAME_MAP.put(aName, new WeakReference<>(name));
+                    // Denesive copy which is OK to share as the key and the nameBytes
+                    // of the COSName are immutable.
+                    byte[] storedBytes = Arrays.copyOf(bytes, bytes.length);
+                    ByteBuffer storedKey = ByteBuffer.wrap(storedBytes);
+
+                    name = new COSName(storedBytes);
+
+                    CLEANER.register(name, () -> NAME_MAP.remove(storedKey));
+                    NAME_MAP.put(storedKey, new WeakReference<>(name));
                 }
             }
         }
@@ -713,43 +762,78 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * 
      * @param aName The name of the COSName object.
      */
-    private COSName(String aName)
+    private COSName(byte[] storedBytes)
     {
-        this.name = aName;
+        this.nameBytes = storedBytes;
+    }
+
+
+    /**
+     * Returns the raw byte sequence that defines this name.
+     *
+     * <p>This is the atomic content/identity of the name. Prefer this over
+     * {@link #getName()} whenever you need to write name bytes to an output stream, compare names
+     * parsed from a PDF, or otherwise operate at the byte level.</p>
+     *
+     * @return a defensive copy of the internal byte array; never {@code null}
+     */
+    public byte[] getBytes()
+    {
+        return Arrays.copyOf(nameBytes, nameBytes.length);
     }
 
     /**
-     * This will get the name of this COSName object.
+     * Returns the name decoded as a UTF-8 {@code String}.
+     * 
+     * <p>This method exists primarily for backward compatibility and for cases where the
+     * readable value needs to be stored.</p>
+     * 
+     * <p>Per PDF 32000-1:2008 §7.3.5, ... However, occasionally the need arises to treat a name object
+     * as text, such as one that represents a font ... </p>
+     * 
+     * <p>... In such situations, the sequence of bytes (after expansion of NUMBER SIGN sequences, if any) 
+     * should be interpreted according to UTF-8... </p>
+     * 
+     * Use {@link #getBytes()} when byte-level fidelity is required.</p>
      * 
      * @return The name of the object.
      */
     public String getName()
     {
-        return name;
+        String utf8String = new String(nameBytes, StandardCharsets.UTF_8);
+
+        //check for lossy decoding, which can happen if the name contains
+        // bytes that are not valid UTF-8
+        if (utf8String.indexOf('\uFFFD') >= 0) {
+            // fall back to ISO-8859-1, which is a single-byte encoding that can decode any
+            // byte sequence without loss
+            return new String(nameBytes, StandardCharsets.ISO_8859_1);
+        }
+        return utf8String;
     }
 
     @Override
     public String toString()
     {
-        return "COSName{" + name + "}";
+        return "COSName{" + getName() + "}";
     }
 
     @Override
     public boolean equals(Object object)
     {
-        return object instanceof COSName && name.equals(((COSName) object).name);
+        return object instanceof COSName && Arrays.equals(nameBytes, ((COSName) object).nameBytes);
     }
 
     @Override
     public int hashCode()
     {
-        return name.hashCode();
+        return Arrays.hashCode(nameBytes);
     }
 
     @Override
     public int compareTo(COSName other)
     {
-        return name.compareTo(other.name);
+        return Arrays.compare(nameBytes, other.nameBytes);
     }
 
     /**
@@ -758,7 +842,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public boolean isEmpty()
     {
-        return name.isEmpty();
+        return nameBytes.length == 0;
     }
 
     @Override
@@ -776,7 +860,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public void writePDF(OutputStream output) throws IOException
     {
         output.write('/');
-        byte[] bytes = getName().getBytes(StandardCharsets.UTF_8);
+        byte[] bytes = getBytes();
         for (byte b : bytes)
         {
             int current = b & 0xFF;
