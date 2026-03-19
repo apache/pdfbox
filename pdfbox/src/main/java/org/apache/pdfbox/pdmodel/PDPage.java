@@ -47,6 +47,8 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.interactive.action.PDPageAdditionalActions;
@@ -141,14 +143,40 @@ public class PDPage implements COSObjectable, PDContentStream
                 .forEach(resourceCache::removeColorSpace);
         getIndirectResourceObjects(resources, COSName.EXT_G_STATE)
                 .forEach(resourceCache::removeExtState);
-        getIndirectResourceObjects(resources, COSName.FONT)
-                .forEach(resourceCache::removeFont);
         getIndirectResourceObjects(resources, COSName.PATTERN)
                 .forEach(resourceCache::removePattern);
         getIndirectResourceObjects(resources, COSName.PROPERTIES)
                 .forEach(resourceCache::removeProperties);
         getIndirectResourceObjects(resources, COSName.SHADING)
                 .forEach(resourceCache::removeShading);
+        for (COSObject cosObject : getIndirectResourceObjects(resources, COSName.FONT))
+        {
+            PDFont removedFont = resourceCache.removeFont(cosObject);
+            if (removedFont == null)
+            {
+                continue;
+            }
+            COSDictionary fontDict = removedFont.getCOSObject();
+            if (removedFont instanceof PDType0Font)
+            {
+                // remove PDCIDFont from cache
+                COSArray descendantFonts = fontDict.getCOSArray(COSName.DESCENDANT_FONTS);
+                if (descendantFonts != null)
+                {
+                    COSBase descendantFontBaseObject = descendantFonts.get(0);
+                    if (descendantFontBaseObject instanceof COSObject)
+                    {
+                        resourceCache.removeCIDFont((COSObject) descendantFontBaseObject);
+                    }
+                }
+            }
+            COSObject fdIndirectObject = fontDict.getCOSObject(COSName.FONT_DESC);
+            // remove PDFontDescriptor from cache
+            if (fdIndirectObject != null)
+            {
+                resourceCache.removeFontDescriptor(fdIndirectObject);
+            }
+        }
         for (COSObject cosObject : getIndirectResourceObjects(resources, COSName.XOBJECT))
         {
             PDXObject removedXObject = resourceCache.removeXObject(cosObject);

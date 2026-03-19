@@ -34,8 +34,10 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
@@ -101,34 +103,46 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * Constructor.
      *
      * @param fontDictionary Font dictionary.
+     * @param resourceCache ResourceCache, can be null.
      */
-    protected PDFont(COSDictionary fontDictionary)
+    protected PDFont(COSDictionary fontDictionary, ResourceCache resourceCache)
     {
         dict = fontDictionary;
         codeToWidthMap = new HashMap<>();
 
         // standard 14 fonts use an AFM
         afmStandard14 = Standard14Fonts.getAFM(getName()); // may be null (it usually is)
-        fontDescriptor = loadFontDescriptor();
+        fontDescriptor = loadFontDescriptor(resourceCache);
         toUnicodeCMap = loadUnicodeCmap();
     }
 
-    private PDFontDescriptor loadFontDescriptor()
+    private PDFontDescriptor loadFontDescriptor(ResourceCache resourceCache)
     {
+        COSObject fdIndirectObject = dict.getCOSObject(COSName.FONT_DESC);
+        if (fdIndirectObject != null && resourceCache != null)
+        {
+            PDFontDescriptor pdFontdescriptor = resourceCache.getFontDescriptor(fdIndirectObject);
+            if (pdFontdescriptor != null)
+            {
+                return pdFontdescriptor;
+            }
+        }
         COSDictionary fd = dict.getCOSDictionary(COSName.FONT_DESC);
         if (fd != null)
         {
-            return new PDFontDescriptor(fd);
+            PDFontDescriptor pdFontdescriptor = new PDFontDescriptor(fd);
+            if (resourceCache != null && fdIndirectObject != null)
+            {
+                resourceCache.put(fdIndirectObject, pdFontdescriptor);
+            }
+            return pdFontdescriptor;
         }
         else if (afmStandard14 != null)
         {
             // build font descriptor from the AFM
             return PDType1FontEmbedder.buildFontDescriptor(afmStandard14);
         }
-        else
-        {
-            return null;
-        }
+        return null;
     }
 
     private CMap loadUnicodeCmap()

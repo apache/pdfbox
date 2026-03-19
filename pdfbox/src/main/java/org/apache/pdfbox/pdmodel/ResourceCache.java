@@ -19,7 +19,9 @@ package org.apache.pdfbox.pdmodel;
 
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
+import org.apache.pdfbox.pdmodel.font.PDCIDFont;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
@@ -40,6 +42,22 @@ public interface ResourceCache
      * @return the cached instance of the referenced font, if available
      */
     PDFont getFont(COSObject indirect);
+
+    /**
+     * Returns the PDCIDFont instance for the given indirect object, if it is in the cache.
+     * 
+     * @param indirect the indirect reference of the PDCIDFont instance to be returned
+     * @return the cached instance of the PDCIDFont, if available
+     */
+    PDCIDFont getCIDFont(COSObject indirect);
+
+    /**
+     * Returns the PDFontDescriptor instance for the given indirect object, if it is in the cache.
+     * 
+     * @param indirect the indirect reference of the PDFontDescriptor instance to be returned
+     * @return the cached instance of the PDFontDescriptor, if available
+     */
+    PDFontDescriptor getFontDescriptor(COSObject indirect);
 
     /**
      * Returns the color space resource for the given indirect object, if it is in the cache.
@@ -96,6 +114,22 @@ public interface ResourceCache
      * @param font the font to be cached
      */
     void put(COSObject indirect, PDFont font);
+
+    /**
+     * Puts the PDCIDFont instance of the given indirect object in the cache.
+     * 
+     * @param indirect the indirect reference of the PDCIDFont to be cached
+     * @param font the font to be cached
+     */
+    void put(COSObject indirect, PDCIDFont cidFont);
+
+    /**
+     * Puts the PDFontDescriptor instance of the given indirect object in the cache.
+     * 
+     * @param indirect the indirect reference of the PDFontDescriptor to be cached
+     * @param font the font to be cached
+     */
+    void put(COSObject indirect, PDFontDescriptor fontDescriptor);
 
     /**
      * Puts the given indirect color space resource in the cache.
@@ -171,6 +205,24 @@ public interface ResourceCache
      * @return the removed resource if present
      */
     PDFont removeFont(COSObject indirect);
+
+    /**
+     * Removes the PDCIDFont instance for the given indirect object from the cache.
+     * 
+     * @param indirect the indirect reference of the PDCIDFont to be removed
+     * 
+     * @return the removed PDCIDFont if present
+     */
+    PDCIDFont removeCIDFont(COSObject indirect);
+
+    /**
+     * Removes the PDFontDescriptor instance for the given indirect object from the cache.
+     * 
+     * @param indirect the indirect reference of the PDFontDescriptor to be removed
+     * 
+     * @return the removed PDFontDescriptor if present
+     */
+    PDFontDescriptor removeFontDescriptor(COSObject indirect);
 
     /**
      * Removes the given indirect shading resource from the cache.

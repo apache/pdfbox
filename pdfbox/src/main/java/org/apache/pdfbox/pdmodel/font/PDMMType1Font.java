@@ -36,6 +36,6 @@ public class PDMMType1Font extends PDType1Font
      */
     public PDMMType1Font(COSDictionary fontDictionary) throws IOException
     {
-        super(fontDictionary);
+        super(fontDictionary, null);
     }
 }

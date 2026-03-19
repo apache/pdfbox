@@ -36,10 +36,12 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 
@@ -56,7 +58,8 @@ public class PDType0Font extends PDFont implements PDVectorFont
     private final Set<Integer> noUnicode = new HashSet<>(); 
     private final GsubData gsubData;
     private final CmapLookup cmapLookup;
-    private CMap cMap, cMapUCS2;
+    private CMap cMap;
+    private CMap cMapUCS2;
     private boolean isCMapPredefined;
     private boolean isDescendantCJK;
     private PDCIDFontType2Embedder embedder;
@@ -66,11 +69,13 @@ public class PDType0Font extends PDFont implements PDVectorFont
      * Constructor for reading a Type0 font from a PDF file.
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
+     * @param resourceCache ResourceCache, can be null.
+     * 
      * @throws IOException if the descendant font is missing.
      */
-    public PDType0Font(COSDictionary fontDictionary) throws IOException
+    public PDType0Font(COSDictionary fontDictionary, ResourceCache resourceCache) throws IOException
     {
-        super(fontDictionary);
+        super(fontDictionary, resourceCache);
 
         gsubData = GsubData.NO_DATA_FOUND;
         cmapLookup = null;
@@ -94,7 +99,22 @@ public class PDType0Font extends PDFont implements PDVectorFont
         {
             throw new IOException("Missing or wrong type in descendant font dictionary");
         }
-        descendantFont = PDFontFactory.createDescendantFont((COSDictionary) descendantFontDictBase, this);
+        COSBase descendantFontBaseObject = descendantFonts.get(0);
+        PDCIDFont cachedCIDFont = null;
+        if (resourceCache != null && descendantFontBaseObject instanceof COSObject)
+        {
+            cachedCIDFont = resourceCache.getCIDFont((COSObject) descendantFontBaseObject);
+        }
+        if (cachedCIDFont == null)
+        {
+            cachedCIDFont = PDFontFactory
+                    .createDescendantFont((COSDictionary) descendantFontDictBase, this);
+            if (resourceCache != null && descendantFontBaseObject instanceof COSObject)
+            {
+                resourceCache.put((COSObject) descendantFontBaseObject, cachedCIDFont);
+            }
+        }
+        descendantFont = cachedCIDFont;
         readEncoding();
         fetchCMapUCS2();
     }

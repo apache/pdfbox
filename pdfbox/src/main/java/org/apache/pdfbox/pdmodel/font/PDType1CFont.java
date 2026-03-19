@@ -36,6 +36,7 @@ import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
@@ -70,11 +71,14 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
      * Constructor.
      * 
      * @param fontDictionary the corresponding dictionary
+     * @param resourceCache ResourceCache, can be null.
+     * 
      * @throws IOException it something went wrong
      */
-    public PDType1CFont(COSDictionary fontDictionary) throws IOException
+    public PDType1CFont(COSDictionary fontDictionary, ResourceCache resourceCache)
+            throws IOException
     {
-        super(fontDictionary);
+        super(fontDictionary, resourceCache);
 
         boolean fontIsDamaged = false;
         CFFType1Font cffEmbedded = null;
