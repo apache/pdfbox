@@ -901,10 +901,35 @@
                             <sha512>60e7b46f11a655083a57f4a627edf75bee477cd1ebfb06fbaefeb8ba16a01be37039cfd51c7c181a3ea368b53d22e327d480a7b0699c0edb2e06b4faaae7790f</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-6178</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13081297/form_empty.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-6178.pdf</outputFileName>
+                            <sha512>d39486af0614bd099167a6adaab833aed41a0ebec7b85b13b382a2fdb6fddbcaaea9ab26ed0a81b72822258c8dd66dd535fa5c76afd1e5a8b1bff7d81e890274</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-6178-1</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13081311/form_selected_ASCII_NUL_acrobat.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-6178-1.pdf</outputFileName>
+                            <sha512>83bc557e6f7d3e98de6e81168b2e2fb3def5025cc5fab1ddb3ef658505351c615253587f09b93503bb73a6225f3d3898be894e9d05dba8d464f4dd9c54514bc3</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
 
 </project>
-

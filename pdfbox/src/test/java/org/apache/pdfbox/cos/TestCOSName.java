@@ -20,15 +20,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.junit.jupiter.api.Test;
 
 class TestCOSName
 {
+    private static final File TARGETPDFDIR = new File("target/pdfs");
+
     /**
      * PDFBOX-4076: Check that characters outside of US_ASCII are not replaced with "?".
      * 
@@ -56,4 +60,65 @@ class TestCOSName
         }
     }
 
+    /**
+     * PDFBOX-6178: Ensure that names with escape sequences #xx are written as is.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    void PDFBox6178() throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try (PDDocument document = Loader.loadPDF(new File(TARGETPDFDIR,"PDFBOX-6178.pdf"))) {
+            PDField field = document.getDocumentCatalog()
+                .getAcroForm(null)
+                .getField("Geschlecht");
+            
+            field.setValue("männlich");
+
+            field.getWidgets()
+                .get(0).getAppearance().getNormalAppearance().getCOSObject()
+                .keySet().forEach(k -> {
+                    try {
+                        k.writePDF(baos);
+                    } catch (IOException e) {
+                        // ignored
+                    }
+                });
+
+            String writtenKeys = new String(baos.toByteArray(), "UTF-8");
+            assertTrue(writtenKeys.contains("/m#E4nnlich"), "Output should be /m#e4nnlich (with 0xE4 as hex escape)");
+        }
+    }
+
+    /**
+     * PDFBOX-6178: Ensure that names with escape sequences #xx are written as is.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    void NameWithASCII_NUL() throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try (PDDocument document = Loader.loadPDF(new File(TARGETPDFDIR,"PDFBOX-6178-1.pdf"))) {
+            PDField field = document.getDocumentCatalog()
+                .getAcroForm(null)
+                .getField("Geschlecht");
+            
+            field.getWidgets()
+                .get(0).getAppearance().getNormalAppearance().getCOSObject()
+                .keySet().forEach(k -> {
+                    try {
+                        k.writePDF(baos);
+                    } catch (IOException e) {
+                        // ignored
+                    }
+                });
+
+            String writtenKeys = new String(baos.toByteArray(), "UTF-8");
+            assertTrue(writtenKeys.contains("/m#00nnlich"), "Output should be /m#00nnlich (with 0xE4 as hex escape)");
+        }
+    }
 }
