@@ -89,11 +89,10 @@ class TestCOSName
 
             String writtenKeys = new String(baos.toByteArray(), "UTF-8");
             assertTrue(writtenKeys.contains("/m#E4nnlich"), "Output should be /m#e4nnlich (with 0xE4 as hex escape)");
-            System.out.println(writtenKeys);
         }
     }
 
-        /**
+    /**
      * PDFBOX-6178: Ensure that names with escape sequences #xx are written as is.
      * 
      * @throws IOException 
@@ -120,7 +119,6 @@ class TestCOSName
 
             String writtenKeys = new String(baos.toByteArray(), "UTF-8");
             assertTrue(writtenKeys.contains("/m#00nnlich"), "Output should be /m#00nnlich (with 0xE4 as hex escape)");
-            System.out.println(writtenKeys);
         }
     }
 }

@@ -751,7 +751,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * Private constructor. This will limit the number of COSName objects that are created.
      * 
-     * @param aName The name of the COSName object.
+     * @param storedBytes The the raw byte sequence that defines this name.
      */
     private COSName(byte[] storedBytes)
     {
