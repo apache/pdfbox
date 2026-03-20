@@ -1852,19 +1852,7 @@ public class COSParser extends BaseParser implements ICOSParser
                     String hex = Character.toString((char) ch1) + (char) ch2;
                     try
                     {
-                        // Beginning with PDF 1.2 a name object is an atomic symbol uniquely defined by a 
-                        // sequence of any characters (8-bit values) except null (character code 0)
-                        // Although not explicitly stated in the PDF specification, it is generally accepted that
-                        // the # escape sequence is used to represent characters that are not allowed in a name object,
-                        // such as the null byte (0x00). Therefore, we will throw an IOException if we encounter a #00 sequence
-                        // in a name object, as this would indicate an invalid name according to the PDF specification.
-                        // ASCII NUL (0x00) is already handled in BaseParser#isEndOfName
-                        int decoded = Integer.parseInt(hex, 16);
-                        if (decoded == 0)
-                        {
-                            throw new IOException("PDF name must not contain null byte (0x00), found #00 at offset " + source.getPosition());
-                        }
-                        buffer.write(decoded);
+                        buffer.write(Integer.parseInt(hex, 16));
                     }
                     catch (NumberFormatException e)
                     {

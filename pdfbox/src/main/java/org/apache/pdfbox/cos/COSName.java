@@ -715,15 +715,6 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static COSName getPDFName(byte[] bytes)
     {
-        for (byte b : bytes)
-        {
-            if (b == 0)
-            {
-                throw new IllegalArgumentException(
-                        "PDF name bytes must not contain null (0x00) characters");
-            }
-        }
-
         // Wrap for lookup only to avoid unnecessary copying of the byte array for the key.
         ByteBuffer lookupKey = ByteBuffer.wrap(bytes);
         
