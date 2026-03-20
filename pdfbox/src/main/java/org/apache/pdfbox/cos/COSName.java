@@ -794,7 +794,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * <p>... In such situations, the sequence of bytes (after expansion of NUMBER SIGN sequences, if any) 
      * should be interpreted according to UTF-8... </p>
      * 
-     * Use {@link #getBytes()} when byte-level fidelity is required.</p>
+     * <p>Use {@link #getBytes()} when byte-level fidelity is required.</p>
      * 
      * @return The name of the object.
      */
