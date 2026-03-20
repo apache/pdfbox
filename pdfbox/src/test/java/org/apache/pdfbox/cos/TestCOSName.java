@@ -17,6 +17,7 @@
 package org.apache.pdfbox.cos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -32,6 +33,16 @@ import org.junit.jupiter.api.Test;
 class TestCOSName
 {
     private static final File TARGETPDFDIR = new File("target/pdfs");
+
+    @Test
+    void testNullByteRejection()
+    {
+        // Null bytes should not be allowed in name bytes
+        byte[] bytesWithNull = new byte[] { 'N', 'a', 'm', 'e', 0, 'X' };
+        assertThrows(IllegalArgumentException.class, () -> {
+            COSName.getPDFName(bytesWithNull);
+        }, "getPDFName should reject bytes containing null (0x00)");
+    }
 
     /**
      * PDFBOX-4076: Check that characters outside of US_ASCII are not replaced with "?".
