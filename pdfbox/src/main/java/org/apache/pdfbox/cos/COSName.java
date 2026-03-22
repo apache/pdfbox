@@ -700,11 +700,15 @@ public final class COSName extends COSBase implements Comparable<COSName>
     }
 
     /**
-     * This will get a COSName object with that name.
-     * 
-     * @param aName The name of the object.
-     * 
-     * @return A COSName with the specified name.
+     * Returns a {@code COSName} whose byte sequence is exactly {@code bytes}.
+     *
+     * <p>This is the preferred factory when constructing a name directly from a PDF byte stream
+     * (i.e. after the parser has stripped the leading {@code /} and expanded all {@code #XX}
+     * escape sequences). Using this method preserves the spec-correct, byte-level identity of the
+     * name even when the bytes are not valid UTF-8.</p>
+     *
+     * @param bytes the raw decoded byte sequence
+     * @return a canonicalised {@code COSName} instance
      */
     public static COSName getPDFName(byte[] bytes)
     {
@@ -733,13 +737,13 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * Private constructor. This will limit the number of COSName objects. that are created.
      * 
-     * @param storedBytes The the raw byte sequence that defines this name.
+     * @param bytes The the raw byte sequence that defines this name.
      * @param staticValue Indicates if the COSName object is static so that it can be stored in the HashMap without
      * synchronizing.
      */
     private COSName(byte[] bytes, boolean staticValue)
     {
-        // Denesive copy which is OK to share as the key and the nameBytes
+        // Defensive copy which is OK to share as the key and the nameBytes
         // of the COSName are immutable.
         byte[] storedBytes = Arrays.copyOf(bytes, bytes.length);
         ByteBuffer storedKey = ByteBuffer.wrap(storedBytes);
@@ -769,7 +773,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * Private constructor. This will limit the number of COSName objects. that are created.
      * 
-     * @param storedBytes The the raw byte sequence that defines this name.
+     * @param aName the name string
      */
     private COSName(String aName)
     {
