@@ -707,11 +707,8 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * escape sequences). Using this method preserves the spec-correct, byte-level identity of the
      * name even when the bytes are not valid UTF-8.</p>
      *
-     * <p>Null bytes (0x00) are rejected; the spec explicitly excludes them.</p>
-     *
-     * @param bytes the raw decoded byte sequence; must not be {@code null} and must not contain 0x00
+     * @param bytes the raw decoded byte sequence; must not be {@code null}
      * @return a canonicalised {@code COSName} instance
-     * @throws IllegalArgumentException if {@code bytes} contains a null byte
      */
     public static COSName getPDFName(byte[] bytes)
     {
@@ -751,11 +748,11 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * Private constructor. This will limit the number of COSName objects that are created.
      * 
-     * @param storedBytes The the raw byte sequence that defines this name.
+     * @param bytes The the raw byte sequence that defines this name.
      */
-    private COSName(byte[] storedBytes)
+    private COSName(byte[] bytes)
     {
-        this.nameBytes = storedBytes;
+        this.nameBytes = bytes;
     }
 
 
