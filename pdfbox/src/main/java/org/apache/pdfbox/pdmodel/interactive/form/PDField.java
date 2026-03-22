@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -508,6 +507,6 @@ public abstract class PDField implements COSObjectable
     @Override
     public int hashCode()
     {
-        return Objects.hash(dictionary);
+        return dictionary.hashCode();
     }
 }
