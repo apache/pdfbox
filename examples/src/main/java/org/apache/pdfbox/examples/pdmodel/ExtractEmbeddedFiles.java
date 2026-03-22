@@ -145,7 +145,9 @@ public final class ExtractEmbeddedFiles
     {
         File file = new File(directoryPath, filename);
         File parentDir = file.getParentFile();
-        if (!parentDir.getCanonicalPath().startsWith(directoryPath))
+        String parentCanonical = parentDir.getCanonicalPath();
+        if (!parentCanonical.equals(directoryPath) &&
+            !parentCanonical.startsWith(directoryPath + File.separator))
         {
             System.err.println("Ignoring " + filename + " (different directory)");
             return;
