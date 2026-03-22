@@ -124,7 +124,7 @@ public class FDFDictionary implements COSObjectable
                         {
                             try
                             {
-                                fieldList.add(new FDFField((Element) fields.item(f)));
+                                fieldList.add(new FDFField((Element) currentNode));
                             }
                             catch (IOException e)
                             {
