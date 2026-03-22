@@ -307,10 +307,14 @@ final class SampledImageReader
             final boolean isIndexed = colorSpace instanceof PDIndexed;
 
             // calculate row padding
-            int padding = 0;
-            if (inputWidth * numComponents * bitsPerComponent % 8 > 0)
+            int padding = inputWidth * numComponents * bitsPerComponent % 8;
+            if (padding > 0)
             {
-                padding = 8 - (inputWidth * numComponents * bitsPerComponent % 8);
+                padding = 8 - padding;
+            }
+            else
+            {
+                padding = 0;
             }
 
             // read stream
@@ -539,7 +543,7 @@ final class SampledImageReader
             {
                 // we just need to copy all sample data, then convert to RGB image.
                 long inputResult = IOUtils.populateBuffer(input, bank);
-                if (inputResult != (long) width * height * numComponents)
+                if (LOG.isDebugEnabled() && inputResult != (long) width * height * numComponents)
                 {
                     LOG.debug("Tried reading " + (long) width * height * numComponents + " bytes but only " + inputResult + " bytes read");
                 }
@@ -654,10 +658,14 @@ final class SampledImageReader
             }
 
             // calculate row padding
-            int padding = 0;
-            if (inputWidth * numComponents * bitsPerComponent % 8 > 0)
+            int padding = inputWidth * numComponents * bitsPerComponent % 8;
+            if (padding > 0)
             {
-                padding = 8 - (inputWidth * numComponents * bitsPerComponent % 8);
+                padding = 8 - padding;
+            }
+            else
+            {
+                padding = 0;
             }
 
             // read stream
