@@ -808,7 +808,16 @@ public final class COSName extends COSBase implements Comparable<COSName>
         {
             return 0;
         }
-        return getName().compareTo(other.getName()); // maybe poor implementation compared to 3.0?
+        int len = Math.min(nameBytes.length, other.nameBytes.length);
+        for (int i = 0; i < len; i++)
+        {
+            int diff = (nameBytes[i] & 0xFF) - (other.nameBytes[i] & 0xFF);
+            if (diff != 0)
+            {
+                return diff;
+            }
+        }
+        return nameBytes.length - other.nameBytes.length;
     }
 
     /**
