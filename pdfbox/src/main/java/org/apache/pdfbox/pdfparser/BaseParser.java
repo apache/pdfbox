@@ -887,7 +887,7 @@ public abstract class BaseParser
             seqSource.unread(c);
         }
 
-        return COSName.getPDFName(decodeBuffer(buffer));
+        return COSName.getPDFName(buffer.toByteArray());
     }
 
     /**

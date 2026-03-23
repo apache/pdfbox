@@ -18,6 +18,8 @@ package org.apache.pdfbox.cos;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,12 +35,12 @@ import org.apache.pdfbox.util.Hex;
 public final class COSName extends COSBase implements Comparable<COSName>
 {
     // using ConcurrentHashMap because this can be accessed by multiple threads
-    private static final Map<String, COSName> nameMap = new ConcurrentHashMap<String, COSName>(
+    private static final Map<ByteBuffer, COSName> nameMap = new ConcurrentHashMap<ByteBuffer, COSName>(
             8192);
 
     // all common COSName values are stored in this HashMap
     // they are already defined as static constants and don't need to be synchronized
-    private static final Map<String, COSName> commonNameMap = new HashMap<String, COSName>(768);
+    private static final Map<ByteBuffer, COSName> commonNameMap = new HashMap<ByteBuffer, COSName>(768);
 
     //
     // IMPORTANT: this list is *alphabetized* and does not need any JavaDoc
@@ -642,98 +644,171 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName ZA_DB = new COSName("ZaDb");
 
     // fields
-    private final String name;
 
     /**
-     * This will get a COSName object with that name.
-     * 
-     * @param aName The name of the object.
-     * 
-     * @return A COSName with the specified name.
+     * <p>Per PDF 32000-1:2008 §7.3.5: Beginning with PDF 1.2 a name object is an atomic symbol 
+     * uniquely defined by a sequence of any characters (8-bit values) except null 
+     * (character code 0).</p>
+     */
+    private final byte[] nameBytes;
+
+    /**
+     * Returns a {@code COSName} whose byte sequence is the UTF-8 encoding of {@code aName}.
+     *
+     * <p>This is the standard factory for names defined in Java source code (e.g. the static
+     * constants above). All well-formed PDF names defined by the spec are ASCII, so the UTF-8
+     * encoding is a transparent identity transform for those cases.</p>
+     *
+     * @param aName the name string; must not be {@code null}
+     * @return a canonicalised {@code COSName} instance
      */
     public static COSName getPDFName(String aName)
     {
-        COSName name = null;
-        if (aName != null)
+        return getPDFName(aName.getBytes(Charsets.UTF_8));
+    }
+
+    /**
+     * Returns a {@code COSName} whose byte sequence is exactly {@code bytes}.
+     *
+     * <p>This is the preferred factory when constructing a name directly from a PDF byte stream
+     * (i.e. after the parser has stripped the leading {@code /} and expanded all {@code #XX}
+     * escape sequences). Using this method preserves the spec-correct, byte-level identity of the
+     * name even when the bytes are not valid UTF-8.</p>
+     *
+     * <p>Null bytes (0x00) are rejected; the spec explicitly excludes them.</p>
+     *
+     * @param bytes the raw decoded byte sequence; must not be {@code null} and must not contain 0x00
+     * @return a canonicalised {@code COSName} instance
+     * @throws IllegalArgumentException if {@code bytes} contains a null byte
+     */
+    public static COSName getPDFName(byte[] bytes)
+    {
+        if (bytes == null)
         {
-            // Is it a common COSName ??
-            name = commonNameMap.get(aName);
+            return null;
+        }
+
+        // Wrap for lookup only to avoid unnecessary copying of the byte array for the key.
+        ByteBuffer lookupKey = ByteBuffer.wrap(bytes);
+
+        // Is it a common COSName ??
+        COSName name = commonNameMap.get(lookupKey);
+        if (name == null)
+        {
+            // It seems to be a document specific COSName
+            name = nameMap.get(lookupKey);
             if (name == null)
             {
-                // It seems to be a document specific COSName
-                name = nameMap.get(aName);
-                if (name == null)
-                {
-                    // name is added to the synchronized map in the constructor
-                    name = new COSName(aName, false);
-                }
+                // name is added to the synchronized map in the constructor
+                name = new COSName(bytes, false);
             }
         }
+
         return name;
     }
 
     /**
-     * Private constructor. This will limit the number of COSName objects. that are created.
-     * 
-     * @param aName The name of the COSName object.
+     * Private constructor. This will limit the number of COSName objects that are created.
+     *
+     * @param storedBytes The name of the COSName object.
      * @param staticValue Indicates if the COSName object is static so that it can be stored in the HashMap without
      * synchronizing.
      */
-    private COSName(String aName, boolean staticValue)
+    private COSName(byte[] storedBytes, boolean staticValue)
     {
-        name = aName;
+        this.nameBytes = storedBytes;
+        ByteBuffer storedKey = ByteBuffer.wrap(storedBytes);
         if (staticValue)
         {
-            commonNameMap.put(aName, this);
+            commonNameMap.put(storedKey, this);
         }
         else
         {
-            nameMap.put(aName, this);
+            nameMap.put(storedKey, this);
         }
     }
 
     /**
-     * Private constructor. This will limit the number of COSName objects. that are created.
+     * Private constructor. This will limit the number of COSName objects that are created.
      * 
      * @param aName The name of the COSName object.
      */
     private COSName(String aName)
     {
-        this(aName, true);
+        this(aName.getBytes(Charsets.UTF_8), true);
     }
 
     /**
-     * This will get the name of this COSName object.
+     * Returns the raw byte sequence that defines this name.
+     *
+     * <p>This is the atomic content/identity of the name. Prefer this over
+     * {@link #getName()} whenever you need to write name bytes to an output stream, compare names
+     * parsed from a PDF, or otherwise operate at the byte level.</p>
+     *
+     * @return a defensive copy of the internal byte array; never {@code null}
+     */
+    public byte[] getBytes()
+    {
+        return Arrays.copyOf(nameBytes, nameBytes.length);
+    }
+
+    /**
+     * Returns the name decoded as a UTF-8 {@code String}.
+     * 
+     * <p>This method exists primarily for backward compatibility and for cases where the
+     * readable value needs to be stored.</p>
+     * 
+     * <p>Per PDF 32000-1:2008 §7.3.5, ... However, occasionally the need arises to treat a name object
+     * as text, such as one that represents a font ... </p>
+     * 
+     * <p>... In such situations, the sequence of bytes (after expansion of NUMBER SIGN sequences, if any) 
+     * should be interpreted according to UTF-8... </p>
+     * 
+     * <p>Use {@link #getBytes()} when byte-level fidelity is required.</p>
      * 
      * @return The name of the object.
      */
     public String getName()
     {
-        return name;
+        String utf8String = new String(nameBytes, Charsets.UTF_8);
+
+        //check for lossy decoding, which can happen if the name contains
+        // bytes that are not valid UTF-8
+        if (utf8String.indexOf('\uFFFD') >= 0)
+        {
+            // fall back to ISO-8859-1, which is a single-byte encoding that can decode any
+            // byte sequence without loss
+            return new String(nameBytes, Charsets.ISO_8859_1);
+        }
+        return utf8String;
     }
 
     @Override
     public String toString()
     {
-        return "COSName{" + name + "}";
+        return "COSName{" + getName() + "}";
     }
 
     @Override
     public boolean equals(Object object)
     {
-        return object instanceof COSName && name.equals(((COSName) object).name);
+        return object instanceof COSName && Arrays.equals(nameBytes, ((COSName) object).nameBytes);
     }
 
     @Override
     public int hashCode()
     {
-        return name.hashCode();
+        return Arrays.hashCode(nameBytes);
     }
 
     @Override
     public int compareTo(COSName other)
     {
-        return name.compareTo(other.name);
+        if (this == other)
+        {
+            return 0;
+        }
+        return getName().compareTo(other.getName()); // maybe poor implementation compared to 3.0?
     }
 
     /**
@@ -742,7 +817,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public boolean isEmpty()
     {
-        return name.isEmpty();
+        return nameBytes.length == 0;
     }
 
     @Override
@@ -760,7 +835,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public void writePDF(OutputStream output) throws IOException
     {
         output.write('/');
-        byte[] bytes = getName().getBytes(Charsets.UTF_8);
+        byte[] bytes = getBytes();
         for (byte b : bytes)
         {
             int current = b & 0xFF;
