@@ -22,14 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFStreamParser;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -94,7 +90,7 @@ class ControlCharacterTest
         PDField field = acroForm.getField("pdfbox-tab");
     	field.setValue("TAB\tTAB");
 
-        List<String> pdfboxValues = getStringsFromStream(field);
+        List<String> pdfboxValues = TestUtils.getStringsFromStream(field);
         pdfboxValues.forEach(token -> assertEquals("TAB", token));
     }
 
@@ -117,8 +113,8 @@ class ControlCharacterTest
         PDField field = acroForm.getField("pdfbox-" + nameSuffix);
         field.setValue(value);
 
-        List<String> pdfboxValues = getStringsFromStream(field);
-        List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-" + nameSuffix));
+        List<String> pdfboxValues = TestUtils.getStringsFromStream(field);
+        List<String> acrobatValues = TestUtils.getStringsFromStream(acroForm.getField("acrobat-" + nameSuffix));
 
         assertEquals(pdfboxValues, acrobatValues);
     }
@@ -127,23 +123,5 @@ class ControlCharacterTest
     void tearDown() throws IOException
     {
         document.close();
-    }
-    
-    private List<String> getStringsFromStream(PDField field) throws IOException
-    {
-    	PDAnnotationWidget widget = field.getWidgets().get(0);
-        PDFStreamParser parser = new PDFStreamParser(widget.getNormalAppearanceStream());
-    	
-        List<Object> tokens = parser.parse();
-    	
-        // TODO: improve the string output to better match
-        // trimming as Acrobat adds spaces to strings
-        // where we don't
-        return tokens.stream() //
-                .filter(COSString.class::isInstance) //
-                .map(COSString.class::cast) //
-                .map(COSString::getString) //
-                .map(String::trim) //
-                .collect(Collectors.toList());
     }
 }
