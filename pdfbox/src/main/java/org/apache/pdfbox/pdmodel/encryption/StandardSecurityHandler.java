@@ -27,6 +27,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Random;
  
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -79,6 +80,9 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
 
     // hashes used for Algorithm 2.B, depending on remainder from E modulo 3
     private static final String[] HASHES_2B = new String[] {"SHA-256", "SHA-384", "SHA-512"};
+
+    // SecureRandom.getInstanceStrong() would be better, but sometimes blocks on Linux
+    private static final Random RANDOM = new SecureRandom();
 
     /**
      * Constructor.
@@ -424,19 +428,18 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
     {
         try
         {
-            SecureRandom rnd = new SecureRandom();
             Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 
             // make a random 256-bit file encryption key
             setEncryptionKey(new byte[32]);
-            rnd.nextBytes(getEncryptionKey());
+            RANDOM.nextBytes(getEncryptionKey());
 
             // Algorithm 8a: Compute U
             byte[] userPasswordBytes = truncate127(userPassword.getBytes(StandardCharsets.UTF_8));
             byte[] userValidationSalt = new byte[8];
             byte[] userKeySalt = new byte[8];
-            rnd.nextBytes(userValidationSalt);
-            rnd.nextBytes(userKeySalt);
+            RANDOM.nextBytes(userValidationSalt);
+            RANDOM.nextBytes(userKeySalt);
             byte[] hashU = computeHash2B(concat(userPasswordBytes, userValidationSalt),
                     userPasswordBytes, null);
             byte[] u = concat(hashU, userValidationSalt, userKeySalt);
@@ -453,8 +456,8 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             byte[] ownerPasswordBytes = truncate127(ownerPassword.getBytes(StandardCharsets.UTF_8));
             byte[] ownerValidationSalt = new byte[8];
             byte[] ownerKeySalt = new byte[8];
-            rnd.nextBytes(ownerValidationSalt);
-            rnd.nextBytes(ownerKeySalt);
+            RANDOM.nextBytes(ownerValidationSalt);
+            RANDOM.nextBytes(ownerKeySalt);
             byte[] hashO = computeHash2B(concat(ownerPasswordBytes, ownerValidationSalt, u),
                     ownerPasswordBytes, u);
             byte[] o = concat(hashO, ownerValidationSalt, ownerKeySalt);
@@ -491,7 +494,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             perms[11] = 'b';
             for (int i = 12; i <= 15; i++)
             {
-                perms[i] = (byte) rnd.nextInt();
+                perms[i] = (byte) RANDOM.nextInt();
             }
 
             cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(getEncryptionKey(), "AES"),
