@@ -84,6 +84,16 @@ public final class PDComboBox extends PDChoice
         
         if (!values.isEmpty())
         {
+            if (hasSeparateExportAndDisplayValues())
+            {
+                List<String> displayValues = getOptionsDisplayValues();
+                int index = getOptions().indexOf(values.get(0));
+                if (index != -1 && index < displayValues.size())
+                {
+                    apHelper.setAppearanceValue(displayValues.get(index));
+                    return;
+                }
+            }
             apHelper.setAppearanceValue(values.get(0));
         }
         else

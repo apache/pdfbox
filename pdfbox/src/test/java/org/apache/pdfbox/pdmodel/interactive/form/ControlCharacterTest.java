@@ -20,13 +20,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -88,8 +84,8 @@ public class ControlCharacterTest {
     	PDField field = acroForm.getField("pdfbox-space");
     	field.setValue("SPACE SPACE");
 
-    	List<String> pdfboxValues = getStringsFromStream(field);
-    	List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-space"));
+    	List<String> pdfboxValues = TestUtils.getStringsFromStream(field);
+    	List<String> acrobatValues = TestUtils.getStringsFromStream(acroForm.getField("acrobat-space"));
 
     	assertEquals(pdfboxValues, acrobatValues);
     }
@@ -100,8 +96,8 @@ public class ControlCharacterTest {
     	PDField field = acroForm.getField("pdfbox-cr");
     	field.setValue("CR\rCR");
 
-    	List<String> pdfboxValues = getStringsFromStream(field);
-    	List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-cr"));
+    	List<String> pdfboxValues = TestUtils.getStringsFromStream(field);
+    	List<String> acrobatValues = TestUtils.getStringsFromStream(acroForm.getField("acrobat-cr"));
 
     	assertEquals(pdfboxValues, acrobatValues);
     }
@@ -112,8 +108,8 @@ public class ControlCharacterTest {
     	PDField field = acroForm.getField("pdfbox-lf");
     	field.setValue("LF\nLF");
 
-    	List<String> pdfboxValues = getStringsFromStream(field);
-    	List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-lf"));
+    	List<String> pdfboxValues = TestUtils.getStringsFromStream(field);
+    	List<String> acrobatValues = TestUtils.getStringsFromStream(acroForm.getField("acrobat-lf"));
 
     	assertEquals(pdfboxValues, acrobatValues);
     }
@@ -124,8 +120,8 @@ public class ControlCharacterTest {
     	PDField field = acroForm.getField("pdfbox-crlf");
     	field.setValue("CRLF\r\nCRLF");
 
-    	List<String> pdfboxValues = getStringsFromStream(field);
-    	List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-crlf"));
+    	List<String> pdfboxValues = TestUtils.getStringsFromStream(field);
+    	List<String> acrobatValues = TestUtils.getStringsFromStream(acroForm.getField("acrobat-crlf"));
 
     	assertEquals(pdfboxValues, acrobatValues);
     }
@@ -136,8 +132,8 @@ public class ControlCharacterTest {
     	PDField field = acroForm.getField("pdfbox-lfcr");
     	field.setValue("LFCR\n\rLFCR");
     	
-    	List<String> pdfboxValues = getStringsFromStream(field);
-    	List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-lfcr"));
+    	List<String> pdfboxValues = TestUtils.getStringsFromStream(field);
+    	List<String> acrobatValues = TestUtils.getStringsFromStream(acroForm.getField("acrobat-lfcr"));
 
     	assertEquals(pdfboxValues, acrobatValues);
     }
@@ -148,8 +144,8 @@ public class ControlCharacterTest {
     	PDField field = acroForm.getField("pdfbox-linebreak");
     	field.setValue("linebreak\u2028linebreak");
     	
-    	List<String> pdfboxValues = getStringsFromStream(field);
-    	List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-linebreak"));
+    	List<String> pdfboxValues = TestUtils.getStringsFromStream(field);
+    	List<String> acrobatValues = TestUtils.getStringsFromStream(acroForm.getField("acrobat-linebreak"));
 
     	assertEquals(pdfboxValues, acrobatValues);
     }
@@ -160,8 +156,8 @@ public class ControlCharacterTest {
     	PDField field = acroForm.getField("pdfbox-paragraphbreak");
     	field.setValue("paragraphbreak\u2029paragraphbreak");
     	
-    	List<String> pdfboxValues = getStringsFromStream(field);
-    	List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-paragraphbreak"));
+    	List<String> pdfboxValues = TestUtils.getStringsFromStream(field);
+    	List<String> acrobatValues = TestUtils.getStringsFromStream(acroForm.getField("acrobat-paragraphbreak"));
 
     	assertEquals(pdfboxValues, acrobatValues);
     }
@@ -170,28 +166,5 @@ public class ControlCharacterTest {
     public void tearDown() throws IOException
     {
         document.close();
-    }
-    
-    private List<String> getStringsFromStream(PDField field) throws IOException
-    {
-    	PDAnnotationWidget widget = field.getWidgets().get(0);
-    	PDFStreamParser parser = new PDFStreamParser(widget.getNormalAppearanceStream());
-    	
-    	Object token = parser.parseNextToken();
-    	
-    	List<String> stringValues = new ArrayList<String>();
-    	
-    	while (token != null)
-    	{
-    		if (token instanceof COSString)
-    		{
-    			// TODO: improve the string output to better match
-    			// trimming as Acrobat adds spaces to strings
-    			// where we don't
-    			stringValues.add(((COSString) token).getString().trim());
-    		}
-    		token = parser.parseNextToken();
-    	}
-    	return stringValues;   	
     }
 }

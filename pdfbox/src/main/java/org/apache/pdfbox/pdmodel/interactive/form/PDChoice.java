@@ -212,6 +212,18 @@ public abstract class PDChoice extends PDVariableText
     }
     
     /**
+     * This will check if the field has dedicated display and export values.
+     * 
+     * @return true if export and display values are different
+     */
+    public boolean hasSeparateExportAndDisplayValues()
+    {
+        List<String> exportValues = getOptionsExportValues();
+        List<String> displayValues = getOptionsDisplayValues();
+        return !exportValues.equals(displayValues);
+    }
+
+    /**
      * This will get the indices of the selected options - the 'I' key.
      * <p>
      * This is only needed if a choice field allows multiple selections and

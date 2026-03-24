@@ -477,6 +477,7 @@ public class TestRadioButtons
                     containsSequence(asBytes, new byte[]{(byte) 0xE4}));
             
             document.save(baos);
+            document.save(new File("/home/msahyoun/test.pdf"));
         }
         finally
         {
