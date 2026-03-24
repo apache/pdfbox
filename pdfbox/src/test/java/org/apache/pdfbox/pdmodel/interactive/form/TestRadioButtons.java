@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -365,5 +366,124 @@ class TestRadioButtons
             assertEquals(COSName.getPDFName("1"), field.getCOSObject().getDictionaryObject(COSName.V));
             assertEquals(1, field.getSelectedIndex());
         }        
+    }
+    /**
+     * PDFBOX-6178: Ensure that RadioButton values with non-ASCII characters preserve encoding.
+     * When setting a RadioButton value to "männlich", both V and AS entries should preserve
+     * the original byte encoding from the appearance dictionary (0xE4 for ä in ISO-8859-1,
+     * not 0xC3 0xA4 from UTF-8).
+     * 
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox6178NonAsciiRadioButtonValue() throws IOException
+    {
+        File pdfFile = new File("target/pdfs/PDFBOX-6178.pdf");
+        if (!pdfFile.exists())
+        {
+            return;  // Skip test if PDF not available
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        // Load document, set value, and save to memory
+        try (PDDocument document = Loader.loadPDF(pdfFile))
+        {
+            PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+            PDField field = acroForm.getField("Geschlecht");
+            
+            field.setValue("männlich");
+            
+            // Verify V entry preserves encoding - should have 0xE4 byte for ä (ISO-8859-1)
+            COSName vEntry = (COSName) field.getCOSObject().getDictionaryObject(COSName.V);
+            assertNotNull(vEntry, "V entry should not be null after setValue");
+            
+            // Check that the bytes contain 0xE4 (ISO-8859-1 ä) not 0xC3 0xA4 (UTF-8)
+            byte[] vBytes = vEntry.getBytes();
+            
+            assertFalse(containsSequence(vBytes, new byte[]{(byte) 0xC3, (byte) 0xA4}),
+                    "V entry should not contain UTF-8 encoded ä (0xC3 0xA4)");
+            assertTrue(containsSequence(vBytes, new byte[]{(byte) 0xE4}),
+                    "V entry should contain ISO-8859-1 encoded ä (0xE4)");
+            
+            // Verify AS entry preserves encoding
+            COSName asEntry = (COSName) field.getWidgets().get(0).getCOSObject()
+                    .getDictionaryObject(COSName.AS);
+            assertNotNull(asEntry, "AS entry should not be null after setValue");
+            
+            // Check that the AS bytes also preserve ISO-8859-1 encoding
+            byte[] asBytes = asEntry.getBytes();
+            
+            assertFalse(containsSequence(asBytes, new byte[]{(byte) 0xC3, (byte) 0xA4}),
+                    "AS entry should not contain UTF-8 encoded ä (0xC3 0xA4)");
+            assertTrue(containsSequence(asBytes, new byte[]{(byte) 0xE4}),
+                    "AS entry should contain ISO-8859-1 encoded ä (0xE4)");
+            
+            document.save(baos);
+        }
+
+        // Reload and verify entries are still correct
+        try (PDDocument document = Loader.loadPDF(baos.toByteArray()))
+        {
+            PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+            PDField field = acroForm.getField("Geschlecht");
+            
+            // Verify V entry after reload
+            COSName vEntry = (COSName) field.getCOSObject().getDictionaryObject(COSName.V);
+            assertNotNull(vEntry, "V entry should not be null after reload");
+            
+            byte[] vBytes = vEntry.getBytes();
+            assertFalse(containsSequence(vBytes, new byte[]{(byte) 0xC3, (byte) 0xA4}),
+                    "V entry should still not contain UTF-8 ä after reload");
+            assertTrue(containsSequence(vBytes, new byte[]{(byte) 0xE4}),
+                    "V entry should still contain ISO-8859-1 ä after reload");
+            
+            // Verify AS entry after reload
+            COSName asEntry = (COSName) field.getWidgets().get(0).getCOSObject()
+                    .getDictionaryObject(COSName.AS);
+            assertNotNull(asEntry, "AS entry should not be null after reload");
+            
+            byte[] asBytes = asEntry.getBytes();
+            assertFalse(containsSequence(asBytes, new byte[]{(byte) 0xC3, (byte) 0xA4}),
+                    "AS entry should still not contain UTF-8 ä after reload");
+            assertTrue(containsSequence(asBytes, new byte[]{(byte) 0xE4}),
+                    "AS entry should still contain ISO-8859-1 ä after reload");
+        }
+    }
+
+    /**
+     * Helper method to check if a byte sequence contains a particular sub-sequence.
+     *
+     * @param haystack the bytes to search in
+     * @param needle the bytes to search for
+     * @return true if needle is found in haystack, false otherwise
+     */
+    private boolean containsSequence(byte[] haystack, byte[] needle)
+    {
+        if (needle.length == 0)
+        {
+            return true;
+        }
+        if (needle.length > haystack.length)
+        {
+            return false;
+        }
+        for (int i = 0; i <= haystack.length - needle.length; i++)
+        {
+            boolean match = true;
+            for (int j = 0; j < needle.length; j++)
+            {
+                if (haystack[i + j] != needle[j])
+                {
+                    match = false;
+                    break;
+                }
+            }
+            if (match)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
