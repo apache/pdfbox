@@ -20,9 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
@@ -142,6 +145,41 @@ class PDChoiceTest
         choiceField.getCOSObject().setItem(COSName.OPT, choiceFieldOptions);
 
         assertEquals(options, choiceField.getOptions());
+    }
+
+    /*
+     * Set here the value of a choice field to a value with a display value that is different
+     * from the export value and check that the correct display value is used in the appearance stream.
+     * See PDFBOX-6150
+     */
+    @Test
+    void PDFBox6150() throws IOException
+    {
+        File pdfFile = new File("target/pdfs/PDFBOX-6150.pdf");
+        
+        if (!pdfFile.exists())
+        {
+            return;  // Skip test if PDF not available
+        }
+
+        // Load document, set value, and save to memory
+        try (PDDocument document = Loader.loadPDF(pdfFile))
+        {
+            PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+            PDChoice field = (PDChoice) acroForm.getField("shipping_country");
+
+            field.setValue("DE");
+
+            assertTrue("DE".equals(field.getValue().get(0)), "The fields value should be set to DE");
+            
+            // Read the content of the normal appearance stream and check that it contains the display value for DE
+            // which is Deutschland
+            List<String> content = TestUtils.getStringsFromStream(field);
+            boolean hasContent = content.stream().anyMatch("Deutschland"::equals);
+            assertTrue(hasContent, "The content should contain the display value for DE which is Deutschland");
+            
+            document.close();
+        }
     }
 }
 

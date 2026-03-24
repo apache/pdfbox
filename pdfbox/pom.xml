@@ -921,6 +921,19 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>PDFBOX-6150</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13080392/test-form.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-6150.pdf</outputFileName>
+                            <sha512>da6c630d2683937bce60f70302176f16531b36300b69d2d8585c15819b7965bf6c0c2f6fe101743d66b3dbb70e7eb0383614b669878641a480b9ea1a6d02510f</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>PDFBOX-6178</id>
                         <phase>generate-test-resources</phase>
                         <goals>
