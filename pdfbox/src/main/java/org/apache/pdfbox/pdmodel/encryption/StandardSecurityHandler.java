@@ -449,9 +449,9 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             // Algorithm 8b: Compute UE
             byte[] hashUE = computeHash2B(concat(userPasswordBytes, userKeySalt),
                     userPasswordBytes, null);
-            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(hashUE, "AES"),
-                    // "an initialization vector of zero"
-                    new IvParameterSpec(new byte[16]));
+            @SuppressWarnings("java:S3329")
+            IvParameterSpec iv1 = new IvParameterSpec(new byte[16]); // "an initialization vector of zero"
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(hashUE, "AES"), iv1);
             byte[] ue = cipher.doFinal(getEncryptionKey());
 
             // Algorithm 9a: Compute O
@@ -467,9 +467,9 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             // Algorithm 9b: Compute OE
             byte[] hashOE = computeHash2B(concat(ownerPasswordBytes, ownerKeySalt, u),
                     ownerPasswordBytes, u);
-            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(hashOE, "AES"),
-                    // "an initialization vector of zero"
-                    new IvParameterSpec(new byte[16]));
+            @SuppressWarnings("java:S3329")
+            IvParameterSpec iv2 = new IvParameterSpec(new byte[16]); // "an initialization vector of zero"
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(hashOE, "AES"), iv2);
             byte[] oe = cipher.doFinal(getEncryptionKey());
 
             // Set keys and other required constants in encryption dictionary
@@ -499,9 +499,9 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
                 perms[i] = (byte) RANDOM.nextInt();
             }
 
-            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(getEncryptionKey(), "AES"),
-                    // "an initialization vector of zero"
-                    new IvParameterSpec(new byte[16]));
+            @SuppressWarnings("java:S3329")
+            IvParameterSpec iv3 = new IvParameterSpec(new byte[16]); // "an initialization vector of zero"
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(getEncryptionKey(), "AES"), iv3);
 
             byte[] permsEnc = cipher.doFinal(perms);
 
@@ -1172,6 +1172,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
                 
                 Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
                 SecretKeySpec keySpec = new SecretKeySpec(kFirst, "AES");
+                @SuppressWarnings("java:S3329")
                 IvParameterSpec ivSpec = new IvParameterSpec(kSecond);
                 cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
                 e = cipher.doFinal(k1);
