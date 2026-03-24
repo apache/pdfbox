@@ -119,7 +119,7 @@ public interface ResourceCache
      * Puts the PDCIDFont instance of the given indirect object in the cache.
      * 
      * @param indirect the indirect reference of the PDCIDFont to be cached
-     * @param font the font to be cached
+     * @param cidFont the font to be cached
      */
     void put(COSObject indirect, PDCIDFont cidFont);
 
@@ -127,7 +127,7 @@ public interface ResourceCache
      * Puts the PDFontDescriptor instance of the given indirect object in the cache.
      * 
      * @param indirect the indirect reference of the PDFontDescriptor to be cached
-     * @param font the font to be cached
+     * @param fontDescriptor the font to be cached
      */
     void put(COSObject indirect, PDFontDescriptor fontDescriptor);
 
