@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class TestFieldRemover
+class TestFieldRemover
 {
 
     @Test
