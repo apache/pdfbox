@@ -171,9 +171,8 @@ public class COSWriterCompressionPool
      * Attempts to find yet unregistered streams and dictionaries in the given structure.
      *
      * @param cosBaseList A list of objects to be added for compressing.
-     * @throws IOException Shall be thrown, if adding failed.
      */
-    private List<COSBase> addStructure(List<COSBase> cosBaseList) throws IOException
+    private List<COSBase> addStructure(List<COSBase> cosBaseList)
     {
         List<COSBase> cosBaseListNext = new ArrayList<>();
         for (COSBase cosBase : cosBaseList)
@@ -188,9 +187,8 @@ public class COSWriterCompressionPool
      * Attempts to find yet unregistered streams and dictionaries in the given structure.
      *
      * @param current The object to be added for compressing.
-     * @throws IOException Shall be thrown, if compressing the object failed.
      */
-    private List<COSBase> addStructure(COSBase current) throws IOException
+    private List<COSBase> addStructure(COSBase current)
     {
         COSBase base = current;
         if (current instanceof COSStream
@@ -225,9 +223,8 @@ public class COSWriterCompressionPool
      * @param elements collection of all elements of a COSDictionary/COSArray.
      * 
      * @return a collection containing the relevant objects within the given Collection.
-     * @throws IOException if something went wrong.
      */
-    private List<COSBase> getElements(Collection<? extends COSBase> elements) throws IOException
+    private List<COSBase> getElements(Collection<? extends COSBase> elements)
     {
         List<COSBase> relevantElements = new ArrayList<>();
         for (COSBase element : elements)
