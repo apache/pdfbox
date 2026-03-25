@@ -426,7 +426,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
                 }
                 catch (IOException ex)
                 {
-                    LOG.warn("Could not get " + strName + " UC2 map for font " + getName(), ex);
+                    LOG.warn("Could not get {} UC2 map for font {}", strName, getName(), ex);
                 }
             }
         }
