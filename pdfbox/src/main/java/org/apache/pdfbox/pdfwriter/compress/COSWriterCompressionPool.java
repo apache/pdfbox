@@ -240,7 +240,7 @@ public class COSWriterCompressionPool
         return relevantElements;
     }
 
-    private boolean filterElement(COSBase element) throws IOException
+    private boolean filterElement(COSBase element)
     {
         if (element instanceof COSObject)
         {

@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 class EndstreamFilterStreamTest
 {
     @Test
-    void testEndstreamFilterStream() throws IOException
+    void testEndstreamFilterStream()
     {
         EndstreamFilterStream feos = new EndstreamFilterStream();
         byte[] tab1 = { 1, 2, 3, 4 };
