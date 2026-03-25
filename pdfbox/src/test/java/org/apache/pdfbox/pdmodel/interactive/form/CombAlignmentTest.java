@@ -37,7 +37,7 @@ class CombAlignmentTest
     private static final String TEST_VALUE = "1234567";
 
     @BeforeEach
-    void setUp() throws IOException
+    void setUp()
     {
         OUT_DIR.mkdirs();
     }
