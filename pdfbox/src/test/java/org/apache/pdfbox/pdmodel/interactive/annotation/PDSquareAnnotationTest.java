@@ -56,7 +56,7 @@ class PDSquareAnnotationTest
     private static final String NAME_OF_PDF = "PDSquareAnnotationTest.pdf";
 
     @BeforeAll
-    static void setUp() throws IOException
+    static void setUp()
     {
         rectangle = new PDRectangle();
         rectangle.setLowerLeftX(91.5958f);

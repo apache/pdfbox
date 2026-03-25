@@ -156,7 +156,7 @@ class TestPDNumberTreeNode
     }
 
     @Test
-    void testUpperLimit() throws IOException
+    void testUpperLimit()
     {
         assertEquals(7, (int) this.node5.getUpperLimit());
         assertEquals(7, (int) this.node2.getUpperLimit());
@@ -177,7 +177,7 @@ class TestPDNumberTreeNode
     }
 
     @Test
-    void testLowerLimit() throws IOException
+    void testLowerLimit()
     {
         assertEquals(1, (int) this.node5.getLowerLimit());
         assertEquals(1, (int) this.node2.getLowerLimit());
