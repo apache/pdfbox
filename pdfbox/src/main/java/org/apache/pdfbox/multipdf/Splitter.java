@@ -847,8 +847,7 @@ public class Splitter
                 }
                 catch (IOException ex)
                 {
-                    LOG.warn("Incorrect destination in link annotation on page " +
-                            (currentPageNumber + 1) + " is removed", ex);
+                    LOG.warn("Incorrect destination in link annotation on page {} is removed", currentPageNumber + 1, ex);
                     link.setDestination(null);
                 }
                 PDAction action = null;
@@ -864,8 +863,7 @@ public class Splitter
                         }
                         catch (IOException ex)
                         {
-                            LOG.warn("GoToAction with incorrect destination in link annotation on page " +
-                                    (currentPageNumber + 1) + " is removed", ex);
+                            LOG.warn("GoToAction with incorrect destination in link annotation on page {} is removed", currentPageNumber + 1, ex);
                             link.setAction(null);
                         }
                     }
