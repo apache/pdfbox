@@ -338,8 +338,8 @@ public class Splitter
             }
             else
             {
-                LOG.warn("tree element neither dictionary nor array, but " + 
-                        (actualSrcObj == null ? "(null)" : actualSrcObj.getClass().getSimpleName()));
+                LOG.warn("tree element neither dictionary nor array, but {}", 
+                        () -> (actualSrcObj == null ? "(null)" : actualSrcObj.getClass().getSimpleName()));
             }
             if (dstObj != null)
             {
