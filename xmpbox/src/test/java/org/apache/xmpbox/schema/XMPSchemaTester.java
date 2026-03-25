@@ -192,46 +192,43 @@ class XMPSchemaTester
         Field[] fields = schemaClass.getFields();
         for (Field field : fields)
         {
-            if (field.isAnnotationPresent(PropertyType.class))
+            if (field.isAnnotationPresent(PropertyType.class) && !field.get(schema).equals(property))
             {
-                if (!field.get(schema).equals(property))
+                PropertyType pt = field.getAnnotation(PropertyType.class);
+                if (pt.type() == Types.LangAlt)
                 {
-                    PropertyType pt = field.getAnnotation(PropertyType.class);
-                    if (pt.type() == Types.LangAlt)
+                    // do not check method existence
+                }
+                else if (pt.type() == Types.Thumbnail && pt.card() == Cardinality.Alt)
+                {
+                    // do not check method existence
+                }
+                else if (pt.type() == Types.ResourceRef)
+                {
+                    // do not check method existence
+                }
+                else if (pt.type() == Types.Version && pt.card() == Cardinality.Seq)
+                {
+                    // do not check method existence
+                }
+                else
+                {
+                    // type test
+                    PropertyType spt = retrievePropertyType(field.get(schema).toString());
+                    String getNameProperty = "get" + prepareName(field.get(schema).toString(), spt) + "Property";
+                    Method getMethod = schemaClass.getMethod(getNameProperty);
+                    assertNull(getMethod.invoke(schema), getNameProperty + " should return null when testing " + property);
+                    // value test
+                    String getNameValue = "get" + prepareName(field.get(schema).toString(), spt);
+                    if (schemaClass == XMPMediaManagementSchema.class && "getHistory".equals(getNameValue))
                     {
-                        // do not check method existence
+                        // PDFBOX-6111: getHistory() has been removed because it doesn't work
+                        // because it's an array of a structured type and not of a text value
+                        continue;
                     }
-                    else if (pt.type() == Types.Thumbnail && pt.card() == Cardinality.Alt)
-                    {
-                        // do not check method existence
-                    }
-                    else if (pt.type() == Types.ResourceRef)
-                    {
-                        // do not check method existence
-                    }
-                    else if (pt.type() == Types.Version && pt.card() == Cardinality.Seq)
-                    {
-                        // do not check method existence
-                    }
-                    else
-                    {
-                        // type test
-                        PropertyType spt = retrievePropertyType(field.get(schema).toString());
-                        String getNameProperty = "get" + prepareName(field.get(schema).toString(), spt) + "Property";
-                        Method getMethod = schemaClass.getMethod(getNameProperty);
-                        assertNull(getMethod.invoke(schema), getNameProperty + " should return null when testing " + property);
-                        // value test
-                        String getNameValue = "get" + prepareName(field.get(schema).toString(), spt);
-                        if (schemaClass == XMPMediaManagementSchema.class && "getHistory".equals(getNameValue))
-                        {
-                            // PDFBOX-6111: getHistory() has been removed because it doesn't work
-                            // because it's an array of a structured type and not of a text value
-                            continue;
-                        }
-                        getMethod = schemaClass.getMethod(getNameValue);
-                        assertNotNull(getMethod, getNameValue + " method should exist");
-                        assertNull(getMethod.invoke(schema), getNameValue + " should return null when testing " + property);
-                    }
+                    getMethod = schemaClass.getMethod(getNameValue);
+                    assertNotNull(getMethod, getNameValue + " method should exist");
+                    assertNull(getMethod.invoke(schema), getNameValue + " should return null when testing " + property);
                 }
             }
         }
