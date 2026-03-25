@@ -158,10 +158,8 @@ public class TestPDFToImage
      * @return If the images are different, the function returns a diff image. If the images are
      * identical, the function returns null. If the size is different, a black border on the bottom
      * at the right is created.
-     *
-     * @throws IOException
      */
-    private BufferedImage diffImages(BufferedImage bim1, BufferedImage bim2) throws IOException
+    private BufferedImage diffImages(BufferedImage bim1, BufferedImage bim2)
     {
         int minWidth = Math.min(bim1.getWidth(), bim2.getWidth());
         int minHeight = Math.min(bim1.getHeight(), bim2.getHeight());

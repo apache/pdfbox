@@ -23,7 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -226,8 +225,7 @@ public class TestImageIOUtils extends TestCase
         checkBufferedImageSize(filename, image, newImage);
     }
 
-    private void checkBufferedImageSize(String filename,
-            BufferedImage image, BufferedImage newImage) throws IOException
+    private void checkBufferedImageSize(String filename, BufferedImage image, BufferedImage newImage)
     {
         assertEquals("File '" + filename + "' has different height after read", image.getHeight(), newImage.getHeight());
         assertEquals("File '" + filename + "' has different width after read", image.getWidth(), newImage.getWidth());
@@ -365,12 +363,12 @@ public class TestImageIOUtils extends TestCase
      * @throws IOException if something goes wrong
      */
     private void checkBmpResolution(String filename, int expectedResolution)
-            throws FileNotFoundException, IOException
+            throws IOException
     {
         // BMP format explained here:
         // http://www.javaworld.com/article/2077561/learn-java/java-tip-60--saving-bitmap-files-in-java.html
         // we skip 38 bytes and then read two 4 byte-integers and reverse the bytes
-        DataInputStream dis = new DataInputStream(new FileInputStream(new File(filename)));
+        DataInputStream dis = new DataInputStream(new FileInputStream(filename));
         int skipped = dis.skipBytes(38);
         assertEquals("Can't skip 38 bytes in image file " + filename, 38, skipped);
         int pixelsPerMeter = Integer.reverseBytes(dis.readInt());
