@@ -47,7 +47,7 @@ public class PDFStreamParser extends COSParser
      */
     private static final Logger LOG = LogManager.getLogger(PDFStreamParser.class);
 
-    private static final Pattern NUMBER_PATTERN = Pattern.compile("^\\d*\\.?\\d*$");
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("^(?>\\d*)\\.?(?>\\d*)$");
     private static final int MAX_BIN_CHAR_TEST_LENGTH = 10;
     private final byte[] binCharTestArr = new byte[MAX_BIN_CHAR_TEST_LENGTH];
     private int inlineImageDepth = 0;

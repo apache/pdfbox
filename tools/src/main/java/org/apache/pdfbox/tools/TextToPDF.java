@@ -282,7 +282,7 @@ public class TextToPDF implements Callable<Integer>
             // the text.
             textIsEmpty = false;
 
-            String[] lineWords = nextLine.replaceAll("[\\n\\r]+$", "").split(" ", -1);
+            String[] lineWords = nextLine.split(" ", -1);
             int lineIndex = 0;
             while (lineIndex < lineWords.length)
             {
