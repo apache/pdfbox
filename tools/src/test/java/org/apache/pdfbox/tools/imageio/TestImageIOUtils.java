@@ -238,8 +238,7 @@ class TestImageIOUtils
         checkBufferedImageSize(filename, image, newImage);
     }
 
-    private void checkBufferedImageSize(String filename,
-            BufferedImage image, BufferedImage newImage) throws IOException
+    private void checkBufferedImageSize(String filename, BufferedImage image, BufferedImage newImage)
     {
         assertEquals(image.getHeight(), newImage.getHeight(), "File '" + filename + "' has different height after read");
         assertEquals(image.getWidth(), newImage.getWidth(), "File '" + filename + "' has different width after read");
@@ -376,7 +375,7 @@ class TestImageIOUtils
         // BMP format explained here:
         // http://www.javaworld.com/article/2077561/learn-java/java-tip-60--saving-bitmap-files-in-java.html
         // we skip 38 bytes and then read two 4 byte-integers and reverse the bytes
-        try (DataInputStream dis = new DataInputStream(new FileInputStream(new File(filename))))
+        try (DataInputStream dis = new DataInputStream(new FileInputStream(filename)))
         {
             int skipped = dis.skipBytes(38);
             assertEquals(38, skipped, "Can't skip 38 bytes in image file " + filename);
