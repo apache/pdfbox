@@ -151,7 +151,7 @@ public class TestPDNumberTreeNode extends TestCase
         Assert.assertNull( this.node1.getValue( 0 ) );
     }
 
-    public void testUpperLimit() throws IOException
+    public void testUpperLimit()
     {
         Assert.assertEquals(7, (int) this.node5.getUpperLimit());
         Assert.assertEquals(7, (int) this.node2.getUpperLimit());
@@ -171,7 +171,7 @@ public class TestPDNumberTreeNode extends TestCase
         Assert.assertNull( this.node1.getUpperLimit() );
     }
 
-    public void testLowerLimit() throws IOException
+    public void testLowerLimit()
     {
         Assert.assertEquals(1, (int) this.node5.getLowerLimit());
         Assert.assertEquals(1, (int) this.node2.getLowerLimit());
