@@ -47,7 +47,9 @@ public class PDFStreamParser extends BaseParser
      */
     private static final Log LOG = LogFactory.getLog(PDFStreamParser.class);
 
-    private static final Pattern NUMBER_PATTERN = Pattern.compile("^(?>\\d*)\\.?(?>\\d*)$");
+    // Pattern to match numbers (integers or decimals). Safe from ReDoS: no overlapping quantifiers
+    // or character classes that cause backtracking. The optional decimal group is explicit and bounded.
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("^\\d*(\\.\\d*)?$");
     private static final int MAX_BIN_CHAR_TEST_LENGTH = 10;
     private final byte[] binCharTestArr = new byte[MAX_BIN_CHAR_TEST_LENGTH];
     private int inlineImageDepth = 0;
