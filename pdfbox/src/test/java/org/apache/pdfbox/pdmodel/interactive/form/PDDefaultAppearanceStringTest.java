@@ -63,7 +63,7 @@ class PDDefaultAppearanceStringTest
     }
     
     @Test
-    void testFontResourceUnavailable() throws IOException
+    void testFontResourceUnavailable()
     {
         COSString sampleString = new COSString("/Helvetica 12 Tf 0.019 0.305 0.627 rg");
         assertThrows(IOException.class, () -> {
@@ -72,7 +72,7 @@ class PDDefaultAppearanceStringTest
     }
     
     @Test
-    void testWrongNumberOfColorArguments() throws IOException
+    void testWrongNumberOfColorArguments()
     {
         COSString sampleString = new COSString("/Helvetica 12 Tf 0.305 0.627 rg");
         assertThrows(IOException.class, () -> {
