@@ -40,6 +40,7 @@ public class FieldRemover
 {
     public FieldRemover()
     {
+        // empty
     }
 
     public static void main(String[] args) throws IOException
@@ -136,7 +137,7 @@ public class FieldRemover
                 for (PDPage page : doc.getPages())
                 {
                     List<PDAnnotation> annotations = page.getAnnotations();
-                    widgetSet.forEach(widget -> annotations.remove(widget));
+                    widgetSet.forEach(annotations::remove);
                 }
             }
             System.out.println("field removed? " + removed);
