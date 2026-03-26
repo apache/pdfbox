@@ -80,7 +80,6 @@ import org.bouncycastle.asn1.x500.style.IETFUtils;
  */
 public class CreateVisibleSignature2 extends CreateSignatureBase
 {
-    private SignatureOptions signatureOptions;
     private boolean lateExternalSigning = false;
     private File imageFile = null;
 
@@ -164,6 +163,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
 
         // creating output document and prepare the IO streams.
 
+        SignatureOptions signatureOptions = new SignatureOptions();
         try (FileOutputStream fos = new FileOutputStream(signedFile);
                 PDDocument doc = Loader.loadPDF(inputFile))
         {
