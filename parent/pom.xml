@@ -312,6 +312,7 @@
                       <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
                       <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
                       <skipSystemScope>true</skipSystemScope>
+                      <suppressionFile>suppressions.xml</suppressionFile>
                   </configuration>
                   <executions>
                       <execution>

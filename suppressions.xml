@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
+	<suppress>
+	   <packageUrl regex="true">^pkg:maven/org\.apache\.pdfbox/jbig2-imageio@.*$</packageUrl>
+	   <cpe>cpe:/a:apache:pdfbox</cpe>
+	</suppress>
+</suppressions>
