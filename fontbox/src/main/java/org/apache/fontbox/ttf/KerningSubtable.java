@@ -254,14 +254,13 @@ public class KerningSubtable
 
     private static class PairData0Format0 implements Comparator<int[]>, PairData
     {
-        private int searchRange;
         private int[][] pairs;
 
         @Override
         public void read(TTFDataStream data) throws IOException
         {
             int numPairs = data.readUnsignedShort();
-            searchRange = data.readUnsignedShort()/6;
+            int searchRange = data.readUnsignedShort()/6;
             int entrySelector = data.readUnsignedShort();
             int rangeShift = data.readUnsignedShort();
             pairs = new int[numPairs][3];
