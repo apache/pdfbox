@@ -52,7 +52,6 @@ import org.apache.pdfbox.util.Hex;
  */
 public class CreateVisibleSignature extends CreateSignatureBase
 {
-    private SignatureOptions signatureOptions;
     private PDVisibleSignDesigner visibleSignDesigner;
     private final PDVisibleSigProperties visibleSignatureProperties = new PDVisibleSigProperties();
     private boolean lateExternalSigning = false;
@@ -223,6 +222,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // and read https://stackoverflow.com/a/71293901/535646
         // and https://issues.apache.org/jira/browse/PDFBOX-5382
 
+        SignatureOptions signatureOptions = null;
         try (FileOutputStream fos = new FileOutputStream(signedFile))
         {
             int accessPermissions = SigUtils.getMDPPermission(doc);
