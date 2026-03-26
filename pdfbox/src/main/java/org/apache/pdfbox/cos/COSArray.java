@@ -167,14 +167,16 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      *
      * @param objectList The list of objects to add.
      */
-    public void addAll( COSArray objectList )
+    public void addAll(COSArray objectList)
     {
-        if( objectList != null )
+        if (objectList == null)
         {
-            if (objects.addAll(objectList.objects))
-            {
-                getUpdateState().update(objectList);
-            }
+            return;
+        }
+
+        if (objects.addAll(objectList.objects))
+        {
+            getUpdateState().update(objectList);
         }
     }
 
