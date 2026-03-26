@@ -78,7 +78,6 @@ import org.bouncycastle.asn1.x500.style.IETFUtils;
  */
 public class CreateVisibleSignature2 extends CreateSignatureBase
 {
-    private SignatureOptions signatureOptions;
     private boolean lateExternalSigning = false;
     private File imageFile = null;
 
@@ -248,7 +247,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
         SignatureInterface signatureInterface = isExternalSigning() ? null : this;
 
         // register signature dictionary and sign interface
-        signatureOptions = new SignatureOptions();
+        SignatureOptions signatureOptions = new SignatureOptions();
         signatureOptions.setVisualSignature(createVisualSignatureTemplate(doc, 0, rect, signature));
         signatureOptions.setPage(0);
         doc.addSignature(signature, signatureInterface, signatureOptions);

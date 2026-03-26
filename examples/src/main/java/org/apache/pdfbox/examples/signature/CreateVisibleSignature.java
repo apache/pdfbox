@@ -50,7 +50,6 @@ import org.apache.pdfbox.util.Hex;
  */
 public class CreateVisibleSignature extends CreateSignatureBase
 {
-    private SignatureOptions signatureOptions;
     private PDVisibleSignDesigner visibleSignDesigner;
     private final PDVisibleSigProperties visibleSignatureProperties = new PDVisibleSigProperties();
     private boolean lateExternalSigning = false;
@@ -266,6 +265,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
         SignatureInterface signatureInterface = isExternalSigning() ? null : this;
 
         // register signature dictionary and sign interface
+        SignatureOptions signatureOptions = null;
         if (visibleSignatureProperties.isVisualSignEnabled())
         {
             signatureOptions = new SignatureOptions();
