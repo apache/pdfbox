@@ -163,7 +163,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
 
         // creating output document and prepare the IO streams.
 
-        SignatureOptions signatureOptions = new SignatureOptions();
+        SignatureOptions signatureOptions = null;
         try (FileOutputStream fos = new FileOutputStream(signedFile);
                 PDDocument doc = Loader.loadPDF(inputFile))
         {
@@ -297,13 +297,15 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
                 doc.saveIncremental(fos);
             }
         }
-        
-        // Do not close signatureOptions before saving, because some COSStream objects within
-        // are transferred to the signed document.
-        // Do not allow signatureOptions get out of scope before saving, because then the COSDocument
-        // in signature options might by closed by gc, which would close COSStream objects prematurely.
-        // See https://issues.apache.org/jira/browse/PDFBOX-3743
-        IOUtils.closeQuietly(signatureOptions);
+        finally
+        {        
+            // Do not close signatureOptions before saving, because some COSStream objects within
+            // are transferred to the signed document.
+            // Do not allow signatureOptions get out of scope before saving, because then the COSDocument
+            // in signature options might by closed by gc, which would close COSStream objects prematurely.
+            // See https://issues.apache.org/jira/browse/PDFBOX-3743
+            IOUtils.closeQuietly(signatureOptions);
+        }
     }
 
     private PDRectangle createSignatureRectangle(PDDocument doc, Rectangle2D humanRect)
