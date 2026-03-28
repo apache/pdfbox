@@ -516,7 +516,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                 osxQuit.setAccessible(true);
                 OSXAdapter.setQuitHandler(this, osxQuit);
             }
-            catch (NoSuchMethodException e)
+            catch (NoSuchMethodException ex)
             {
                 new ErrorDialog(ex).setVisible(true);
             }
