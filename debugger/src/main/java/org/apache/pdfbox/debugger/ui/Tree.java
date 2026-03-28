@@ -172,9 +172,9 @@ public class Tree extends JTree
                 byte[] bytes = in.readAllBytes();
                 saveStream(bytes, null, null);
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                new ErrorDialog(ex).setVisible(true);
             }
         });
         return saveMenuItem;
@@ -251,9 +251,9 @@ public class Tree extends JTree
                 byte[] bytes = in.readAllBytes();
                 saveStream(bytes, fileFilter, extension);
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                new ErrorDialog(ex).setVisible(true);
             }
         });
         return saveMenuItem;
@@ -304,9 +304,9 @@ public class Tree extends JTree
                 }
                 Desktop.getDesktop().open(temp);
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                new ErrorDialog(ex).setVisible(true);
             }
         });
         return openMenuItem;
@@ -353,9 +353,9 @@ public class Tree extends JTree
                 InputStream data = stream.createInputStream(stopFilters);
                 saveStream(data.readAllBytes(), null, null);
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                new ErrorDialog(ex).setVisible(true);
             }
         });
         return menuItem;
