@@ -355,12 +355,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         File file = new File("config.properties");
         if (file.exists())
         {
-            try
+            try (InputStream is = new FileInputStream(file))
             {
-                try (InputStream is = new FileInputStream(file))
-                {
-                    configuration.load(is);
-                }
+                configuration.load(is);
             }
             catch (IOException ex)
             {
