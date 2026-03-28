@@ -51,10 +51,6 @@ public class RecentFiles
         this.maximum = maximumFile;
         this.pref = Preferences.userNodeForPackage(className);
         filePaths = readHistoryFromPref();
-        if (filePaths == null)
-        {
-            filePaths = new ArrayDeque<>();
-        }
     }
 
     /**
@@ -108,18 +104,14 @@ public class RecentFiles
      */
     public List<String> getFiles()
     {
-        if (!isEmpty())
+        List<String> files = filePaths.stream().
+                filter(path -> new File(path).exists()).
+                collect(Collectors.toList());
+        if (files.size() > maximum)
         {
-            List<String> files = filePaths.stream().
-                    filter(path -> new File(path).exists()).
-                    collect(Collectors.toList());
-            if (files.size() > maximum)
-            {
-                files.remove(0);
-            }
-            return files;
+            files.remove(0);
         }
-        return null;
+        return files;
     }
 
     /**
@@ -175,12 +167,7 @@ public class RecentFiles
     {
         Preferences node = pref.node(KEY);
         int historyLength = node.getInt(HISTORY_LENGTH, 0);
-        if (historyLength == 0)
-        {
-            return null;
-        }
         Queue<String> history = new ArrayDeque<>();
-
         for (int i = 1; i <= historyLength; i++)
         {
             int totalPieces = node.getInt(String.format(PIECES_LENGTH_KEY, i), 0);
