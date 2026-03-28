@@ -45,7 +45,7 @@ import org.apache.xmpbox.type.Types;
 public class PDFAIdentificationSchema extends XMPSchema
 {
     private static final Set<String> VALID_VALUES =
-            new HashSet<>(Arrays.asList("A", "B", "U", "e", "f"));
+            new HashSet<String>(Arrays.asList("A", "B", "U", "e", "f"));
 
     @PropertyType(type = Types.Integer, card = Cardinality.Simple)
     public static final String PART = "part";
