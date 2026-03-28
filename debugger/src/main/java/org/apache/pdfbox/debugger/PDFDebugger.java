@@ -248,7 +248,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         }
         else
         {
-            new ErrorDialog(new IllegalArgumentException("Unknown view mode: " + "initialViewMode")).setVisible(true);
+            new ErrorDialog(new IllegalArgumentException("Unknown view mode: " + initialViewMode)).setVisible(true);
         }
     }
 
@@ -362,9 +362,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                     configuration.load(is);
                 }
             }
-            catch(IOException e)
+            catch (IOException ex)
             {
-                throw new RuntimeException(e);
+                new ErrorDialog(ex).setVisible(true);
             }
         }
     }
@@ -516,9 +516,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                 osxQuit.setAccessible(true);
                 OSXAdapter.setQuitHandler(this, osxQuit);
             }
-            catch (NoSuchMethodException e)
+            catch (NoSuchMethodException ex)
             {
-                throw new RuntimeException(e);
+                new ErrorDialog(ex).setVisible(true);
             }
         }
     }
@@ -546,9 +546,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
             {
                 readPDFurl(urlString, "");
             }
-            catch (IOException | URISyntaxException e)
+            catch (IOException | URISyntaxException ex)
             {
-                throw new RuntimeException(e);
+                new ErrorDialog(ex).setVisible(true);
             }
         });
         fileMenu.add(openUrlMenuItem);
@@ -1255,9 +1255,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                     return new String(in.readAllBytes());
                 }
             }
-            catch( IOException e )
+            catch (IOException ex)
             {
-                throw new RuntimeException(e);
+                new ErrorDialog(ex).setVisible(true);
             }
         }
         if (selectedNode instanceof COSDictionary)
@@ -1586,9 +1586,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                 {
                     readPDFFile(filePath, "");
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    throw new RuntimeException(e);
+                    new ErrorDialog(ex).setVisible(true);
                 }
             }
         };
