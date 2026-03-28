@@ -178,9 +178,9 @@ public class Tree extends JTree
                     byte[] bytes = IOUtils.toByteArray(cosStream.createRawInputStream());
                     saveStream(bytes, null, null);
                 }
-                catch (IOException e)
+                catch (IOException ex)
                 {
-                    e.printStackTrace();
+                    new ErrorDialog(ex).setVisible(true);
                 }
             }
         });
@@ -273,9 +273,9 @@ public class Tree extends JTree
                     byte[] bytes = IOUtils.toByteArray(cosStream.createInputStream());
                     saveStream(bytes, fileFilter, extension);
                 }
-                catch (IOException e)
+                catch (IOException ex)
                 {
-                    e.printStackTrace();
+                    new ErrorDialog(ex).setVisible(true);
                 }
             }
         });
@@ -350,9 +350,9 @@ public class Tree extends JTree
                         }
                     }
                 }
-                catch (IOException e)
+                catch (IOException ex)
                 {
-                    e.printStackTrace();
+                    new ErrorDialog(ex).setVisible(true);
                 }
             }
         });
@@ -403,9 +403,9 @@ public class Tree extends JTree
                     InputStream data = stream.createInputStream(stopFilters);
                     saveStream(IOUtils.toByteArray(data), null, null);
                 }
-                catch (IOException e)
+                catch (IOException ex)
                 {
-                    e.printStackTrace();
+                    new ErrorDialog(ex).setVisible(true);
                 }
             }
         });
