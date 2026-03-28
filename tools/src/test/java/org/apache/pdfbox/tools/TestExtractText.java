@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -66,7 +65,7 @@ class TestExtractText
     void setUpStreams() throws UnsupportedEncodingException
     {
         out.reset();
-        printStream = new PrintStream(out, true, StandardCharsets.UTF_8);
+        printStream = new PrintStream(out, true, "utf-8");
         System.setOut(printStream);
     }
 
