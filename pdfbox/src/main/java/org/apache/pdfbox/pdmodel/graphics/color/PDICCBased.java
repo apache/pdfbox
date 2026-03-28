@@ -609,10 +609,9 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     }
 
     /**
-     * Internal accessor to support indexed raw images.
      * @return true if this colorspace is sRGB.
      */
-    boolean isSRGB()
+    public boolean isSRGB()
     {
         return isRGB;
     }
