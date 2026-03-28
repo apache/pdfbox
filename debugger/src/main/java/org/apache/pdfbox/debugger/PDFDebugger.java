@@ -821,8 +821,7 @@ public class PDFDebugger extends JFrame
             }
             catch (Exception e)
             {
-                e.printStackTrace();
-                throw new RuntimeException(e);
+                LOG.error(e.getMessage(), e);
             }
         }
     }
