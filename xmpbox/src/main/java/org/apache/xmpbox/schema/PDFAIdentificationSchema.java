@@ -21,6 +21,7 @@
 
 package org.apache.xmpbox.schema;
 
+import java.util.Set;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.AbstractField;
 import org.apache.xmpbox.type.Attribute;
@@ -41,6 +42,7 @@ import org.apache.xmpbox.type.Types;
 @StructuredType(preferedPrefix = "pdfaid", namespace = "http://www.aiim.org/pdfa/ns/id/")
 public class PDFAIdentificationSchema extends XMPSchema
 {
+    private static final Set<String> VALID_VALUES = Set.of("A", "B", "U", "e", "f");
 
     @PropertyType(type = Types.Integer, card = Cardinality.Simple)
     public static final String PART = "part";
@@ -169,8 +171,7 @@ public class PDFAIdentificationSchema extends XMPSchema
     public void setConformanceProperty(TextType conf) throws BadFieldValueException
     {
         String value = conf.getStringValue();
-        if (value.equals("A") || value.equals("B") || value.equals("U") ||
-            value.equals("e") || value.equals("f"))
+        if (VALID_VALUES.contains(value))
         {
             addProperty(conf);
         }
