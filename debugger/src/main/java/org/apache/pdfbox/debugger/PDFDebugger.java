@@ -230,9 +230,9 @@ public class PDFDebugger extends JFrame
                 configuration.load(is);
                 is.close();
             }
-            catch(IOException e)
+            catch (IOException ex)
             {
-                throw new RuntimeException(e);
+                new ErrorDialog(ex).setVisible(true);
             }
         }
     }
@@ -376,9 +376,9 @@ public class PDFDebugger extends JFrame
                 osxQuit.setAccessible(true);
                 OSXAdapter.setQuitHandler(this, osxQuit);
             }
-            catch (NoSuchMethodException e)
+            catch (NoSuchMethodException ex)
             {
-                throw new RuntimeException(e);
+                new ErrorDialog(ex).setVisible(true);
             }
         }
     }
@@ -416,9 +416,9 @@ public class PDFDebugger extends JFrame
                 {
                     readPDFurl(urlString, "");
                 }
-                catch (IOException e)
+                catch (IOException ex)
                 {
-                    throw new RuntimeException(e);
+                    new ErrorDialog(ex).setVisible(true);
                 }
             }
         });
@@ -1238,7 +1238,7 @@ public class PDFDebugger extends JFrame
             }
             catch (IOException e)
             {
-                throw new RuntimeException(e);
+                new ErrorDialog(ex).setVisible(true);
             }
             finally
             {
@@ -1622,9 +1622,9 @@ public class PDFDebugger extends JFrame
                 {
                     readPDFFile(filePath, "");
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    throw new RuntimeException(e);
+                    new ErrorDialog(ex).setVisible(true);
                 }
             }
         };
