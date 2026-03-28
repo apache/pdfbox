@@ -522,13 +522,15 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         COSArray idArray = document.getDocument().getDocumentID();
 
         //check if the document has an id yet.  If it does not then generate one
+        byte[] userPasswordBytes = userPassword.getBytes(StandardCharsets.ISO_8859_1);
+        byte[] ownerPasswordBytes = ownerPassword.getBytes(StandardCharsets.ISO_8859_1);
         if (idArray == null || idArray.size() < 2)
         {
             MessageDigest md = MessageDigests.getMD5();
             BigInteger time = BigInteger.valueOf(System.currentTimeMillis());
             md.update(time.toByteArray());
-            md.update(ownerPassword.getBytes(StandardCharsets.ISO_8859_1));
-            md.update(userPassword.getBytes(StandardCharsets.ISO_8859_1));
+            md.update(ownerPasswordBytes);
+            md.update(userPasswordBytes);
             md.update(document.getDocument().toString().getBytes(StandardCharsets.ISO_8859_1));
 
             byte[] id = md.digest(this.toString().getBytes(StandardCharsets.ISO_8859_1));
@@ -541,14 +543,15 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         COSString id = (COSString) idArray.getObject(0);
 
         byte[] ownerBytes = computeOwnerPassword(
-                ownerPassword.getBytes(StandardCharsets.ISO_8859_1),
-                userPassword.getBytes(StandardCharsets.ISO_8859_1), revision, length);
+                ownerPasswordBytes,
+                userPasswordBytes, revision, length);
 
+        byte[] idBytes = id.getBytes();
         byte[] userBytes = computeUserPassword(
-                userPassword.getBytes(StandardCharsets.ISO_8859_1),
-                ownerBytes, permissionInt, id.getBytes(), revision, length, true);
+                userPasswordBytes,
+                ownerBytes, permissionInt, idBytes, revision, length, true);
 
-        setEncryptionKey(computeEncryptedKeyRev234(userPassword.getBytes(StandardCharsets.ISO_8859_1), ownerBytes, permissionInt, id.getBytes(), true, length, revision));
+        setEncryptionKey(computeEncryptedKeyRev234(userPasswordBytes, ownerBytes, permissionInt, idBytes, true, length, revision));
 
         encryptionDictionary.setOwnerKey(ownerBytes);
         encryptionDictionary.setUserKey(userBytes);
