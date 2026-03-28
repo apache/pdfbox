@@ -145,9 +145,9 @@ public class OSXAdapter implements InvocationHandler
                 });
                 setQuitHandlerMethod.invoke(desktopObject, osxAdapterProxy);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                e.printStackTrace();
+                new ErrorDialog(ex).setVisible(true);
             }
             return;
         }
@@ -234,9 +234,9 @@ public class OSXAdapter implements InvocationHandler
                 });
                 setOpenFileHandlerMethod.invoke(desktopObject, osxAdapterProxy);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                e.printStackTrace();
+                new ErrorDialog(ex).setVisible(true);
             }
             return;
         }
