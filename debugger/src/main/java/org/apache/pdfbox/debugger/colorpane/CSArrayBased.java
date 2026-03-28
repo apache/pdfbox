@@ -123,6 +123,11 @@ public class CSArrayBased
             otherLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             otherLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
             panel.add(otherLabel);
+
+            JLabel srgbLabel = new JLabel("sRGB: " + ((PDICCBased) colorSpace).isSRGB());
+            srgbLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            srgbLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
+            panel.add(srgbLabel);
         }
     }
 
