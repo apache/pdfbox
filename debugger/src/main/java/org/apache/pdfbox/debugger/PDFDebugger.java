@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -207,10 +206,6 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
     private String currentTreeViewMode = TreeViewMenu.VIEW_PAGES;
 
     // cli options
-    // Expected for CLI app to write to System.out/System.err
-    @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR;
-
     @Option(names = { "-h", "--help" }, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
@@ -233,7 +228,6 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
      */
     public PDFDebugger()
     {
-        SYSERR = System.err;
         if (viewstructure)
         {
             currentTreeViewMode = TreeViewMenu.VIEW_STRUCTURE;
@@ -248,14 +242,13 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
      */
     public PDFDebugger(String initialViewMode)
     {
-        SYSERR = System.err;
         if (TreeViewMenu.isValidViewMode(initialViewMode))
         {
             currentTreeViewMode = initialViewMode;
         }
         else
         {
-            SYSERR.println("Onknown view mode " + initialViewMode);
+            new ErrorDialog(new IllegalArgumentException("Unknown view mode: " + "initialViewMode")).setVisible(true);
         }
     }
 
@@ -321,7 +314,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         }
         catch (Exception ex)
         {
-            SYSERR.println( "Error viewing document: " + ex.getMessage());
+            new ErrorDialog(ex).setVisible(true);
             return 4;
         }
         return 0;
