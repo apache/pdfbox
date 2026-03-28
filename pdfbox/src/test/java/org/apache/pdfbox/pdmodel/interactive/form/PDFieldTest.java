@@ -26,8 +26,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
 
 /**
  * Test for the PDField class.
@@ -44,6 +47,12 @@ class PDFieldTest
         document = new PDDocument();
         acroForm = new PDAcroForm(document);
         textField = new PDTextField(acroForm);
+    }
+
+    @AfterEach
+    void tearDown() throws IOException
+    {
+        document.close();
     }
 
     /**
