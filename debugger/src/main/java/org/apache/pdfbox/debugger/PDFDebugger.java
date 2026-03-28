@@ -1236,7 +1236,7 @@ public class PDFDebugger extends JFrame
                 in = stream.createInputStream();
                 data = new String(IOUtils.toByteArray(in));
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
                 new ErrorDialog(ex).setVisible(true);
             }
