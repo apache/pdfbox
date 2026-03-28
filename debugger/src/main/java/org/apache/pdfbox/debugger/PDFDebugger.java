@@ -872,8 +872,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
             }
             catch (Exception e)
             {
-                e.printStackTrace();
-                throw new RuntimeException(e);
+                LOG.error(e.getMessage(), e);
             }
         }
     }
