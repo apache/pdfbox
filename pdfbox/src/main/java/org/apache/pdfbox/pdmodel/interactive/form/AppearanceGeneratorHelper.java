@@ -925,7 +925,7 @@ class AppearanceGeneratorHelper
                         {
                             return Math.max(fs - 1, MINIMUM_FONT_SIZE);
                         }
-                        fs++;
+                        fs += 1.0;
                     }
                     return Math.min(fs, DEFAULT_FONT_SIZE);
                 }
