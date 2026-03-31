@@ -22,6 +22,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.debugger.treestatus.TreeStatus;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 import javax.swing.JMenuItem;
@@ -39,22 +40,12 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.AclEntry;
-import java.nio.file.attribute.AclEntryPermission;
-import java.nio.file.attribute.AclEntryType;
-import java.nio.file.attribute.AclFileAttributeView;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.nio.file.attribute.UserPrincipal;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.stream.Stream;
 
 import org.apache.pdfbox.debugger.PDFDebugger;
 
@@ -73,81 +64,8 @@ public class Tree extends JTree
     // Temporary files are stored in a private temp directory with restricted permissions,
     // which is deleted on exit using a shutdown hook.
     // PDFBOX-6185
-    private static final Path TEMP_DIR = createTempDir();
-
-    private static Path createTempDir()
-    {
-        try
-        {
-            Path tempDir = Files.createTempDirectory("pdfbox-");
-            applyOwnerOnlyPermissions(tempDir);
-
-            // use shutdown hook instead of deleteOnExit() to ensure deletion
-            // of the entire directory in case of not automatically deleted on 
-            // JVM exit (e.g. due to hard crash or kill -9)
-            Runtime.getRuntime().addShutdownHook(new Thread(() ->
-            {
-                try (Stream<Path> entries = Files.walk(tempDir))
-                {
-                    entries.sorted(Comparator.reverseOrder())
-                        .forEach(p -> p.toFile().delete());
-                }
-                catch (IOException ignored) {}
-            }));
-
-            return tempDir;
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException("Failed to create temporary directory for PDFDebugger", e);
-        }
-    }
-
-    private static void applyOwnerOnlyPermissions(Path dir) throws IOException
-    {
-        if (FileSystems.getDefault().supportedFileAttributeViews().contains("posix"))
-        {
-            // Unix/macOS — rwx------
-            Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("rwx------"));
-        }
-        else
-        {
-            // Windows — replace the entire ACL with a single owner-only ALLOW entry
-            AclFileAttributeView aclView =
-                Files.getFileAttributeView(dir, AclFileAttributeView.class);
-
-            if (aclView == null)
-            {
-                throw new IOException("Neither posix nor ACL view is supported on this file system");
-            }
-
-            UserPrincipal owner = aclView.getOwner();
-
-            AclEntry ownerFullControl = AclEntry.newBuilder()
-                .setType(AclEntryType.ALLOW)
-                .setPrincipal(owner)
-                .setPermissions(
-                    AclEntryPermission.READ_DATA,
-                    AclEntryPermission.WRITE_DATA,
-                    AclEntryPermission.APPEND_DATA,
-                    AclEntryPermission.READ_NAMED_ATTRS,
-                    AclEntryPermission.WRITE_NAMED_ATTRS,
-                    AclEntryPermission.EXECUTE,
-                    AclEntryPermission.DELETE_CHILD,
-                    AclEntryPermission.READ_ATTRIBUTES,
-                    AclEntryPermission.WRITE_ATTRIBUTES,
-                    AclEntryPermission.DELETE,
-                    AclEntryPermission.READ_ACL,
-                    AclEntryPermission.WRITE_ACL,
-                    AclEntryPermission.SYNCHRONIZE
-                )
-                .build();
-
-            // Set so that only the owner has permissions, and remove any inherited ACL entries
-            aclView.setAcl(Collections.singletonList(ownerFullControl));
-        }
-    }
-
+    private Path tempDir;
+    
     /**
      * Constructor.
      */
@@ -385,7 +303,11 @@ public class Tree extends JTree
         {
             try
             {
-                File temp = Files.createTempFile(TEMP_DIR, "pdfbox", "." + extension).toFile();
+                if (tempDir == null)
+                {
+                    tempDir = IOUtils.createProtectedTempDir();
+                }
+                File temp = Files.createTempFile(tempDir, "pdfbox", "." + extension).toFile();
 
                 try (InputStream is = cosStream.createInputStream())
                 {
