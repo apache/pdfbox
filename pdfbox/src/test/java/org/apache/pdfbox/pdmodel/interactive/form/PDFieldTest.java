@@ -49,7 +49,7 @@ public class PDFieldTest
     }
 
     @After
-    void tearDown() throws IOException
+    public void tearDown() throws IOException
     {
         document.close();
     }
