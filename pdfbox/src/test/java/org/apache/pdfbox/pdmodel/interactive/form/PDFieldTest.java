@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.IOException;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -24,6 +26,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDDocument;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,6 +46,12 @@ public class PDFieldTest
         document = new PDDocument();
         acroForm = new PDAcroForm(document);
         textField = new PDTextField(acroForm);
+    }
+
+    @After
+    void tearDown() throws IOException
+    {
+        document.close();
     }
 
     /**
