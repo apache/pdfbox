@@ -46,6 +46,7 @@ import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
@@ -99,10 +100,26 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
      * @param fontDictionary The font dictionary according to the PDF specification.
      * 
      * @throws IOException if the font could not be created
+     * 
+     * @deprecated use {@link #PDTrueTypeFont(COSDictionary, ResourceCache)} instead
      */
     public PDTrueTypeFont(COSDictionary fontDictionary) throws IOException
     {
-        super(fontDictionary);
+        this(fontDictionary, null);
+    }
+
+    /**
+     * Creates a new TrueType font from a Font dictionary.
+     *
+     * @param fontDictionary The font dictionary according to the PDF specification.
+     * @param resourceCache ResourceCache, can be null.
+     * 
+     * @throws IOException if the font could not be created
+     */
+    public PDTrueTypeFont(COSDictionary fontDictionary, ResourceCache resourceCache)
+            throws IOException
+    {
+        super(fontDictionary, resourceCache);
 
         TrueTypeFont ttfFont = null;
         boolean fontIsDamaged = false;

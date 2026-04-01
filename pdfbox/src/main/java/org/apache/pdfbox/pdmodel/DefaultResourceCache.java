@@ -25,7 +25,9 @@ import java.util.Set;
 
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
+import org.apache.pdfbox.pdmodel.font.PDCIDFont;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
@@ -55,6 +57,10 @@ public class DefaultResourceCache implements ResourceCache
     private final Map<Long, Integer> removedFonts = new HashMap<>();
     private final Set<Long> stableFonts = new HashSet<>();
     
+    private final Map<COSObject, SoftReference<PDCIDFont>> cidFonts = new HashMap<>();
+
+    private final Map<COSObject, SoftReference<PDFontDescriptor>> fontDescriptors = new HashMap<>();
+
     private final Map<COSObject, SoftReference<PDColorSpace>> colorSpaces =
             new HashMap<>();
     private final Map<Long, Integer> removedColorSpaces = new HashMap<>();
@@ -145,6 +151,58 @@ public class DefaultResourceCache implements ResourceCache
             }
         }
         SoftReference<PDFont> font = fonts.remove(indirect);
+        return font != null ? font.get() : null;
+    }
+
+    @Override
+    public PDCIDFont getCIDFont(COSObject indirect)
+    {
+        SoftReference<PDCIDFont> font = cidFonts.get(indirect);
+        return font != null ? font.get() : null;
+    }
+
+    @Override
+    public void put(COSObject indirect, PDCIDFont font)
+    {
+        cidFonts.put(indirect, new SoftReference<>(font));
+    }
+
+    @Override
+    public PDCIDFont removeCIDFont(COSObject indirect)
+    {
+        if (cidFonts.isEmpty())
+        {
+            return null;
+        }
+        SoftReference<PDCIDFont> font = cidFonts.remove(indirect);
+        return font != null ? font.get() : null;
+    }
+
+    @Override
+    public PDFontDescriptor getFontDescriptor(COSObject indirect)
+    {
+        if (fontDescriptors.isEmpty())
+        {
+            return null;
+        }
+        SoftReference<PDFontDescriptor> fontDescriptor = fontDescriptors.get(indirect);
+        return fontDescriptor != null ? fontDescriptor.get() : null;
+    }
+
+    @Override
+    public void put(COSObject indirect, PDFontDescriptor fontDescriptor)
+    {
+        fontDescriptors.put(indirect, new SoftReference<>(fontDescriptor));
+    }
+
+    @Override
+    public PDFontDescriptor removeFontDescriptor(COSObject indirect)
+    {
+        if (fontDescriptors.isEmpty())
+        {
+            return null;
+        }
+        SoftReference<PDFontDescriptor> font = fontDescriptors.remove(indirect);
         return font != null ? font.get() : null;
     }
 
