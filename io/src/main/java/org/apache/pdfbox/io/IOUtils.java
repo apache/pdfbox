@@ -209,7 +209,7 @@ public final class IOUtils
     {
         try
         {
-            if (buf != null)
+            if (buf != null && buf.isDirect())
             {
                 UNMAPPER.ifPresent(u -> u.accept(buf));
             }
@@ -302,6 +302,7 @@ public final class IOUtils
         return (ByteBuffer buffer) -> {
             if (!buffer.isDirect())
             {
+                // defensive check, should not happen as we only call this method with direct buffers
                 throw new IllegalArgumentException("unmapping only works with direct buffers");
             }
             if (!unmappableBufferClass.isInstance(buffer))
