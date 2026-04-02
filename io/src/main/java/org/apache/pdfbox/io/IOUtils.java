@@ -209,6 +209,8 @@ public final class IOUtils
     {
         try
         {
+            // HeapByteBuffers don't need to be unmapped, and unmapping only works for direct buffers,
+            // so we can skip it in that case.
             if (buf != null && buf.isDirect())
             {
                 UNMAPPER.ifPresent(u -> u.accept(buf));
