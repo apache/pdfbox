@@ -29,6 +29,7 @@ import static java.util.Objects.nonNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,11 +39,23 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclEntryPermission;
+import java.nio.file.attribute.AclEntryType;
+import java.nio.file.attribute.AclFileAttributeView;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.nio.file.attribute.UserPrincipal;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -334,5 +347,94 @@ public final class IOUtils
     public static StreamCacheCreateFunction createTempFileOnlyStreamCache()
     {
         return MemoryUsageSetting.setupTempFileOnly().streamCache;
+    }
+
+    /**
+     * Creates a temporary directory in the default temporary-file directory 
+     * with owner-only permissions and registers a shutdown hook to delete it on JVM exit.
+     * 
+     * <p>Note: This method is designed to be used for storing temporary files that may contain sensitive data
+     * in a temporary directories with restricted permissions, to mitigate the risk of unauthorized access by
+     * other users or processes on the same system. Used e.g. by PDFDebugger.</p>
+     * 
+     * @return the path to the created temporary directory
+     * @throws IOException 
+     */
+    public static Path createProtectedTempDir() throws IOException
+    {
+        // S5443: permissions are immediately restricted to owner-only by
+        // applyOwnerOnlyPermissions(), mitigating the default-permission risk.
+        @SuppressWarnings("java:S5443")
+        Path tempPath = Files.createTempDirectory("pdfbox-");
+        applyOwnerOnlyPermissions(tempPath);
+
+        // use shutdown hook instead of deleteOnExit() to ensure deletion
+        // of the entire directory in case of not automatically deleted on 
+        // JVM exit (e.g. due to open file handles or when the temp directory is not empty)
+        Runtime.getRuntime().addShutdownHook(new Thread(() ->
+        {
+            try (Stream<Path> entries = Files.walk(tempPath))
+            {
+                entries.sorted(Comparator.reverseOrder())
+                    .forEach(p -> p.toFile().delete());
+            }
+            catch (IOException ignored) {}
+        }));
+
+        return tempPath;
+    }
+
+    private static void applyOwnerOnlyPermissions(Path dir) throws IOException
+    {
+        if (FileSystems.getDefault().supportedFileAttributeViews().contains("posix"))
+        {
+            // Unix/macOS — rwx------
+            Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("rwx------"));
+        }
+        else
+        {
+            // Windows — replace the entire ACL with a single owner-only ALLOW entry
+            AclFileAttributeView aclView =
+            Files.getFileAttributeView(dir, AclFileAttributeView.class);
+
+            if (aclView == null)
+            {
+                File tempDir = dir.toFile();
+                boolean isReadable = tempDir.setReadable(true, true);
+                boolean isWritable = tempDir.setWritable(true, true);
+                boolean isExecutable = tempDir.setExecutable(true, true);
+                if (!isReadable || !isWritable || !isExecutable)
+                {
+                    LOG.warn("Unable to set owner-only permissions on temporary directory: " + dir +
+                            ". Please ensure that the temporary directory is protected against unauthorized access.");
+                }
+                return;
+            }
+
+            UserPrincipal owner = aclView.getOwner();
+
+            AclEntry ownerFullControl = AclEntry.newBuilder()
+                .setType(AclEntryType.ALLOW)
+                .setPrincipal(owner)
+                .setPermissions(
+                    AclEntryPermission.READ_DATA,
+                    AclEntryPermission.WRITE_DATA,
+                    AclEntryPermission.APPEND_DATA,
+                    AclEntryPermission.READ_NAMED_ATTRS,
+                    AclEntryPermission.WRITE_NAMED_ATTRS,
+                    AclEntryPermission.EXECUTE,
+                    AclEntryPermission.DELETE_CHILD,
+                    AclEntryPermission.READ_ATTRIBUTES,
+                    AclEntryPermission.WRITE_ATTRIBUTES,
+                    AclEntryPermission.DELETE,
+                    AclEntryPermission.READ_ACL,
+                    AclEntryPermission.WRITE_ACL,
+                    AclEntryPermission.SYNCHRONIZE
+                )
+                .build();
+
+            // Set so that only the owner has permissions, and remove any inherited ACL entries
+            aclView.setAcl(Collections.singletonList(ownerFullControl));
+        }
     }
 }

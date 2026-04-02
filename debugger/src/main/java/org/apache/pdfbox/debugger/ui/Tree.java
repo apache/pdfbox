@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,11 @@ public class Tree extends JTree
     // No logging possible in this class because it is created before the "LogDialog.init()" call
     private final JPopupMenu treePopupMenu;
     private final Object rootNode;
+
+    // Temporary files are stored in a private temp directory with restricted permissions,
+    // which is deleted on exit using a shutdown hook.
+    // PDFBOX-6185
+    private Path tempDir;
 
     /**
      * Constructor.
@@ -294,8 +300,11 @@ public class Tree extends JTree
         {
             try
             {
-                File temp = Files.createTempFile("pdfbox", "." + extension).toFile();
-                temp.deleteOnExit();
+                if (tempDir == null)
+                {
+                    tempDir = IOUtils.createProtectedTempDir();
+                }
+                File temp = Files.createTempFile(tempDir, "pdfbox", "." + extension).toFile();
 
                 try (InputStream is = cosStream.createInputStream())
                 {
