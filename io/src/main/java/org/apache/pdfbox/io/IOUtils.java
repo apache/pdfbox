@@ -384,9 +384,15 @@ public final class IOUtils
             if (aclView == null)
             {
                 File tempDir = dir.toFile();
-                tempDir.setReadable(true, true);
-                tempDir.setWritable(true, true);
-                tempDir.setExecutable(true, true);
+                boolean isReadable = tempDir.setReadable(true, true);
+                boolean isWritable = tempDir.setWritable(true, true);
+                boolean isExecutable = tempDir.setExecutable(true, true);
+                if (!isReadable || !isWritable || !isExecutable)
+                {
+                    LOG.warn("Unable to set owner-only permissions on temporary directory: {}. " +
+                            "Please ensure that the temporary directory is protected against unauthorized access.",
+                            dir);
+                }
                 return;
             }
 
