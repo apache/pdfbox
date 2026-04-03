@@ -18,23 +18,22 @@ package org.apache.pdfbox.pdmodel;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * Test case introduced with PDFBOX-6097
- * 
- */
 class TestPDPage
 {
     @Test
     void testAddingPageAfterCreatingAnnotation() throws IOException
     {
+        // PDFBOX-6097
         try (PDDocument document = new PDDocument())
         {
             PDPage page = new PDPage(PDRectangle.A4);
@@ -58,5 +57,19 @@ class TestPDPage
             document.close();
         }
     }
-
+    
+    @Test
+    void testNullThreadBeads() throws IOException
+    {
+        // PDFBOX-6186
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            assertEquals(0, page.getThreadBeads().size());
+            page.setThreadBeads(new ArrayList<>());
+            assertEquals(0, page.getThreadBeads().size());
+            page.setThreadBeads(null);
+            assertEquals(0, page.getThreadBeads().size());
+        }
+    }
 }

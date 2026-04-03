@@ -685,6 +685,11 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public void setThreadBeads(List<PDThreadBead> beads)
     {
+        if (beads == null)
+        {
+            page.removeItem(COSName.B);
+            return;
+        }
         page.setItem(COSName.B, new COSArray(beads));
     }
 

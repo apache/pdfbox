@@ -238,6 +238,11 @@ public class PDDocumentCatalog implements COSObjectable
      */
     public void setThreads(List<PDThread> threads)
     {
+        if (threads == null)
+        {
+            root.removeItem(COSName.THREADS);
+            return;
+        }
         COSArray threadsArray = new COSArray(threads);
         threadsArray.setDirect(false);
         root.setItem(COSName.THREADS, threadsArray);
