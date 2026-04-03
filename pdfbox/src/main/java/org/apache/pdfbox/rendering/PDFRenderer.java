@@ -541,10 +541,8 @@ public class PDFRenderer
      * 
      * @param parameters parameters to be used when creating the PageDrawer instance
      * @return a new PageDrawer instance
-     * 
-     * @throws IOException id the PageDrawer instance could not be created
      */
-    protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException
+    protected PageDrawer createPageDrawer(PageDrawerParameters parameters)
     {
         PageDrawer pageDrawer = new PageDrawer(parameters);
         pageDrawer.setAnnotationFilter(annotationFilter);

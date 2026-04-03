@@ -188,9 +188,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * Constructor.
      *
      * @param parameters Parameters for page drawing.
-     * @throws IOException If there is an error loading properties from the file.
      */
-    public PageDrawer(PageDrawerParameters parameters) throws IOException
+    public PageDrawer(PageDrawerParameters parameters)
     {
         super(parameters.getPage());
         this.renderer = parameters.getRenderer();
