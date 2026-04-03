@@ -215,7 +215,7 @@ public class PDDocument implements Closeable
      * 
      * @param doc The COSDocument that this document wraps.
      * @param source input representing the pdf
-     * @param permission he access permissions of the pdf
+     * @param permission The access permissions of the pdf
      * 
      */
     public PDDocument(COSDocument doc, RandomAccessRead source, AccessPermission permission)
