@@ -490,10 +490,12 @@ class AppearanceGeneratorHelper {
 
         // get the font
         PDFont font = defaultAppearance.getFont();
-        if (font == null) {
+        if (font == null)
+        {
             throw new IllegalArgumentException("font is null, check whether /DA entry is incomplete or incorrect");
         }
-        if (font.getName().contains("+")) {
+        if (font.getName() != null && font.getName().contains("+"))
+        {
             LOG.warn("Font '" + defaultAppearance.getFontName().getName() + "' of field '"
                     + field.getFullyQualifiedName() + "' contains subsetted font '" + font.getName() + "'");
             LOG.warn("This may bring trouble with PDField.setValue(), PDAcroForm.flatten() or "
