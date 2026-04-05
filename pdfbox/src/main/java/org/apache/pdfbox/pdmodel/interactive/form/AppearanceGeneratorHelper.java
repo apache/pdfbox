@@ -515,7 +515,7 @@ class AppearanceGeneratorHelper
             {
                 throw new IllegalArgumentException("font is null, check whether /DA entry is incomplete or incorrect");
             }
-            if (font.getName().contains("+"))
+            if (font.getName() != null && font.getName().contains("+"))
             {
                 LOG.warn("Font '" + defaultAppearance.getFontName().getName() +
                          "' of field '" + field.getFullyQualifiedName() + 
