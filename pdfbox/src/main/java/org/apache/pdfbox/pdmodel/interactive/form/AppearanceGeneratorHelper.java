@@ -522,7 +522,7 @@ class AppearanceGeneratorHelper
             {
                 throw new IllegalArgumentException("font is null, check whether /DA entry is incomplete or incorrect");
             }
-            if (font.getName().contains("+"))
+            if (font.getName() != null && font.getName().contains("+"))
             {
                 LOG.warn("Font '{}' of field '{}' contains subsetted font '{}'",
                         defaultAppearance.getFontName().getName(), field.getFullyQualifiedName(),
