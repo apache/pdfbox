@@ -78,7 +78,7 @@ public class CustomPageDrawer
         }
 
         @Override
-        protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException
+        protected PageDrawer createPageDrawer(PageDrawerParameters parameters)
         {
             return new MyPageDrawer(parameters);
         }
@@ -89,7 +89,7 @@ public class CustomPageDrawer
      */
     private static class MyPageDrawer extends PageDrawer
     {
-        MyPageDrawer(PageDrawerParameters parameters) throws IOException
+        MyPageDrawer(PageDrawerParameters parameters)
         {
             super(parameters);
         }

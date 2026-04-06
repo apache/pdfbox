@@ -93,7 +93,7 @@ public class OpaquePDFRenderer extends PDFRenderer
     }
 
     @Override
-    protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException
+    protected PageDrawer createPageDrawer(PageDrawerParameters parameters)
     {
         return new OpaquePageDrawer(parameters);
     }
@@ -101,7 +101,7 @@ public class OpaquePDFRenderer extends PDFRenderer
     private static class OpaquePageDrawer extends PageDrawer
     {
 
-        OpaquePageDrawer(PageDrawerParameters parameters) throws IOException
+        OpaquePageDrawer(PageDrawerParameters parameters)
         {
             super(parameters);
             addOperator(new OpaqueDrawObject(this));
