@@ -76,7 +76,7 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
     /**
      * Set the coordinates of individual words or group of words.
      * 
-     * The quadliterals shall encompasses a word or group of contiguous words in the text underlying the annotation. The
+     * The quadliterals shall encompass a word or group of contiguous words in the text underlying the annotation. The
      * coordinates for each quadrilateral shall be given in the order x1 y1 x2 y2 x3 y3 x4 y4.
      *
      * @param coords an array of 8 􏰍 n numbers specifying the coordinates of n quadrilaterals.
