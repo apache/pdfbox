@@ -351,28 +351,33 @@ public class PDFRenderer
 
         // use a transparent background if the image type supports alpha
         Graphics2D g = image.createGraphics();
-        if (image.getType() == BufferedImage.TYPE_INT_ARGB)
+        try
         {
-            g.setBackground(new Color(0, 0, 0, 0));
-        }
-        else
-        {
-            g.setBackground(Color.WHITE);
-        }
-        g.clearRect(0, 0, image.getWidth(), image.getHeight());
-        
-        transform(g, page.getRotation(), cropBox, scale, scale);
+            if (image.getType() == BufferedImage.TYPE_INT_ARGB)
+            {
+                g.setBackground(new Color(0, 0, 0, 0));
+            }
+            else
+            {
+                g.setBackground(Color.WHITE);
+            }
+            g.clearRect(0, 0, image.getWidth(), image.getHeight());
 
-        // the end-user may provide a custom PageDrawer
-        RenderingHints actualRenderingHints =
-                renderingHints == null ? createDefaultRenderingHints(g) : renderingHints;
-        PageDrawerParameters parameters =
-                new PageDrawerParameters(this, page, subsamplingAllowed, destination,
-                        actualRenderingHints, imageDownscalingOptimizationThreshold);
-        PageDrawer drawer = createPageDrawer(parameters);
-        drawer.drawPage(g, cropBox);
-        
-        g.dispose();
+            transform(g, page.getRotation(), cropBox, scale, scale);
+
+            // the end-user may provide a custom PageDrawer
+            RenderingHints actualRenderingHints =
+                    renderingHints == null ? createDefaultRenderingHints(g) : renderingHints;
+            PageDrawerParameters parameters =
+                    new PageDrawerParameters(this, page, subsamplingAllowed, destination,
+                            actualRenderingHints, imageDownscalingOptimizationThreshold);
+            PageDrawer drawer = createPageDrawer(parameters);
+            drawer.drawPage(g, cropBox);
+        }
+        finally
+        {
+            g.dispose();
+        }
 
         if (image.getType() != imageType.toBufferedImageType())
         {
