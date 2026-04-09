@@ -19,7 +19,6 @@ package org.apache.pdfbox.io;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
