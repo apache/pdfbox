@@ -256,11 +256,11 @@ public class ScratchFile implements RandomAccessStreamCache
                 {
                     if (scratchFileDirectory == null)
                     {
-                        file = Files.createTempFile("PDFBox", ".tmp").toFile();
+                        file = IOUtils.createProtectedTempFile(null, "PDFBox", ".tmp").toFile();
                     }
                     else
                     {
-                        file = Files.createTempFile(scratchFileDirectory.toPath(), "PDFBox", ".tmp").toFile();
+                        file = IOUtils.createProtectedTempFile(scratchFileDirectory.toPath(), "PDFBox", ".tmp").toFile();
                     }
                     try
                     {
