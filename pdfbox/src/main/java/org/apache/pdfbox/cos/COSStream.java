@@ -231,25 +231,40 @@ public class COSStream extends COSDictionary implements Closeable
         else
             randomAccess = getStreamCache().createBuffer();
         OutputStream randomOut = new RandomAccessOutputStream(randomAccess);
-        OutputStream cosOut = new COSOutputStream(getFilterList(), this, randomOut,
-                getStreamCache());
-        isWriting = true;
-        return new FilterOutputStream(cosOut)
+        boolean success = false;
+
+        try
         {
-            @Override
-            public void write(byte[] b, int off, int len) throws IOException
+            OutputStream cosOut = new COSOutputStream(getFilterList(), this, randomOut,
+                    getStreamCache());
+            isWriting = true;
+            FilterOutputStream result = new FilterOutputStream(cosOut)
             {
-                this.out.write(b, off, len);
-            }
-            
-            @Override
-            public void close() throws IOException
+                @Override
+                public void write(byte[] b, int off, int len) throws IOException
+                {
+                    this.out.write(b, off, len);
+                }
+                
+                @Override
+                public void close() throws IOException
+                {
+                    super.close();
+                    setInt(COSName.LENGTH, (int)randomAccess.length());
+                    isWriting = false;
+                }
+            };
+            success = true;
+            return result;
+        }
+        finally
+        {
+            if (!success)
             {
-                super.close();
-                setInt(COSName.LENGTH, (int)randomAccess.length());
-                isWriting = false;
+                // clean up partially written data
+                randomOut.close();
             }
-        };
+        }
     }
     
     /**
