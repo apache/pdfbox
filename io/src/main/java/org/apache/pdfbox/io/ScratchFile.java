@@ -19,7 +19,6 @@ package org.apache.pdfbox.io;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -252,11 +251,11 @@ public class ScratchFile implements RandomAccessStreamCache
                 {
                     if (scratchFileDirectory == null)
                     {
-                        file = Files.createTempFile("PDFBox", ".tmp").toFile();
+                        file = IOUtils.createProtectedTempFile(null, "PDFBox", ".tmp").toFile();
                     }
                     else
                     {
-                        file = Files.createTempFile(scratchFileDirectory.toPath(), "PDFBox", ".tmp").toFile();
+                        file = IOUtils.createProtectedTempFile(scratchFileDirectory.toPath(), "PDFBox", ".tmp").toFile();
                     }
                     try
                     {

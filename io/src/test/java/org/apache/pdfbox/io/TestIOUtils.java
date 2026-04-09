@@ -408,4 +408,201 @@ class TestIOUtils
             }
         }
     }
+
+    /**
+     * Tests {@link IOUtils#createProtectedTempFile(Path, String, String)} 
+     * creates a file in the default temporary-file directory.
+     * @throws IOException if an I/O error occurs
+     */
+    @Test
+    void testCreateProtectedTempFileDefaultDir() throws IOException
+    {
+        Path tempFile = IOUtils.createProtectedTempFile(null, "test", ".tmp");
+        try
+        {
+            assertTrue(Files.exists(tempFile), "Temporary file should exist");
+            assertTrue(Files.isRegularFile(tempFile), "Path should be a file");
+            assertTrue(tempFile.getFileName().toString().startsWith("test"), 
+                    "File name should start with 'test'");
+            assertTrue(tempFile.getFileName().toString().endsWith(".tmp"), 
+                    "File name should end with '.tmp'");
+        }
+        finally
+        {
+            // Cleanup
+            if (Files.exists(tempFile))
+            {
+                Files.delete(tempFile);
+            }
+        }
+    }
+
+    /**
+     * Tests {@link IOUtils#createProtectedTempFile(Path, String, String)} 
+     * creates a file in a specified directory.
+     * @throws IOException if an I/O error occurs
+     */
+    @Test
+    void testCreateProtectedTempFileSpecifiedDir() throws IOException
+    {
+        Path tempDir = IOUtils.createProtectedTempDir();
+        try
+        {
+            Path tempFile = IOUtils.createProtectedTempFile(tempDir, "myfile", ".bin");
+            try
+            {
+                assertTrue(Files.exists(tempFile), "Temporary file should exist");
+                assertTrue(Files.isRegularFile(tempFile), "Path should be a file");
+                assertEquals(tempDir, tempFile.getParent(), "File should be in specified directory");
+                assertTrue(tempFile.getFileName().toString().startsWith("myfile"), 
+                        "File name should start with 'myfile'");
+                assertTrue(tempFile.getFileName().toString().endsWith(".bin"), 
+                        "File name should end with '.bin'");
+            }
+            finally
+            {
+                // Cleanup temp file
+                if (Files.exists(tempFile))
+                {
+                    Files.delete(tempFile);
+                }
+            }
+        }
+        finally
+        {
+            // Cleanup temp directory
+            if (Files.exists(tempDir))
+            {
+                Files.delete(tempDir);
+            }
+        }
+    }
+
+    /**
+     * Tests {@link IOUtils#createProtectedTempFile(Path, String, String)} 
+     * with POSIX permissions.
+     * @throws IOException if an I/O error occurs
+     */
+    @Test
+    void testCreateProtectedTempFilePermissions() throws IOException
+    {
+        Path tempFile = IOUtils.createProtectedTempFile(null, "perm", ".test");
+        try
+        {
+            // Check if system supports POSIX permissions
+            if (Files.getFileStore(tempFile).supportsFileAttributeView("posix"))
+            {
+                Set<PosixFilePermission> perms = Files.getPosixFilePermissions(tempFile);
+                
+                // Should have owner read and write
+                assertTrue(perms.contains(PosixFilePermission.OWNER_READ));
+                assertTrue(perms.contains(PosixFilePermission.OWNER_WRITE));
+                
+                // Should NOT have owner execute for files
+                assertFalse(perms.contains(PosixFilePermission.OWNER_EXECUTE));
+                
+                // Should NOT have group or others permissions
+                assertFalse(perms.contains(PosixFilePermission.GROUP_READ));
+                assertFalse(perms.contains(PosixFilePermission.GROUP_WRITE));
+                assertFalse(perms.contains(PosixFilePermission.GROUP_EXECUTE));
+                assertFalse(perms.contains(PosixFilePermission.OTHERS_READ));
+                assertFalse(perms.contains(PosixFilePermission.OTHERS_WRITE));
+                assertFalse(perms.contains(PosixFilePermission.OTHERS_EXECUTE));
+            }
+        }
+        finally
+        {
+            // Cleanup
+            if (Files.exists(tempFile))
+            {
+                Files.delete(tempFile);
+            }
+        }
+    }
+
+    /**
+     * Tests {@link IOUtils#createProtectedTempFile(Path, String, String)} 
+     * creates multiple unique files.
+     * @throws IOException if an I/O error occurs
+     */
+    @Test
+    void testCreateProtectedTempFileMultiple() throws IOException
+    {
+        Path tempFile1 = IOUtils.createProtectedTempFile(null, "test1", ".tmp");
+        Path tempFile2 = IOUtils.createProtectedTempFile(null, "test1", ".tmp");
+        
+        try
+        {
+            assertTrue(Files.exists(tempFile1));
+            assertTrue(Files.exists(tempFile2));
+            // Paths should be different (unique files)
+            assertFalse(tempFile1.equals(tempFile2));
+        }
+        finally
+        {
+            // Cleanup
+            if (Files.exists(tempFile1))
+            {
+                Files.delete(tempFile1);
+            }
+            if (Files.exists(tempFile2))
+            {
+                Files.delete(tempFile2);
+            }
+        }
+    }
+
+    /**
+     * Tests {@link IOUtils#createProtectedTempFile(Path, String, String)} 
+     * with null suffix.
+     * @throws IOException if an I/O error occurs
+     */
+    @Test
+    void testCreateProtectedTempFileNullSuffix() throws IOException
+    {
+        Path tempFile = IOUtils.createProtectedTempFile(null, "test", null);
+        try
+        {
+            assertTrue(Files.exists(tempFile), "Temporary file should exist");
+            assertTrue(Files.isRegularFile(tempFile), "Path should be a file");
+        }
+        finally
+        {
+            // Cleanup
+            if (Files.exists(tempFile))
+            {
+                Files.delete(tempFile);
+            }
+        }
+    }
+
+    /**
+     * Tests {@link IOUtils#createProtectedTempFile(Path, String, String)} 
+     * can create and write to the file.
+     * @throws IOException if an I/O error occurs
+     */
+    @Test
+    void testCreateProtectedTempFileWriteable() throws IOException
+    {
+        Path tempFile = IOUtils.createProtectedTempFile(null, "writable", ".dat");
+        try
+        {
+            // Write some test data
+            byte[] testData = "Test content".getBytes();
+            Files.write(tempFile, testData);
+            
+            // Read back and verify
+            byte[] readData = Files.readAllBytes(tempFile);
+            assertEquals(testData.length, readData.length);
+            assertEquals("Test content", new String(readData));
+        }
+        finally
+        {
+            // Cleanup
+            if (Files.exists(tempFile))
+            {
+                Files.delete(tempFile);
+            }
+        }
+    }
 }
