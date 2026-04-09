@@ -453,7 +453,10 @@ public final class IOUtils
             return dir == null 
                 ? Files.createTempFile(prefix, suffix, POSIX_FILE_PERMISSIONS) 
                 : Files.createTempFile(dir, prefix, suffix, POSIX_FILE_PERMISSIONS);
-        }
+        }            
+        // S5443: permissions are immediately restricted to owner-only by
+        // applyOwnerOnlyPermissions(), mitigating the default-permission risk.
+        @SuppressWarnings("java:S5443")
         Path tempFile = dir == null 
             ? Files.createTempFile(prefix, suffix) 
             : Files.createTempFile(dir, prefix, suffix);
