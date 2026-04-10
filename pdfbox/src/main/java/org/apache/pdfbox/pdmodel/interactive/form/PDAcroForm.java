@@ -152,24 +152,32 @@ public final class PDAcroForm implements COSObjectable
     public FDFDocument exportFDF() throws IOException
     {
         FDFDocument fdf = new FDFDocument();
-        FDFCatalog catalog = fdf.getCatalog();
-        FDFDictionary fdfDict = new FDFDictionary();
-        catalog.setFDF(fdfDict);
-
-        List<PDField> fields = getFields();
-        List<FDFField> fdfFields = new ArrayList<>(fields.size());
-        for (PDField field : fields)
+        try
         {
-            fdfFields.add(field.exportFDF());
+            FDFCatalog catalog = fdf.getCatalog();
+            FDFDictionary fdfDict = new FDFDictionary();
+            catalog.setFDF(fdfDict);
+
+            List<PDField> fields = getFields();
+            List<FDFField> fdfFields = new ArrayList<>(fields.size());
+            for (PDField field : fields)
+            {
+                fdfFields.add(field.exportFDF());
+            }
+
+            fdfDict.setID(document.getDocument().getDocumentID());
+
+            if (!fdfFields.isEmpty())
+            {
+                fdfDict.setFields(fdfFields);
+            }
+            return fdf;
         }
-
-        fdfDict.setID(document.getDocument().getDocumentID());
-
-        if (!fdfFields.isEmpty())
+        catch (Exception e)
         {
-            fdfDict.setFields(fdfFields);
+            fdf.close();
+            throw e;
         }
-        return fdf;
     }
 
     /**
