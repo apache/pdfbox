@@ -27,7 +27,11 @@ import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
 import org.apache.pdfbox.cos.COSString;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Isolated;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 
 /**
  * Test the date conversion utility.
@@ -36,6 +40,7 @@ import org.junit.jupiter.api.Test;
  * @author Fred Hansen
  * 
  */
+@Isolated
 class TestDateUtil
 {
     private static final int MINS = 60*1000, HRS = 60*MINS;
@@ -45,6 +50,7 @@ class TestDateUtil
     /**
      * Test common date formats.
      */
+    @ResourceLock(Resources.TIME_ZONE)
     @Test
     void testExtract()
     {
