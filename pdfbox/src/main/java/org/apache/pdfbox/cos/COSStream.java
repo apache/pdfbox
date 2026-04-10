@@ -290,11 +290,10 @@ public class COSStream extends COSDictionary implements Closeable
         else
             randomAccess = getStreamCache().createBuffer();
 
-        OutputStream randomOut = null;
+        OutputStream randomOut = new RandomAccessOutputStream(randomAccess);
 
         try
         {
-            randomOut = new RandomAccessOutputStream(randomAccess);
             FilterOutputStream result = new FilterOutputStream(randomOut)
             {
                 @Override
@@ -318,12 +317,19 @@ public class COSStream extends COSDictionary implements Closeable
                 }
             };
             isWriting = true;
-            randomOut = null; // ownership transferred to result so don't close it in the finally block
             return result;
         }
-        finally
+        catch (Exception e)
         {
-            if (randomOut != null) randomOut.close();
+            try
+            {
+                randomOut.close();
+            }
+            catch (IOException closeEx)
+            {
+                e.addSuppressed(closeEx);
+            }
+            throw e;
         }
     }
     
