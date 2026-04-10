@@ -43,7 +43,8 @@ public final class FileTypeDetector
         // https://en.wikipedia.org/wiki/List_of_file_signatures
 
         root.addPath(FileType.JPEG, new byte[]{(byte)0xff, (byte)0xd8});
-        root.addPath(FileType.TIFF, "II".getBytes(StandardCharsets.ISO_8859_1), new byte[]{0x2a, 0x00});
+        byte[] iiBytes = "II".getBytes(StandardCharsets.ISO_8859_1);
+        root.addPath(FileType.TIFF, iiBytes, new byte[]{0x2a, 0x00});
         root.addPath(FileType.TIFF, "MM".getBytes(StandardCharsets.ISO_8859_1), new byte[]{0x00, 0x2a});
         root.addPath(FileType.PSD, "8BPS".getBytes(StandardCharsets.ISO_8859_1));
         root.addPath(FileType.PNG, new byte[]{(byte)0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52});
@@ -61,13 +62,13 @@ public final class FileTypeDetector
 
         // https://github.com/drewnoakes/metadata-extractor/issues/217
         // root.addPath(FileType.ARW, "II".getBytes(StandardCharsets.ISO_8859_1), new byte[]{0x2a, 0x00, 0x08, 0x00})
-        root.addPath(FileType.CRW, "II".getBytes(StandardCharsets.ISO_8859_1), new byte[]{0x1a, 0x00, 0x00, 0x00}, "HEAPCCDR".getBytes(StandardCharsets.ISO_8859_1));
-        root.addPath(FileType.CR2, "II".getBytes(StandardCharsets.ISO_8859_1), new byte[]{0x2a, 0x00, 0x10, 0x00, 0x00, 0x00, 0x43, 0x52});
+        root.addPath(FileType.CRW, iiBytes, new byte[]{0x1a, 0x00, 0x00, 0x00}, "HEAPCCDR".getBytes(StandardCharsets.ISO_8859_1));
+        root.addPath(FileType.CR2, iiBytes, new byte[]{0x2a, 0x00, 0x10, 0x00, 0x00, 0x00, 0x43, 0x52});
         root.addPath(FileType.NEF, "MM".getBytes(StandardCharsets.ISO_8859_1), new byte[]{0x00, 0x2a, 0x00, 0x00, 0x00, (byte)0x80, 0x00});
         root.addPath(FileType.ORF, "IIRO".getBytes(StandardCharsets.ISO_8859_1), new byte[]{(byte)0x08, 0x00});
         root.addPath(FileType.ORF, "IIRS".getBytes(StandardCharsets.ISO_8859_1), new byte[]{(byte)0x08, 0x00});
         root.addPath(FileType.RAF, "FUJIFILMCCD-RAW".getBytes(StandardCharsets.ISO_8859_1));
-        root.addPath(FileType.RW2, "II".getBytes(StandardCharsets.ISO_8859_1), new byte[]{0x55, 0x00});
+        root.addPath(FileType.RW2, iiBytes, new byte[]{0x55, 0x00});
     }
 
     private FileTypeDetector()
