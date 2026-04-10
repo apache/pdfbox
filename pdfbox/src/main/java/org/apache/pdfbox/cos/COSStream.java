@@ -95,7 +95,7 @@ public class COSStream extends COSDictionary implements Closeable
     {
         this(streamCache);
         this.randomAccessReadView = randomAccessReadView;
-        setInt(COSName.LENGTH, (int) randomAccessReadView.length());
+        setLong(COSName.LENGTH, randomAccessReadView.length());
     }
 
     /**
@@ -233,16 +233,14 @@ public class COSStream extends COSDictionary implements Closeable
             randomAccess = getStreamCache().createBuffer();
 
         OutputStream randomOut = null;
-        OutputStream cosOut = null;
 
         try
         {
             randomOut = new RandomAccessOutputStream(randomAccess);
-            cosOut = new COSOutputStream(getFilterList(), this, randomOut, getStreamCache());
+            OutputStream cosOut = new COSOutputStream(getFilterList(), this, randomOut, getStreamCache());
             randomOut = null; // ownership transferred to cosOut so don't close it in the finally block
 
-            final OutputStream cosOutFinal = cosOut;
-            FilterOutputStream result = new FilterOutputStream(cosOutFinal)
+            FilterOutputStream result = new FilterOutputStream(cosOut)
             {
                 @Override
                 public void write(byte[] b, int off, int len) throws IOException
@@ -256,7 +254,7 @@ public class COSStream extends COSDictionary implements Closeable
                     try
                     {
                         super.close();
-                        setInt(COSName.LENGTH, (int)randomAccess.length());
+                        setLong(COSName.LENGTH, randomAccess.length());
                     }
                     finally
                     {
@@ -265,12 +263,10 @@ public class COSStream extends COSDictionary implements Closeable
                 }
             };
             isWriting = true;
-            cosOut = null; // ownership transferred to result, so don't close it in the finally block
             return result;
         }
         finally
         {
-            if (cosOut != null) cosOut.close();
             if (randomOut != null) randomOut.close();
         }
     }
@@ -281,6 +277,7 @@ public class COSStream extends COSDictionary implements Closeable
      * @return OutputStream for raw PDF stream data.
      * @throws IOException If the output stream could not be created.
      */
+    @SuppressWarnings("java:S2095") // Intermediate OutputStream ownership is transferred to the returned FilterOutputStream
     public OutputStream createRawOutputStream() throws IOException
     {
         checkClosed();
@@ -292,24 +289,42 @@ public class COSStream extends COSDictionary implements Closeable
             randomAccess.clear();
         else
             randomAccess = getStreamCache().createBuffer();
-        OutputStream out = new RandomAccessOutputStream(randomAccess);
-        isWriting = true;
-        return new FilterOutputStream(out)
+
+        OutputStream randomOut = null;
+
+        try
         {
-            @Override
-            public void write(byte[] b, int off, int len) throws IOException
+            randomOut = new RandomAccessOutputStream(randomAccess);
+            FilterOutputStream result = new FilterOutputStream(randomOut)
             {
-                this.out.write(b, off, len);
-            }
-            
-            @Override
-            public void close() throws IOException
-            {
-                super.close();
-                setInt(COSName.LENGTH, (int)randomAccess.length());
-                isWriting = false;
-            }
-        };
+                @Override
+                public void write(byte[] b, int off, int len) throws IOException
+                {
+                    this.out.write(b, off, len);
+                }
+                
+                @Override
+                public void close() throws IOException
+                {
+                    try
+                    {
+                        super.close();
+                        setLong(COSName.LENGTH, randomAccess.length());
+                    }
+                    finally
+                    {
+                        isWriting = false;
+                    }
+                }
+            };
+            isWriting = true;
+            randomOut = null; // ownership transferred to result so don't close it in the finally block
+            return result;
+        }
+        finally
+        {
+            if (randomOut != null) randomOut.close();
+        }
     }
     
     /**
