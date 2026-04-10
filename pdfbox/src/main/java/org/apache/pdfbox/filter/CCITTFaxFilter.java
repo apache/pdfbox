@@ -60,8 +60,43 @@ final class CCITTFaxFilter extends Filter
         // decompress data
         int k = decodeParms.getInt(COSName.K, 0);
         boolean encodedByteAlign = decodeParms.getBoolean(COSName.ENCODED_BYTE_ALIGN, false);
-        int arraySize = (cols + 7) / 8 * rows;
-        // TODO possible options??
+        if (cols <= 0 || rows <= 0)
+        {
+            throw new IOException("Invalid CCITT image dimensions: cols=" + cols + ", rows=" + rows);
+        }
+
+        long arraySizeLong = ((long) cols + 7) / 8 * rows;
+
+        long maxBytes = 256 * 1024 * 1024L;
+        String sysProp = System.getProperty(Filter.SYSPROP_CCITTFAX_MAXBYTES);
+
+        if (sysProp != null)
+        {
+            try
+            {
+                long parsed = Long.parseLong(sysProp);
+                if (parsed > 0)
+                {
+                    maxBytes = parsed;
+                }
+                // else ignore zero/negative values
+            }
+            catch (NumberFormatException e)
+            {
+                // ignore invalid value, keep default
+            }
+        }
+
+        if (arraySizeLong > maxBytes)
+        {
+            throw new IOException(
+                "CCITT decode buffer too large (" + arraySizeLong + " bytes) for cols=" + cols +
+                ", rows=" + rows + "; max allowed=" + maxBytes +
+                "; increase " + Filter.SYSPROP_CCITTFAX_MAXBYTES + " to override"
+            );
+        }
+
+        int arraySize = (int) arraySizeLong;
         byte[] decompressed = new byte[arraySize];
         CCITTFaxDecoderStream s;
         int type;
