@@ -189,6 +189,7 @@ public class COSDocument extends COSBase implements Closeable
      * @return the new COSStream
      * @throws IOException if the random access view can't be read
      */
+    @SuppressWarnings("java:S2095") // RandomAccessReadView is owned by the created COSStream and will be closed 
     public COSStream createCOSStream(COSDictionary dictionary, long startPosition,
             long streamLength) throws IOException
     {
