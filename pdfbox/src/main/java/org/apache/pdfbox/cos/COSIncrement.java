@@ -70,11 +70,11 @@ public class COSIncrement implements Iterable<COSBase>
     }
     
     /**
-     * Collect all updates made to the given {@link COSBase} and it's contained structures.<br>
+     * Collect all updates made to the given {@link COSBase} and its contained structures.<br>
      * This shall forward all {@link COSUpdateInfo} objects to the proper specialized collection methods.
      *
      * @param base The {@link COSBase} updates shall be collected for.
-     * @return Returns {@code true}, if the {@link COSBase} represents a direct child structure, that would require it´s
+     * @return Returns {@code true} if the {@link COSBase} represents a direct child structure, that would require its
      * parent to be updated instead.
      * @see #collect(COSDictionary)
      * @see #collect(COSArray)
@@ -93,7 +93,9 @@ public class COSIncrement implements Iterable<COSBase>
         }
         else if(base instanceof COSObject)
         {
-            return collect((COSObject) base);
+            collect((COSObject) base);
+            // COSObjects by definition are indirect and shall never cause a parent structure to be updated.
+            return false;
         }
         else if(base instanceof COSArray)
         {
@@ -103,11 +105,11 @@ public class COSIncrement implements Iterable<COSBase>
     }
     
     /**
-     * Collect all updates made to the given {@link COSDictionary} and it's contained structures.
+     * Collect all updates made to the given {@link COSDictionary} and its contained structures.
      *
      * @param dictionary The {@link COSDictionary} updates shall be collected for.
-     * @return Returns {@code true}, if the {@link COSDictionary} represents a direct child structure, that would
-     * require it´s parent to be updated instead.
+     * @return Returns {@code true} if the {@link COSDictionary} represents a direct child structure
+     * that would require its parent to be updated instead.
      */
     private boolean collect(COSDictionary dictionary)
     {
@@ -157,11 +159,11 @@ public class COSIncrement implements Iterable<COSBase>
     }
     
     /**
-     * Collect all updates made to the given {@link COSArray} and it's contained structures.
+     * Collect all updates made to the given {@link COSArray} and its contained structures.
      *
      * @param array The {@link COSDictionary} updates shall be collected for.
-     * @return Returns {@code true}, if the {@link COSArray}´s elements changed. A {@link COSArray} shall always be
-     * treated as a direct structure, that would require it´s parent to be updated instead.
+     * @return Returns {@code true} if the {@link COSArray}´s elements changed. A {@link COSArray} shall always be
+     * treated as a direct structure, that would require its parent to be updated instead.
      */
     private boolean collect(COSArray array)
     {
@@ -184,17 +186,15 @@ public class COSIncrement implements Iterable<COSBase>
     }
     
     /**
-     * Collect all updates made to the given {@link COSObject} and it's contained structures.
+     * Collect all updates made to the given {@link COSObject} and its contained structures.
      *
      * @param object The {@link COSObject} updates shall be collected for.
-     * @return Always returns {@code false}. {@link COSObject}s by definition are indirect and shall never cause a
-     * parent structure to be updated.
      */
-    private boolean collect(COSObject object)
+    private void collect(COSObject object)
     {
         if(contains(object))
         {
-            return false;
+            return;
         }
         addProcessedObject(object);
         COSUpdateState updateState = object.getUpdateState();
@@ -213,7 +213,7 @@ public class COSIncrement implements Iterable<COSBase>
         // Skip?
         if(actual == null || contains(actual.getCOSObject()))
         {
-            return false;
+            return;
         }
         boolean childDemandsParentUpdate = false;
         COSUpdateState actualUpdateState = actual.getUpdateState();
@@ -227,15 +227,14 @@ public class COSIncrement implements Iterable<COSBase>
         {
             add(actual.getCOSObject());
         }
-        return false;
     }
     
     /**
-     * Returns {@code true}, if the given {@link COSBase} is already known to and has been processed by this
+     * Returns {@code true} if the given {@link COSBase} is already known to and has been processed by this
      * {@link COSIncrement}.
      *
      * @param base The {@link COSBase} to check.
-     * @return {@code true}, if the given {@link COSBase} is already known to and has been processed by this
+     * @return {@code true} if the given {@link COSBase} is already known to and has been processed by this
      * {@link COSIncrement}.
      * @see #objects
      * @see #processedObjects
@@ -251,7 +250,7 @@ public class COSIncrement implements Iterable<COSBase>
      * Should that be the case, the {@link COSUpdateState} originates from another {@link COSDocument} and must be added
      * to the {@link COSIncrement}, hence call {@link COSUpdateState#update()}.
      *
-     * @param updateState The {@link COSUpdateState} that shall be updated, if it's originating from another
+     * @param updateState The {@link COSUpdateState} that shall be updated, if its originating from another
      *                    {@link COSDocument}.
      * @see #incrementOrigin
      */
@@ -314,11 +313,11 @@ public class COSIncrement implements Iterable<COSBase>
     }
     
     /**
-     * Returns {@code true}, if the given {@link COSBase} has been excluded from the increment, and hence is contained
+     * Returns {@code true} if the given {@link COSBase} has been excluded from the increment, and hence is contained
      * in {@link #excluded}.
      *
      * @param base The {@link COSBase} to check for exclusion.
-     * @return {@code true}, if the given {@link COSBase} has been excluded from the increment, and hence is contained
+     * @return {@code true} if the given {@link COSBase} has been excluded from the increment, and hence is contained
      * in {@link #excluded}.
      * @see #excluded
      */
