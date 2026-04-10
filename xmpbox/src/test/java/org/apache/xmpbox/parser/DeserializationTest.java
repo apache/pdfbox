@@ -21,6 +21,7 @@
 
 package org.apache.xmpbox.parser;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -51,12 +52,15 @@ import org.apache.xmpbox.type.ThumbnailType;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpParsingException;
 import org.apache.xmpbox.xml.XmpParsingException.ErrorType;
+import org.apache.xmpbox.xml.XmpSerializer;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.apache.xmpbox.xml.XmpSerializer;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.parallel.Isolated;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 
 /**
  * DomXmpParser imports the XML into an internal representation. XmpSerializer exports this into
@@ -64,6 +68,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author Tilman Hausherr
  */
+@Isolated
+@ResourceLock(Resources.TIME_ZONE)
 class DeserializationTest
 {
 
