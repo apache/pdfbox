@@ -51,11 +51,15 @@ import org.apache.xmpbox.type.ThumbnailType;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpParsingException;
 import org.apache.xmpbox.xml.XmpParsingException.ErrorType;
+import org.apache.xmpbox.xml.XmpSerializer;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.apache.xmpbox.xml.XmpSerializer;
+import org.junit.jupiter.api.parallel.Isolated;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 
 /**
  * DomXmpParser imports the XML into an internal representation. XmpSerializer exports this into
@@ -63,6 +67,8 @@ import org.apache.xmpbox.xml.XmpSerializer;
  *
  * @author Tilman Hausherr
  */
+@Isolated
+@ResourceLock(Resources.TIME_ZONE)
 class DeserializationTest
 {
 
@@ -310,7 +316,8 @@ class DeserializationTest
         }
         catch (XmpParsingException e)
         {
-            assertEquals(ErrorType.NoType, e.getErrorType());
+            e.printStackTrace();
+            assertEquals(ErrorType.NoType, e.getErrorType(), e.getMessage());
         }
     }
 
