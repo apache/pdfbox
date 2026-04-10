@@ -144,27 +144,27 @@ final class PNGConverter
 
         if (bitDepth != 1 && bitDepth != 2 && bitDepth != 4 && bitDepth != 8 && bitDepth != 16)
         {
-            LOG.error(String.format("Invalid bit depth %d.", bitDepth));
+            LOG.error("Invalid bit depth %d.", bitDepth);
             return null;
         }
         if (width <= 0 || height <= 0)
         {
-            LOG.error(String.format("Invalid image size %d x %d", width, height));
+            LOG.error("Invalid image size %d x %d", width, height);
             return null;
         }
         if (compressionMethod != 0)
         {
-            LOG.error(String.format("Unknown PNG compression method %d.", compressionMethod));
+            LOG.error("Unknown PNG compression method %d.", compressionMethod);
             return null;
         }
         if (filterMethod != 0)
         {
-            LOG.error(String.format("Unknown PNG filtering method %d.", compressionMethod));
+            LOG.error("Unknown PNG filtering method %d.", compressionMethod);
             return null;
         }
         if (interlaceMethod != 0)
         {
-            LOG.debug(String.format("Can't handle interlace method %d.", interlaceMethod));
+            LOG.debug("Can't handle interlace method %d.", interlaceMethod);
             return null;
         }
 
@@ -224,8 +224,8 @@ final class PNGConverter
         }
         if (state.bitsPerComponent > 8)
         {
-            LOG.debug(String.format("Can only convert indexed images with bit depth <= 8, not %d.",
-                    state.bitsPerComponent));
+            LOG.debug("Can only convert indexed images with bit depth <= 8, not %d.",
+                    state.bitsPerComponent);
             return null;
         }
 
@@ -238,8 +238,8 @@ final class PNGConverter
         int highVal = (plte.length / 3) - 1;
         if (highVal > 255)
         {
-            LOG.error(String.format("Too much colors in PLTE, only 256 allowed, found %d colors.",
-                    highVal + 1));
+            LOG.error("Too much colors in PLTE, only 256 allowed, found %d colors.",
+                    highVal + 1);
             return null;
         }
 
@@ -356,7 +356,7 @@ final class PNGConverter
             // The gamma is stored as 1 / gamma.
             if (Math.abs(gamma - (1 / 2.2f)) > 0.00001)
             {
-                LOG.debug(String.format("We can't handle gamma of %f yet.", gamma));
+                LOG.debug("We can't handle gamma of %f yet.", gamma);
                 return null;
             }
         }
@@ -365,8 +365,7 @@ final class PNGConverter
         {
             if (state.sRGB.length != 1)
             {
-                LOG.error(
-                        String.format("sRGB chunk has an invalid length of %d", state.sRGB.length));
+                LOG.error("sRGB chunk has an invalid length of %d", state.sRGB.length);
                 return null;
             }
 
@@ -436,8 +435,7 @@ final class PNGConverter
             byte compressionMethod = state.iCCP.bytes[state.iCCP.start + iccProfileDataStart];
             if (compressionMethod != 0)
             {
-                LOG.error(String.format("iCCP chunk: invalid compression method %d",
-                        compressionMethod));
+                LOG.error("iCCP chunk: invalid compression method %d", compressionMethod);
                 return null;
             }
             // Skip over the compression method
@@ -674,8 +672,7 @@ final class PNGConverter
         int ourCRC = crc(chunk.bytes, chunk.start - 4, chunk.length + 4);
         if (ourCRC != chunk.crc)
         {
-            LOG.error(String.format("Invalid CRC %08X on chunk %08X, expected %08X.", ourCRC,
-                    chunk.chunkType, chunk.crc));
+            LOG.error("Invalid CRC %08X on chunk %08X, expected %08X.", ourCRC, chunk.chunkType, chunk.crc);
             return false;
         }
         return true;
@@ -777,7 +774,7 @@ final class PNGConverter
 
         if (firstChunkType != CHUNK_IHDR)
         {
-            LOG.error(String.format("First Chunktype was %08X, not IHDR", firstChunkType));
+            LOG.error("First Chunktype was %08X, not IHDR", firstChunkType);
             return null;
         }
 
@@ -878,7 +875,7 @@ final class PNGConverter
                 // We don't need the last image change time either
                 break;
             default:
-                LOG.debug(String.format("Unknown chunk type %08X, skipping.", chunkType));
+                LOG.debug("Unknown chunk type %08X, skipping.", chunkType);
                 break;
             }
             ptr += chunkLength;
