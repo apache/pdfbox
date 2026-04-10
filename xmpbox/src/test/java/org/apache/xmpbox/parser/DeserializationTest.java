@@ -316,7 +316,6 @@ class DeserializationTest
         }
         catch (XmpParsingException e)
         {
-            e.printStackTrace();
             assertEquals(ErrorType.NoType, e.getErrorType(), e.getMessage());
         }
     }
