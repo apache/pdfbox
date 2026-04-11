@@ -1067,7 +1067,7 @@ public class PDDocument implements Closeable
      * signed</a>. (PDFBox already does this for signature widget annotations)
      * <p>
      * Another problem with page-based modifications can occur if the page tree isn't flat: there
-     * won't be an closed update path from the catalog to the page. To fix this, add code like this:
+     * won't be a closed update path from the catalog to the page. To fix this, add code like this:
      * <pre>{@code
      * COSDictionary parent = page.getCOSObject().getCOSDictionary(COSName.PARENT);
      * while (parent != null)
