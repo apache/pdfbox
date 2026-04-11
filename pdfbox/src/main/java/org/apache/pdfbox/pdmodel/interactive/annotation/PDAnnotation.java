@@ -179,7 +179,7 @@ public abstract class PDAnnotation implements COSObjectable
     /**
      * Constructor.
      * 
-     * @param dict The annotations dictionary.
+     * @param dict The annotations' dictionary.
      */
     protected PDAnnotation(COSDictionary dict)
     {
@@ -353,7 +353,7 @@ public abstract class PDAnnotation implements COSObjectable
     /**
      * This will get the appearance dictionary associated with this annotation. This may return null.
      * 
-     * @return This annotations appearance.
+     * @return This annotations' appearance.
      */
     public PDAppearanceDictionary getAppearance()
     {
