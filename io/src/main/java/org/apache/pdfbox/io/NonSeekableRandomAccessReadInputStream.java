@@ -95,9 +95,16 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
     @Override
     public void skip(int length) throws IOException
     {
-        for (int i=0; i< length;i++)
+        byte[] skipBuffer = new byte[Math.min(length, BUFFER_SIZE)];
+        int remaining = length;
+        while (remaining > 0)
         {
-            read();
+            int bytesRead = read(skipBuffer, 0, Math.min(remaining, skipBuffer.length));
+            if (bytesRead == -1)
+            {
+                break;
+            }
+            remaining -= bytesRead;
         }
     }
 
@@ -138,6 +145,20 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
     public int read(byte[] b, int offset, int length) throws IOException
     {
         checkClosed();
+        // Parameter validation as defined in InputStream.read(byte[], int, int)
+        if (b == null)
+        {
+            throw new NullPointerException("buffer is null");
+        }
+        if (offset < 0 || length < 0 || offset + length > b.length)
+        {
+            throw new IndexOutOfBoundsException("buffer length=" + b.length + " offset=" + offset
+                    + " length=" + length);
+        }
+        if (length == 0)
+        {
+            return 0;
+        }
         if (isEOF())
         {
             return -1;
@@ -162,7 +183,7 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
                 break;
             }
         }
-        return numberOfBytesRead;
+        return numberOfBytesRead > 0 ? numberOfBytesRead : -1;
     }
 
     @Override
@@ -233,7 +254,7 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
         catch (IOException exception)
         {
             // some data could be read -> don't throw an exception
-            LOG.warn("FlateFilter: premature end of stream due to a DataFormatException");
+            LOG.warn("premature end of stream, some data could be read ", exception);
             isEOF = true;
             throw exception;
         }
@@ -248,7 +269,8 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
     public int available() throws IOException
     {
         checkClosed();
-        return is.available();
+        int buffered = Math.max(0, bufferBytes[CURRENT] - currentBufferPointer);
+        return buffered + is.available();
     }
 
     /**
@@ -258,7 +280,7 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
     public long length() throws IOException
     {
         checkClosed();
-        return size;
+        return size + is.available();
     }
 
     @Override
@@ -269,8 +291,9 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
         {
             currentBufferPointer -= bytes;
             position -= bytes;
+            isEOF = false;
         }
-        else if (bufferBytes[LAST] > 0)
+        else if (bufferBytes[LAST] > 0 && (bytes - currentBufferPointer) <= bufferBytes[LAST])
         {
             // there is a former buffer
             int remainingBytesToRewind = bytes - currentBufferPointer;

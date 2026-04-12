@@ -255,7 +255,7 @@ class NonSeekableRandomAccessReadInputStreamTest
         ByteArrayInputStream bais = new ByteArrayInputStream(ba);
         try (RandomAccessRead rar = new NonSeekableRandomAccessReadInputStream(bais))
         {
-            assertEquals(0, rar.length()); // not really what I'd expect...
+            assertEquals(4096 * 2, rar.length());
             int len = rar.read(new byte[4096 + 1]);
             assertEquals(4096 * 2, rar.length());
             assertEquals(4096 + 1, len);
