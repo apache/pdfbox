@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.io;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -162,6 +163,23 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
         return numberOfBytesRead;
     }
 
+    @Override
+    public void readFully(byte[] b, int offset, int length) throws IOException
+    {
+        // override the default implementation as the return value from length isn't reliable
+        checkClosed();
+        int bytesReadTotal = 0;
+        while (bytesReadTotal < length)
+        {
+            int bytesReadNow = read(b, offset + bytesReadTotal, length - bytesReadTotal);
+            if (bytesReadNow <= 0)
+            {
+                throw new EOFException("EOF, should have been detected earlier");
+            }
+            bytesReadTotal += bytesReadNow;
+        }
+    }
+
     private void switchBuffers(int firstBuffer, int secondBuffer)
     {
         byte[] tmpBuffer = buffers[firstBuffer];
@@ -170,6 +188,17 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
         int tmpBufferBytes = bufferBytes[firstBuffer];
         bufferBytes[firstBuffer] = bufferBytes[secondBuffer];
         bufferBytes[secondBuffer] = tmpBufferBytes;
+    }
+
+    /**
+     * Returns an estimate of the number of bytes that can be read (or skipped over) from the underlying input stream
+     * without blocking, which may be 0, or 0 when end of stream is detected.
+     */
+    @Override
+    public int available() throws IOException
+    {
+        checkClosed();
+        return is.available();
     }
 
     private boolean fetch() throws IOException
