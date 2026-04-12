@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -286,6 +287,172 @@ class NonSeekableRandomAccessReadInputStreamTest
         rar.close();
         Assertions.assertThrows(IOException.class, rar::read,
                     "read() should have thrown an IOException");
+    }
+
+    /**
+     * Verify that all methods which require an open stream throw IOException after close().
+     */
+    @Test
+    void testClosedStreamMethods() throws IOException
+    {
+        ByteArrayInputStream bais = new ByteArrayInputStream(new byte[] { 1, 2, 3 });
+        NonSeekableRandomAccessReadInputStream rar =
+                new NonSeekableRandomAccessReadInputStream(bais);
+        rar.close();
+
+        Assertions.assertThrows(IOException.class, rar::read,
+                "read() on closed stream should throw IOException");
+        Assertions.assertThrows(IOException.class, () -> rar.read(new byte[1], 0, 1),
+                "read(byte[], int, int) on closed stream should throw IOException");
+        Assertions.assertThrows(IOException.class, () -> rar.readFully(new byte[1], 0, 1),
+                "readFully() on closed stream should throw IOException");
+        Assertions.assertThrows(IOException.class, rar::getPosition,
+                "getPosition() on closed stream should throw IOException");
+        Assertions.assertThrows(IOException.class, rar::available,
+                "available() on closed stream should throw IOException");
+        Assertions.assertThrows(IOException.class, rar::length,
+                "length() on closed stream should throw IOException");
+        Assertions.assertThrows(IOException.class, rar::isEOF,
+                "isEOF() on closed stream should throw IOException");
+    }
+
+    /**
+     * Verify parameter validation in read(byte[], int, int) as required by the InputStream contract.
+     */
+    @Test
+    void testReadBytesParameterValidation() throws IOException
+    {
+        byte[] inputValues = { 0, 1, 2, 3, 4 };
+        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        try (NonSeekableRandomAccessReadInputStream rar =
+                new NonSeekableRandomAccessReadInputStream(bais))
+        {
+            // null buffer must throw NullPointerException
+            Assertions.assertThrows(NullPointerException.class, () -> rar.read(null, 0, 1),
+                    "null buffer should throw NullPointerException");
+
+            byte[] buf = new byte[4];
+
+            // negative offset must throw IndexOutOfBoundsException
+            Assertions.assertThrows(IndexOutOfBoundsException.class, () -> rar.read(buf, -1, 2),
+                    "negative offset should throw IndexOutOfBoundsException");
+
+            // negative length must throw IndexOutOfBoundsException
+            Assertions.assertThrows(IndexOutOfBoundsException.class, () -> rar.read(buf, 0, -1),
+                    "negative length should throw IndexOutOfBoundsException");
+
+            // offset + length beyond buffer end must throw IndexOutOfBoundsException
+            Assertions.assertThrows(IndexOutOfBoundsException.class, () -> rar.read(buf, 2, 4),
+                    "offset + length > buf.length should throw IndexOutOfBoundsException");
+
+            // length == 0 must return 0 immediately without advancing position
+            assertEquals(0, rar.read(buf, 0, 0));
+            assertEquals(0, rar.getPosition());
+        }
+    }
+
+    /**
+     * Verify that readFully() reads exactly the requested number of bytes across a buffer boundary.
+     */
+    @Test
+    void testReadFully() throws IOException
+    {
+        byte[] inputValues = new byte[10];
+        for (int i = 0; i < inputValues.length; i++)
+        {
+            inputValues[i] = (byte) i;
+        }
+        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        try (NonSeekableRandomAccessReadInputStream rar =
+                new NonSeekableRandomAccessReadInputStream(bais))
+        {
+            byte[] buf = new byte[10];
+            rar.readFully(buf, 0, 10);
+            for (int i = 0; i < 10; i++)
+            {
+                assertEquals(i, buf[i]);
+            }
+            assertEquals(10, rar.getPosition());
+        }
+    }
+
+    /**
+     * Verify that readFully() throws EOFException when the stream ends before the requested
+     * number of bytes are available.
+     */
+    @Test
+    void testReadFullyEOF() throws IOException
+    {
+        byte[] inputValues = { 0, 1, 2 };
+        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        try (NonSeekableRandomAccessReadInputStream rar =
+                new NonSeekableRandomAccessReadInputStream(bais))
+        {
+            Assertions.assertThrows(EOFException.class, () -> rar.readFully(new byte[10], 0, 10),
+                    "readFully() should throw EOFException when stream ends before length bytes");
+        }
+    }
+
+    /**
+     * Verify that skip() silently stops at EOF without throwing an exception.
+     */
+    @Test
+    void testSkipPastEOF() throws IOException
+    {
+        byte[] inputValues = { 0, 1, 2, 3, 4 };
+        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        try (NonSeekableRandomAccessReadInputStream rar =
+                new NonSeekableRandomAccessReadInputStream(bais))
+        {
+            // skipping far beyond the end of the stream should not throw
+            rar.skip(100);
+            assertEquals(5, rar.getPosition());
+            assertTrue(rar.isEOF());
+        }
+    }
+
+    /**
+     * Verify that available() accounts for bytes buffered internally as well as bytes remaining
+     * in the underlying stream, and returns 0 at EOF.
+     */
+    @Test
+    void testAvailable() throws IOException
+    {
+        byte[] inputValues = new byte[10];
+        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        try (NonSeekableRandomAccessReadInputStream rar =
+                new NonSeekableRandomAccessReadInputStream(bais))
+        {
+            // before any read, available() reflects is.available() since nothing is buffered yet
+            assertEquals(10, rar.available());
+
+            // read one byte: the fetch pulls all 10 bytes into the internal buffer,
+            // so available = 9 buffered + 0 remaining in the underlying stream
+            rar.read();
+            assertEquals(9, rar.available());
+
+            // consume all remaining bytes
+            while (rar.read() != -1) {}
+            assertEquals(0, rar.available());
+        }
+    }
+
+    /**
+     * Verify that length() returns the exact total after the stream is fully consumed,
+     * at which point size holds the true count and is.available() is 0.
+     */
+    @Test
+    void testLengthAfterFullConsumption() throws IOException
+    {
+        byte[] inputValues = new byte[100];
+        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+        try (NonSeekableRandomAccessReadInputStream rar =
+                new NonSeekableRandomAccessReadInputStream(bais))
+        {
+            while (rar.read() != -1) {}
+            assertTrue(rar.isEOF());
+            assertEquals(100, rar.length());
+        }
     }
 
     private byte[] createRandomData()
