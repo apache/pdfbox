@@ -1291,7 +1291,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
     private void exitMenuItemActionPerformed(ActionEvent ignored)
     {
         IOUtils.closeQuietly(document);
-        if (!currentFilePath.startsWith("http"))
+        if (currentFilePath != null && !currentFilePath.startsWith("http"))
         {
             recentFiles.addFile(currentFilePath);
         }
