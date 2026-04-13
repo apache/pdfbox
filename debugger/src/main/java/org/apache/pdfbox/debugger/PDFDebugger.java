@@ -1263,23 +1263,12 @@ public class PDFDebugger extends JFrame
 
     private void exitMenuItemActionPerformed(ActionEvent ignored)
     {
-        if( document != null )
+        IOUtils.closeQuietly(document);
+        if (!currentFilePath.startsWith("http"))
         {
-            try
-            {
-                document.close();
-                if (!currentFilePath.startsWith("http"))
-                {
-                    recentFiles.addFile(currentFilePath);
-                }
-                recentFiles.close();
-            }
-            catch( IOException e )
-            {
-                // no dialogbox, don't interfere with exit wish
-                e.printStackTrace();
-            }
+            recentFiles.addFile(currentFilePath);
         }
+        recentFiles.close();
         windowPrefs.setExtendedState(getExtendedState());
         this.setExtendedState(Frame.NORMAL);
         windowPrefs.setBounds(getBounds());
