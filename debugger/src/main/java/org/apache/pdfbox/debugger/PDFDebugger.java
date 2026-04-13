@@ -137,6 +137,7 @@ import org.apache.pdfbox.debugger.ui.XrefEntries;
 import org.apache.pdfbox.debugger.ui.XrefEntry;
 import org.apache.pdfbox.debugger.ui.ZoomMenu;
 import org.apache.pdfbox.filter.FilterFactory;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
@@ -1290,23 +1291,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
     
     private void exitMenuItemActionPerformed(ActionEvent ignored)
     {
-        if( document != null )
+        IOUtils.closeQuietly(document);
+        if (!currentFilePath.startsWith("http"))
         {
-            try
-            {
-                document.close();
-                if (!currentFilePath.startsWith("http"))
-                {
-                    recentFiles.addFile(currentFilePath);
-                }
-                recentFiles.close();
-            }
-            catch( IOException e )
-            {
-                // no dialogbox, don't interfere with exit wish
-                e.printStackTrace();
-            }
+            recentFiles.addFile(currentFilePath);
         }
+        recentFiles.close();
         windowPrefs.setExtendedState(getExtendedState());
         this.setExtendedState(Frame.NORMAL);
         windowPrefs.setBounds(getBounds());
