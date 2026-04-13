@@ -205,9 +205,14 @@ public final class PDFPrintable implements Printable
         {
             return NO_SUCH_PAGE;
         }
+
+        Graphics2D printerGraphics = null;
+        Graphics2D graphics2D = null;
+
         try
         {
-            Graphics2D graphics2D = (Graphics2D)graphics;
+            printerGraphics = (Graphics2D) graphics;
+            graphics2D = printerGraphics;
 
             // capture the DPI that will be used for rasterizing the image
             // if rasterizing is specified
@@ -270,7 +275,6 @@ public final class PDFPrintable implements Printable
             }
 
             // rasterize to bitmap (optional)
-            Graphics2D printerGraphics = null;
             BufferedImage image = null;
             if (rasterDpi > 0)
             {
@@ -283,7 +287,6 @@ public final class PDFPrintable implements Printable
                                           (int)(imageableHeight * dpiScale / scale),
                                           BufferedImage.TYPE_INT_ARGB);
 
-                printerGraphics = graphics2D;
                 graphics2D = image.createGraphics();
 
                 // rescale
@@ -310,12 +313,11 @@ public final class PDFPrintable implements Printable
             }
 
             // draw rasterized bitmap (optional)
-            if (printerGraphics != null)
+            if (graphics2D != printerGraphics)
             {
                 printerGraphics.setBackground(Color.WHITE);
                 printerGraphics.clearRect(0, 0, image.getWidth(), image.getHeight());
                 printerGraphics.drawImage(image, 0, 0, null);
-                graphics2D.dispose();
             }
 
             return PAGE_EXISTS;
@@ -323,6 +325,13 @@ public final class PDFPrintable implements Printable
         catch (IOException e)
         {
             throw new PrinterIOException(e);
+        }
+        finally
+        {
+            if (graphics2D != null && graphics2D != printerGraphics)
+            {
+                graphics2D.dispose();
+            }
         }
     }
 
