@@ -60,6 +60,7 @@ import javax.print.attribute.standard.Sides;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
@@ -194,6 +195,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
     private JMenuItem saveAsMenuItem;
     private JMenu recentFilesMenu;
     private JMenuItem printMenuItem;
+    private JCheckBoxMenuItem printBorder;
     private JMenuItem reopenMenuItem;
 
     // edit > find menu
@@ -592,6 +594,10 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         fileMenu.addSeparator();
         fileMenu.add(printMenuItem);
         fileMenu.add(PrintDpiMenu.getInstance().getMenu());
+        
+        printBorder = new JCheckBoxMenuItem("Print border");
+        printBorder.setEnabled(true);
+        fileMenu.add(printBorder);
 
         if (!IS_MAC_OS)
         {
@@ -1334,7 +1340,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         try
         {
             PrinterJob job = PrinterJob.getPrinterJob();
-            job.setPageable(new PDFPageable(document, Orientation.AUTO, false, PrintDpiMenu.getDpiSelection()));
+            job.setPageable(new PDFPageable(document, Orientation.AUTO, printBorder.isSelected(), PrintDpiMenu.getDpiSelection()));
             PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
             PDViewerPreferences vp = document.getDocumentCatalog().getViewerPreferences();
             if (vp != null && vp.getDuplex() != null)
