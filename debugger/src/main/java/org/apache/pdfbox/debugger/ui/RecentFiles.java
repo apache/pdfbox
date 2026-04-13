@@ -17,7 +17,6 @@
 package org.apache.pdfbox.debugger.ui;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,10 +116,8 @@ public class RecentFiles
     /**
      * This method save the present recent file history in the preference. To get the recent file
      * history in next session this method must be called.
-     *
-     * @throws IOException if saving in preference doesn't success.
      */
-    public void close() throws IOException
+    public void close()
     {
         writeHistoryToPref(filePaths);
     }
