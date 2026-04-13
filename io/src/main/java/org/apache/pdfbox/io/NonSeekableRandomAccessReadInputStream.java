@@ -263,7 +263,6 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
         }
         catch (IOException exception)
         {
-            // some data could be read -> don't throw an exception
             LOG.warn("premature end of stream, some data could be read ", exception);
             isEOF = true;
             throw exception;
