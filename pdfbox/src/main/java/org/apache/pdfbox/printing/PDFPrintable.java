@@ -306,7 +306,7 @@ public final class PDFPrintable implements Printable
             }
 
             // draw rasterized bitmap (optional)
-            if (graphics2D != printerGraphics)
+            if (image != null)
             {
                 printerGraphics.setBackground(Color.WHITE);
                 printerGraphics.clearRect(0, 0, image.getWidth(), image.getHeight());
