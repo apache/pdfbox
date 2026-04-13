@@ -726,7 +726,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         {
             readPDFFile(filename, "");
         }
-        catch (IOException | URISyntaxException e)
+        catch (IOException e)
         {
             new ErrorDialog(e).setVisible(true);
         }
@@ -793,7 +793,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                 }
             }
         }
-        catch (IOException | URISyntaxException e)
+        catch (IOException e)
         {
             new ErrorDialog(e).setVisible(true);
         }
@@ -1372,13 +1372,13 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         }
     }
 
-    private void readPDFFile(String filePath, String password) throws IOException, URISyntaxException
+    private void readPDFFile(String filePath, String password) throws IOException
     {
         File file = new File(filePath);
         readPDFFile(file, password);
     }
     
-    private void readPDFFile(final File file, String password) throws IOException, URISyntaxException
+    private void readPDFFile(final File file, String password) throws IOException
     {
         if( document != null )
         {
@@ -1439,15 +1439,16 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         currentFilePath = urlString;
         LogDialog.instance().clear();
         TextDialog.instance().setVisible(false);
+        URL url = new URI(urlString).toURL();
 
         DocumentOpener documentOpener = new DocumentOpener(password)
         {
             @Override
-            PDDocument open() throws IOException, URISyntaxException
+            PDDocument open() throws IOException
             {
                 long t0 = System.nanoTime();
                 PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer
-                        .createBufferFromStream(new URI(urlString).toURL().openStream()), password);
+                        .createBufferFromStream(url.openStream()), password);
                 long t1 = System.nanoTime();
                 long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
                 LOG.info("Parsed in {} ms", ms);
@@ -1524,9 +1525,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
          * 
          * @return the PDDocument instance
          * @throws IOException Cannot read document
-         * @throws URISyntaxException
          */
-        abstract PDDocument open() throws IOException, URISyntaxException;
+        abstract PDDocument open() throws IOException;
 
         /**
          * Call this!
@@ -1534,7 +1534,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
          * @return the PDDocument instance
          * @throws IOException Cannot read document
          */
-        final PDDocument parse() throws IOException, URISyntaxException 
+        final PDDocument parse() throws IOException
         {
             while (true)
             {
