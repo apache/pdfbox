@@ -744,13 +744,18 @@ public class COSWriter implements ICOSVisitor
                 trailer.removeItem(COSName.PREV);
             }
             pdfxRefStream.addTrailerInfo(trailer);
-            // the size is the highest object number+1. we add one more
-            // for the xref stream object we are going to write
-            pdfxRefStream.setSize(number + 2);
+            // Pre-assign the object key for the xref stream so it can be
+            // included in its own cross-reference data. Per PDF Reference
+            // §7.5.8, the /Size value must be one greater than the highest
+            // object number in the file, including the xref stream itself.
+            COSObjectKey xrefStreamKey = new COSObjectKey(++number, 0);
+            long xrefStreamOffset = getStandardOutput().getPos();
+            setStartxref(xrefStreamOffset);
+            pdfxRefStream.addEntry(new NormalXReference(xrefStreamOffset, xrefStreamKey, null));
+            pdfxRefStream.setSize(number + 1);
 
-            setStartxref(getStandardOutput().getPos());
-            COSStream stream2 = pdfxRefStream.getStream();
-            doWriteObject(stream2);
+            COSStream xrefStream = pdfxRefStream.getStream();
+            doWriteObject(xrefStreamKey, xrefStream);
         }
     }
 
