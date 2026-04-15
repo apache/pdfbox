@@ -310,7 +310,7 @@ public final class PDFPrintable implements Printable
                 graphics2D.scale(scale, scale);
                 graphics2D.setColor(Color.GRAY);
                 graphics2D.setStroke(new BasicStroke(0.5f));
-                graphics.drawRect(0, 0, (int)cropBox.getWidth(), (int)cropBox.getHeight());
+                graphics2D.drawRect(0, 0, (int)cropBox.getWidth(), (int)cropBox.getHeight());
             }
 
             // draw rasterized bitmap (optional)
