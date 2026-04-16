@@ -188,12 +188,11 @@ public final class PDFPageable extends Book
         //
         // As a workaround, we normalise all Page(s) to be portrait, then flag them as landscape in
         // the PageFormat.
-        Paper paper;
+        Paper paper = new Paper();
         boolean isLandscape;
         if (mediaBox.getWidth() > mediaBox.getHeight())
         {
             // rotate
-            paper = new Paper();
             paper.setSize(mediaBox.getHeight(), mediaBox.getWidth());
             paper.setImageableArea(cropBox.getLowerLeftY(), cropBox.getLowerLeftX(),
                     cropBox.getHeight(), cropBox.getWidth());
@@ -201,7 +200,6 @@ public final class PDFPageable extends Book
         }
         else
         {
-            paper = new Paper();
             paper.setSize(mediaBox.getWidth(), mediaBox.getHeight());
             paper.setImageableArea(cropBox.getLowerLeftX(), cropBox.getLowerLeftY(),
                     cropBox.getWidth(), cropBox.getHeight());
