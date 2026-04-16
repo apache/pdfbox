@@ -275,15 +275,18 @@ public final class PDFPrintable implements Printable
                 }
             }
 
+            AffineTransform printerBorderTransform = printerGraphics.getTransform();
+            double borderScale = scale;
+
             // rasterize to bitmap (optional)
             BufferedImage image = null;
             if (rasterDpi > 0)
             {
+                float dpiScale = rasterDpi / 72;
                 if (LOG.isDebugEnabled())
                 {
-                    LOG.debug("dpi set to " + rasterDpi);
+                    LOG.debug("rasterDpi: " + rasterDpi + ", dpiScale: " + dpiScale);
                 }
-                float dpiScale = rasterDpi / 72;
                 image = new BufferedImage((int)(imageableWidth * dpiScale / scale),
                                           (int)(imageableHeight * dpiScale / scale),
                                           BufferedImage.TYPE_INT_ARGB);
@@ -296,22 +299,10 @@ public final class PDFPrintable implements Printable
             }
 
             // draw to graphics using PDFRender
-            AffineTransform transform = graphics2D.getTransform();
             graphics2D.setBackground(Color.WHITE);
             renderer.setSubsamplingAllowed(subsamplingAllowed);
             renderer.setRenderingHints(renderingHints);
             renderer.renderPageToGraphics(pageIndex, graphics2D, (float) scale, (float) scale, RenderDestination.PRINT);
-
-            // draw crop box
-            if (showPageBorder)
-            {
-                graphics2D.setTransform(transform);
-                graphics2D.setClip(0, 0, (int)imageableWidth, (int)imageableHeight);
-                graphics2D.scale(scale, scale);
-                graphics2D.setColor(Color.GRAY);
-                graphics2D.setStroke(new BasicStroke(0.5f));
-                graphics2D.drawRect(0, 0, (int)cropBox.getWidth(), (int)cropBox.getHeight());
-            }
 
             // draw rasterized bitmap (optional)
             if (image != null)
@@ -319,6 +310,18 @@ public final class PDFPrintable implements Printable
                 printerGraphics.setBackground(Color.WHITE);
                 printerGraphics.clearRect(0, 0, image.getWidth(), image.getHeight());
                 printerGraphics.drawImage(image, 0, 0, null);
+            }
+
+            // draw crop box on the printer graphics (always, whether rasterizing or not).
+            // Drawing after the blit avoids losing the thin stroke during raster scale-down.
+            if (showPageBorder)
+            {
+                printerGraphics.setTransform(printerBorderTransform);
+                printerGraphics.setClip(0, 0, (int) imageableWidth, (int) imageableHeight);
+                printerGraphics.scale(borderScale, borderScale);
+                printerGraphics.setColor(Color.GRAY);
+                printerGraphics.setStroke(new BasicStroke(0.5f));
+                printerGraphics.drawRect(0, 0, (int) cropBox.getWidth(), (int) cropBox.getHeight());
             }
 
             return PAGE_EXISTS;
