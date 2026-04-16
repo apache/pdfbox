@@ -278,7 +278,7 @@ public final class PDFPrintable implements Printable
             if (rasterDpi > 0)
             {
                 float dpiScale = rasterDpi / 72;
-                LOG.info("rasterDpi: {}, dpiScale: {}", rasterDpi, dpiScale);
+                LOG.debug("rasterDpi: {}, dpiScale: {}", rasterDpi, dpiScale);
                 image = new BufferedImage((int)(imageableWidth * dpiScale / scale),
                                           (int)(imageableHeight * dpiScale / scale),
                                           BufferedImage.TYPE_INT_ARGB);
