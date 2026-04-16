@@ -279,8 +279,8 @@ public final class PDFPrintable implements Printable
             {
                 float dpiScale = rasterDpi / 72;
                 LOG.debug("rasterDpi: {}, dpiScale: {}", rasterDpi, dpiScale);
-                image = new BufferedImage((int)(imageableWidth * dpiScale / scale),
-                                          (int)(imageableHeight * dpiScale / scale),
+                image = new BufferedImage(Math.max(1, (int) (imageableWidth * dpiScale / scale)),
+                                          Math.max(1, (int) (imageableHeight * dpiScale / scale)),
                                           BufferedImage.TYPE_INT_ARGB);
 
                 graphics2D = image.createGraphics();
