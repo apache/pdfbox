@@ -210,11 +210,21 @@ public final class PDFPrintable implements Printable
 
         Graphics2D printerGraphics = null;
         Graphics2D graphics2D = null;
+        AffineTransform callerTransform = null;
+        Shape callerClip = null;
+        Color callerColor = null;
+        Color callerBackground = null;
+        Stroke callerStroke = null;
 
         try
         {
             printerGraphics = (Graphics2D) graphics;
             graphics2D = printerGraphics;
+            callerTransform = printerGraphics.getTransform();
+            callerClip = printerGraphics.getClip();
+            callerColor = printerGraphics.getColor();
+            callerBackground = printerGraphics.getBackground();
+            callerStroke = printerGraphics.getStroke();
 
             // capture the DPI that will be used for rasterizing the image
             // if rasterizing is specified
@@ -310,27 +320,12 @@ public final class PDFPrintable implements Printable
             // Drawing after the blit avoids losing the thin stroke during raster scale-down.
             if (showPageBorder)
             {
-                // save state so transform/clip/color/stroke changes don't leak back to the caller
-                AffineTransform savedTransform = printerGraphics.getTransform();
-                Shape savedClip = printerGraphics.getClip();
-                Color savedColor = printerGraphics.getColor();
-                Stroke savedStroke = printerGraphics.getStroke();
-                try
-                {
-                    printerGraphics.setTransform(printerBorderTransform);
-                    printerGraphics.setClip(0, 0, (int) imageableWidth, (int) imageableHeight);
-                    printerGraphics.scale(borderScale, borderScale);
-                    printerGraphics.setColor(Color.GRAY);
-                    printerGraphics.setStroke(new BasicStroke(0.5f));
-                    printerGraphics.drawRect(0, 0, (int) cropBox.getWidth(), (int) cropBox.getHeight());
-                }
-                finally
-                {
-                    printerGraphics.setTransform(savedTransform);
-                    printerGraphics.setClip(savedClip);
-                    printerGraphics.setColor(savedColor);
-                    printerGraphics.setStroke(savedStroke);
-                }
+                printerGraphics.setTransform(printerBorderTransform);
+                printerGraphics.setClip(0, 0, (int) imageableWidth, (int) imageableHeight);
+                printerGraphics.scale(borderScale, borderScale);
+                printerGraphics.setColor(Color.GRAY);
+                printerGraphics.setStroke(new BasicStroke(0.5f));
+                printerGraphics.drawRect(0, 0, (int) cropBox.getWidth(), (int) cropBox.getHeight());
             }
 
             return PAGE_EXISTS;
@@ -341,6 +336,16 @@ public final class PDFPrintable implements Printable
         }
         finally
         {
+            // restore caller's state (guarded because the cast on line above may have thrown
+            // before any state was captured)
+            if (printerGraphics != null && callerTransform != null)
+            {
+                printerGraphics.setTransform(callerTransform);
+                printerGraphics.setClip(callerClip);
+                printerGraphics.setColor(callerColor);
+                printerGraphics.setBackground(callerBackground);
+                printerGraphics.setStroke(callerStroke);
+            }
             if (graphics2D != null && graphics2D != printerGraphics)
             {
                 graphics2D.dispose();
