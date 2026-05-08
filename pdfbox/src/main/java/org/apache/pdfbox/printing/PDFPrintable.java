@@ -206,8 +206,11 @@ public final class PDFPrintable implements Printable
             return NO_SUCH_PAGE;
         }
 
-        Graphics2D printerGraphics = null;
-        Graphics2D graphics2D = null;
+        // work on a private copy so the caller's Graphics2D state (transform, clip, color,
+        // background, stroke) is never mutated. Disposing the copy in the finally block
+        // releases its resources without affecting the original.
+        Graphics2D printerGraphics = (Graphics2D) graphics.create();
+        Graphics2D graphics2D = printerGraphics;
 
         try
         {
@@ -332,10 +335,11 @@ public final class PDFPrintable implements Printable
         }
         finally
         {
-            if (graphics2D != null && graphics2D != printerGraphics)
+            if (graphics2D != printerGraphics)
             {
                 graphics2D.dispose();
             }
+            printerGraphics.dispose();
         }
     }
 
