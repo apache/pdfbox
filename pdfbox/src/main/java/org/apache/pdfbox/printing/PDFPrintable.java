@@ -336,16 +336,12 @@ public final class PDFPrintable implements Printable
         }
         finally
         {
-            // restore caller's state (guarded because the cast on line above may have thrown
-            // before any state was captured)
-            if (printerGraphics != null && callerTransform != null)
-            {
-                printerGraphics.setTransform(callerTransform);
-                printerGraphics.setClip(callerClip);
-                printerGraphics.setColor(callerColor);
-                printerGraphics.setBackground(callerBackground);
-                printerGraphics.setStroke(callerStroke);
-            }
+            printerGraphics.setTransform(callerTransform);
+            printerGraphics.setClip(callerClip);
+            printerGraphics.setColor(callerColor);
+            printerGraphics.setBackground(callerBackground);
+            printerGraphics.setStroke(callerStroke);
+
             if (graphics2D != null && graphics2D != printerGraphics)
             {
                 graphics2D.dispose();
