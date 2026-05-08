@@ -22,8 +22,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.Shape;
-import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
@@ -208,24 +206,14 @@ public final class PDFPrintable implements Printable
             return NO_SUCH_PAGE;
         }
 
-        Graphics2D printerGraphics = null;
-        Graphics2D graphics2D = null;
-        AffineTransform callerTransform = null;
-        Shape callerClip = null;
-        Color callerColor = null;
-        Color callerBackground = null;
-        Stroke callerStroke = null;
+        // work on a private copy so the caller's Graphics2D state (transform, clip, color,
+        // background, stroke) is never mutated. Disposing the copy in the finally block
+        // releases its resources without affecting the original.
+        Graphics2D printerGraphics = (Graphics2D) graphics.create();
+        Graphics2D graphics2D = printerGraphics;
 
         try
         {
-            printerGraphics = (Graphics2D) graphics;
-            graphics2D = printerGraphics;
-            callerTransform = printerGraphics.getTransform();
-            callerClip = printerGraphics.getClip();
-            callerColor = printerGraphics.getColor();
-            callerBackground = printerGraphics.getBackground();
-            callerStroke = printerGraphics.getStroke();
-
             // capture the DPI that will be used for rasterizing the image
             // if rasterizing is specified
             float rasterDpi = dpi;
@@ -336,16 +324,11 @@ public final class PDFPrintable implements Printable
         }
         finally
         {
-            printerGraphics.setTransform(callerTransform);
-            printerGraphics.setClip(callerClip);
-            printerGraphics.setColor(callerColor);
-            printerGraphics.setBackground(callerBackground);
-            printerGraphics.setStroke(callerStroke);
-
-            if (graphics2D != null && graphics2D != printerGraphics)
+            if (graphics2D != printerGraphics)
             {
                 graphics2D.dispose();
             }
+            printerGraphics.dispose();
         }
     }
 
