@@ -27,11 +27,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.pdmodel.PDResources;
 
-interface ToolTip
-{
-    String getToolTipText();
-}
-
 /**
  * @author Khyrul Bashar
  * A class that provides the tooltip for an operator.
