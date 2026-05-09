@@ -215,9 +215,6 @@ public final class PDFPrintable implements Printable
 
         try
         {
-            printerGraphics = (Graphics2D)graphics;
-            graphics2D = printerGraphics;
-
             // capture the DPI that will be used for rasterizing the image
             // if rasterizing is specified
             float rasterDpi = dpi;
