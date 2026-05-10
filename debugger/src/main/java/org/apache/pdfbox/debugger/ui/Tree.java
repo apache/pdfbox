@@ -59,7 +59,6 @@ public class Tree extends JTree
 {
     // No logging possible in this class because it is created before the "LogDialog.init()" call
     private final JPopupMenu treePopupMenu;
-    private final Object rootNode;
 
     // Temporary files are stored in a private temp directory with restricted permissions,
     // which is deleted on exit using a shutdown hook.
@@ -72,8 +71,14 @@ public class Tree extends JTree
     public Tree()
     {
         treePopupMenu = new JPopupMenu();
+    }
+
+    /**
+     * Initialization, to be called immediately after construction.
+     */
+    public void init()
+    {
         setComponentPopupMenu(treePopupMenu);
-        rootNode = getModel().getRoot();
         int treeRowHeight = Integer.parseInt(PDFDebugger.configuration.getProperty(
                                     "treeRowHeight", Integer.toString(getRowHeight())));
         setRowHeight(treeRowHeight);
@@ -159,7 +164,8 @@ public class Tree extends JTree
         copyPathMenuItem.addActionListener(actionEvent ->
         {
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(new StringSelection(new TreeStatus(rootNode).getStringForPath(path)), null);
+            String pathString = new TreeStatus(getModel().getRoot()).getStringForPath(path);
+            clipboard.setContents(new StringSelection(pathString), null);
         });
         return copyPathMenuItem;
     }
