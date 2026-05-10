@@ -220,10 +220,11 @@ public final class PDFPrintable implements Printable
             float rasterDpi = dpi;
             if (rasterDpi == RASTERIZE_DPI_AUTO)
             {
-                rasterDpi = new Matrix(graphics2D.getTransform()).getScalingFactorX() * 72.0f;
+                AffineTransform transform = graphics2D.getTransform();
+                rasterDpi = new Matrix(transform).getScalingFactorX() * 72.0f;
                 if (LOG.isDebugEnabled())
                 {
-                    LOG.debug("auto raster dpi: " + rasterDpi + ", g2d: " + graphics2D + ", g2d transform: " + graphics2D.getTransform());
+                    LOG.debug("auto raster dpi: " + rasterDpi + ", g2d: " + graphics2D + ", g2d transform: " + transform);
                 }
             }
 
