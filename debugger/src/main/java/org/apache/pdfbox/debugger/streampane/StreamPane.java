@@ -144,6 +144,16 @@ public class StreamPane implements ActionListener
             niceView = null;
         }
 
+        tabbedPane = new JTabbedPane();
+    }
+
+    /**
+     * Initialization, to be called immediately after construction.
+     *
+     * @throws IOException if there is an I/O error during internal data transfer.
+     */
+    public void init() throws IOException
+    {
         if (stream.isImage())
         {
             panel.add(createHeaderPanel(stream.getFilterList(), Stream.IMAGE, this));
@@ -155,7 +165,6 @@ public class StreamPane implements ActionListener
             requestStreamText(Stream.DECODED);
         }
 
-        tabbedPane = new JTabbedPane();
         if (stream.isImage())
         {
             tabbedPane.add("Image view", rawView.getStreamPanel());
