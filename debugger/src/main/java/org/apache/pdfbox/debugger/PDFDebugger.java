@@ -1032,6 +1032,7 @@ public class PDFDebugger extends JFrame
         if (COSName.PAGE.equals(typeItem))
         {
             PagePane pagePane = new PagePane(document, page, statusBar.getStatusLabel());
+            pagePane.init();
             replaceRightComponent(new JScrollPane(pagePane.getPanel()));
         }
     }
