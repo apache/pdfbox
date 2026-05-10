@@ -219,8 +219,9 @@ public final class PDFPrintable implements Printable
             float rasterDpi = dpi;
             if (rasterDpi == RASTERIZE_DPI_AUTO)
             {
-                rasterDpi = new Matrix(graphics2D.getTransform()).getScalingFactorX() * 72.0f;
-                LOG.debug("auto raster dpi: {}, g2d: {}, g2d transform: {}", rasterDpi, graphics2D, graphics2D.getTransform());
+                AffineTransform transform = graphics2D.getTransform();
+                rasterDpi = new Matrix(transform).getScalingFactorX() * 72.0f;
+                LOG.debug("auto raster dpi: {}, g2d: {}, g2d transform: {}", rasterDpi, graphics2D, transform);
             }
 
             PDPage page = pageTree.get(pageIndex);
