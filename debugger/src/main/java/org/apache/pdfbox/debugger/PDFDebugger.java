@@ -1137,6 +1137,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
             }
         }
         StreamPane streamPane = new StreamPane(stream, isContentStream, isThumb, resourcesDic);
+        streamPane.init();
         replaceRightComponent(streamPane.getPanel());
     }
 
