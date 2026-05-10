@@ -376,6 +376,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         jSplitPane = new javax.swing.JSplitPane();
         JScrollPane jScrollPaneLeft = new JScrollPane();
         tree = new Tree();
+        tree.init();
         jScrollPaneRight = new JScrollPane();
         jTextPane = new javax.swing.JTextPane();
         
