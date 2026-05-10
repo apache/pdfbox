@@ -51,7 +51,7 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
     private static final Highlighter.HighlightPainter SELECTION_PAINTER =
             new DefaultHighlighter.DefaultHighlightPainter(new Color(109, 216, 26));
     private final SearchEngine searchEngine;
-    private final SearchPanel searchPanel;
+    private SearchPanel searchPanel;
     private final JTextComponent textComponent;
     private int totalMatch = 0;
     private int currentMatch = -1;
@@ -96,12 +96,20 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
     public Searcher(JTextComponent textComponent)
     {
         this.textComponent = textComponent;
-        searchPanel = new SearchPanel(this, this, this, nextAction, previousAction);
         searchEngine = new SearchEngine(textComponent, PAINTER);
 
         nextAction.setEnabled(false);
         previousAction.setEnabled(false);
     }
+
+    /**
+     * Initialization, to be called immediately after construction.
+     */
+    public void init()
+    {
+        searchPanel = new SearchPanel(this, this, this, nextAction, previousAction);
+    }
+
 
     public JPanel getSearchPanel()
     {
