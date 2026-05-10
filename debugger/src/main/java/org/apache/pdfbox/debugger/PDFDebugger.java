@@ -419,13 +419,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         documentScroller.setViewportView(documentPanel);
 
         statusPane = new TreeStatusPane(tree);
-        statusPane.getPanel().setBorder(new BevelBorder(BevelBorder.RAISED));
-        Dimension preferredTreePathSize = statusPane.getPanel().getPreferredSize();
-        int treePathHeight = (int) Math.round(preferredTreePathSize.getHeight());
-        treePathHeight = Integer.parseInt(
-                configuration.getProperty("treePathHeight", Integer.toString(treePathHeight)));
-        preferredTreePathSize.height = treePathHeight;
-        statusPane.getPanel().setPreferredSize(preferredTreePathSize);
+        statusPane.init();
+
         getContentPane().add(statusPane.getPanel(), BorderLayout.PAGE_START);
 
         getContentPane().add(jSplitPane, BorderLayout.CENTER);
