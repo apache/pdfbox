@@ -19,6 +19,7 @@ package org.apache.pdfbox.debugger.treestatus;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -70,10 +71,12 @@ public class TreeStatusPane implements TreeSelectionListener
     public TreeStatusPane(JTree targetTree)
     {
         tree = targetTree;
-        init();
     }
 
-    private void init()
+    /**
+     * Initialization, to be called immediately after construction.
+     */
+    public void init()
     {
         panel = new JPanel(new BorderLayout());
         statusField = new JTextField();
@@ -86,6 +89,13 @@ public class TreeStatusPane implements TreeSelectionListener
         errorBorder = new BevelBorder(BevelBorder.LOWERED, Color.RED, Color.RED);
         statusField.setAction(textInputAction);
         tree.addTreeSelectionListener(this);
+        panel.setBorder(new BevelBorder(BevelBorder.RAISED));
+        Dimension preferredTreePathSize = panel.getPreferredSize();
+        int treePathHeight = (int) Math.round(preferredTreePathSize.getHeight());
+        treePathHeight = Integer.parseInt(
+                PDFDebugger.configuration.getProperty("treePathHeight", Integer.toString(treePathHeight)));
+        preferredTreePathSize.height = treePathHeight;
+        panel.setPreferredSize(preferredTreePathSize);
     }
 
     /**

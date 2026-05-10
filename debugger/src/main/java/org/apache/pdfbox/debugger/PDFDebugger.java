@@ -19,7 +19,6 @@ package org.apache.pdfbox.debugger;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.Toolkit;
@@ -296,13 +295,8 @@ public class PDFDebugger extends JFrame
         documentScroller.setViewportView(documentPanel);
 
         statusPane = new TreeStatusPane(tree);
-        statusPane.getPanel().setBorder(new BevelBorder(BevelBorder.RAISED));
-        Dimension preferredTreePathSize = statusPane.getPanel().getPreferredSize();
-        int treePathHeight = (int) Math.round(preferredTreePathSize.getHeight());
-        treePathHeight = Integer.parseInt(
-                configuration.getProperty("treePathHeight", Integer.toString(treePathHeight)));
-        preferredTreePathSize.height = treePathHeight;
-        statusPane.getPanel().setPreferredSize(preferredTreePathSize);
+        statusPane.init();
+
         getContentPane().add(statusPane.getPanel(), BorderLayout.PAGE_START);
 
         getContentPane().add(jSplitPane, BorderLayout.CENTER);
