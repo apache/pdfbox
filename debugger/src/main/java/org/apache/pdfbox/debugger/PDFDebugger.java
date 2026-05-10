@@ -1101,6 +1101,7 @@ public class PDFDebugger extends JFrame
             resourcesDic = (COSDictionary) getUnderneathObject(resourcesObj);
         }
         StreamPane streamPane = new StreamPane(stream, isContentStream, isThumb, resourcesDic);
+        streamPane.init();
         replaceRightComponent(streamPane.getPanel());
     }
 
