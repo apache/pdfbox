@@ -120,6 +120,13 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         pageIndex = document.getPages().indexOf(page);
         this.document = document;
         this.statuslabel = statuslabel;
+    }
+
+    /**
+     * Initialization, to be called immediately after construction.
+     */
+    public void init()
+    {
         initUI();
         initRectMap();
     }
