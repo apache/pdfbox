@@ -38,6 +38,14 @@ public class ReaderBottomPanel extends JPanel
     
     public ReaderBottomPanel()
     {
+        // call init() after construction
+    }
+
+    /**
+     * Initialization, to be called immediately after construction.
+     */
+    public void init()
+    {
         BorderLayout layout = new BorderLayout();
         this.setLayout(layout);
         

@@ -426,6 +426,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         getContentPane().add(jSplitPane, BorderLayout.CENTER);
 
         statusBar = new ReaderBottomPanel();
+        statusBar.init();
         getContentPane().add(statusBar, BorderLayout.SOUTH);
 
         // create menus
