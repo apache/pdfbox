@@ -302,6 +302,7 @@ public class PDFDebugger extends JFrame
         getContentPane().add(jSplitPane, BorderLayout.CENTER);
 
         statusBar = new ReaderBottomPanel();
+        statusBar.init();
         getContentPane().add(statusBar, BorderLayout.SOUTH);
 
         // create menus
