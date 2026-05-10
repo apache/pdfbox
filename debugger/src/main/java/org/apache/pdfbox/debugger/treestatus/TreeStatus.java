@@ -33,12 +33,8 @@ import org.apache.pdfbox.debugger.ui.PageEntry;
  */
 public final class TreeStatus
 {
-    private Object rootNode;
+    private final Object rootNode;
    
-    private TreeStatus()
-    {
-    }
-    
     /**
      * Constructor.
      *
