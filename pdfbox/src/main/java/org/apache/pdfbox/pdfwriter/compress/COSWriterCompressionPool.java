@@ -110,14 +110,21 @@ public class COSWriterCompressionPool
         // Drop hollow objects.
         COSBase current = base instanceof COSObject ? ((COSObject) base).getObject() : base;
         // to avoid to mixup indirect COSInteger objects holding the same value we have to check
-        // if the given key is the same than the key which is stored for the "same" base object wihtin the object pool
-        // the same is always true for COSFloat, COSBoolean and COSName and under certain circumstances for the remainig
-        // types as well
-        if (current == null //
-                || (key != null && objectPool.contains(key)) //
-                || (key == null && objectPool.contains(current)))
+        // if the given key is the same than the key which is stored for the "same" base object within the object pool
+        // the same is always true for COSFloat, COSBoolean and COSName and under certain circumstances for the
+        // remaining types as well
+        if (current == null || (key == null && objectPool.contains(current)))
         {
             return current;
+        }
+        if (current != null && key != null && objectPool.contains(key))
+        {
+            COSBase cosObject = objectPool.getObject(key);
+            // check if the key belongs to the same object
+            if (cosObject == current || cosObject == base)
+            {
+                return current;
+            }
         }
 
         // Check whether the object can not be appended to an object stream.
@@ -188,10 +195,10 @@ public class COSWriterCompressionPool
     private List<COSBase> addStructure(COSBase current)
     {
         COSBase base = current;
-        if (current instanceof COSStream
-                || (current instanceof COSDictionary && !current.isDirect()) //
-                || (current instanceof COSArray && !current.isDirect()) //
-        )
+        if (!current.isDirect() && //
+                (current instanceof COSStream //
+                        || current instanceof COSDictionary //
+                        || current instanceof COSArray))
         {
             base = addObjectToPool(base.getKey(), current);
         }
