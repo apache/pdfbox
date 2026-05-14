@@ -784,6 +784,8 @@ public class Splitter
         destCatalog.setLanguage(sourceCatalog.getLanguage());
         destCatalog.setMarkInfo(sourceCatalog.getMarkInfo());
         destCatalog.setMetadata(sourceCatalog.getMetadata());
+        // reset reused object keys to avoid gaps in the xref table
+        destCatalog.getCOSObject().resetImportedObjectKeys();
         return document;
     }
 
