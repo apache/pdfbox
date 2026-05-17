@@ -24,6 +24,7 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -96,6 +97,40 @@ public final class PDIndexed extends PDSpecialColorSpace
         baseColorSpace = PDColorSpace.create(array.get(1), resources);
         readColorTable();
         initRgbColorTable();
+    }
+
+    /**
+     * Factory method to create a new indexed color space.
+     * 
+     * @param base base colorspace, mandantory has to be != null
+     * @param hival maximum valid index value for lookup data
+     * @param lookupData array for lookup data, mandantory has to be != null
+     * 
+     * @return an instance of PDIndedex initialized with the given values
+     * 
+     * @throws IOException if the colorspace could not be created
+     */
+    public static PDIndexed create(PDColorSpace base, int hival, byte[] lookupData)
+            throws IOException
+    {
+        if (base == null && lookupData == null)
+        {
+            throw new IllegalArgumentException("base value is null");
+        }
+        if (base == null && lookupData == null)
+        {
+            throw new IllegalArgumentException("lookupData value is null");
+        }
+        PDIndexed pdIndexed = new PDIndexed();
+        pdIndexed.baseColorSpace = base;
+        pdIndexed.array.set(1, base.getCOSObject());
+        pdIndexed.array.set(2, hival);
+        pdIndexed.lookupData = Arrays.copyOf(lookupData, lookupData.length);
+        COSString cosLookupData = new COSString(lookupData, true);
+        pdIndexed.array.set(3, cosLookupData);
+        pdIndexed.readColorTable();
+        pdIndexed.initRgbColorTable();
+        return pdIndexed;
     }
 
     @Override
