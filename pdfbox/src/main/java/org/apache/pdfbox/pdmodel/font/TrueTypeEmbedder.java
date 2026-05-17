@@ -380,9 +380,8 @@ abstract class TrueTypeEmbedder implements Subsetter
      */
     public String getTag(Map<Integer, Integer> gidToCid)
     {
-        // deterministic
-        long num = gidToCid.hashCode();
-
+        // hash might be negative due to an overflow if the map contains lots of values
+        long num = Math.abs(gidToCid.hashCode());
         // base25 encode
         StringBuilder sb = new StringBuilder();
         do
