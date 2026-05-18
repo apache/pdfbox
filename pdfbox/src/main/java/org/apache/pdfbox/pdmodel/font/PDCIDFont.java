@@ -31,7 +31,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.Vector;
 
@@ -425,9 +424,11 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
         COSStream stream = dict.getCOSStream(COSName.CID_TO_GID_MAP);
         if (stream != null)
         {
-            InputStream is = stream.createInputStream();
-            byte[] mapAsBytes = is.readAllBytes();
-            IOUtils.closeQuietly(is);
+            byte[] mapAsBytes;
+            try (InputStream is = stream.createInputStream())
+            {
+                mapAsBytes = is.readAllBytes();
+            }
             int numberOfInts = mapAsBytes.length / 2;
             cid2gid = new int[numberOfInts];
             int offset = 0;
