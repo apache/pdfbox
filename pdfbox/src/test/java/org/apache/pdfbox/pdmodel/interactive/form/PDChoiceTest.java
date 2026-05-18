@@ -169,7 +169,7 @@ class PDChoiceTest
 
             field.setValue("DE");
 
-            assertTrue("DE".equals(field.getValue().get(0)), "The fields value should be set to DE");
+            assertEquals("DE", field.getValue().get(0), "The fields value should be set to DE");
             
             // Read the content of the normal appearance stream and check that it contains the display value for DE
             // which is Deutschland

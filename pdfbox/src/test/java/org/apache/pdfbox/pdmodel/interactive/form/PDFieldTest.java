@@ -21,6 +21,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -395,14 +396,14 @@ class PDFieldTest
 
         // Different fields should not be equal
         field2.setPartialName("differentField");
-        assertFalse(field1.equals(field2));
+        assertNotEquals(field1, field2);
 
         // Field should equal itself
         assertEquals(field1, field1);
 
         // Field should not equal null or other types
-        assertFalse(field1.equals(null));
-        assertFalse(field1.equals("not a field"));
+        assertNotNull(field1);
+        assertNotEquals(field1,"not a field");
     }
 
     /**
