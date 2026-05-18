@@ -392,9 +392,10 @@ public final class ExtractImages implements Callable<Integer>
                          PDDeviceRGB.INSTANCE.getName().equals(colorSpaceName)))
                     {
                         // RGB or Gray colorspace: get and write the unmodified JPEG stream
-                        InputStream data = pdImage.createInputStream(JPEG);
-                        data.transferTo(imageOutput);
-                        IOUtils.closeQuietly(data);
+                        try (InputStream is = pdImage.createInputStream(JPEG))
+                        {
+                            is.transferTo(imageOutput);
+                        }
                     }
                     else
                     {
