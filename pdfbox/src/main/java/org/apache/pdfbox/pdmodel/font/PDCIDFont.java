@@ -424,9 +424,11 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
         COSStream stream = dict.getCOSStream(COSName.CID_TO_GID_MAP);
         if (stream != null)
         {
-            InputStream is = stream.createInputStream();
-            byte[] mapAsBytes = IOUtils.toByteArray(is);
-            IOUtils.closeQuietly(is);
+            byte[] mapAsBytes;
+            try (InputStream is = stream.createInputStream())
+            {
+                mapAsBytes = IOUtils.toByteArray(is);
+            }
             int numberOfInts = mapAsBytes.length / 2;
             cid2gid = new int[numberOfInts];
             int offset = 0;
