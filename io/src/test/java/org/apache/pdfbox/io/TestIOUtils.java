@@ -22,6 +22,7 @@ package org.apache.pdfbox.io;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -393,7 +394,7 @@ class TestIOUtils
             assertTrue(Files.exists(tempDir1));
             assertTrue(Files.exists(tempDir2));
             // Paths should be different
-            assertFalse(tempDir1.equals(tempDir2));
+            assertNotEquals(tempDir1,tempDir2);
         }
         finally
         {
