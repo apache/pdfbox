@@ -35,7 +35,6 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -415,10 +414,11 @@ public final class ExtractImages implements Callable<Integer>
                             || PDDeviceRGB.INSTANCE.getName().equals(colorSpaceName)))
                     {
                         // RGB or Gray colorspace: get and write the unmodified JPEG2000 stream
-                        InputStream data = pdImage.createInputStream(
-                                Collections.singletonList(COSName.JPX_DECODE.getName()));
-                        data.transferTo(imageOutput);
-                        IOUtils.closeQuietly(data);
+                        try (InputStream data = pdImage.createInputStream(
+                                        Collections.singletonList(COSName.JPX_DECODE.getName())))
+                        {
+                            data.transferTo(imageOutput);
+                        }
                     }
                     else
                     {
