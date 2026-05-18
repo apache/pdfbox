@@ -291,7 +291,7 @@ public class PDFieldTest
      * Test setValue and getValueAsString methods.
      */
     @Test
-    public void testSetValueAndGetValueAsString() throws Exception
+    public void testSetValueAndGetValueAsString()
     {
         // PDTextField requires proper form setup with /DR (Default Resources) to set values.
         // This test verifies the method signatures and basic behavior without triggering appearance generation.
