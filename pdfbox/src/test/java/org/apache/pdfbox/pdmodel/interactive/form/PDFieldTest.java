@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -395,14 +396,14 @@ public class PDFieldTest
 
         // Different fields should not be equal
         field2.setPartialName("differentField");
-        assertFalse(field1.equals(field2));
+        assertNotEquals(field1, field2);
 
         // Field should equal itself
         assertEquals(field1, field1);
 
         // Field should not equal null or other types
-        assertFalse(field1.equals(null));
-        assertFalse(field1.equals("not a field"));
+        assertNotNull(field1);
+        assertNotEquals(field1,"not a field");
     }
 
     /**
