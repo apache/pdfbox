@@ -104,13 +104,23 @@ public final class PDIndexed extends PDSpecialColorSpace
     public static PDIndexed create(PDColorSpace base, int hival, byte[] lookupData)
             throws IOException
     {
-        if (base == null && lookupData == null)
+        if (base == null)
         {
-            throw new IllegalArgumentException("base value is null");
+            throw new IllegalArgumentException("base must not be null");
         }
-        if (base == null && lookupData == null)
+        if (lookupData == null)
         {
-            throw new IllegalArgumentException("lookupData value is null");
+            throw new IllegalArgumentException("lookupData must not be null");
+        }
+        if (hival < 0 || hival > 255)
+        {
+            throw new IllegalArgumentException(" hival has to be a positive value <= 255");
+        }
+        int expected = (hival + 1) * base.getNumberOfComponents();
+        if (lookupData.length < expected)
+        {
+            throw new IllegalArgumentException("lookupData too short: expected at least " + expected
+                    + " bytes ((hival+1) * components), got " + lookupData.length);
         }
         PDIndexed pdIndexed = new PDIndexed();
         pdIndexed.array = new COSArray();
@@ -119,7 +129,7 @@ public final class PDIndexed extends PDSpecialColorSpace
         pdIndexed.array.add(1, base.getCOSObject());
         pdIndexed.array.add(2, COSInteger.get(hival));
         pdIndexed.lookupData = Arrays.copyOf(lookupData, lookupData.length);
-        COSString cosLookupData = new COSString(lookupData, true);
+        COSString cosLookupData = new COSString(pdIndexed.lookupData, true);
         pdIndexed.array.add(3, cosLookupData);
         pdIndexed.readColorTable();
         pdIndexed.initRgbColorTable();

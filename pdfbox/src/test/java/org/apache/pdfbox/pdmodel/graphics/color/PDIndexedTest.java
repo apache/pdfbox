@@ -15,7 +15,9 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -78,8 +80,53 @@ class PDIndexedTest
         }
         catch (IOException e)
         {
-            fail("Unexpected exception");
+            fail("Unexpected exception", e);
         }
+    }
+
+    /**
+     * Test parameter of factory method.
+     */
+    @Test
+    void testFactoryParameterChecks()
+    {
+        final PDColorSpace baseColorspace = PDDeviceRGB.INSTANCE;
+        // empty lookupData as placeholder
+        final byte[] lookupDataEmpty = new byte[5];
+        // define 6 color values
+        final int hival = 5;
+        // create s string containing 6 RGB values. Spaces are added for a better readability
+        final String stringLookupData = "AA1166 112233 000000 FEDC01 4561FE DC34DA" //
+                .replace(" ", "");
+        byte[] lookupData = null;
+        try
+        {
+            lookupData = COSString.parseHex(stringLookupData).getBytes();
+        }
+        catch (IOException e)
+        {
+            fail("Unexpected exception", e);
+        }
+
+        // check lookupData not null
+        assertThrows(IllegalArgumentException.class,
+                () -> PDIndexed.create(baseColorspace, 0, null));
+        // check base colorspace not null
+        assertThrows(IllegalArgumentException.class,
+                () -> PDIndexed.create(null, 0, lookupDataEmpty));
+        // check hival not negative
+        assertThrows(IllegalArgumentException.class,
+                () -> PDIndexed.create(baseColorspace, -1, lookupDataEmpty));
+        // check hival <= 255
+        assertThrows(IllegalArgumentException.class,
+                () -> PDIndexed.create(baseColorspace, 256, lookupDataEmpty));
+        // check minimum size of lookupData array: (hival + 1) * numberOfComponents of base colorspace
+        assertThrows(IllegalArgumentException.class,
+                () -> PDIndexed.create(baseColorspace, hival, lookupDataEmpty));
+
+        // everything is fine
+        final byte[] lookupDataOK = lookupData;
+        assertDoesNotThrow(() -> PDIndexed.create(baseColorspace, hival, lookupDataOK));
     }
 
 }
