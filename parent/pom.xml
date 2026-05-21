@@ -58,7 +58,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <bouncycastle.version>1.84</bouncycastle.version>
     <junit.version>4.13.2</junit.version>
-    <jbig2.version>3.0.4</jbig2.version>
+    <jbig2.version>3.0.5</jbig2.version>
     <jai.version>1.4.0</jai.version>
     <!-- Version 2.6 and up requires Java 7 or above -->
     <commons-io.version>2.5</commons-io.version>
