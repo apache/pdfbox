@@ -59,7 +59,7 @@
     <log4j2.version>2.26.0</log4j2.version>
     <!-- can't update to 6.0.0, needs jdk17 -->
     <junit.version>5.13.4</junit.version>
-    <jbig2.version>3.0.4</jbig2.version>
+    <jbig2.version>3.0.5</jbig2.version>
     <jai.version>1.4.0</jai.version>
     <commons-io.version>2.22.0</commons-io.version>
     <picocli.version>4.7.7</picocli.version>
