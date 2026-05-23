@@ -178,7 +178,7 @@ public class COSWriterCompressionPool
      */
     private List<COSBase> addStructure(List<COSBase> cosBaseList)
     {
-        List<COSBase> cosBaseListNext = new ArrayList<>();
+        List<COSBase> cosBaseListNext = new ArrayList<>(cosBaseList.size());
         for (COSBase cosBase : cosBaseList)
         {
             cosBaseListNext.addAll(addStructure(cosBase));
