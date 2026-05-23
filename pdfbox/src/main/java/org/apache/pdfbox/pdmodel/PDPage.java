@@ -259,7 +259,7 @@ public class PDPage implements COSObjectable, PDContentStream
     }
 
     @Override
-    public RandomAccessRead getContentsForStreamParsing() throws IOException
+    public RandomAccessRead getContentsForStreamParsing()
     {
         // return a stream based reader if there is just one stream
         COSStream contentStream = page.getCOSStream(COSName.CONTENTS);
@@ -282,7 +282,7 @@ public class PDPage implements COSObjectable, PDContentStream
     }
 
     @Override
-    public RandomAccessRead getContentsForRandomAccess() throws IOException
+    public RandomAccessRead getContentsForRandomAccess()
     {
         COSStream contentStream = page.getCOSStream(COSName.CONTENTS);
         if (contentStream != null)
