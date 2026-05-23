@@ -119,7 +119,7 @@ public class COSWriterCompressionPool
         {
             return current;
         }
-        if (current != null && key != null && objectPool.contains(key))
+        if (key != null && objectPool.contains(key))
         {
             COSBase cosObject = objectPool.getObject(key);
             // check if the key belongs to the same object
