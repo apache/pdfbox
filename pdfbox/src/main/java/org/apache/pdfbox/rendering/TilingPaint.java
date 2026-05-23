@@ -171,9 +171,15 @@ class TilingPaint implements Paint
         PDRectangle bBox = pattern.getBBox();
         newPatternMatrix.translate(-bBox.getLowerLeftX(), -bBox.getLowerLeftY());
 
-        // render using PageDrawer
-        drawer.drawTilingPattern(graphics, pattern, colorSpace, color, newPatternMatrix);
-        graphics.dispose();
+        try
+        {
+            // render using PageDrawer
+            drawer.drawTilingPattern(graphics, pattern, colorSpace, color, newPatternMatrix);
+        }
+        finally
+        {
+            graphics.dispose();
+        }
 
         return image;
     }
