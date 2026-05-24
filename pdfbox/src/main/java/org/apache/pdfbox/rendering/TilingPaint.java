@@ -173,8 +173,14 @@ class TilingPaint implements Paint
                 Matrix.getTranslateInstance(-bbox.getLowerLeftX(), -bbox.getLowerLeftY()));
 
         // render using PageDrawer
-        drawer.drawTilingPattern(graphics, pattern, colorSpace, color, newPatternMatrix);
-        graphics.dispose();
+        try
+        {
+            drawer.drawTilingPattern(graphics, pattern, colorSpace, color, newPatternMatrix);
+        }
+        finally
+        {
+            graphics.dispose();
+        }
 
         return image;
     }
