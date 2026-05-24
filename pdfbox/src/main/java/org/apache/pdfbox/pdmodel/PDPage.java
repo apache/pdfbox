@@ -305,7 +305,7 @@ public class PDPage implements COSObjectable, PDContentStream
                     .filter(COSStream.class::isInstance) //
                     .map(b -> (COSStream) b) //
                     .collect(Collectors.toList());
-            List<RandomAccessRead> inputStreams = new ArrayList<>();
+            List<RandomAccessRead> inputStreams = new ArrayList<>(streams.size() * 2);
             streams.forEach(stream ->
             {
                 try
