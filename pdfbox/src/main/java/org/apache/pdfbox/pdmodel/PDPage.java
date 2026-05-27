@@ -809,10 +809,17 @@ public class PDPage implements COSObjectable, PDContentStream
             {
                 continue;
             }
-            PDAnnotation createdAnnotation = PDAnnotation.createAnnotation(item);
-            if (annotationFilter.accept(createdAnnotation))
+            try
             {
-                actuals.add(createdAnnotation);
+                PDAnnotation createdAnnotation = PDAnnotation.createAnnotation(item);
+                if (annotationFilter.accept(createdAnnotation))
+                {
+                    actuals.add(createdAnnotation);
+                }
+            }
+            catch (IOException ex)
+            {
+                LOG.error(ex.getMessage(), ex);
             }
         }
         return new COSArrayList<>(actuals, annots);
