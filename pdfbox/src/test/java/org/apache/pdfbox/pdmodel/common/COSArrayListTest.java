@@ -275,7 +275,7 @@ class COSArrayListTest
     }
 
     @Test
-    void removeFromFilteredListByIndex() throws IOException
+    void removeFromFilteredListByIndex()
     {
         // retrieve all annotations from page but the link annotation
         // which is 2nd in list - see above setup
@@ -288,7 +288,7 @@ class COSArrayListTest
     }
 
     @Test
-    void removeFromFilteredListByObject() throws IOException
+    void removeFromFilteredListByObject()
     {
         // retrieve all annotations from page but the link annotation
         // which is 2nd in list - see above setup

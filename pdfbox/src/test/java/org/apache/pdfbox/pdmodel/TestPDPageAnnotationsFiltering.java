@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -57,7 +56,7 @@ class TestPDPageAnnotationsFiltering
     }
 
     @Test
-    void validateNoFiltering() throws IOException
+    void validateNoFiltering()
     {
         List<PDAnnotation> annotations = page.getAnnotations();
         assertEquals(3, annotations.size());
@@ -67,14 +66,14 @@ class TestPDPageAnnotationsFiltering
     }
 
     @Test
-    void validateAllFiltered() throws IOException
+    void validateAllFiltered()
     {
         List<PDAnnotation> annotations = page.getAnnotations(annotation -> false);
         assertEquals(0, annotations.size());
     }
 
     @Test
-    void validateSelectedFew() throws IOException
+    void validateSelectedFew()
     {
         List<PDAnnotation> annotations = page.getAnnotations(annotation -> 
             (annotation instanceof PDAnnotationLink || annotation instanceof PDAnnotationSquare));

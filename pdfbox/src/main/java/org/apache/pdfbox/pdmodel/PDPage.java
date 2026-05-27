@@ -775,10 +775,8 @@ public class PDPage implements COSObjectable, PDContentStream
      *
      * @return List of the PDAnnotation objects, never null. The returned list is backed by the
      * annotations COSArray, so any adding or deleting in this list will change the document too.
-     * 
-     * @throws IOException If there is an error while creating the annotation list.
      */
-    public List<PDAnnotation> getAnnotations() throws IOException
+    public List<PDAnnotation> getAnnotations()
     {
         return getAnnotations(annotation -> true);
     }
