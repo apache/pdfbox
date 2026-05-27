@@ -789,10 +789,8 @@ public class PDPage implements COSObjectable, PDContentStream
      * @param annotationFilter the annotation filter provided allowing to filter out specific annotations
      * @return List of the PDAnnotation objects, never null. The returned list is backed by the
      * annotations COSArray, so any adding or deleting in this list will change the document too.
-     * 
-     * @throws IOException If there is an error while creating the annotation list.
      */
-    public List<PDAnnotation> getAnnotations(AnnotationFilter annotationFilter) throws IOException
+    public List<PDAnnotation> getAnnotations(AnnotationFilter annotationFilter)
     {
         COSArray annots = page.getCOSArray(COSName.ANNOTS);
         if (annots == null)
