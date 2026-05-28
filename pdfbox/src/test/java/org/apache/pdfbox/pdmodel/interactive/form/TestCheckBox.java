@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -159,5 +160,34 @@ public class TestCheckBox extends TestCase
         acroForm.setFields(fields);
         assertEquals("Off", checkBox.getValue());
         doc.close();
+    }
+
+    /**
+     * PDFBOX-6207 Invalid /Opt entry. String instead of array of strings.
+     * 
+     * @throws IOException
+     */
+    public void testPDFBox6207() throws IOException
+    {
+        File pdfFile = new File("target/pdfs/PDFBOX-6207.pdf");
+        
+        if (!pdfFile.exists())
+        {
+            return;  // Skip test if PDF not available
+        }
+
+        PDDocument testPdf = PDDocument.load(pdfFile);
+        PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
+        PDCheckBox field = (PDCheckBox) acroForm.getField("Check_Info_Post_andere");
+
+        try
+        {
+            field.setValue("Yes");
+        }
+        catch (Exception e)
+        {
+            fail("Setting a valid value of a checkbox with an invalid /Opt entry should not throw an exception");
+        }
+        testPdf.close();
     }
 }
