@@ -940,6 +940,19 @@
                             <sha512>83bc557e6f7d3e98de6e81168b2e2fb3def5025cc5fab1ddb3ef658505351c615253587f09b93503bb73a6225f3d3898be894e9d05dba8d464f4dd9c54514bc3</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-6207</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13082507/form_with_checkbox.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-6207.pdf</outputFileName>
+                            <sha512>3c8020c1114e2267fdc4e525eed04fd452c75eab4fb0c5d60340983d91af52aca330383a4430934de82e73ddfcd17eec55f1426bd0756b7d11510fadf1043cf9</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

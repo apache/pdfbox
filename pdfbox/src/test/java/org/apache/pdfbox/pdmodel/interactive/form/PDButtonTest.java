@@ -388,7 +388,7 @@ class PDButtonTest
         // Set a value which doesn't match the radio button list
         assertThrows(IllegalArgumentException.class, () -> radioButton.setValue("InvalidValue"));
     }
-    
+
     @AfterEach
     void tearDown() throws IOException
     {
