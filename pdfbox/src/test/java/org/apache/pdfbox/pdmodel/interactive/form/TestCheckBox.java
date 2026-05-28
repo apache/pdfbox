@@ -16,15 +16,18 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -123,6 +126,33 @@ class TestCheckBox
             page.getAnnotations().add(widget);
             acroForm.setFields(fields);
             assertEquals("Off", checkBox.getValue());
+        }
+    }
+
+    /**
+     * PDFBOX-6207 Invalid /Opt entry. String instead of array of strings.
+     * 
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox6207() throws IOException
+    {
+        File pdfFile = new File("target/pdfs/PDFBOX-6207.pdf");
+        
+        if (!pdfFile.exists())
+        {
+            return;  // Skip test if PDF not available
+        }
+
+        try (PDDocument testPdf = Loader.loadPDF(pdfFile))
+        {
+            PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
+            PDCheckBox field = (PDCheckBox) acroForm.getField("Check_Info_Post_andere");
+            System.out.println(field.getExportValues());
+            assertDoesNotThrow(() -> {
+                field.setValue("Yes");
+         
+            }, "Setting a valid value of a checkbox with an invalid /Opt entry should not throw an exception");
         }
     }
 }

@@ -253,6 +253,11 @@ public abstract class PDButton extends PDTerminalField
         
         if (value instanceof COSString)
         {
+            COSString stringValue = (COSString) value;
+            if (stringValue.getString().isEmpty())
+            {
+                return Collections.emptyList();
+            }
             return Collections.singletonList(((COSString) value).getString());
         }
         else if (value instanceof COSArray)
