@@ -148,7 +148,6 @@ class TestCheckBox
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDCheckBox field = (PDCheckBox) acroForm.getField("Check_Info_Post_andere");
-            System.out.println(field.getExportValues());
             assertDoesNotThrow(() -> {
                 field.setValue("Yes");
          
