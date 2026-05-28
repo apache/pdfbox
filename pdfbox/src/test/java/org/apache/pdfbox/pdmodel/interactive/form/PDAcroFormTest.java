@@ -479,19 +479,12 @@ class PDAcroFormTest
         int count = 0;
         for (PDPage page : documentToTest.getPages())
         {
-            try
+            for (PDAnnotation annotation : page.getAnnotations())
             {
-                for (PDAnnotation annotation : page.getAnnotations())
+                if (annotation instanceof PDAnnotationWidget)
                 {
-                    if (annotation instanceof PDAnnotationWidget)
-                    {
-                        count ++;
-                    }
+                    count++;
                 }
-            }
-            catch (IOException e)
-            {
-                // ignoring
             }
         }
         return count;
