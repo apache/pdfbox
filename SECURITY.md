@@ -21,10 +21,11 @@ PDFBox supports processing of untrusted (potentially malicious or malformed)
 PDF files **to a limited degree**:
 
 - **In scope**: Remote code execution, privilege escalation, unauthorized data
-  access, sandbox escape, or disproportionate resource amplification (i.e.
-  small attacker-controlled inputs triggering catastrophic memory or CPU
-  consumption) caused by processing an untrusted PDF document. These are
-  genuine vulnerabilities and should be reported privately.
+  access, escape from an embedding application's sandbox or security boundary,
+  or disproportionate resource amplification (i.e. small attacker-controlled
+  inputs triggering catastrophic memory or CPU consumption) caused by processing
+  an untrusted PDF document. These are genuine vulnerabilities and should be
+  reported privately.
 
 - **Known limitations (not vulnerabilities)**: Malformed PDFs may cause
   unchecked exceptions such as `NullPointerException` or `StackOverflowError`,
