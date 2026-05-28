@@ -1507,7 +1507,7 @@ public class PDFMergerUtility
      * @param page the new page
      * @param structParentOffset the offset which should be applied
      */
-    private void updateStructParentEntries(PDPage page, int structParentOffset) throws IOException
+    private void updateStructParentEntries(PDPage page, int structParentOffset)
     {
         int structParents = page.getStructParents();
         if (structParents >= 0)

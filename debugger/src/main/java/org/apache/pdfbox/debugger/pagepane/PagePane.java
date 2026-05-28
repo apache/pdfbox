@@ -133,18 +133,11 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
     private void initRectMap()
     {
-        try
-        {
-            collectFieldLocations();
-            collectLinkLocations();
-        }
-        catch (IOException ex)
-        {
-            LOG.error(ex.getMessage(), ex);
-        }
+        collectFieldLocations();
+        collectLinkLocations();
     }
 
-    private void collectLinkLocations() throws IOException
+    private void collectLinkLocations()
     {
         for (PDAnnotation annotation : page.getAnnotations())
         {
@@ -155,7 +148,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         }
     }
 
-    private void collectLinkLocation(PDAnnotationLink linkAnnotation) throws IOException
+    private void collectLinkLocation(PDAnnotationLink linkAnnotation)
     {
         if (linkAnnotation.getRectangle() == null)
         {
@@ -201,7 +194,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         }
     }
 
-    private void collectFieldLocations() throws IOException
+    private void collectFieldLocations()
     {
         // get Acroform without applying fixups to enure that we get the original content
         PDDocumentFixup fixup = ViewMenu.isRepairAcroformSelected() ? new AcroFormDefaultFixup(document) : null;

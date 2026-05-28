@@ -53,7 +53,7 @@ class TestListBox
     PDListBox choice;
 
     @BeforeEach
-    void setUp() throws IOException
+    void setUp()
     {
         // export values
         exportValues = new ArrayList<>();

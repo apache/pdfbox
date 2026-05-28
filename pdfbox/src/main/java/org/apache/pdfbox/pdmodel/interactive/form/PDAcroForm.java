@@ -775,10 +775,9 @@ public final class PDAcroForm implements COSObjectable
      * @param fields a list of fields to be flattened
      * @param pages the page tree
      * @return
-     * @throws IOException 
      */
     private Map<COSDictionary,Set<COSDictionary>> buildPagesWidgetsMap(
-            List<PDField> fields, PDPageTree pages) throws IOException
+            List<PDField> fields, PDPageTree pages)
     {
         Map<COSDictionary,Set<COSDictionary>> pagesAnnotationsMap = new HashMap<>();
         boolean hasMissingPageRef = false;
