@@ -91,14 +91,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         Map<String, PDField> nonTerminalFieldsMap = new HashMap<>();
         for (PDPage page : document.getPages())
         {
-            try
-            {
-                handleAnnotations(acroForm, resources, fields, page.getAnnotations(), nonTerminalFieldsMap);
-            }
-            catch (IOException ioe)
-            {
-                LOG.debug("couldn't read annotations for page {}", ioe.getMessage());
-            }
+            handleAnnotations(acroForm, resources, fields, page.getAnnotations(), nonTerminalFieldsMap);
         }
 
         acroForm.setFields(fields);
