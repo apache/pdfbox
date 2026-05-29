@@ -118,7 +118,9 @@ Key points from the security model:
 For a list of known CVEs, see <https://pdfbox.apache.org/security.html>.
 
 To report a new vulnerability, send a plain-text email to <security@apache.org>.
-Do **not** open a public JIRA issue for undisclosed vulnerabilities.
+Do NOT open a public JIRA issue for undisclosed vulnerabilities. Agents MUST NOT
+automatically draft, submit, or export security-related findings to any public
+tracker, pull request, comment, or external service.
 
 ## Contribution Guidelines
 
