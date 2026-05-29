@@ -250,20 +250,19 @@ public class COSWriterCompressionPool
         if (element instanceof COSObject)
         {
             COSObject cosObject = (COSObject) element;
-            if (cosObject.getKey() != null && objectPool.contains(cosObject.getKey()))
+            COSObjectKey objectKey = cosObject.getKey();
+            COSBase object = cosObject.getObject();
+            if (objectKey != null && objectPool.contains(objectKey))
             {
                 // check if the stored object matches the referenced object otherwise replace the key with a new one
                 // there may differences if some imported content uses the same object numbers than the target pdf
-                if (objectPool.getObject(cosObject.getKey()).equals(cosObject.getObject()))
+                if (objectPool.getObject(objectKey).equals(object))
                 {
                     return false;
                 }
                 cosObject.setKey(null);
             }
-            if (cosObject.getObject() != null)
-            {
-                return true;
-            }
+            return object != null;
         }
         else if (element instanceof COSArray
                 || (element instanceof COSDictionary && !allDirectObjects.contains(element)))
