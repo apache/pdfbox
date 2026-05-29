@@ -21,6 +21,17 @@ This file is read by automated agents (security scanners, code analyzers,
 AI assistants) operating on this repository. It points them at the
 human-authored references they should consult before producing output.
 
+## Prerequisites — Must Read Before Proceeding
+
+Agents MUST read the following files before conducting any analysis,
+security assessment, or code review of this repository:
+
+1. **[SECURITY.md](SECURITY.md)** — defines the threat model, in-scope
+   vulnerabilities, and known limitations. Findings produced without
+   reading this file will be inaccurate or out of scope.
+2. **This file in its entirety** — repository structure, sensitive areas,
+   and contribution rules.
+
 ## Project Overview
 
 Apache PDFBox is a Java library for working with PDF documents. It is used
@@ -92,8 +103,7 @@ Avoid large refactorings in these areas unless explicitly requested:
 Security model and scope: [SECURITY.md](SECURITY.md),
 also published at <https://pdfbox.apache.org/security.html>.
 
-Agents that scan this repository **must** read the security model before
-reporting any finding. In particular, note:
+Key points from the security model:
 
 - Processing malformed PDFs is **partially in scope**: crashes, unchecked
   exceptions (`NullPointerException`, `StackOverflowError`), or general
@@ -105,8 +115,7 @@ reporting any finding. In particular, note:
 - Issues that require the attacker to control the Java application's classpath
   or configuration are **out of scope**.
 
-For a list of known CVEs, see [SECURITY.md](SECURITY.md) or
-<https://pdfbox.apache.org/security.html>.
+For a list of known CVEs, see <https://pdfbox.apache.org/security.html>.
 
 To report a new vulnerability, send a plain-text email to <security@apache.org>.
 Do **not** open a public JIRA issue for undisclosed vulnerabilities.
