@@ -43,8 +43,8 @@ import org.junit.Test;
  */
 public class TestPDFPrintable
 {
-    private final int IMAGE_WIDTH = 100;
-    private final int IMAGE_HEIGHT = 100;
+    private static final int IMAGE_WIDTH = 100;
+    private static final int IMAGE_HEIGHT = 100;
 
     /**
      * Tests that the page border is drawn with Color.GRAY when showPageBorder is true.
