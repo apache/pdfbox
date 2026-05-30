@@ -66,17 +66,18 @@ class PDIndexedTest
             String lookupDataString = ((COSString) indexedCOSArray.getObject(3)).toHexString();
             assertEquals(stringLookupData, lookupDataString, "unexpected value for lookup data");
 
-            PDDocument document = new PDDocument();
-            PDPage page = new PDPage();
-            PDResources resources = new PDResources();
-            resources.add(pdIndexed);
-            page.setResources(resources);
-            document.addPage(page);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            document.save(baos, CompressParameters.NO_COMPRESSION);
-            document.close();
-            String pdfAsString = baos.toString();
-            assertTrue(pdfAsString.contains(outputString), "output doesn't match expected string");
+            try (PDDocument document = new PDDocument())
+            {
+                PDPage page = new PDPage();
+                PDResources resources = new PDResources();
+                resources.add(pdIndexed);
+                page.setResources(resources);
+                document.addPage(page);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                document.save(baos, CompressParameters.NO_COMPRESSION);
+                String pdfAsString = baos.toString();
+                assertTrue(pdfAsString.contains(outputString), "output doesn't match expected string");
+            }
         }
         catch (IOException e)
         {
