@@ -761,7 +761,7 @@ public class PDPage implements COSObjectable, PDContentStream
             return null;
         }
         COSArray array = (COSArray) base;
-        List<PDViewportDictionary> viewports = new ArrayList<PDViewportDictionary>();
+        List<PDViewportDictionary> viewports = new ArrayList<PDViewportDictionary>(array.size());
         for (int i = 0; i < array.size(); ++i)
         {
             COSBase base2 = array.getObject(i);
