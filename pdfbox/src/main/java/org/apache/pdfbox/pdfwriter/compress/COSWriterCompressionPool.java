@@ -198,11 +198,7 @@ public class COSWriterCompressionPool
     private List<COSBase> addStructure(COSBase current)
     {
         COSBase base = current;
-        if (!current.isDirect() && //
-                (current instanceof COSStream //
-                        || current instanceof COSDictionary //
-                        || current instanceof COSArray) //
-        )
+        if (!current.isDirect() && (current instanceof COSDictionary || current instanceof COSArray))
         {
             base = addObjectToPool(base.getKey(), current);
         }
