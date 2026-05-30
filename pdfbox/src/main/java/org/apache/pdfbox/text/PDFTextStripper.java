@@ -385,8 +385,9 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
     private void fillBeadRectangles(PDPage page)
     {
-        beadRectangles = new ArrayList<>();
-        for (PDThreadBead bead : page.getThreadBeads())
+        List<PDThreadBead> threadBeads = page.getThreadBeads();
+        beadRectangles = new ArrayList<>(threadBeads.size());
+        for (PDThreadBead bead : threadBeads)
         {
             if (bead == null || bead.getRectangle() == null)
             {
