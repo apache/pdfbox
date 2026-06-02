@@ -104,4 +104,11 @@ public final class COSInputStream extends FilterInputStream
             return decodeResults.get(decodeResults.size() - 1);
         }
     }
+
+    @Override
+    public void close() throws IOException {
+        decodeResults.clear();
+
+        super.close();
+    }
 }
