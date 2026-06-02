@@ -485,6 +485,12 @@ public class COSDocument extends COSBase implements Closeable
         }
         closed = true;
 
+        // Release large data structures immediately so the GC can reclaim memory
+        // even if callers hold a reference to this COSDocument instance.
+        objectPool.clear();
+        xrefTable.clear();
+        trailer = null;
+
         // rethrow first exception to keep method contract
         if (firstException != null)
         {
