@@ -1556,6 +1556,14 @@ abstract class PDAbstractContentStream implements Closeable
         {
             LOG.warn("You did not call endText(), some viewers won't display your text");
         }
+
+        // Release large data structures immediately so the GC can reclaim memory
+        // even if callers hold a reference to this COSDocument instance.
+        fontStack.clear();
+        nonStrokingColorSpaceStack.clear();
+        strokingColorSpaceStack.clear();
+        gsubWorkers.clear();
+
         outputStream.close();
     }
 
