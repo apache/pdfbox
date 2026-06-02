@@ -148,6 +148,8 @@ public final class COSOutputStream extends FilterOutputStream
         }
         finally
         {
+            filters.clear();
+
             super.close();
         }
     }
