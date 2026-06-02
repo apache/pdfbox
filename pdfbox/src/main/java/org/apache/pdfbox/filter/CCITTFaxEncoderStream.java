@@ -93,6 +93,10 @@ final class CCITTFaxEncoderStream extends OutputStream {
 
     @Override
     public void close() throws IOException {
+        // Release large data structures immediately so the GC can reclaim memory
+        // even if callers hold a reference to this COSDocument instance.
+        changesCurrentRow = null;
+        changesReferenceRow = null;
         stream.close();
     }
 
