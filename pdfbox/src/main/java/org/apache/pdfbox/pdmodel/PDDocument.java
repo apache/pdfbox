@@ -1264,6 +1264,7 @@ public class PDDocument implements Closeable
             if (signingSupport != null)
             {
                 firstException = IOUtils.closeAndLogException(signingSupport, LOG, "SigningSupport", firstException);
+                signingSupport = null;
             }
 
             // close all intermediate I/O streams
@@ -1280,6 +1281,16 @@ public class PDDocument implements Closeable
             {
                 firstException = IOUtils.closeAndLogException(ttf, LOG, "TrueTypeFont", firstException);
             }
+
+            // Release large data structures immediately so the GC can reclaim memory
+            // even if callers hold a reference to this COSDocument instance.
+            fontsToSubset.clear();
+            fontsToClose.clear();
+            documentInformation = null;
+            documentCatalog = null;
+            encryption = null;
+            resourceCache = null;
+            accessPermission = null;
 
             // rethrow first exception to keep method contract
             if (firstException != null)
