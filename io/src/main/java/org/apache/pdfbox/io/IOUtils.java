@@ -40,6 +40,7 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.AclEntry;
 import java.nio.file.attribute.AclEntryPermission;
@@ -486,7 +487,7 @@ public final class IOUtils
      * @throws IOException if an I/O error occurs while setting POSIX permissions or accessing the file
      * @throws SecurityException if a security manager is installed and denies access to the file
      * @see Files#setPosixFilePermissions(Path, Set)
-     * @see Files#getFileAttributeView(Path, Class)
+     * @see Files#getFileAttributeView(Path, Class, LinkOption[])
      */
     private static void applyOwnerOnlyPermissions(Path path, boolean isDirectory) throws IOException
     {
