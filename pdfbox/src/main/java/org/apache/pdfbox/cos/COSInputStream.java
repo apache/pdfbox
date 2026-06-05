@@ -54,15 +54,10 @@ public final class COSInputStream extends FilterInputStream
      * @param parameters Filter parameters.
      * @param in Encoded input stream.
      * @param scratchFile Scratch file to use, or null.
+     * @param options decode options for the encoded stream
      * @return Decoded stream.
      * @throws IOException If the stream could not be read.
      */
-    static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream in,
-                                 ScratchFile scratchFile) throws IOException
-    {
-        return create(filters, parameters, in, scratchFile, DecodeOptions.DEFAULT);
-    }
-
     static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream in,
                                  ScratchFile scratchFile, DecodeOptions options) throws IOException
     {
