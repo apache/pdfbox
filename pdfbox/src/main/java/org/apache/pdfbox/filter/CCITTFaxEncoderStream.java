@@ -93,6 +93,9 @@ final class CCITTFaxEncoderStream extends OutputStream {
 
     @Override
     public void close() throws IOException {
+        changesCurrentRow = null;
+        changesReferenceRow = null;
+
         stream.close();
     }
 
