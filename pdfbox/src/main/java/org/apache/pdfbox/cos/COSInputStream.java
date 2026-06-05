@@ -43,21 +43,6 @@ public final class COSInputStream extends FilterInputStream
      * @param filters Filters to be applied.
      * @param parameters Filter parameters.
      * @param in Encoded input stream.
-     * @return Decoded stream.
-     * @throws IOException If the stream could not be read.
-     */
-    static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream in)
-            throws IOException
-    {
-        return create(filters, parameters, in, DecodeOptions.DEFAULT);
-    }
-
-    /**
-     * Creates a new COSInputStream from an encoded input stream.
-     *
-     * @param filters Filters to be applied.
-     * @param parameters Filter parameters.
-     * @param in Encoded input stream.
      * @param options decode options for the encoded stream
      * @return Decoded stream.
      * @throws IOException If the stream could not be read.
