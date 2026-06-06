@@ -86,7 +86,7 @@ public class WriteDecodedDoc implements Callable<Integer>
         {
             doc.setAllSecurityToBeRemoved(true);
             COSDocument cosDocument = doc.getDocument();
-            cosDocument.getXrefTable().keySet().stream()
+            cosDocument.getXrefTable().keySet()
                     .forEach(o -> processObject(cosDocument.getObjectFromPool(o), skipImages));
             doc.getDocumentCatalog();
             doc.getDocument().setIsXRefStream(false);
