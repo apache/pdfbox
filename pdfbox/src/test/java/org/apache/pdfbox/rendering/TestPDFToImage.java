@@ -164,14 +164,12 @@ public class TestPDFToImage
     public static boolean doTestFile(final File file, String inDir, String outDir)
             throws IOException
     {
-        PDDocument document = null;
         boolean failed = false;
 
         LOG.info("Opening: {}", file.getName());
-        try
+        new FileOutputStream(new File(outDir, file.getName() + ".parseerror")).close();
+        try (PDDocument document = Loader.loadPDF(file))
         {
-            new FileOutputStream(new File(outDir, file.getName() + ".parseerror")).close();
-            document = Loader.loadPDF(file, (String) null);
             int numPages = document.getNumberOfPages();
             if (numPages < 1)
             {
@@ -222,13 +220,6 @@ public class TestPDFToImage
             failed = true;
             LOG.error("Error converting file {}", file.getName());
             throw e;
-        }
-        finally
-        {
-            if (document != null)
-            {
-                document.close();
-            }
         }
 
         LOG.info("Comparing: {}", file.getName());
