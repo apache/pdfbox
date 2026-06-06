@@ -1494,7 +1494,7 @@ class PDFMergerUtilityTest
                 checkWithNumberTree(dstDoc);
                 checkForPageOrphans(dstDoc);
             }
-            splitResult.stream().forEach(IOUtils::closeQuietly);
+            splitResult.forEach(IOUtils::closeQuietly);
         }
     }
 
