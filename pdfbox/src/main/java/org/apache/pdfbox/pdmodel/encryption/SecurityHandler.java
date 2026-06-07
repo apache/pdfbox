@@ -56,9 +56,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  * @author Benoit Guillon
  * @author Manuel Kasper
  * 
- * @param <T_POLICY> the protection policy.
+ * @param <TPOLICY> the protection policy.
  */
-public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
+public abstract class SecurityHandler<TPOLICY extends ProtectionPolicy>
 {
     private static final Logger LOG = LogManager.getLogger(SecurityHandler.class);
 
@@ -94,7 +94,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
     /**
      * The typed {@link ProtectionPolicy} to be used for encryption.
      */
-    private T_POLICY protectionPolicy = null;
+    private TPOLICY protectionPolicy = null;
     
     /**
      * The access permission granted to the current user for the document. These
@@ -124,7 +124,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @param protectionPolicy The protection policy.
      */
-    protected SecurityHandler(T_POLICY protectionPolicy)
+    protected SecurityHandler(TPOLICY protectionPolicy)
     {
         this.protectionPolicy = protectionPolicy;
         keyLength = (short) protectionPolicy.getEncryptionKeyLength();
@@ -815,7 +815,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @return The set {@link ProtectionPolicy}.
      */
-    protected T_POLICY getProtectionPolicy()
+    protected TPOLICY getProtectionPolicy()
     {
         return protectionPolicy;
     }
@@ -824,7 +824,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      * Sets the {@link ProtectionPolicy} to the given value.
      * @param protectionPolicy The {@link ProtectionPolicy}, that shall be set.
      */
-    protected void setProtectionPolicy(T_POLICY protectionPolicy)
+    protected void setProtectionPolicy(TPOLICY protectionPolicy)
     {
         this.protectionPolicy = protectionPolicy;
     }
