@@ -127,7 +127,8 @@ public class XMPRightsManagementSchema extends XMPSchema
      */
     public void setMarked(Boolean marked)
     {
-        BooleanType tt = (BooleanType) instanciateSimple(MARKED, marked ? BooleanType.TRUE : BooleanType.FALSE);
+        BooleanType tt = (BooleanType) instanciateSimple(MARKED,
+                marked != null && marked ? BooleanType.TRUE : BooleanType.FALSE);
         setMarkedProperty(tt);
     }
 
