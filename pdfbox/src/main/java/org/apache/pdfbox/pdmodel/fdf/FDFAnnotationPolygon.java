@@ -94,7 +94,7 @@ public class FDFAnnotationPolygon extends FDFAnnotation
             {
                 throw new IOException("Error: missing element 'vertices'");
             }
-            String[] verticesValues = vertices.split(",|;");
+            String[] verticesValues = vertices.split("[,;]");
             float[] values = parseFloats(verticesValues);
             setVertices(values);
         }
