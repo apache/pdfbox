@@ -724,7 +724,7 @@ public class COSParser extends BaseParser implements ICOSParser
                         document);
                 Map<COSObjectKey, COSBase> allStreamObjects = parser.parseAllObjects();
                 objectStreamObject = allStreamObjects.remove(key);
-                allStreamObjects.forEach((k, v) -> streamObjects.putIfAbsent(k, v));
+                allStreamObjects.forEach(streamObjects::putIfAbsent);
             }
             catch (IOException ex)
             {
