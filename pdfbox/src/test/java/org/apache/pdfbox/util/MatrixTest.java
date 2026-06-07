@@ -319,7 +319,7 @@ class MatrixTest
         for (int i = 0; i < values.length; i++)
         {
             // Need to convert a (row, column) coordinate into a straight index.
-            int row = (int) Math.floor(i / 3);
+            int row = i / 3;
             int column = i % 3;
             StringBuilder failureMsg = new StringBuilder();
             failureMsg.append("Incorrect value for matrix[").append(row).append(",").append(column)
