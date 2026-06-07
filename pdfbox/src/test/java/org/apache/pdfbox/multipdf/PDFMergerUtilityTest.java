@@ -1088,22 +1088,19 @@ class PDFMergerUtilityTest
                             }
                         }
                     }
-                    if (page != null)
+                    if (page != null && pageTree.indexOf(page) == -1)
                     {
-                        if (pageTree.indexOf(page) == -1)
+                        COSBase item = kdict.getItem(COSName.OBJ);
+                        if (item instanceof COSObject)
                         {
-                            COSBase item = kdict.getItem(COSName.OBJ);
-                            if (item instanceof COSObject)
-                            {
-                                assertNotEquals(-1, pageTree.indexOf(page),
-                                        "Annotation page is not in the page tree: " + item);
-                            }
-                            else
-                            {
-                                // don't display because of stack overflow
-                                assertNotEquals(-1, pageTree.indexOf(page),
-                                        "Annotation page is not in the page tree");
-                            }
+                            assertNotEquals(-1, pageTree.indexOf(page),
+                                    "Annotation page is not in the page tree: " + item);
+                        }
+                        else
+                        {
+                            // don't display because of stack overflow
+                            assertNotEquals(-1, pageTree.indexOf(page),
+                                    "Annotation page is not in the page tree");
                         }
                     }
                 }
