@@ -1183,7 +1183,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
                 byte[] eFirst = new byte[16];
                 System.arraycopy(e, 0, eFirst, 0, 16);
                 BigInteger bi = new BigInteger(1, eFirst);
-                BigInteger remainder = bi.mod(new BigInteger("3"));
+                BigInteger remainder = bi.mod(BigInteger.valueOf(3));
                 String nextHash = HASHES_2B[remainder.intValue()];
                 
                 md = MessageDigest.getInstance(nextHash);
