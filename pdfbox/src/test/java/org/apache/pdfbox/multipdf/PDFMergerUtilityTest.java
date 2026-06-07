@@ -1060,20 +1060,17 @@ public class PDFMergerUtilityTest extends TestCase
                             }
                         }
                     }
-                    if (page != null)
+                    if (page != null && pageTree.indexOf(page) == -1)
                     {
-                        if (pageTree.indexOf(page) == -1)
+                        COSBase item = kdict.getItem(COSName.OBJ);
+                        if (item instanceof COSObject)
                         {
-                            COSBase item = kdict.getItem(COSName.OBJ);
-                            if (item instanceof COSObject)
-                            {
-                                Assert.assertNotEquals("Annotation page is not in the page tree: " + item, -1, pageTree.indexOf(page));
-                            }
-                            else
-                            {
-                                // don't display because of stack overflow
-                                Assert.assertNotEquals("Annotation page is not in the page tree", -1, pageTree.indexOf(page));
-                            }
+                            Assert.assertNotEquals("Annotation page is not in the page tree: " + item, -1, pageTree.indexOf(page));
+                        }
+                        else
+                        {
+                            // don't display because of stack overflow
+                            Assert.assertNotEquals("Annotation page is not in the page tree", -1, pageTree.indexOf(page));
                         }
                     }
                 }
