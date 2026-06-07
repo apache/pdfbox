@@ -537,7 +537,7 @@ class TestIOUtils
             assertTrue(Files.exists(tempFile1));
             assertTrue(Files.exists(tempFile2));
             // Paths should be different (unique files)
-            assertFalse(tempFile1.equals(tempFile2));
+            assertNotEquals(tempFile1, tempFile2);
         }
         finally
         {
