@@ -26,7 +26,9 @@ import static org.junit.jupiter.api.Assertions.fail;
  ****************************************************************************/
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,7 +60,7 @@ class TestValidFiles
 
     protected Log logger = null;
 
-    protected static Collection<File> stopIfExpected() throws Exception
+    protected static Collection<File> stopIfExpected()
     {
         // throw new Exception("Test badly configured");
         List<File> ret = new ArrayList<>();
@@ -66,7 +68,7 @@ class TestValidFiles
         return ret;
     }
 
-    public static Collection<File> initializeParameters() throws Exception
+    public static Collection<File> initializeParameters()
     {
         // find isartor files
         String isartor = System.getProperty(ISARTOR_FILES);
@@ -90,7 +92,7 @@ class TestValidFiles
     }
 
     @BeforeAll
-    static void beforeClass() throws Exception
+    static void beforeClass() throws FileNotFoundException
     {
         String irp = System.getProperty(RESULTS_FILE);
         if (irp == null)
@@ -106,14 +108,14 @@ class TestValidFiles
     }
 
     @AfterAll
-    static void afterClass() throws Exception
+    static void afterClass()
     {
         IOUtils.closeQuietly(isartorResultFile);
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void validate(File path) throws Exception
+    void validate(File path) throws IOException
     {
         logger = LogFactory.getLog(path != null ? path.getName() : "dummy");
         if (path == null)

@@ -174,7 +174,7 @@ public class GlyphTable extends TTFTable
     {
         if (level > maxp.getMaxComponentDepth())
         {
-            throw new IOException("composite glyph maximum level reached");
+            throw new IOException("composite glyph maximum level (" + maxp.getMaxComponentDepth() + ") reached");
         }
         GlyphData glyph = new GlyphData();
         int leftSideBearing = hmt == null ? 0 : hmt.getLeftSideBearing(gid);

@@ -115,7 +115,7 @@ public class OSXAdapter implements InvocationHandler
     }
 
     // Pass this method an Object and Method equipped to perform application shutdown logic
-    // The method passed should return a boolean stating whether or not the quit should occur
+    // The method passed should return a boolean stating whether the quit should occur
     public static void setQuitHandler(final Object target, final Method quitHandler)
     {
         if (isMinJdk9())
@@ -145,9 +145,9 @@ public class OSXAdapter implements InvocationHandler
                 });
                 setQuitHandlerMethod.invoke(desktopObject, osxAdapterProxy);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                e.printStackTrace();
+                new ErrorDialog(ex).setVisible(true);
             }
             return;
         }
@@ -234,9 +234,9 @@ public class OSXAdapter implements InvocationHandler
                 });
                 setOpenFileHandlerMethod.invoke(desktopObject, osxAdapterProxy);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                e.printStackTrace();
+                new ErrorDialog(ex).setVisible(true);
             }
             return;
         }

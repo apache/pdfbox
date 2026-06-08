@@ -50,11 +50,11 @@ class PfbParserTest
         Assertions.assertEquals("Open Sans Regular", font.getFullName());
         Assertions.assertEquals("Open Sans", font.getFamilyName());
         Assertions.assertEquals("Digitized data copyright (c) 2010-2011, Google Corporation.", font.getNotice());
-        Assertions.assertEquals(false, font.isFixedPitch());
-        Assertions.assertEquals(false, font.isForceBold());
+        Assertions.assertFalse(font.isFixedPitch());
+        Assertions.assertFalse(font.isForceBold());
         Assertions.assertEquals(0, font.getItalicAngle());
         Assertions.assertEquals("Book", font.getWeight());
-        Assertions.assertTrue(font.getEncoding() instanceof BuiltInEncoding);
+        Assertions.assertInstanceOf(BuiltInEncoding.class, font.getEncoding());
         Assertions.assertEquals(4498, font.getASCIISegment().length);
         Assertions.assertEquals(95911, font.getBinarySegment().length);
         Assertions.assertEquals(938, font.getCharStringsDict().size());
@@ -83,11 +83,11 @@ class PfbParserTest
         Assertions.assertEquals("DejaVu Serif Condensed", font.getFullName());
         Assertions.assertEquals("DejaVu Serif Condensed", font.getFamilyName());
         Assertions.assertEquals("Copyright [c] 2003 by Bitstream, Inc. All Rights Reserved.", font.getNotice());
-        Assertions.assertEquals(false, font.isFixedPitch());
-        Assertions.assertEquals(false, font.isForceBold());
+        Assertions.assertFalse(font.isFixedPitch());
+        Assertions.assertFalse(font.isForceBold());
         Assertions.assertEquals(0, font.getItalicAngle());
         Assertions.assertEquals("Book", font.getWeight());
-        Assertions.assertTrue(font.getEncoding() instanceof BuiltInEncoding);
+        Assertions.assertInstanceOf(BuiltInEncoding.class, font.getEncoding());
         Assertions.assertEquals(5959, font.getASCIISegment().length);
         Assertions.assertEquals(1056090, font.getBinarySegment().length);
         Assertions.assertEquals(3399, font.getCharStringsDict().size());
@@ -100,5 +100,26 @@ class PfbParserTest
     void testEmpty()
     {
         Assertions.assertThrows(IOException.class, () -> Type1Font.createWithPFB(new byte[0]));
+    }
+
+    /**
+     * Test that a PFB with a negative size field (integer overflow) throws IOException
+     * instead of NegativeArraySizeException. A crafted 18-byte PFB with size bytes
+     * 01 00 00 FF overflows the signed int to -16777215, bypassing the upper-bound check.
+     */
+    @Test
+    void testNegativeRecordSize()
+    {
+        // 18-byte crafted PFB: start marker 0x80, ASCII type 0x01,
+        // size field 0x01 0x00 0x00 0xFF = -16777215 as signed int
+        byte[] crashInput = {
+            (byte) 0x80, 0x01,                         // header
+            0x01, 0x00, 0x00, (byte) 0xFF,             // size: overflows to negative
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,     // garbage data
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+            0x27, 0x05, (byte) 0xF8, (byte) 0xFF,
+            (byte) 0xD2, 0x40
+        };
+        Assertions.assertThrows(IOException.class, () -> new PfbParser(crashInput));
     }
 }

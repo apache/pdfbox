@@ -62,19 +62,11 @@ class TestExtractText
     }
 
     @BeforeEach
-    void setUpStreams()
+    void setUpStreams() throws UnsupportedEncodingException
     {
         out.reset();
-        try
-        {
-            printStream = new PrintStream(out, true, "utf-8");
-            System.setOut(printStream);
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            // shouldn't happen at all
-            e.printStackTrace();
-        }
+        printStream = new PrintStream(out, true, "utf-8");
+        System.setOut(printStream);
     }
 
     @AfterEach

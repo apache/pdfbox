@@ -119,7 +119,7 @@ public class Loader
      */
     public static FDFDocument loadXFDF(String filename) throws IOException
     {
-        return Loader.loadXFDF(new BufferedInputStream(new FileInputStream(filename)));
+        return Loader.loadXFDF(new File(filename));
     }
 
     /**
@@ -133,7 +133,10 @@ public class Loader
      */
     public static FDFDocument loadXFDF(File file) throws IOException
     {
-        return Loader.loadXFDF(new BufferedInputStream(new FileInputStream(file)));
+        try (InputStream is = new BufferedInputStream(new FileInputStream(file)))
+        {
+            return Loader.loadXFDF(is);
+        }
     }
 
     /**

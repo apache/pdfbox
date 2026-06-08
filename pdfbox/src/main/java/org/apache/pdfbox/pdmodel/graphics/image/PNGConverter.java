@@ -54,8 +54,8 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
  * If this is for any reason not possible, the factory will return null. You
  * must then encode the image by loading it and using the LosslessFactory.
  * <p>
- * The W3C PNG spec was used to implement this class:
- * https://www.w3.org/TR/2003/REC-PNG-20031110
+ * <a href="https://www.w3.org/TR/2003/REC-PNG-20031110">The W3C PNG spec</a> was used to implement
+ * this class.
  *
  * @author Emmeran Seehuber
  */
@@ -553,7 +553,8 @@ final class PNGConverter
 
     /**
      * Map the renderIntent int to a PDF render intent. See also
-     * https://www.w3.org/TR/2003/REC-PNG-20031110/#11sRGB
+     * <a href="https://www.w3.org/TR/2003/REC-PNG-20031110/#11sRGB">sRGB Standard RGB colour
+     * space</a>.
      *
      * @param renderIntent the PNG render intent
      * @return the matching PDF Render Intent or null

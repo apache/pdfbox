@@ -16,17 +16,20 @@
  */
 package org.apache.pdfbox.pdmodel.fdf;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.pdfbox.Loader;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+
 
 /**
  * Tests for the FDFAnnotation class.
@@ -72,4 +75,48 @@ class FDFAnnotationTest
             assertTrue(testedPDFBox4345andPDFBox3646);
         }
     }
+
+    @Test
+    void testAnnotationWidth() throws IOException
+    {
+        String xfdf =
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+            "<xfdf xmlns=\"http://ns.adobe.com/xfdf/\" xml:space=\"preserve\">" +
+            "<annots>" +
+            "<freetext" +
+            " width=\"0.00\"" +
+            " justification=\"left\" page=\"0\"" +
+            " date=\"D:20251124141013+01'00'\"" +
+            " flags=\"print\"" +
+            " name=\"b525be7e-4735-4598-ab7f-163cd0c7e48b\"" +
+            " rect=\"372.339325,722.633545,531.075317,736.673523\"" +
+            " title=\"Username\"" +
+            " BBox=\"372.339325,722.633545,531.075317,736.673523\"" +
+            " Matrix=\"1.000000,0.000000,0.000000,1.000000,0.000000,0.000000\"" +
+            " creationdate=\"D:20251124141003+01'00'\"" +
+            " opacity=\"1\"" +
+            " subject=\"Texteingabe\"" +
+            " intent=\"FreeTextTypewriter\"" +
+            " IT=\"FreeTextTypewriter\">" +
+            "<defaultappearance>&#x20;/Helv 12 Tf 0.415686 0.756863 0.690196 rg</defaultappearance>" +
+            "<defaultstyle>font: &apos;Helvetica&apos; ,sans-serif 12.00pt;color:#3049D1</defaultstyle>" +
+            "<contents>Your text is here.</contents>" +
+            "</freetext>" +
+            "</annots>" +
+            "<f href=\".xfdf\"/>" +
+            "</xfdf>";
+
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(xfdf.getBytes(StandardCharsets.UTF_8));
+
+        try (FDFDocument fdfDoc = Loader.loadXFDF(inputStream))
+        {
+            List<FDFAnnotation> fdfAnnots = fdfDoc.getCatalog().getFDF().getAnnotations();
+            assertEquals(1, fdfAnnots.size());
+            
+            FDFAnnotation annot = fdfAnnots.get(0);
+            assertNotNull(annot.getBorderStyle());
+            assertEquals(0f, annot.getBorderStyle().getWidth(), 0.01f);
+        }
+    }
+
 }

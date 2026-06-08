@@ -62,7 +62,7 @@ class XMPMediaManagementTest
         xmpSchemaTester.testGetSetProperty();
     }
 
-    static Stream<Arguments> initializeParameters() throws Exception
+    static Stream<Arguments> initializeParameters()
     {
         return Stream.of(
             Arguments.of("DocumentID", XMPSchemaTester.createPropertyType(Types.URI), "uuid:FB031973-5E75-11B2-8F06-E7F5C101C07A"),

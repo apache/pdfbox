@@ -144,6 +144,16 @@ public class StreamPane implements ActionListener
             niceView = null;
         }
 
+        tabbedPane = new JTabbedPane();
+    }
+
+    /**
+     * Initialization, to be called immediately after construction.
+     *
+     * @throws IOException if there is an I/O error during internal data transfer.
+     */
+    public void init() throws IOException
+    {
         if (stream.isImage())
         {
             panel.add(createHeaderPanel(stream.getFilterList(), Stream.IMAGE, this));
@@ -155,7 +165,6 @@ public class StreamPane implements ActionListener
             requestStreamText(Stream.DECODED);
         }
 
-        tabbedPane = new JTabbedPane();
         if (stream.isImage())
         {
             tabbedPane.add("Image view", rawView.getStreamPanel());
@@ -384,12 +393,13 @@ public class StreamPane implements ActionListener
                     transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
                     Transformer transformer = transformerFactory.newTransformer();
                     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-                    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "1");
+                    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
                     StringWriter sw = new StringWriter();
                     StreamResult result = new StreamResult(sw);
                     DOMSource source = new DOMSource(doc);
                     transformer.transform(source, result);
-                    docu.insertString(0, sw.toString(), null);
+                    // replaceAll because of JDK-8262285. Alternatively pass an XSLT to newTransformer()
+                    docu.insertString(0, sw.toString().replaceAll("(\\r\\n|\\r|\\n) +(\\r\\n|\\r|\\n)","\n"), null);
                 }
                 catch (IOException | TransformerFactoryConfigurationError | IllegalArgumentException |
                        TransformerException | BadLocationException ex)

@@ -20,6 +20,7 @@ package org.apache.fontbox.ttf;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.fontbox.ttf.gsub.GSUBTablePrintUtil;
 import org.apache.fontbox.ttf.model.GsubData;
@@ -31,7 +32,7 @@ import org.junit.jupiter.api.Test;
  * 
  * @author Palash Ray
  */
-public class GSUBTableDebugger
+class GSUBTableDebugger
 {
 
     private static final String LOHIT_BENGALI_FONT_FILE = "/ttf/Lohit-Bengali.ttf";
@@ -39,10 +40,10 @@ public class GSUBTableDebugger
     @Test
     void printLohitBengaliTTF()
     {
-        try
+        try(InputStream is1 = GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE);
+            InputStream is2 = GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE))
         {
-            RandomAccessReadBuffer randomAccessReadBuffer = new RandomAccessReadBuffer(
-                    GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE));
+            RandomAccessReadBuffer randomAccessReadBuffer = new RandomAccessReadBuffer(is1);
             RandomAccessReadDataStream randomAccessReadBufferDataStream = new RandomAccessReadDataStream(
                     randomAccessReadBuffer);
     
@@ -53,8 +54,7 @@ public class GSUBTableDebugger
             glyphSubstitutionTable.read(null, randomAccessReadBufferDataStream);
     
             TrueTypeFont trueTypeFont = new TTFParser()
-                    .parse(new RandomAccessReadBuffer(
-                            GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE)));
+                    .parse(new RandomAccessReadBuffer(is2));
     
             GsubData gsubData = glyphSubstitutionTable.getGsubData();
             new GSUBTablePrintUtil().printCharacterToGlyph(gsubData,

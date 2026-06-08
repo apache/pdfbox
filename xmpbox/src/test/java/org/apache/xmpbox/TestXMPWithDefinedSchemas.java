@@ -21,37 +21,42 @@
 
 package org.apache.xmpbox;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.io.IOException;
 
 import java.io.InputStream;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpParsingException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class TestXMPWithDefinedSchemas
 {
-    static Stream<String> initializeParameters() throws Exception
+    static Stream<String> initializeParameters()
     {
         return Stream.of(
             "/validxmp/override_ns.rdf",
             "/validxmp/ghost2.xmp",
             "/validxmp/history2.rdf",
             "/validxmp/Notepad++_A1b.xmp",
-            "/validxmp/metadata.rdf"
+            "/validxmp/metadata.rdf",
+            "/validxmp/PDFBOX-6099.xmp"
         );
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    void main(String path) throws Exception
+    void main(String path) throws XmpParsingException, IOException
     {
-        InputStream is = this.getClass().getResourceAsStream(path);
-
-        DomXmpParser builder = new DomXmpParser();
-        XMPMetadata rxmp = builder.parse(is);
-        // ensure basic parsing was OK
-        assertTrue(rxmp.getAllSchemas().size()>0);
+        try (InputStream is = this.getClass().getResourceAsStream(path))
+        {
+            DomXmpParser builder = new DomXmpParser();
+            XMPMetadata rxmp = builder.parse(is);
+            // ensure basic parsing was OK
+            assertFalse(rxmp.getAllSchemas().isEmpty());
+        }
     }
 }

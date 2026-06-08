@@ -65,6 +65,7 @@ class StreamTextView implements MouseMotionListener, AncestorListener
         textPane.addMouseMotionListener(this);
         textPane.setFont(new Font("monospaced", Font.PLAIN, 13));
         searcher = new Searcher(textPane);
+        searcher.init();
 
         JScrollPane scrollPane = new JScrollPane(textPane);
 

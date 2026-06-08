@@ -829,8 +829,7 @@ public class COSParser extends BaseParser implements ICOSParser
                         document);
                 Map<COSObjectKey, COSBase> allStreamObjects = parser.parseAllObjects();
                 objectStreamObject = allStreamObjects.remove(key);
-                allStreamObjects.entrySet().stream()
-                        .forEach(e -> streamObjects.putIfAbsent(e.getKey(), e.getValue()));
+                allStreamObjects.forEach(streamObjects::putIfAbsent);
             }
             catch (IOException ex)
             {
@@ -1753,7 +1752,7 @@ public class COSParser extends BaseParser implements ICOSParser
             }
 
             // the number of objects in the xref table
-            int count = 0;
+            int count;
             try
             {
                 count = Integer.parseInt(splitString[1]);

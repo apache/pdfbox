@@ -17,6 +17,7 @@
 package org.apache.pdfbox.io;
 
 import java.io.Closeable;
+import java.io.EOFException;
 import java.io.IOException;
 
 /**
@@ -159,4 +160,43 @@ public interface RandomAccessRead extends Closeable
      * 
      */
     RandomAccessReadView createView(long startPosition, long streamLength) throws IOException;
+
+    /**
+     * Same as {@link #read(byte[])} but will loop until exactly length bytes are read or
+     * it will throw an exception.
+     *
+     * @param b The buffer to write the data to.
+     * @throws IOException
+     */
+    default void readFully(byte[] b) throws IOException
+    {
+        readFully(b, 0, b.length);
+    }
+
+    /**
+     * Same as {@link #read(byte[], int, int)} but will loop until exactly length bytes are read or
+     * it will throw an exception.
+     *
+     * @param b The buffer to write the data to.
+     * @param offset Offset into the buffer to start writing.
+     * @param length The exact amount of data to attempt to read.
+     * @throws IOException
+     */
+    default void readFully(byte[] b, int offset, int length) throws IOException
+    {
+        if (length() - getPosition() < length)
+        {
+            throw new EOFException("Premature end of buffer reached");
+        }
+        int bytesReadTotal = 0;
+        while (bytesReadTotal < length)
+        {
+            int bytesReadNow = read(b, offset + bytesReadTotal, length - bytesReadTotal);
+            if (bytesReadNow <= 0)
+            {
+                throw new EOFException("EOF, should have been detected earlier");
+            }
+            bytesReadTotal += bytesReadNow;
+        }
+    }
 }

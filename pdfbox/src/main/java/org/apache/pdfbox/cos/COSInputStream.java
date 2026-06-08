@@ -21,7 +21,6 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.pdfbox.filter.DecodeOptions;
@@ -43,21 +42,6 @@ public final class COSInputStream extends FilterInputStream
      * @param filters Filters to be applied.
      * @param parameters Filter parameters.
      * @param in Encoded input stream.
-     * @return Decoded stream.
-     * @throws IOException If the stream could not be read.
-     */
-    static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream in)
-            throws IOException
-    {
-        return create(filters, parameters, in, DecodeOptions.DEFAULT);
-    }
-
-    /**
-     * Creates a new COSInputStream from an encoded input stream.
-     *
-     * @param filters Filters to be applied.
-     * @param parameters Filter parameters.
-     * @param in Encoded input stream.
      * @param options decode options for the encoded stream
      * @return Decoded stream.
      * @throws IOException If the stream could not be read.
@@ -67,25 +51,29 @@ public final class COSInputStream extends FilterInputStream
     {
         if (filters.isEmpty())
         {
-            return new COSInputStream(in, Collections.emptyList());
+            return new COSInputStream(in, null);
         }
         List<DecodeResult> results = new ArrayList<>(filters.size());
         RandomAccessRead decoded = Filter.decode(in, filters, parameters, options, results);
-        return new COSInputStream(new RandomAccessInputStream(decoded), results);
+        if (results.isEmpty())
+        {
+            return new COSInputStream(in, null);
+        }
+        return new COSInputStream(new RandomAccessInputStream(decoded), results.get(results.size() - 1));
     }
 
-    private final List<DecodeResult> decodeResults;
+    private final DecodeResult decodeResult;
 
     /**
      * Constructor.
      * 
      * @param input decoded stream
-     * @param decodeResults results of decoding
+     * @param decodeResult result of decoding
      */
-    private COSInputStream(InputStream input, List<DecodeResult> decodeResults)
+    private COSInputStream(InputStream input, DecodeResult decodeResult)
     {
         super(input);
-        this.decodeResults = decodeResults;
+        this.decodeResult = decodeResult;
     }
     
     /**
@@ -95,13 +83,10 @@ public final class COSInputStream extends FilterInputStream
      */
     public DecodeResult getDecodeResult()
     {
-        if (decodeResults.isEmpty())
+        if (decodeResult == null)
         {
             return DecodeResult.createDefault();
         }
-        else
-        {
-            return decodeResults.get(decodeResults.size() - 1);
-        }
+        return decodeResult;
     }
 }

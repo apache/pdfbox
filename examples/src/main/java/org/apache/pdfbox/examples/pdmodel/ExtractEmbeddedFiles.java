@@ -19,7 +19,6 @@ package org.apache.pdfbox.examples.pdmodel;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -62,7 +61,7 @@ public final class ExtractEmbeddedFiles
         }
 
         File pdfFile = new File(args[0]);
-        String filePath = pdfFile.getParent() + FileSystems.getDefault().getSeparator();
+        String directoryPath = pdfFile.getParentFile().getCanonicalPath();
         try (PDDocument document = Loader.loadPDF(pdfFile))
         {
             PDDocumentNameDictionary namesDictionary =
@@ -70,18 +69,18 @@ public final class ExtractEmbeddedFiles
             PDEmbeddedFilesNameTreeNode efTree = namesDictionary.getEmbeddedFiles();
             if (efTree != null)
             {
-                extractFilesFromEFTree(efTree, filePath);
+                extractFilesFromEFTree(efTree, directoryPath);
             }
 
             // extract files from page annotations
             for (PDPage page : document.getPages())
             {
-                extractFilesFromPage(page, filePath);
+                extractFilesFromPage(page, directoryPath);
             }
         }
     }
 
-    private static void extractFilesFromPage(PDPage page, String filePath) throws IOException
+    private static void extractFilesFromPage(PDPage page, String directoryPath) throws IOException
     {
         for (PDAnnotation annotation : page.getAnnotations())
         {
@@ -95,19 +94,19 @@ public final class ExtractEmbeddedFiles
                     PDEmbeddedFile embeddedFile = getEmbeddedFile(complexFileSpec);
                     if (embeddedFile != null)
                     {
-                        extractFile(filePath, complexFileSpec.getFilename(), embeddedFile);
+                        extractFile(complexFileSpec.getFilename(), embeddedFile, directoryPath);
                     }
                 }
             }
         }
     }
 
-    private static void extractFilesFromEFTree(PDNameTreeNode<PDComplexFileSpecification> efTree, String filePath) throws IOException
+    private static void extractFilesFromEFTree(PDNameTreeNode<PDComplexFileSpecification> efTree, String directoryPath) throws IOException
     {
         Map<String, PDComplexFileSpecification> names = efTree.getNames();
         if (names != null)
         {
-            extractFiles(names, filePath);
+            extractFiles(names, directoryPath);
         }
         else
         {
@@ -118,38 +117,44 @@ public final class ExtractEmbeddedFiles
             }
             for (PDNameTreeNode<PDComplexFileSpecification> node : kids)
             {
-                extractFilesFromEFTree(node, filePath);
+                extractFilesFromEFTree(node, directoryPath);
             }
         }
     }
 
-    private static void extractFiles(Map<String, PDComplexFileSpecification> names, String filePath) 
+    private static void extractFiles(Map<String, PDComplexFileSpecification> names, String directoryPath) 
             throws IOException
     {
         for (Entry<String, PDComplexFileSpecification> entry : names.entrySet())
         {
-            PDComplexFileSpecification fileSpec = entry.getValue();
-            PDEmbeddedFile embeddedFile = getEmbeddedFile(fileSpec);
+            PDComplexFileSpecification complexFileSpec = entry.getValue();
+            PDEmbeddedFile embeddedFile = getEmbeddedFile(complexFileSpec);
             if (embeddedFile != null)
             {
-                extractFile(filePath, fileSpec.getFilename(), embeddedFile);
+                extractFile(complexFileSpec.getFilename(), embeddedFile, directoryPath);
             }
         }
     }
 
-    private static void extractFile(String filePath, String filename, PDEmbeddedFile embeddedFile)
+    private static void extractFile(String filename, PDEmbeddedFile embeddedFile, String directoryPath)
             throws IOException
     {
-        String embeddedFilename = filePath + filename;
-        File file = new File(embeddedFilename);
+        File file = new File(directoryPath, filename);
         File parentDir = file.getParentFile();
+        String parentCanonical = parentDir.getCanonicalPath();
+        if (!parentCanonical.equals(directoryPath) &&
+            !parentCanonical.startsWith(directoryPath + File.separator))
+        {
+            System.err.println("Ignoring " + filename + " (different directory)");
+            return;
+        }
         if (!parentDir.exists())
         {
             // sometimes paths contain a directory
             System.out.println("Creating " + parentDir);
             parentDir.mkdirs();
         }
-        System.out.println("Writing " + embeddedFilename);
+        System.out.println("Writing " + file);
         try (FileOutputStream fos = new FileOutputStream(file))
         {
             fos.write(embeddedFile.toByteArray());

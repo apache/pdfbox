@@ -61,12 +61,13 @@ class PDFAIdentificationTest
         xmpSchemaTester.testGetSetProperty();
     }
 
-    static Stream<Arguments> initializeParameters() throws Exception
+    static Stream<Arguments> initializeParameters()
     {
         return Stream.of(
             Arguments.of("part", XMPSchemaTester.createPropertyType(Types.Integer), 1),
             Arguments.of("amd", XMPSchemaTester.createPropertyType(Types.Text), "2005"),
-            Arguments.of("conformance", XMPSchemaTester.createPropertyType(Types.Text), "B")
+            Arguments.of("conformance", XMPSchemaTester.createPropertyType(Types.Text), "B"),
+            Arguments.of("rev", XMPSchemaTester.createPropertyType(Types.Integer), 2020)
         );
     }
 }

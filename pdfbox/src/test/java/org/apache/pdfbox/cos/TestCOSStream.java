@@ -142,7 +142,7 @@ class TestCOSStream
     }
 
     /**
-     * Tests tests that encoding is done correctly even if the the stream is closed twice.
+     * Tests tests that encoding is done correctly even if the stream is closed twice.
      * Closeable.close() allows streams to be closed multiple times. The second and subsequent
      * close() calls should have no effect.
      *

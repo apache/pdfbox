@@ -53,7 +53,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
     private static final Log LOG = LogFactory.getLog(PDFreeTextAppearanceHandler.class);
 
     private static final Pattern COLOR_PATTERN =
-            Pattern.compile(".*color\\:\\s*\\#([0-9a-fA-F]{6}).*");
+            Pattern.compile("color:\\s*+#([0-9a-fA-F]{6})");
 
     private float fontSize = 10;
     private COSName fontName = COSName.HELV;
@@ -118,6 +118,8 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             }
             cs.setLineWidth(ab.width);
 
+            String lineEndingStyle = annotation.getLineEndingStyle();
+
             // draw callout line(s)
             // must be done before retangle paint to avoid a line cutting through cloud
             // see CTAN-example-Annotations.pdf
@@ -127,7 +129,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                 float y = pathsArray[i * 2 + 1];
                 if (i == 0)
                 {
-                    if (SHORT_STYLES.contains(annotation.getLineEndingStyle()))
+                    if (SHORT_STYLES.contains(lineEndingStyle))
                     {
                         // modify coordinate to shorten the segment
                         // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
@@ -155,7 +157,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             // paint the styles here and after line(s) draw, to avoid line crossing a filled shape       
             if (PDAnnotationFreeText.IT_FREE_TEXT_CALLOUT.equals(annotation.getIntent())
                     // check only needed to avoid q cm Q if LE_NONE
-                    && !LE_NONE.equals(annotation.getLineEndingStyle())
+                    && !LE_NONE.equals(lineEndingStyle)
                     && pathsArray.length >= 4)
             {
                 float x2 = pathsArray[2];
@@ -163,7 +165,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                 float x1 = pathsArray[0];
                 float y1 = pathsArray[1];
                 cs.saveGraphicsState();
-                if (ANGLED_STYLES.contains(annotation.getLineEndingStyle()))
+                if (ANGLED_STYLES.contains(lineEndingStyle))
                 {
                     // do a transform so that first "arm" is imagined flat,
                     // like in line handler.
@@ -177,7 +179,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                 {
                     cs.transform(Matrix.getTranslateInstance(x1, y1));
                 }
-                drawStyle(annotation.getLineEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground, false);
+                drawStyle(lineEndingStyle, cs, 0, 0, ab.width, hasStroke, hasBackground, false);
                 cs.restoreGraphicsState();
             }
 
@@ -288,7 +290,8 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             cs.addRect(xOffset, clipY, clipWidth, clipHeight);
             cs.clip();
 
-            if (annotation.getContents() != null)
+            String annotationContents = annotation.getContents();
+            if (annotationContents != null)
             {
                 cs.beginText();
                 cs.setFont(font, fontSize);
@@ -298,7 +301,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                 appearanceStyle.setFontSize(fontSize);
                 PlainTextFormatter formatter = new PlainTextFormatter.Builder(cs)
                         .style(appearanceStyle)
-                        .text(new PlainText(annotation.getContents()))
+                        .text(new PlainText(annotationContents))
                         .width(width - ab.width * 4)
                         .wrapLines(true)
                         .initialOffset(xOffset, yOffset)

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -1464,42 +1465,123 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             {
                 return;
             }
-            else
-            {
-                indirectObjects.add(key);
-            }
+            indirectObjects.add(key);
         }
         for (Entry<COSName, COSBase> entry : items.entrySet())
         {
             COSBase cosBase = entry.getValue();
-            COSObjectKey cosBaseKey = cosBase != null ? cosBase.getKey() : null;
-            // avoid endless recursions
-            if (COSName.PARENT.equals(entry.getKey())
-                    || (cosBaseKey != null && indirectObjects.contains(cosBaseKey)))
+            COSObjectKey indirectObjectKey = cosBase instanceof COSObject ? cosBase.getKey() : null;
+            if (indirectObjectKey != null)
             {
-                continue;
-            }
-            if (cosBase instanceof COSObject)
-            {
+                // avoid endless recursions
+                if ( indirectObjects.contains(indirectObjectKey))
+                {
+                    continue;
+                }
                 // dereference object
                 cosBase = ((COSObject) cosBase).getObject();
             }
             if (cosBase instanceof COSDictionary)
             {
+                COSName entryKey = entry.getKey();
                 // descend to included dictionary to collect all included indirect objects
-                ((COSDictionary) cosBase).getIndirectObjectKeys(indirectObjects);
+                // skip PARENT and P references to avoid recursions
+                if (!COSName.PARENT.equals(entryKey) && !COSName.P.equals(entryKey))
+                {
+                    ((COSDictionary) cosBase).getIndirectObjectKeys(indirectObjects);
+                }
             }
             else if (cosBase instanceof COSArray)
             {
                 // descend to included array to collect all included indirect objects
                 ((COSArray) cosBase).getIndirectObjectKeys(indirectObjects);
             }
-            else if (cosBaseKey != null)
+            else if (indirectObjectKey != null)
             {
                 // add key for all indirect objects other than COSDictionary/COSArray
-                indirectObjects.add(cosBaseKey);
+                indirectObjects.add(indirectObjectKey);
             }
         }
+    }
+
+    /**
+     * Reset all object keys of all indirect objects after importing a page to avoid overlapping numbers when saving the
+     * new pdf.
+     * 
+     * Expert use only. This might trigger some unwanted side effects.
+     * 
+     */
+    public void resetImportedObjectKeys()
+    {
+        resetObjectKeys(new HashSet<>()).clear();
+    }
+
+    /**
+     * Resets the object key of all indirect objects numbers within this dictionary and all included dictionaries and
+     * arrays. It is used to avoid overlapping object numbers when importing an existing page to another pdf.
+     * 
+     * Expert use only. This might trigger some unwanted side effects.
+     * 
+     * @param indirectObjects a collection of already found indirect objects.
+     * 
+     * @return the updated collection of indirect objects
+     */
+    protected Collection<COSObjectKey> resetObjectKeys(Collection<COSObjectKey> indirectObjects)
+    {
+        if (indirectObjects == null)
+        {
+            return indirectObjects;
+        }
+        COSObjectKey key = getKey();
+        if (key != null)
+        {
+            // avoid endless recursions
+            if (indirectObjects.contains(key))
+            {
+                return indirectObjects;
+            }
+            indirectObjects.add(key);
+            // reset object key
+            setKey(null);
+        }
+        for (Entry<COSName, COSBase> entry : items.entrySet())
+        {
+            COSBase cosBase = entry.getValue();
+            COSObjectKey indirectObjectKey = cosBase instanceof COSObject ? cosBase.getKey() : null;
+            if (indirectObjectKey != null)
+            {
+                // avoid endless recursions
+                if (indirectObjects.contains(indirectObjectKey))
+                {
+                    continue;
+                }
+                // dereference object first
+                cosBase = ((COSObject) cosBase).getObject();
+                // reset object key
+                entry.getValue().setKey(null);
+            }
+            if (cosBase instanceof COSDictionary)
+            {
+                COSName entryKey = entry.getKey();
+                // descend to included dictionary to reset all included indirect objects
+                // skip PARENT and P references to avoid recursions
+                if (!COSName.PARENT.equals(entryKey) && !COSName.P.equals(entryKey))
+                {
+                    ((COSDictionary) cosBase).resetObjectKeys(indirectObjects);
+                }
+            }
+            else if (cosBase instanceof COSArray)
+            {
+                // descend to included array to reset all included indirect objects
+                ((COSArray) cosBase).resetObjectKeys(indirectObjects);
+            }
+            else if (indirectObjectKey != null)
+            {
+                // add key for all indirect objects other than COSDictionary/COSArray
+                indirectObjects.add(indirectObjectKey);
+            }
+        }
+        return indirectObjects;
     }
 
 }

@@ -27,6 +27,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Random;
  
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -79,6 +80,9 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
 
     // hashes used for Algorithm 2.B, depending on remainder from E modulo 3
     private static final String[] HASHES_2B = new String[] {"SHA-256", "SHA-384", "SHA-512"};
+
+    // SecureRandom.getInstanceStrong() would be better, but sometimes blocks on Linux
+    private static final Random RANDOM = new SecureRandom();
 
     /**
      * Constructor.
@@ -152,8 +156,10 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             throw new IOException("Decryption material is not compatible with the document");
         }
         
+        int encryptionVersion = encryption.getVersion();
         // This is only used with security version 4 and 5.
-        if (encryption.getVersion() >= REVISION_4) {
+        if (encryptionVersion >= REVISION_4)
+        {
 	        setStreamFilterName(encryption.getStreamFilterName());
 	        setStringFilterName(encryption.getStringFilterName());
         }
@@ -168,9 +174,9 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
 
         int dicPermissions = encryption.getPermissions();
         int dicRevision = encryption.getRevision();
-        int dicLength = encryption.getVersion() == 1 ? 5 : encryption.getLength() / 8;
+        int dicLength = encryptionVersion == 1 ? 5 : encryption.getLength() / 8;
         
-        if (encryption.getVersion() == REVISION_4 || encryption.getVersion() == REVISION_5)
+        if (encryptionVersion == REVISION_4 || encryptionVersion == REVISION_5)
         {
             // detect whether AES encryption is used. This assumes that the encryption algo is 
             // stored in the PDCryptFilterDictionary
@@ -239,34 +245,29 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         AccessPermission currentAccessPermission;
 
         byte[] encryptedKey;
-        byte[] passwordBytes;
+        byte[] passwordBytes = password.getBytes(passwordCharset);
         boolean isOwnerPassword;
-        if( isOwnerPassword(password.getBytes(passwordCharset), userKey, ownerKey,
+        if (isOwnerPassword(passwordBytes, userKey, ownerKey,
                                  dicPermissions, documentIDBytes, dicRevision,
                                  dicLength, encryptMetadata) )
         {
             currentAccessPermission = AccessPermission.getOwnerAccessPermission();
             setCurrentAccessPermission(currentAccessPermission);
             
-            if (dicRevision == REVISION_5 || dicRevision == REVISION_6)
+            if (dicRevision != REVISION_5 && dicRevision != REVISION_6)
             {
-                passwordBytes = password.getBytes(passwordCharset);
-            }
-            else
-            {
-                passwordBytes = getUserPassword234(password.getBytes(passwordCharset),
+                passwordBytes = getUserPassword234(passwordBytes,
                         ownerKey, dicRevision, dicLength );
             }
             isOwnerPassword = true;
         }
-        else if( isUserPassword(password.getBytes(passwordCharset), userKey, ownerKey,
+        else if (isUserPassword(passwordBytes, userKey, ownerKey,
                            dicPermissions, documentIDBytes, dicRevision,
                            dicLength, encryptMetadata) )
         {
             currentAccessPermission = new AccessPermission(dicPermissions);
             currentAccessPermission.setReadOnly();
             setCurrentAccessPermission(currentAccessPermission);
-            passwordBytes = password.getBytes(passwordCharset);
             isOwnerPassword = false;
         }
         else
@@ -427,19 +428,18 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
     {
         try
         {
-            SecureRandom rnd = new SecureRandom();
             Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 
             // make a random 256-bit file encryption key
             setEncryptionKey(new byte[32]);
-            rnd.nextBytes(getEncryptionKey());
+            RANDOM.nextBytes(getEncryptionKey());
 
             // Algorithm 8a: Compute U
             byte[] userPasswordBytes = truncate127(userPassword.getBytes(StandardCharsets.UTF_8));
             byte[] userValidationSalt = new byte[8];
             byte[] userKeySalt = new byte[8];
-            rnd.nextBytes(userValidationSalt);
-            rnd.nextBytes(userKeySalt);
+            RANDOM.nextBytes(userValidationSalt);
+            RANDOM.nextBytes(userKeySalt);
             byte[] hashU = computeHash2B(concat(userPasswordBytes, userValidationSalt),
                     userPasswordBytes, null);
             byte[] u = concat(hashU, userValidationSalt, userKeySalt);
@@ -456,8 +456,8 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             byte[] ownerPasswordBytes = truncate127(ownerPassword.getBytes(StandardCharsets.UTF_8));
             byte[] ownerValidationSalt = new byte[8];
             byte[] ownerKeySalt = new byte[8];
-            rnd.nextBytes(ownerValidationSalt);
-            rnd.nextBytes(ownerKeySalt);
+            RANDOM.nextBytes(ownerValidationSalt);
+            RANDOM.nextBytes(ownerKeySalt);
             byte[] hashO = computeHash2B(concat(ownerPasswordBytes, ownerValidationSalt, u),
                     ownerPasswordBytes, u);
             byte[] o = concat(hashO, ownerValidationSalt, ownerKeySalt);
@@ -494,7 +494,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
             perms[11] = 'b';
             for (int i = 12; i <= 15; i++)
             {
-                perms[i] = (byte) rnd.nextInt();
+                perms[i] = (byte) RANDOM.nextInt();
             }
 
             cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(getEncryptionKey(), "AES"),
@@ -520,13 +520,15 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         COSArray idArray = document.getDocument().getDocumentID();
 
         //check if the document has an id yet.  If it does not then generate one
+        byte[] userPasswordBytes = userPassword.getBytes(StandardCharsets.ISO_8859_1);
+        byte[] ownerPasswordBytes = ownerPassword.getBytes(StandardCharsets.ISO_8859_1);
         if (idArray == null || idArray.size() < 2)
         {
             MessageDigest md = MessageDigests.getMD5();
             BigInteger time = BigInteger.valueOf(System.currentTimeMillis());
             md.update(time.toByteArray());
-            md.update(ownerPassword.getBytes(StandardCharsets.ISO_8859_1));
-            md.update(userPassword.getBytes(StandardCharsets.ISO_8859_1));
+            md.update(ownerPasswordBytes);
+            md.update(userPasswordBytes);
             md.update(document.getDocument().toString().getBytes(StandardCharsets.ISO_8859_1));
 
             byte[] id = md.digest(this.toString().getBytes(StandardCharsets.ISO_8859_1));
@@ -541,14 +543,15 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         COSString id = (COSString) idArray.getObject(0);
 
         byte[] ownerBytes = computeOwnerPassword(
-                ownerPassword.getBytes(StandardCharsets.ISO_8859_1),
-                userPassword.getBytes(StandardCharsets.ISO_8859_1), revision, length);
+                ownerPasswordBytes,
+                userPasswordBytes, revision, length);
 
+        byte[] idBytes = id.getBytes();
         byte[] userBytes = computeUserPassword(
-                userPassword.getBytes(StandardCharsets.ISO_8859_1),
-                ownerBytes, permissionInt, id.getBytes(), revision, length, true);
+                userPasswordBytes,
+                ownerBytes, permissionInt, idBytes, revision, length, true);
 
-        setEncryptionKey(computeEncryptedKeyRev234(userPassword.getBytes(StandardCharsets.ISO_8859_1), ownerBytes, permissionInt, id.getBytes(), true, length, revision));
+        setEncryptionKey(computeEncryptedKeyRev234(userPasswordBytes, ownerBytes, permissionInt, idBytes, true, length, revision));
 
         encryptionDictionary.setOwnerKey(ownerBytes);
         encryptionDictionary.setUserKey(userBytes);
@@ -945,24 +948,32 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
     }
 
     // steps (a) to (d) of "Algorithm 3: Computing the encryption dictionary’s O (owner password) value".
-    private byte[] computeRC4key(byte[] ownerPassword, int encRevision, int length)
+    private byte[] computeRC4key(byte[] ownerPassword, int encRevision, int length) throws IOException
     {
-        MessageDigest md = MessageDigests.getMD5();
-        byte[] digest = md.digest(truncateOrPad(ownerPassword));
-        if (encRevision == REVISION_3 || encRevision == REVISION_4)
+        try
         {
-            for (int i = 0; i < 50; i++)
+            MessageDigest md = MessageDigests.getMD5();
+            byte[] digest = md.digest(truncateOrPad(ownerPassword));
+            if (encRevision == REVISION_3 || encRevision == REVISION_4)
             {
-                // this deviates from the spec - however, omitting the length
-                // parameter prevents the file to be opened in Adobe Reader
-                // with the owner password when the key length is 40 bit (= 5 bytes)
-                md.update(digest, 0, length);
-                digest = md.digest();
+                for (int i = 0; i < 50; i++)
+                {
+                    // this deviates from the spec - however, omitting the length
+                    // parameter prevents the file to be opened in Adobe Reader
+                    // with the owner password when the key length is 40 bit (= 5 bytes)
+                    md.update(digest, 0, length);
+                    digest = md.digest();
+                }
             }
+            byte[] rc4Key = new byte[length];
+            System.arraycopy(digest, 0, rc4Key, 0, length);
+            return rc4Key;
         }
-        byte[] rc4Key = new byte[length];
-        System.arraycopy(digest, 0, rc4Key, 0, length);
-        return rc4Key;
+        catch (IllegalArgumentException ex)
+        {
+            // PDFBOX-6115: happens with illegal key length
+            throw new IOException(ex);
+        }
     }
 
 
@@ -1171,7 +1182,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
                 byte[] eFirst = new byte[16];
                 System.arraycopy(e, 0, eFirst, 0, 16);
                 BigInteger bi = new BigInteger(1, eFirst);
-                BigInteger remainder = bi.mod(new BigInteger("3"));
+                BigInteger remainder = bi.mod(BigInteger.valueOf(3));
                 String nextHash = HASHES_2B[remainder.intValue()];
                 
                 md = MessageDigest.getInstance(nextHash);

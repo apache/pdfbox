@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +53,7 @@ class TestIsartorBavaria
     private static final String SKIP_BAVARIA = "skip-bavaria";
     private static FileOutputStream isartorResultFile;
 
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Object[]> initializeParameters() throws IOException
     {
         String filter = System.getProperty(FILTER_FILE);
         String skipBavaria = System.getProperty(SKIP_BAVARIA);

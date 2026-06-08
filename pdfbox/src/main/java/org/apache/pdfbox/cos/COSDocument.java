@@ -216,13 +216,16 @@ public class COSDocument extends COSBase implements Closeable
         for (COSObjectKey objectKey : objectKeys)
         {
             COSObject objectFromPool = getObjectFromPool(objectKey);
-            COSBase realObject = objectFromPool.getObject();
-            if (realObject instanceof COSDictionary)
+            if (objectFromPool != null)
             {
-                COSDictionary dic = (COSDictionary) realObject;
-                if (dic.getItem(COSName.LINEARIZED) != null)
+                COSBase realObject = objectFromPool.getObject();
+                if (realObject instanceof COSDictionary)
                 {
-                    return dic;
+                    COSDictionary dic = (COSDictionary) realObject;
+                    if (dic.getItem(COSName.LINEARIZED) != null)
+                    {
+                        return dic;
+                    }
                 }
             }
         }
@@ -270,13 +273,16 @@ public class COSDocument extends COSBase implements Closeable
         for (COSObjectKey objectKey : keys)
         {
             COSObject objectFromPool = getObjectFromPool(objectKey);
-            COSBase realObject = objectFromPool.getObject();
-            if (realObject instanceof COSDictionary)
+            if (objectFromPool != null)
             {
-                COSName dictType = ((COSDictionary) realObject).getCOSName(COSName.TYPE);
-                if (type1.equals(dictType) || (type2 != null && type2.equals(dictType)))
+                COSBase realObject = objectFromPool.getObject();
+                if (realObject instanceof COSDictionary)
                 {
-                    retval.add(objectFromPool);
+                    COSName dictType = ((COSDictionary) realObject).getCOSName(COSName.TYPE);
+                    if (type1.equals(dictType) || (type2 != null && type2.equals(dictType)))
+                    {
+                        retval.add(objectFromPool);
+                    }
                 }
             }
         }

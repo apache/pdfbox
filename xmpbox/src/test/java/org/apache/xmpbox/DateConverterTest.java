@@ -21,15 +21,21 @@
 
 package org.apache.xmpbox;
 
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import org.junit.jupiter.api.Test;
 
@@ -52,16 +58,45 @@ class DateConverterTest
     void testDateConversion() throws Exception
     {
         // Test partial dates
-        Calendar convDate = DateConverter.toCalendar("2015-02-02");
+        Calendar convDate = DateConverter.toCalendar("2015");
         assertEquals(2015, convDate.get(Calendar.YEAR));
+        convDate = DateConverter.toCalendar("2015-05");
+        assertEquals(4, convDate.get(Calendar.MONTH));
+        convDate = DateConverter.toCalendar("2015-05-02");
+        assertEquals(2015, convDate.get(Calendar.YEAR));
+        assertEquals(4, convDate.get(Calendar.MONTH));
+        assertEquals(2, convDate.get(Calendar.DAY_OF_MONTH));
 
         convDate = DateConverter.toCalendar("D:2015-02-02");
         assertEquals(2015, convDate.get(Calendar.YEAR));
 
+        convDate = DateConverter.toCalendar("D:2015-02-03T10:11:12");
+        assertEquals(2015, convDate.get(Calendar.YEAR));
+        assertEquals(1, convDate.get(Calendar.MONTH)); // 0-based
+        assertEquals(3, convDate.get(Calendar.DAY_OF_MONTH));
+        assertEquals(10, convDate.get(Calendar.HOUR_OF_DAY));
+        assertEquals(11, convDate.get(Calendar.MINUTE));
+        assertEquals(12, convDate.get(Calendar.SECOND));
+
+        convDate = DateConverter.toCalendar("D:2015-02-03T10:11:12Z");
+        assertEquals(2015, convDate.get(Calendar.YEAR));
+        assertEquals(1, convDate.get(Calendar.MONTH)); // 0-based
+        assertEquals(3, convDate.get(Calendar.DAY_OF_MONTH));
+        assertEquals(10, convDate.get(Calendar.HOUR_OF_DAY));
+        assertEquals(11, convDate.get(Calendar.MINUTE));
+        assertEquals(12, convDate.get(Calendar.SECOND));
+
         convDate = DateConverter.toCalendar("2025-09-03T15:43:47.989082+00:00");
         assertEquals(989, convDate.get(Calendar.MILLISECOND));
 
+        // test some bad strings
         assertThrows(IOException.class, () -> DateConverter.toCalendar("123"));
+        assertThrows(IOException.class, () -> DateConverter.toCalendar("2008-12-31T19:48:30+19:00"));
+        assertThrows(IOException.class, () -> DateConverter.toCalendar("2008-12-31T19:48:30-19:00"));
+        assertThrows(IOException.class, () -> DateConverter.toCalendar("2008-12-02T21:04:0Z"));
+        assertThrows(IOException.class, () -> DateConverter.toCalendar("0-01-01T00:00:00Z"));
+        assertThrows(IOException.class, () -> DateConverter.toCalendar("2009-03-16T01:15:19-0-4:00"));
+        assertThrows(IOException.class, () -> DateConverter.toCalendar("0-00-00T00:00:00-04:00"));
 
         //Test missing seconds
         assertEquals(DateConverter.toCalendar("2015-12-08T12:07:00-05:00"),
@@ -99,16 +134,6 @@ class DateConverterTest
 
         assertEquals(DateConverter.toCalendar(testString2).toInstant(),ZonedDateTime.parse(testString1, dateTimeFormatter).toInstant());
 
-        testString1 = "2015-02-02T16:37:19.192Z";
-        testString2 = "2015-02-02T08:37:19.192PST";
-
-        assertEquals(DateConverter.toCalendar(testString2).toInstant(),ZonedDateTime.parse(testString1, dateTimeFormatter).toInstant());
-
-        testString1 = "2015-02-02T16:37:19.192+01:00";
-        testString2 = "2015-02-02T16:37:19.192Europe/Berlin";
-
-        assertEquals(DateConverter.toCalendar(testString2).toInstant(),ZonedDateTime.parse(testString1, dateTimeFormatter).toInstant());
-
         // PDFBOX-4902: half-hour TZ
         testString1 = "2015-02-02T16:37:19.192+05:30";
         assertEquals(DateConverter.toCalendar(testString1).toInstant(),ZonedDateTime.parse(testString1, dateTimeFormatter).toInstant());
@@ -118,6 +143,14 @@ class DateConverterTest
 
         testString1 = "2015-02-02T16:37:19.192+10:30";
         assertEquals(DateConverter.toCalendar(testString1).toInstant(),ZonedDateTime.parse(testString1, dateTimeFormatter).toInstant());
+
+        testString1 = "2024-04-09T14:41:38";
+        assertEquals(DateConverter.toCalendar(testString1).toInstant(),
+                LocalDateTime.parse(testString1, ISO_LOCAL_DATE_TIME).atZone(ZoneId.of("UTC"))
+                        .toInstant());
+
+        assertNull(DateConverter.toCalendar(null));
+        assertNull(DateConverter.toCalendar(""));
     }
     
     /**
@@ -136,5 +169,20 @@ class DateConverterTest
         assertEquals(dateFormat.format(cal.getTime()), 
                     dateFormat.format(DateConverter.toCalendar(DateConverter.toISO8601(cal,true)).getTime())
                 );
+
+        cal = DateConverter.toCalendar("2015-02-02T16:37:19.192+09:09");
+        assertEquals(dateFormat.format(cal.getTime()), 
+                    dateFormat.format(DateConverter.toCalendar(DateConverter.toISO8601(cal,true)).getTime())
+                );
+
+        cal = DateConverter.toCalendar("2015-02-02T16:37:19.192+10:10");
+        assertEquals(dateFormat.format(cal.getTime()), 
+                    dateFormat.format(DateConverter.toCalendar(DateConverter.toISO8601(cal,true)).getTime())
+                );
+
+        // PDFBOX-6107
+        cal = DateConverter.toCalendar("0000-01-01");
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        assertEquals("0001-01-01T00:00:00+00:00", DateConverter.toISO8601(cal));
     }
 }

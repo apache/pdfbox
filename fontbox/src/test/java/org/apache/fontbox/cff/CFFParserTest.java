@@ -15,19 +15,18 @@
  */
 package org.apache.fontbox.cff;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -108,7 +107,7 @@ class CFFParserTest
     {
         CFFEncoding encoding = testCFFType1Font.getEncoding();
         assertNotNull(encoding, "Encoding must not be null");
-        assertTrue(encoding instanceof CFFStandardEncoding,
+        assertInstanceOf(CFFStandardEncoding.class, encoding, 
                 "Encoding is not an instance of CFFStandardEncoding");
     }
 
@@ -119,24 +118,19 @@ class CFFParserTest
         assertFalse(charStringBytes.isEmpty());
         assertEquals(824, testCFFType1Font.getNumCharStrings());
         // check some randomly chosen values
-        assertTrue(
-                Arrays.equals(new byte[] { -4, 15, 14 }, charStringBytes.get(1)), //
+        assertArrayEquals(new byte[] { -4, 15, 14 }, charStringBytes.get(1), //
                 "Other char strings byte values than expected");
-        assertTrue(
-                Arrays.equals(new byte[] { 72, 29, -13, 29, -9, -74, -9, 43, 3, 33, 29, 14 },
-                        charStringBytes.get(16)), //
+        assertArrayEquals(new byte[] { 72, 29, -13, 29, -9, -74, -9, 43, 3, 33, 29, 14 },
+                        charStringBytes.get(16), //
                 "Other char strings byte values than expected");
-        assertTrue(
-                Arrays.equals(new byte[] { -41, 88, 29, -47, -9, 12, 1, -123, 10, 3, 35, 29, -9,
-                        -50, -9, 62, -9, 3, 10, 85, -56, 61, 10 }, charStringBytes.get(195)), //
+        assertArrayEquals(new byte[] { -41, 88, 29, -47, -9, 12, 1, -123, 10, 3, 35, 29, -9,
+                        -50, -9, 62, -9, 3, 10, 85, -56, 61, 10 }, charStringBytes.get(195), //
                 "Other char strings byte values than expected");
-        assertTrue(
-                Arrays.equals(new byte[] { -5, -69, -61, -8, 28, 1, -9, 57, -39, -65, 29, 14 },
-                        charStringBytes.get(525)), //
+        assertArrayEquals(new byte[] { -5, -69, -61, -8, 28, 1, -9, 57, -39, -65, 29, 14 },
+                        charStringBytes.get(525), //
                 "Other char strings byte values than expected");
-        assertTrue(
-                Arrays.equals(new byte[] { 107, -48, 10, -9, 20, -9, 123, 3, -9, -112, -8, -46, 21,
-                        -10, 115, 10 }, charStringBytes.get(738)), //
+        assertArrayEquals(new byte[] { 107, -48, 10, -9, 20, -9, 123, 3, -9, -112, -8, -46, 21,
+                        -10, 115, 10 }, charStringBytes.get(738), //
                 "Other char strings byte values than expected");
     }
 
@@ -147,16 +141,13 @@ class CFFParserTest
         assertFalse(globalSubrIndex.isEmpty());
         assertEquals(278, globalSubrIndex.size());
         // check some randomly chosen values
-        assertTrue(
-                Arrays.equals(new byte[] { 21, -70, -83, -85, -72, -72, 105, -85, 92, 91, 105, 107,
-                        10, -83, -9, 62, 10 }, globalSubrIndex.get(12)), //
+        assertArrayEquals(new byte[] { 21, -70, -83, -85, -72, -72, 105, -85, 92, 91, 105, 107,
+                        10, -83, -9, 62, 10 }, globalSubrIndex.get(12), //
                 "Other global subr index values than expected");
-        assertTrue(
-                Arrays.equals(new byte[] { 58, 122, 29, -5, 48, 6, 11 }, globalSubrIndex.get(120)), //
+        assertArrayEquals(new byte[] { 58, 122, 29, -5, 48, 6, 11 }, globalSubrIndex.get(120), //
                 "Other global subr index values than expected");
-        assertTrue(
-                Arrays.equals(new byte[] { 68, 80, 29, -45, -9, 16, -8, -92, 119, 11 },
-                        globalSubrIndex.get(253)), //
+        assertArrayEquals(new byte[] { 68, 80, 29, -45, -9, 16, -8, -92, 119, 11 },
+                        globalSubrIndex.get(253), //
                 "Other global subr index values than expected");
     }
 

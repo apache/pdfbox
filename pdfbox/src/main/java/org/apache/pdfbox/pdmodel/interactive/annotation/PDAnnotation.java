@@ -336,6 +336,20 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
+     * This will set the annotations appearance state name.
+     * 
+     * <p>Note that the PDF specification defines the AS entry as a name, but some PDFs use a string.
+     * This method will write a name, which is correct and should be preferred but may cause issues
+     * with some viewers if the PDF being edited already uses a string.</p>
+     * 
+     * @param as The COSName of the appearance stream.
+     */
+    public void setAppearanceState(COSName as)
+    {
+        getCOSObject().setItem(COSName.AS, as);
+    }
+
+    /**
      * This will get the appearance dictionary associated with this annotation. This may return null.
      * 
      * @return This annotations appearance.

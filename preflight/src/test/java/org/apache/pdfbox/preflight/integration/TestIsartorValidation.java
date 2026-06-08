@@ -23,6 +23,8 @@ package org.apache.pdfbox.preflight.integration;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,32 +56,32 @@ class TestIsartorValidation
     private static InvalidFileTester tester;
 
     @BeforeAll
-    static void setup() throws Exception
+    static void setup() throws FileNotFoundException
     {
         tester = new InvalidFileTester(RESULTS_FILE);
     }
 
     @AfterAll
-    static void closeDown() throws Exception
+    static void closeDown()
     {
         tester.after();
     }
 
     @ParameterizedTest
 	@MethodSource("initializeParameters")
-    void validate(File path, String expectedError) throws Exception
+    void validate(File path, String expectedError) throws IOException
     {
         tester.validate(path, expectedError);
     }
 
-    protected static Collection<Arguments> stopIfExpected() throws Exception
+    protected static Collection<Arguments> stopIfExpected()
     {
         List<Arguments> ret = new ArrayList<>();
         ret.add(Arguments.of(null, null));
         return ret;
     }
 
-    public static Collection<Arguments> initializeParameters() throws Exception
+    public static Collection<Arguments> initializeParameters() throws IOException
     {
         // find isartor files
         String isartor = System.getProperty(ISARTOR_FILES);

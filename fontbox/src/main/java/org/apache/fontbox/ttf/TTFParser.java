@@ -54,7 +54,7 @@ public class TTFParser
     /**
      * Parse a RandomAccessRead and return a TrueType font.
      *
-     * @param randomAccessRead The RandomAccessREad to be read from. It will be closed before returning.
+     * @param randomAccessRead The RandomAccessRead to be read from. It will be closed before returning.
      * @return A TrueType font.
      * @throws IOException If there is an error parsing the TrueType font.
      */
@@ -105,9 +105,9 @@ public class TTFParser
     }
 
     /**
-     * Parse a RandomAccessRead and return a TrueType font.
+     * Parse a RandomAccessRead and return the table headers.
      *
-     * @param randomAccessRead The RandomAccessREad to be read from. It will be closed before returning.
+     * @param randomAccessRead The randomAccessRead to be read from. It will be closed before returning.
      * @return TrueType font headers.
      * @throws IOException If there is an error parsing the TrueType font.
      */
@@ -254,7 +254,7 @@ public class TTFParser
      * 
      * This method can be optimized further by skipping unused portions inside each individual table parser
      *
-     * @param font the TrueTypeFont instance holding the parsed data.
+     * @param raf the TrueType data stream.
      * @throws IOException If there is an error parsing the TrueType font.
      */
     FontHeaders parseTableHeaders(TTFDataStream raf) throws IOException

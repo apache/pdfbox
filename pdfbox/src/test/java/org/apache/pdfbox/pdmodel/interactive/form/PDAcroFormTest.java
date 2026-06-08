@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -341,8 +342,8 @@ class PDAcroFormTest
             assertNotNull(helv);
             assertNotNull(zadb);
             // make sure that font wasn't overwritten
-            assertTrue(helv instanceof PDType1Font);
-            assertTrue(zadb instanceof PDType1Font);
+            assertInstanceOf(PDType1Font.class, helv);
+            assertInstanceOf(PDType1Font.class, zadb);
             PDType1Font helvType1 = (PDType1Font) helv;
             PDType1Font zadbType1 = (PDType1Font) zadb;
             assertEquals(FontName.HELVETICA.getName(), helv.getName());

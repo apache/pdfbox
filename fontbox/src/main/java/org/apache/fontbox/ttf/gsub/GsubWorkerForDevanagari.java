@@ -72,7 +72,7 @@ public class GsubWorkerForDevanagari implements GsubWorker
         this.gsubData = gsubData;
         beforeHalfGlyphIds = getBeforeHalfGlyphIds();
         rephGlyphIds = getRephGlyphIds();
-        beforeRephGlyphIds = getbeforeRephGlyphIds();
+        beforeRephGlyphIds = getBeforeRephGlyphIds();
     }
 
     @Override
@@ -256,7 +256,7 @@ public class GsubWorkerForDevanagari implements GsubWorker
 
     private List<Integer> getRephGlyphIds()
     {
-        List<Integer> result = new ArrayList<>();
+        List<Integer> result = new ArrayList<>(REPH_CHARS.length);
         for (char character : REPH_CHARS)
         {
             result.add(getGlyphId(character));
@@ -264,9 +264,9 @@ public class GsubWorkerForDevanagari implements GsubWorker
         return Collections.unmodifiableList(result);
     }
 
-    private List<Integer> getbeforeRephGlyphIds()
+    private List<Integer> getBeforeRephGlyphIds()
     {
-        List<Integer> glyphIds = new ArrayList<>();
+        List<Integer> glyphIds = new ArrayList<>(BEFORE_REPH_CHARS.length);
         for (char character : BEFORE_REPH_CHARS)
         {
             glyphIds.add(getGlyphId(character));

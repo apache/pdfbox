@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -474,5 +475,34 @@ public abstract class PDField implements COSObjectable
     {
         return getFullyQualifiedName() + "{type: " + getClass().getSimpleName() + " value: " +
                 getInheritableAttribute(COSName.V) + "}";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals (Object o)
+    {
+        if (o == this)
+        {
+            return true;
+        }
+
+        if (!(o instanceof PDField))
+        {
+            return false;
+        }
+
+        COSDictionary toBeCompared = ((PDField) o).getCOSObject();
+        return toBeCompared.equals(getCOSObject());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(dictionary);
     }
 }

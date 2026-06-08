@@ -135,22 +135,22 @@ public final class PDFontFactory
             COSDictionary fd = dictionary.getCOSDictionary(COSName.FONT_DESC);
             if (fd != null && fd.containsKey(COSName.FONT_FILE3))
             {
-                return new PDType1CFont(dictionary);
+                return new PDType1CFont(dictionary, resourceCache);
             }
-            return new PDType1Font(dictionary);
+            return new PDType1Font(dictionary, resourceCache);
         }
         else if (COSName.MM_TYPE1.equals(subType))
         {
             COSDictionary fd = dictionary.getCOSDictionary(COSName.FONT_DESC);
             if (fd != null && fd.containsKey(COSName.FONT_FILE3))
             {
-                return new PDType1CFont(dictionary);
+                return new PDType1CFont(dictionary, resourceCache);
             }
-            return new PDMMType1Font(dictionary);
+            return new PDMMType1Font(dictionary, resourceCache);
         }
         else if (COSName.TRUE_TYPE.equals(subType))
         {
-            return new PDTrueTypeFont(dictionary);
+            return new PDTrueTypeFont(dictionary, resourceCache);
         }
         else if (COSName.TYPE3.equals(subType))
         {
@@ -170,7 +170,7 @@ public final class PDFontFactory
                     fixType0Subtype(descendantFont, fontDescriptor, fontTypeFromFont.getSubtype());
                 }
             }
-            return new PDType0Font(dictionary);
+            return new PDType0Font(dictionary, resourceCache);
         }
         else if (COSName.CID_FONT_TYPE0.equals(subType))
         {
@@ -185,7 +185,7 @@ public final class PDFontFactory
             // assuming Type 1 font (see PDFBOX-1988) because it seems that Adobe Reader does this
             // however, we may need more sophisticated logic perhaps looking at the FontFile
             LOG.warn("Invalid font subtype '" + subType + "'");
-            return new PDType1Font(dictionary);
+            return new PDType1Font(dictionary, resourceCache);
         }
     }
 

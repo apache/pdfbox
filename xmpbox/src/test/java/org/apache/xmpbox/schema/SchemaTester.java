@@ -201,6 +201,15 @@ class SchemaTester extends AbstractTypeTester {
         }
     }
 
+    public void testRandomSetterSimple() throws ReflectiveOperationException
+    {
+        initializeSeed(new Random());
+        for (int i=0; i < RAND_LOOP_COUNT;i++)
+        {
+            internalTestSetterSimple();
+        }
+    }
+
     private void internalTestPropertySetterSimple() throws Exception
     {
         if (cardinality != Cardinality.Simple)
@@ -282,5 +291,37 @@ class SchemaTester extends AbstractTypeTester {
         StringBuilder sb = new StringBuilder();
         sb.append(schema.getPrefix()).append(":").append(name);
         return sb.toString();
+    }
+
+    // Test simple values to increase test coverage
+    private void internalTestSetterSimple() throws ReflectiveOperationException
+    {
+        if (cardinality != Cardinality.Simple)
+        {
+            return;
+        }
+
+        if (schemaClass == PhotoshopSchema.class && 
+                ("Urgency".equals(fieldName) || "ColorMode".equals(fieldName) || "DateCreated".equals(fieldName)))
+        {
+            // can't test these because return type != parameter (Urgency / ColorMode)
+            // or because value isn't expected parameter (DateCreated: getJavaValue() gives Calendar)
+            return;
+        }
+
+        XMPSchema schema = getSchema();
+
+        String setter = calculateSimpleSetter(fieldName);
+        Object value = getJavaValue(type);
+        Method set = schemaClass.getMethod(setter, String.class);
+        set.invoke(schema, value);
+        // check property set
+        AbstractSimpleProperty stored = (AbstractSimpleProperty) schema.getProperty(fieldName);
+        assertEquals(value, stored.getValue());
+        // check getter
+        String getter = calculateSimpleGetter(fieldName);
+        Method get = schemaClass.getMethod(getter);
+        Object result = get.invoke(schema);
+        assertEquals(value, result);
     }
 }

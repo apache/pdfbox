@@ -20,8 +20,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
 /**
- * If exist, it describe where the signature handler can request a RFC3161
- * timestamp and if it is a must have for the signature.
+ * This optional dictionary provides the URL for a RFC3161 time-stamping server, and whether
+ * the timestamp is required for the signature.
  *
  * @author Thomas Chojecki
  */
@@ -85,16 +85,16 @@ public class PDSeedValueTimeStamp
      */
     public boolean isTimestampRequired()
     {
-        return dictionary.getInt(COSName.FT, 0) != 0;
+        return dictionary.getInt(COSName.FF, 0) != 0;
     }
 
     /**
-     * Sets if a timestamp is reuqired or not.
+     * Sets if a timestamp is required or not.
      * 
      * @param flag true if a timestamp is required
      */
     public void setTimestampRequired(boolean flag)
     {
-        dictionary.setInt(COSName.FT, flag ? 1 : 0);
+        dictionary.setInt(COSName.FF, flag ? 1 : 0);
     }
 }

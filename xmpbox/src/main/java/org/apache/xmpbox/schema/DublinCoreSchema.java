@@ -403,7 +403,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public ArrayProperty getContributorsProperty()
     {
-        return (ArrayProperty) getProperty(CONTRIBUTOR);
+        return getPropertyAs(CONTRIBUTOR, ArrayProperty.class);
     }
 
     /**
@@ -424,7 +424,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public TextType getCoverageProperty()
     {
-        return (TextType) getProperty(COVERAGE);
+        return getPropertyAs(COVERAGE, TextType.class);
     }
 
     /**
@@ -434,7 +434,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public String getCoverage()
     {
-        TextType tt = (TextType) getProperty(COVERAGE);
+        TextType tt = getPropertyAs(COVERAGE, TextType.class);
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -445,7 +445,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public ArrayProperty getCreatorsProperty()
     {
-        return (ArrayProperty) getProperty(CREATOR);
+        return getPropertyAs(CREATOR, ArrayProperty.class);
     }
 
     /**
@@ -465,7 +465,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public ArrayProperty getDatesProperty()
     {
-        return (ArrayProperty) getProperty(DATE);
+        return getPropertyAs(DATE, ArrayProperty.class);
     }
 
     /**
@@ -485,7 +485,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public ArrayProperty getDescriptionProperty()
     {
-        return (ArrayProperty) getProperty(DESCRIPTION);
+        return getPropertyAs(DESCRIPTION, ArrayProperty.class);
     }
 
     /**
@@ -531,7 +531,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public TextType getFormatProperty()
     {
-        return (TextType) getProperty(FORMAT);
+        return getPropertyAs(FORMAT, TextType.class);
     }
 
     /**
@@ -541,7 +541,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public String getFormat()
     {
-        TextType tt = (TextType) getProperty(FORMAT);
+        TextType tt = getPropertyAs(FORMAT, TextType.class);
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -552,7 +552,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public TextType getIdentifierProperty()
     {
-        return (TextType) getProperty(IDENTIFIER);
+        return getPropertyAs(IDENTIFIER, TextType.class);
     }
 
     /**
@@ -562,7 +562,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public String getIdentifier()
     {
-        TextType tt = (TextType) getProperty(IDENTIFIER);
+        TextType tt = getPropertyAs(IDENTIFIER, TextType.class);
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -573,7 +573,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public ArrayProperty getLanguagesProperty()
     {
-        return (ArrayProperty) getProperty(LANGUAGE);
+        return getPropertyAs(LANGUAGE, ArrayProperty.class);
     }
 
     /**
@@ -593,7 +593,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public ArrayProperty getPublishersProperty()
     {
-        return (ArrayProperty) getProperty(PUBLISHER);
+        return getPropertyAs(PUBLISHER, ArrayProperty.class);
     }
 
     /**
@@ -613,7 +613,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public ArrayProperty getRelationsProperty()
     {
-        return (ArrayProperty) getProperty(RELATION);
+        return getPropertyAs(RELATION, ArrayProperty.class);
     }
 
     /**
@@ -633,7 +633,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public ArrayProperty getRightsProperty()
     {
-        return (ArrayProperty) getProperty(RIGHTS);
+        return getPropertyAs(RIGHTS, ArrayProperty.class);
     }
 
     /**
@@ -678,7 +678,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public TextType getSourceProperty()
     {
-        return (TextType) getProperty(SOURCE);
+        return getPropertyAs(SOURCE, TextType.class);
     }
 
     /**
@@ -688,7 +688,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public String getSource()
     {
-        TextType tt = (TextType) getProperty(SOURCE);
+        TextType tt = getPropertyAs(SOURCE, TextType.class);
         return tt == null ? null : tt.getStringValue();
     }
 
@@ -699,7 +699,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public ArrayProperty getSubjectsProperty()
     {
-        return (ArrayProperty) getProperty(SUBJECT);
+        return getPropertyAs(SUBJECT, ArrayProperty.class);
     }
 
     /**
@@ -719,7 +719,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public ArrayProperty getTitleProperty()
     {
-        return (ArrayProperty) getProperty(TITLE);
+        return getPropertyAs(TITLE, ArrayProperty.class);
     }
 
     /**
@@ -763,7 +763,7 @@ public class DublinCoreSchema extends XMPSchema
      */
     public ArrayProperty getTypesProperty()
     {
-        return (ArrayProperty) getProperty(TYPE);
+        return getPropertyAs(TYPE, ArrayProperty.class);
     }
 
     /**
@@ -780,5 +780,4 @@ public class DublinCoreSchema extends XMPSchema
     {
         removeUnqualifiedBagValue(TYPE, type);
     }
-
 }

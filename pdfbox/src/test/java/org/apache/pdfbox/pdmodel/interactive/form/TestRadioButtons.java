@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -24,10 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +49,9 @@ import org.junit.jupiter.api.Test;
  */
 class TestRadioButtons
 {
+    static final File TESTFILE3656 =
+            new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form/PDFBOX-3656-SF1199AEG (Complete).pdf");
+
     /**
      * This will test the radio button PDModel.
      *
@@ -137,16 +140,11 @@ class TestRadioButtons
      * PDFBOX-3656 Radio button field with FLAG_RADIOS_IN_UNISON false
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox3656NotInUnison() throws IOException, URISyntaxException
+    void testPDFBox3656NotInUnison() throws IOException
     {
-
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -162,15 +160,11 @@ class TestRadioButtons
      * Setting by the first export value shall only select the first radio button
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox3656ByValidExportValue() throws IOException, URISyntaxException
+    void testPDFBox3656ByValidExportValue() throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -189,15 +183,11 @@ class TestRadioButtons
      * PDFBOX-3656 Set by invalid export value
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox3656ByInvalidExportValue() throws IOException, URISyntaxException
+    void testPDFBox3656ByInvalidExportValue() throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -213,8 +203,8 @@ class TestRadioButtons
 
             // compare the messages
             String expectedMessage = "value 'Invalid' is not a valid option for the field Checking/Savings, valid values are: [Checking, Savings] and Off";
-	        String actualMessage = exception.getMessage();
-	 
+            String actualMessage = exception.getMessage();
+
             assertTrue(actualMessage.contains(expectedMessage));
 
             assertEquals("Off", field.getValue(), "no option shall be selected");
@@ -229,15 +219,11 @@ class TestRadioButtons
      * Setting by the index shall only select the corresponding radio button
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox3656ByValidIndex() throws IOException, URISyntaxException
+    void testPDFBox3656ByValidIndex() throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -259,16 +245,11 @@ class TestRadioButtons
      * Setting by the index shall only select the corresponding radio button
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox3656ByInvalidIndex() throws IOException, URISyntaxException
+    void testPDFBox3656ByInvalidIndex() throws IOException
     {
-
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -284,8 +265,8 @@ class TestRadioButtons
 
             // compare the messages
             String expectedMessage = "index '6' is not a valid index for the field Checking/Savings, valid indices are from 0 to 5";
-	        String actualMessage = exception.getMessage();
-	 
+            String actualMessage = exception.getMessage();
+
             assertTrue(actualMessage.contains(expectedMessage));
 
             assertEquals("Off", field.getValue(), "no option shall be selected");
@@ -297,15 +278,11 @@ class TestRadioButtons
      * PDFBOX-4617 Enable getting selected index
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox4617IndexNoneSelected() throws IOException, URISyntaxException
+    void testPDFBox4617IndexNoneSelected() throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -318,15 +295,11 @@ class TestRadioButtons
      * PDFBOX-4617 Enable getting selected index for value being set by option
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox4617IndexForSetByOption() throws IOException, URISyntaxException
+    void testPDFBox4617IndexForSetByOption() throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -340,15 +313,11 @@ class TestRadioButtons
      * PDFBOX-4617 Enable getting selected index for value being set by index
      * 
      * @throws IOException
-     * @throws URISyntaxException
      */
     @Test
-    void testPDFBox4617IndexForSetByIndex() throws IOException, URISyntaxException
+    void testPDFBox4617IndexForSetByIndex() throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(
-                RandomAccessReadBuffer.createBufferFromStream(new URI(sourceUrl).toURL().openStream())))
+        try (PDDocument testPdf = Loader.loadPDF(TESTFILE3656))
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
@@ -397,5 +366,124 @@ class TestRadioButtons
             assertEquals(COSName.getPDFName("1"), field.getCOSObject().getDictionaryObject(COSName.V));
             assertEquals(1, field.getSelectedIndex());
         }        
+    }
+    /**
+     * PDFBOX-6178: Ensure that RadioButton values with non-ASCII characters preserve encoding.
+     * When setting a RadioButton value to "männlich", both V and AS entries should preserve
+     * the original byte encoding from the appearance dictionary (0xE4 for ä in ISO-8859-1,
+     * not 0xC3 0xA4 from UTF-8).
+     * 
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox6178NonAsciiRadioButtonValue() throws IOException
+    {
+        File pdfFile = new File("target/pdfs/PDFBOX-6178.pdf");
+        if (!pdfFile.exists())
+        {
+            return;  // Skip test if PDF not available
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        // Load document, set value, and save to memory
+        try (PDDocument document = Loader.loadPDF(pdfFile))
+        {
+            PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+            PDField field = acroForm.getField("Geschlecht");
+            
+            field.setValue("männlich");
+            
+            // Verify V entry preserves encoding - should have 0xE4 byte for ä (ISO-8859-1)
+            COSName vEntry = (COSName) field.getCOSObject().getDictionaryObject(COSName.V);
+            assertNotNull(vEntry, "V entry should not be null after setValue");
+            
+            // Check that the bytes contain 0xE4 (ISO-8859-1 ä) not 0xC3 0xA4 (UTF-8)
+            byte[] vBytes = vEntry.getBytes();
+            
+            assertFalse(containsSequence(vBytes, new byte[]{(byte) 0xC3, (byte) 0xA4}),
+                    "V entry should not contain UTF-8 encoded ä (0xC3 0xA4)");
+            assertTrue(containsSequence(vBytes, new byte[]{(byte) 0xE4}),
+                    "V entry should contain ISO-8859-1 encoded ä (0xE4)");
+            
+            // Verify AS entry preserves encoding
+            COSName asEntry = (COSName) field.getWidgets().get(0).getCOSObject()
+                    .getDictionaryObject(COSName.AS);
+            assertNotNull(asEntry, "AS entry should not be null after setValue");
+            
+            // Check that the AS bytes also preserve ISO-8859-1 encoding
+            byte[] asBytes = asEntry.getBytes();
+            
+            assertFalse(containsSequence(asBytes, new byte[]{(byte) 0xC3, (byte) 0xA4}),
+                    "AS entry should not contain UTF-8 encoded ä (0xC3 0xA4)");
+            assertTrue(containsSequence(asBytes, new byte[]{(byte) 0xE4}),
+                    "AS entry should contain ISO-8859-1 encoded ä (0xE4)");
+            
+            document.save(baos);
+        }
+
+        // Reload and verify entries are still correct
+        try (PDDocument document = Loader.loadPDF(baos.toByteArray()))
+        {
+            PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+            PDField field = acroForm.getField("Geschlecht");
+            
+            // Verify V entry after reload
+            COSName vEntry = (COSName) field.getCOSObject().getDictionaryObject(COSName.V);
+            assertNotNull(vEntry, "V entry should not be null after reload");
+            
+            byte[] vBytes = vEntry.getBytes();
+            assertFalse(containsSequence(vBytes, new byte[]{(byte) 0xC3, (byte) 0xA4}),
+                    "V entry should still not contain UTF-8 ä after reload");
+            assertTrue(containsSequence(vBytes, new byte[]{(byte) 0xE4}),
+                    "V entry should still contain ISO-8859-1 ä after reload");
+            
+            // Verify AS entry after reload
+            COSName asEntry = (COSName) field.getWidgets().get(0).getCOSObject()
+                    .getDictionaryObject(COSName.AS);
+            assertNotNull(asEntry, "AS entry should not be null after reload");
+            
+            byte[] asBytes = asEntry.getBytes();
+            assertFalse(containsSequence(asBytes, new byte[]{(byte) 0xC3, (byte) 0xA4}),
+                    "AS entry should still not contain UTF-8 ä after reload");
+            assertTrue(containsSequence(asBytes, new byte[]{(byte) 0xE4}),
+                    "AS entry should still contain ISO-8859-1 ä after reload");
+        }
+    }
+
+    /**
+     * Helper method to check if a byte sequence contains a particular sub-sequence.
+     *
+     * @param haystack the bytes to search in
+     * @param needle the bytes to search for
+     * @return true if needle is found in haystack, false otherwise
+     */
+    private boolean containsSequence(byte[] haystack, byte[] needle)
+    {
+        if (needle.length == 0)
+        {
+            return true;
+        }
+        if (needle.length > haystack.length)
+        {
+            return false;
+        }
+        for (int i = 0; i <= haystack.length - needle.length; i++)
+        {
+            boolean match = true;
+            for (int j = 0; j < needle.length; j++)
+            {
+                if (haystack[i + j] != needle[j])
+                {
+                    match = false;
+                    break;
+                }
+            }
+            if (match)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

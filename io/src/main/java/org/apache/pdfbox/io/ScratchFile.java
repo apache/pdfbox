@@ -249,7 +249,14 @@ public class ScratchFile implements RandomAccessStreamCache
                 // create scratch file is needed
                 if ( raf == null )
                 {
-                    file = File.createTempFile("PDFBox", ".tmp", scratchFileDirectory);
+                    if (scratchFileDirectory == null)
+                    {
+                        file = IOUtils.createProtectedTempFile(null, "PDFBox", ".tmp").toFile();
+                    }
+                    else
+                    {
+                        file = IOUtils.createProtectedTempFile(scratchFileDirectory.toPath(), "PDFBox", ".tmp").toFile();
+                    }
                     try
                     {
                         raf = new java.io.RandomAccessFile(file, "rw");

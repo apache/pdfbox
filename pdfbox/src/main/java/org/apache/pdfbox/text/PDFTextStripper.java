@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -169,14 +168,14 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      * The charactersByArticle is used to extract text by article divisions. For example a PDF that has two columns like
      * a newspaper, we want to extract the first column and then the second column. In this example the PDF would have 2
      * beads(or articles), one for each column. The size of the charactersByArticle would be 5, because not all text on
-     * the screen will fall into one of the articles. The five divisions are shown below
-     *
-     * Text before first article
-     * first article text
-     * text between first article and second article
-     * second article text
-     * text after second article
-     *
+     * the screen will fall into one of the articles. The five divisions are shown below:
+     * <ol>
+     * <li>Text before first article</li>
+     * <li>first article text</li>
+     * <li>text between first article and second article</li>
+     * <li>second article text</li>
+     * <li>text after second article</li>
+     * </ol>
      * Most PDFs won't have any beads, so charactersByArticle will contain a single entry.
      */
     protected ArrayList<List<TextPosition>> charactersByArticle = new ArrayList<>();
@@ -208,7 +207,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      * <p>IMPORTANT: By default, text extraction is done in the same sequence as the text in the PDF page content stream.
      * PDF is a graphic format, not a text format, and unlike HTML, it has no requirements that text one on page
      * be rendered in a certain order. The order is the one that was determined by the software that created the
-     * PDF. To get text sorted from left to right and top to botton, use {@link #setSortByPosition(boolean)}.
+     * PDF. To get text sorted from left to right and top to bottom, use {@link #setSortByPosition(boolean)}.
      * 
      * @param doc The document to get the text from.
      * @return The text of the PDF document.
@@ -386,8 +385,9 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
     private void fillBeadRectangles(PDPage page)
     {
-        beadRectangles = new ArrayList<>();
-        for (PDThreadBead bead : page.getThreadBeads())
+        List<PDThreadBead> threadBeads = page.getThreadBeads();
+        beadRectangles = new ArrayList<>(threadBeads.size());
+        for (PDThreadBead bead : threadBeads)
         {
             if (bead == null || bead.getRectangle() == null)
             {
@@ -1192,7 +1192,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     }
 
     /**
-     * By default the text stripper will attempt to remove text that overlapps each other. Word paints the same
+     * By default the text stripper will attempt to remove text that overlaps each other. Word paints the same
      * character several times in order to make it look bold. By setting this to false all text will be extracted, which
      * means that certain sections will be duplicated, but better performance will be noticed.
      *
@@ -1811,7 +1811,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     {
         if (listOfPatterns == null)
         {
-            listOfPatterns = new ArrayList<>();
+            listOfPatterns = new ArrayList<>(LIST_ITEM_EXPRESSIONS.length);
             for (String expression : LIST_ITEM_EXPRESSIONS)
             {
                 Pattern p = Pattern.compile(expression);
@@ -1874,7 +1874,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      */
     private List<WordWithTextPositions> normalize(List<LineItem> line)
     {
-        List<WordWithTextPositions> normalized = new LinkedList<>();
+        List<WordWithTextPositions> normalized = new ArrayList<>();
         StringBuilder lineBuilder = new StringBuilder();
         List<TextPosition> wordPositions = new ArrayList<>();
 

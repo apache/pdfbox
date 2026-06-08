@@ -22,16 +22,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.fontbox.util.BoundingBox;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -40,35 +42,24 @@ import org.junit.jupiter.api.Test;
  */
 class AFMParserTest
 {
+    public static final String HELVETICA_AFM = "src/test/resources/afm/Helvetica.afm";
+
     @Test
-    void testStartFontMetrics() throws IOException
+    void testStartFontMetrics()
     {
-        try
-        {
-            new AFMParser(new ByteArrayInputStream("huhu".getBytes(StandardCharsets.US_ASCII)))
-                    .parse();
-            fail("The AFMParser should have thrown an IOException because of a missing "
-                    + AFMParser.START_FONT_METRICS);
-        }
-        catch (IOException e)
-        {
-            // expected exception
-        }
+        assertThrows(IOException.class,
+                () -> new AFMParser(new ByteArrayInputStream("huhu".getBytes(StandardCharsets.US_ASCII))).parse(),
+                "The AFMParser should have thrown an IOException because of a missing " + AFMParser.START_FONT_METRICS);
     }
 
     @Test
     void testEndFontMetrics() throws IOException
     {
-        AFMParser parser = new AFMParser(
-                new FileInputStream("src/test/resources/afm/NoEndFontMetrics.afm"));
-        try
+        try (InputStream is = new FileInputStream("src/test/resources/afm/NoEndFontMetrics.afm"))
         {
-            parser.parse();
-            fail("The AFMParser should have thrown an IOException because of a missing "
-                    + AFMParser.END_FONT_METRICS);
-        }
-        catch (IOException e)
-        {
+            AFMParser parser = new AFMParser(is);
+            IOException e = assertThrows(IOException.class, parser::parse,
+                    "The AFMParser should have thrown an IOException because of a missing " + AFMParser.END_FONT_METRICS);
             assertTrue(e.getMessage().contains("Unknown AFM key"));
         }
     }
@@ -76,16 +67,12 @@ class AFMParserTest
     @Test
     void testMalformedFloat() throws IOException
     {
-        AFMParser parser = new AFMParser(
-                new FileInputStream("src/test/resources/afm/MalformedFloat.afm"));
-        try
+        try (InputStream is = new FileInputStream("src/test/resources/afm/MalformedFloat.afm"))
         {
-            parser.parse();
-            fail("The AFMParser should have thrown an IOException because of a malformed float value");
-        }
-        catch (IOException e)
-        {
-            assertTrue(e.getCause() instanceof NumberFormatException);
+            AFMParser parser = new AFMParser(is);
+            IOException e = assertThrows(IOException.class, parser::parse,
+                    "The AFMParser should have thrown an IOException because of a malformed float value");
+            assertInstanceOf(NumberFormatException.class, e.getCause());
             assertTrue(e.getMessage().contains("4,1ab"));
         }
     }
@@ -93,16 +80,12 @@ class AFMParserTest
     @Test
     void testMalformedInteger() throws IOException
     {
-        AFMParser parser = new AFMParser(
-                new FileInputStream("src/test/resources/afm/MalformedInteger.afm"));
-        try
+        try (InputStream is = new FileInputStream("src/test/resources/afm/MalformedInteger.afm"))
         {
-            parser.parse();
-            fail("The AFMParser should have thrown an IOException because of a malformed int value");
-        }
-        catch (IOException e)
-        {
-            assertTrue(e.getCause() instanceof NumberFormatException);
+            AFMParser parser = new AFMParser(is);
+            IOException e = assertThrows(IOException.class, parser::parse,
+                    "The AFMParser should have thrown an IOException because of a malformed int value");
+            assertInstanceOf(NumberFormatException.class, e.getCause());
             assertTrue(e.getMessage().contains("3.4"));
         }
     }
@@ -110,78 +93,90 @@ class AFMParserTest
     @Test
     void testHelveticaFontMetrics() throws IOException
     {
-        AFMParser parser = new AFMParser(
-                new FileInputStream("src/test/resources/afm/Helvetica.afm"));
-        checkHelveticaFontMetrics(parser.parse());
+        try (InputStream is = new FileInputStream(HELVETICA_AFM))
+        {
+            AFMParser parser = new AFMParser(is);
+            checkHelveticaFontMetrics(parser.parse());
+        }
     }
 
     @Test
     void testHelveticaCharMetrics() throws IOException
     {
-        AFMParser parser = new AFMParser(
-                new FileInputStream("src/test/resources/afm/Helvetica.afm"));
-        FontMetrics fontMetrics = parser.parse();
+        try (InputStream is = new FileInputStream(HELVETICA_AFM))
+        {
+            AFMParser parser = new AFMParser(is);
+            FontMetrics fontMetrics = parser.parse();
 
-        // char metrics
-        checkHelveticaCharMetrics(fontMetrics.getCharMetrics());
+            // char metrics
+            checkHelveticaCharMetrics(fontMetrics.getCharMetrics());
+        }
     }
 
     @Test
     void testHelveticaKernPairs() throws IOException
     {
-        AFMParser parser = new AFMParser(
-                new FileInputStream("src/test/resources/afm/Helvetica.afm"));
-        FontMetrics fontMetrics = parser.parse();
+        try (InputStream is = new FileInputStream(HELVETICA_AFM))
+        {
+            AFMParser parser = new AFMParser(is);
+            FontMetrics fontMetrics = parser.parse();
 
-        // KernPairs
-        List<KernPair> kernPairs = fontMetrics.getKernPairs();
-        assertEquals(2705, kernPairs.size());
-        // check "KPX A Ucircumflex -50"
-        checkKernPair(kernPairs, "A", "Ucircumflex", -50, 0);
-        // check "KPX W agrave -40"
-        checkKernPair(kernPairs, "W", "agrave", -40, 0);
-        // KernPairs0
-        assertTrue(fontMetrics.getKernPairs0().isEmpty());
-        // KernPairs1
-        assertTrue(fontMetrics.getKernPairs1().isEmpty());
-        // composite data
-        assertTrue(fontMetrics.getComposites().isEmpty());
+            // KernPairs
+            List<KernPair> kernPairs = fontMetrics.getKernPairs();
+            assertEquals(2705, kernPairs.size());
+            // check "KPX A Ucircumflex -50"
+            checkKernPair(kernPairs, "A", "Ucircumflex", -50, 0);
+            // check "KPX W agrave -40"
+            checkKernPair(kernPairs, "W", "agrave", -40, 0);
+            // KernPairs0
+            assertTrue(fontMetrics.getKernPairs0().isEmpty());
+            // KernPairs1
+            assertTrue(fontMetrics.getKernPairs1().isEmpty());
+            // composite data
+            assertTrue(fontMetrics.getComposites().isEmpty());
+        }
     }
 
     @Test
     void testHelveticaFontMetricsReducedDataset() throws IOException
     {
-        AFMParser parser = new AFMParser(
-                new FileInputStream("src/test/resources/afm/Helvetica.afm"));
-        checkHelveticaFontMetrics(parser.parse(true));
+        try (InputStream is = new FileInputStream(HELVETICA_AFM))
+        {
+            AFMParser parser = new AFMParser(is);
+            checkHelveticaFontMetrics(parser.parse(true));
+        }
     }
 
     @Test
     void testHelveticaCharMetricsReducedDataset() throws IOException
     {
-        AFMParser parser = new AFMParser(
-                new FileInputStream("src/test/resources/afm/Helvetica.afm"));
-        FontMetrics fontMetrics = parser.parse(true);
+        try (InputStream is = new FileInputStream(HELVETICA_AFM))
+        {
+            AFMParser parser = new AFMParser(is);
+            FontMetrics fontMetrics = parser.parse(true);
 
-        // char metrics
-        checkHelveticaCharMetrics(fontMetrics.getCharMetrics());
+            // char metrics
+            checkHelveticaCharMetrics(fontMetrics.getCharMetrics());
+        }
     }
 
     @Test
     void testHelveticaKernPairsReducedDataset() throws IOException
     {
-        AFMParser parser = new AFMParser(
-                new FileInputStream("src/test/resources/afm/Helvetica.afm"));
-        FontMetrics fontMetrics = parser.parse(true);
+        try (InputStream is = new FileInputStream(HELVETICA_AFM))
+        {
+            AFMParser parser = new AFMParser(is);//
+            FontMetrics fontMetrics = parser.parse(true);
 
-        // KernPairs, empty due to reducedDataset == true
-        assertTrue(fontMetrics.getKernPairs().isEmpty());
-        // KernPairs0
-        assertTrue(fontMetrics.getKernPairs0().isEmpty());
-        // KernPairs1
-        assertTrue(fontMetrics.getKernPairs1().isEmpty());
-        // composite data
-        assertTrue(fontMetrics.getComposites().isEmpty());
+            // KernPairs, empty due to reducedDataset == true
+            assertTrue(fontMetrics.getKernPairs().isEmpty());
+            // KernPairs0
+            assertTrue(fontMetrics.getKernPairs0().isEmpty());
+            // KernPairs1
+            assertTrue(fontMetrics.getKernPairs1().isEmpty());
+            // composite data
+            assertTrue(fontMetrics.getComposites().isEmpty());
+        }
     }
 
     private void checkHelveticaCharMetrics(List<CharMetric> charMetrics)

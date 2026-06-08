@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
-    <version>3.0.6-SNAPSHOT</version>
+    <version>3.0.8-SNAPSHOT</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
@@ -88,7 +88,7 @@
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
-      <version>1.10.15</version>
+      <version>1.10.17</version>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -111,7 +111,7 @@
     <dependency>
       <groupId>commons-net</groupId>
       <artifactId>commons-net</artifactId>
-      <version>3.12.0</version>
+      <version>3.13.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -129,7 +129,7 @@
     <dependency>
         <groupId>org.verapdf</groupId>
         <artifactId>validation-model</artifactId>
-        <version>1.28.2</version>
+        <version>1.30.1</version>
         <scope>test</scope>
     </dependency>
   </dependencies>
@@ -143,13 +143,26 @@
     </resources>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <configuration>
-          <excludes>
-            <exclude>src/test/resources/org/apache/pdfbox/examples/signature/*</exclude>
-            <exclude>src/main/resources/org/apache/pdfbox/resources/pdfa/sRGB.*</exclude>
-          </excludes>
+          <inputExcludes>
+            <inputExclude>src/test/resources/org/apache/pdfbox/examples/signature/*</inputExclude>
+            <inputExclude>src/main/resources/org/apache/pdfbox/resources/pdfa/sRGB.*</inputExclude>
+            <inputExclude>src/main/resources/org/apache/pdfbox/examples/interactive/form/FillFormField.pdf</inputExclude>
+            <inputExclude>src/main/resources/org/apache/pdfbox/examples/rendering/custom-render-demo.pdf</inputExclude>
+            <inputExclude>src/test/resources/org/apache/pdfbox/examples/pdmodel/document.pdf</inputExclude>
+            <!-- netbeans local -->
+            <inputExclude>nbactions.xml</inputExclude>
+            <inputExclude>nb-configuration.xml</inputExclude>
+          </inputExcludes>
         </configuration>
       </plugin>
       <plugin>

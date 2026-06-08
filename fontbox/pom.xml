@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
-    <version>3.0.6-SNAPSHOT</version>
+    <version>3.0.8-SNAPSHOT</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
@@ -78,11 +78,11 @@
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <configuration>
-            <excludes>
-                <exclude>src/main/resources/org/apache/fontbox/cmap/*</exclude>
-                <exclude>src/main/resources/org/apache/fontbox/unicode/*</exclude>
-                <exclude>src/test/resources/afm/*</exclude>
-            </excludes>
+            <inputExcludes>
+                <inputExclude>src/main/resources/org/apache/fontbox/cmap/*</inputExclude>
+                <inputExclude>src/main/resources/org/apache/fontbox/unicode/*</inputExclude>
+                <inputExclude>src/test/resources/afm/*</inputExclude>
+            </inputExcludes>
         </configuration>
       </plugin>
       <!-- download test files from JIRA and keep them in repository cache -->

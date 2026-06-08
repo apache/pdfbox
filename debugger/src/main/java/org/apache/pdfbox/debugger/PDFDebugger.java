@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -61,6 +60,7 @@ import javax.print.attribute.standard.Sides;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
@@ -195,6 +195,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
     private JMenuItem saveAsMenuItem;
     private JMenu recentFilesMenu;
     private JMenuItem printMenuItem;
+    private JCheckBoxMenuItem printBorder;
     private JMenuItem reopenMenuItem;
 
     // edit > find menu
@@ -207,10 +208,6 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
     private String currentTreeViewMode = TreeViewMenu.VIEW_PAGES;
 
     // cli options
-    // Expected for CLI app to write to System.out/System.err
-    @SuppressWarnings("squid:S106")
-    private final PrintStream SYSERR;
-
     @Option(names = { "-h", "--help" }, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
@@ -233,7 +230,6 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
      */
     public PDFDebugger()
     {
-        SYSERR = System.err;
         if (viewstructure)
         {
             currentTreeViewMode = TreeViewMenu.VIEW_STRUCTURE;
@@ -248,14 +244,13 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
      */
     public PDFDebugger(String initialViewMode)
     {
-        SYSERR = System.err;
         if (TreeViewMenu.isValidViewMode(initialViewMode))
         {
             currentTreeViewMode = initialViewMode;
         }
         else
         {
-            SYSERR.println("Onknown view mode " + initialViewMode);
+            new ErrorDialog(new IllegalArgumentException("Unknown view mode: " + initialViewMode)).setVisible(true);
         }
     }
 
@@ -321,7 +316,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         }
         catch (Exception ex)
         {
-            SYSERR.println( "Error viewing document: " + ex.getMessage());
+            new ErrorDialog(ex).setVisible(true);
             return 4;
         }
         return 0;
@@ -362,16 +357,13 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         File file = new File("config.properties");
         if (file.exists())
         {
-            try
+            try (InputStream is = new FileInputStream(file))
             {
-                try (InputStream is = new FileInputStream(file))
-                {
-                    configuration.load(is);
-                }
+                configuration.load(is);
             }
-            catch(IOException e)
+            catch (IOException ex)
             {
-                throw new RuntimeException(e);
+                new ErrorDialog(ex).setVisible(true);
             }
         }
     }
@@ -384,6 +376,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         jSplitPane = new javax.swing.JSplitPane();
         JScrollPane jScrollPaneLeft = new JScrollPane();
         tree = new Tree();
+        tree.init();
         jScrollPaneRight = new JScrollPane();
         jTextPane = new javax.swing.JTextPane();
         
@@ -427,18 +420,14 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         documentScroller.setViewportView(documentPanel);
 
         statusPane = new TreeStatusPane(tree);
-        statusPane.getPanel().setBorder(new BevelBorder(BevelBorder.RAISED));
-        Dimension preferredTreePathSize = statusPane.getPanel().getPreferredSize();
-        int treePathHeight = (int) Math.round(preferredTreePathSize.getHeight());
-        treePathHeight = Integer.parseInt(
-                configuration.getProperty("treePathHeight", Integer.toString(treePathHeight)));
-        preferredTreePathSize.height = treePathHeight;
-        statusPane.getPanel().setPreferredSize(preferredTreePathSize);
+        statusPane.init();
+
         getContentPane().add(statusPane.getPanel(), BorderLayout.PAGE_START);
 
         getContentPane().add(jSplitPane, BorderLayout.CENTER);
 
         statusBar = new ReaderBottomPanel();
+        statusBar.init();
         getContentPane().add(statusBar, BorderLayout.SOUTH);
 
         // create menus
@@ -523,9 +512,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                 osxQuit.setAccessible(true);
                 OSXAdapter.setQuitHandler(this, osxQuit);
             }
-            catch (NoSuchMethodException e)
+            catch (NoSuchMethodException ex)
             {
-                throw new RuntimeException(e);
+                new ErrorDialog(ex).setVisible(true);
             }
         }
     }
@@ -553,9 +542,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
             {
                 readPDFurl(urlString, "");
             }
-            catch (IOException | URISyntaxException e)
+            catch (IOException | URISyntaxException ex)
             {
-                throw new RuntimeException(e);
+                new ErrorDialog(ex).setVisible(true);
             }
         });
         fileMenu.add(openUrlMenuItem);
@@ -602,6 +591,10 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         fileMenu.addSeparator();
         fileMenu.add(printMenuItem);
         fileMenu.add(PrintDpiMenu.getInstance().getMenu());
+        
+        printBorder = new JCheckBoxMenuItem("Print border");
+        printBorder.setEnabled(true);
+        fileMenu.add(printBorder);
 
         if (!IS_MAC_OS)
         {
@@ -729,7 +722,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         {
             readPDFFile(filename, "");
         }
-        catch (IOException | URISyntaxException e)
+        catch (IOException e)
         {
             new ErrorDialog(e).setVisible(true);
         }
@@ -796,7 +789,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                 }
             }
         }
-        catch (IOException | URISyntaxException e)
+        catch (IOException e)
         {
             new ErrorDialog(e).setVisible(true);
         }
@@ -872,8 +865,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
             }
             catch (Exception e)
             {
-                e.printStackTrace();
-                throw new RuntimeException(e);
+                LOG.error(e.getMessage(), e);
             }
         }
     }
@@ -1071,6 +1063,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
             if (COSName.PAGE.equals(typeItem))
             {
                 PagePane pagePane = new PagePane(document, page, statusBar.getStatusLabel());
+                pagePane.init();
                 replaceRightComponent(new JScrollPane(pagePane.getPanel()));
             }
         }
@@ -1143,6 +1136,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
             }
         }
         StreamPane streamPane = new StreamPane(stream, isContentStream, isThumb, resourcesDic);
+        streamPane.init();
         replaceRightComponent(streamPane.getPanel());
     }
 
@@ -1263,9 +1257,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                     return new String(IOUtils.toByteArray(in));
                 }
             }
-            catch( IOException e )
+            catch (IOException ex)
             {
-                throw new RuntimeException(e);
+                new ErrorDialog(ex).setVisible(true);
             }
         }
         if (selectedNode instanceof COSDictionary)
@@ -1295,23 +1289,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
     
     private void exitMenuItemActionPerformed(ActionEvent ignored)
     {
-        if( document != null )
+        IOUtils.closeQuietly(document);
+        if (currentFilePath != null && !currentFilePath.startsWith("http"))
         {
-            try
-            {
-                document.close();
-                if (!currentFilePath.startsWith("http"))
-                {
-                    recentFiles.addFile(currentFilePath);
-                }
-                recentFiles.close();
-            }
-            catch( IOException e )
-            {
-                // no dialogbox, don't interfere with exit wish
-                e.printStackTrace();
-            }
+            recentFiles.addFile(currentFilePath);
         }
+        recentFiles.close();
         windowPrefs.setExtendedState(getExtendedState());
         this.setExtendedState(Frame.NORMAL);
         windowPrefs.setBounds(getBounds());
@@ -1345,7 +1328,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         try
         {
             PrinterJob job = PrinterJob.getPrinterJob();
-            job.setPageable(new PDFPageable(document, Orientation.AUTO, false, PrintDpiMenu.getDpiSelection()));
+            job.setPageable(new PDFPageable(document, Orientation.AUTO, printBorder.isSelected(), PrintDpiMenu.getDpiSelection()));
             PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
             PDViewerPreferences vp = document.getDocumentCatalog().getViewerPreferences();
             if (vp != null && vp.getDuplex() != null)
@@ -1387,13 +1370,13 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         }
     }
 
-    private void readPDFFile(String filePath, String password) throws IOException, URISyntaxException
+    private void readPDFFile(String filePath, String password) throws IOException
     {
         File file = new File(filePath);
         readPDFFile(file, password);
     }
     
-    private void readPDFFile(final File file, String password) throws IOException, URISyntaxException
+    private void readPDFFile(final File file, String password) throws IOException
     {
         if( document != null )
         {
@@ -1454,15 +1437,16 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         currentFilePath = urlString;
         LogDialog.instance().clear();
         TextDialog.instance().setVisible(false);
+        URL url = new URI(urlString).toURL();
 
         DocumentOpener documentOpener = new DocumentOpener(password)
         {
             @Override
-            PDDocument open() throws IOException, URISyntaxException
+            PDDocument open() throws IOException
             {
                 long t0 = System.nanoTime();
                 PDDocument doc = Loader.loadPDF(RandomAccessReadBuffer
-                        .createBufferFromStream(new URI(urlString).toURL().openStream()), password);
+                        .createBufferFromStream(url.openStream()), password);
                 long t1 = System.nanoTime();
                 long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
                 LOG.info("Parsed in " + ms + " ms");
@@ -1539,9 +1523,8 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
          * 
          * @return the PDDocument instance
          * @throws IOException Cannot read document
-         * @throws URISyntaxException
          */
-        abstract PDDocument open() throws IOException, URISyntaxException;
+        abstract PDDocument open() throws IOException;
 
         /**
          * Call this!
@@ -1549,7 +1532,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
          * @return the PDDocument instance
          * @throws IOException Cannot read document
          */
-        final PDDocument parse() throws IOException, URISyntaxException 
+        final PDDocument parse() throws IOException 
         {
             while (true)
             {
@@ -1595,9 +1578,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                 {
                     readPDFFile(filePath, "");
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    throw new RuntimeException(e);
+                    new ErrorDialog(ex).setVisible(true);
                 }
             }
         };

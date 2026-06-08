@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
-    <version>3.0.6-SNAPSHOT</version>
+    <version>3.0.8-SNAPSHOT</version>
     <relativePath>parent/pom.xml</relativePath>
   </parent>
 
@@ -55,21 +55,28 @@
   </scm>
 
   <build>
-    <pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.rat</groupId>
-                <artifactId>apache-rat-plugin</artifactId>
-                <version>0.16.1</version>
-                <configuration>
-                    <excludes>
-                        <exclude>release.properties</exclude>
-                        <exclude>.github/workflows/codeql-analysis.yml</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </pluginManagement>
+      <plugins>
+          <plugin>
+              <groupId>org.apache.rat</groupId>
+              <artifactId>apache-rat-plugin</artifactId>
+              <configuration>
+                  <inputExcludes>
+                      <inputExclude>release.properties</inputExclude>
+                      <inputExclude>.github/workflows/codeql-analysis.yml</inputExclude>
+                      <!-- already tested before -->
+                      <inputExclude>/pdfbox/**</inputExclude>
+                      <inputExclude>/fontbox/**</inputExclude>
+                      <inputExclude>/xmpbox/**</inputExclude>
+                      <inputExclude>/tools/**</inputExclude>
+                      <inputExclude>/io/**</inputExclude>
+                      <inputExclude>/preflight/**</inputExclude>
+                      <inputExclude>/examples/**</inputExclude>
+                      <!-- netbeans local -->
+                      <inputExclude>nb-configuration.xml</inputExclude>
+                  </inputExcludes>
+              </configuration>
+          </plugin>
+      </plugins>
   </build>
 
   <profiles>
@@ -97,7 +104,7 @@
           </plugin>
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.0</version>
             <executions>
               <execution>
                 <goals>

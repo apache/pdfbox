@@ -41,8 +41,8 @@ public final class FlateFilterDecoderStream extends FilterInputStream
     private int currentDataIndex = 0;
     private int bytesDecoded = 0;
 
-    private byte[] buffer = new byte[2048];
-    private byte[] decodedData = new byte[4096];
+    private final byte[] buffer = new byte[2048];
+    private final byte[] decodedData = new byte[4096];
     // use nowrap mode to bypass zlib-header and checksum to avoid a DataFormatException
     private final Inflater inflater = new Inflater(true);
 

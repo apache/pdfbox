@@ -75,12 +75,13 @@ public class PDFCloneUtility
      * 
      * Expert use only, don’t use it if you don’t know exactly what you are doing.
      * 
+     * @param <TCOSBASE> The type to be returned.
      * @param base the initial object as the root of the deep-clone operation
      * @return the cloned instance of the base object
      * @throws IOException if an I/O error occurs
      */
     @SuppressWarnings("unchecked")
-    public <TCOSBase extends COSBase> TCOSBase cloneForNewDocument(TCOSBase base) throws IOException
+    public <TCOSBASE extends COSBase> TCOSBASE cloneForNewDocument(TCOSBASE base) throws IOException
     {
         if (base == null)
         {
@@ -90,7 +91,7 @@ public class PDFCloneUtility
         if (retval != null)
         {
             // we are done, it has already been converted.
-            return (TCOSBase) retval;
+            return (TCOSBASE) retval;
         }
         if (clonedValues.contains(base))
         {
@@ -100,7 +101,7 @@ public class PDFCloneUtility
         retval = cloneCOSBaseForNewDocument(base);
         clonedVersion.put(base, retval);
         clonedValues.add(retval);
-        return (TCOSBase) retval;
+        return (TCOSBASE) retval;
     }
 
     private COSBase cloneCOSBaseForNewDocument(COSBase base) throws IOException

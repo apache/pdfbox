@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -469,7 +470,7 @@ public final class PDAcroForm implements COSObjectable
      * This will get a field by name, possibly using the cache if setCache is true.
      *
      * @param fullyQualifiedName The name of the field to get.
-     * @return The field with that name of null if one was not found.
+     * @return The first field with that name of null if one was not found.
      */
     public PDField getField(String fullyQualifiedName)
     {
@@ -482,7 +483,7 @@ public final class PDAcroForm implements COSObjectable
         // get the field from the field tree
         for (PDField field : getFieldTree())
         {
-            if (field.getFullyQualifiedName().equals(fullyQualifiedName))
+            if (Objects.equals(field.getFullyQualifiedName(), fullyQualifiedName))
             {
                 return field;
             }

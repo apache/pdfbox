@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
-    <version>3.0.6-SNAPSHOT</version>
+    <version>3.0.8-SNAPSHOT</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
@@ -114,6 +114,16 @@
                         <Automatic-Module-Name>org.apache.pdfbox.tools</Automatic-Module-Name>
                     </manifestEntries>
                 </archive>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.rat</groupId>
+            <artifactId>apache-rat-plugin</artifactId>
+            <configuration>
+                <inputExcludes>
+                    <inputExclude>src/test/resources/input/ImageIOUtil/*.pdf</inputExclude>
+                    <inputExclude>src/test/resources/org/apache/pdfbox/*.pdf</inputExclude>
+                </inputExcludes>
             </configuration>
         </plugin>
     </plugins>

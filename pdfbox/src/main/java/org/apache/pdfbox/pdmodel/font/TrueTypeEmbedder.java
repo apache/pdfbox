@@ -23,7 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +53,12 @@ abstract class TrueTypeEmbedder implements Subsetter
     private static final int ITALIC = 1;
     private static final int OBLIQUE = 512;
     private static final String BASE25 = "BCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    // PDF spec required tables (if present), all others will be removed
+    private static final List<String> TABLES =
+            Arrays.asList("head", "hhea", "loca", "maxp", "cvt ", "prep", "glyf", "hmtx", "fpgm",
+                    // Windows ClearType
+                    "gasp");
 
     private final PDDocument document;
     protected TrueTypeFont ttf;
@@ -312,22 +318,8 @@ abstract class TrueTypeEmbedder implements Subsetter
             throw new IllegalStateException("Subsetting is disabled");
         }
 
-        // PDF spec required tables (if present), all others will be removed
-        List<String> tables = new ArrayList<>();
-        tables.add("head");
-        tables.add("hhea");
-        tables.add("loca");
-        tables.add("maxp");
-        tables.add("cvt ");
-        tables.add("prep");
-        tables.add("glyf");
-        tables.add("hmtx");
-        tables.add("fpgm");
-        // Windows ClearType
-        tables.add("gasp");
-
         // set the GIDs to subset
-        TTFSubsetter subsetter = new TTFSubsetter(ttf, tables);
+        TTFSubsetter subsetter = new TTFSubsetter(ttf, TABLES);
         subsetter.addAll(subsetCodePoints);
         subsetter.forceInvisible('\u200B'); // ZWSP
         subsetter.forceInvisible('\u200C'); // ZWNJ
@@ -372,9 +364,8 @@ abstract class TrueTypeEmbedder implements Subsetter
      */
     public String getTag(Map<Integer, Integer> gidToCid)
     {
-        // deterministic
-        long num = gidToCid.hashCode();
-
+        // hash might be negative due to an overflow if the map contains lots of values
+        long num = Math.abs(gidToCid.hashCode());
         // base25 encode
         StringBuilder sb = new StringBuilder();
         do

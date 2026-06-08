@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,11 @@ public class Tree extends JTree
 {
     // No logging possible in this class because it is created before the "LogDialog.init()" call
     private final JPopupMenu treePopupMenu;
-    private final Object rootNode;
+
+    // Temporary files are stored in a private temp directory with restricted permissions,
+    // which is deleted on exit using a shutdown hook.
+    // PDFBOX-6185
+    private Path tempDir;
 
     /**
      * Constructor.
@@ -65,8 +70,14 @@ public class Tree extends JTree
     public Tree()
     {
         treePopupMenu = new JPopupMenu();
+    }
+
+    /**
+     * Initialization, to be called immediately after construction.
+     */
+    public void init()
+    {
         setComponentPopupMenu(treePopupMenu);
-        rootNode = getModel().getRoot();
         int treeRowHeight = Integer.parseInt(PDFDebugger.configuration.getProperty(
                                     "treeRowHeight", Integer.toString(getRowHeight())));
         setRowHeight(treeRowHeight);
@@ -152,7 +163,8 @@ public class Tree extends JTree
         copyPathMenuItem.addActionListener(actionEvent ->
         {
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(new StringSelection(new TreeStatus(rootNode).getStringForPath(path)), null);
+            String pathString = new TreeStatus(getModel().getRoot()).getStringForPath(path);
+            clipboard.setContents(new StringSelection(pathString), null);
         });
         return copyPathMenuItem;
     }
@@ -172,9 +184,9 @@ public class Tree extends JTree
                 byte[] bytes = IOUtils.toByteArray(cosStream.createRawInputStream());
                 saveStream(bytes, null, null);
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                new ErrorDialog(ex).setVisible(true);
             }
         });
         return saveMenuItem;
@@ -250,9 +262,9 @@ public class Tree extends JTree
                 byte[] bytes = IOUtils.toByteArray(cosStream.createInputStream());
                 saveStream(bytes, fileFilter, extension);
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                new ErrorDialog(ex).setVisible(true);
             }
         });
         return saveMenuItem;
@@ -294,8 +306,11 @@ public class Tree extends JTree
         {
             try
             {
-                File temp = File.createTempFile("pdfbox", "." + extension);
-                temp.deleteOnExit();
+                if (tempDir == null)
+                {
+                    tempDir = IOUtils.createProtectedTempDir();
+                }
+                File temp = Files.createTempFile(tempDir, "pdfbox", "." + extension).toFile();
 
                 try (InputStream is = cosStream.createInputStream())
                 {
@@ -303,9 +318,9 @@ public class Tree extends JTree
                 }
                 Desktop.getDesktop().open(temp);
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                new ErrorDialog(ex).setVisible(true);
             }
         });
         return openMenuItem;
@@ -352,9 +367,9 @@ public class Tree extends JTree
                 InputStream data = stream.createInputStream(stopFilters);
                 saveStream(IOUtils.toByteArray(data), null, null);
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                new ErrorDialog(ex).setVisible(true);
             }
         });
         return menuItem;

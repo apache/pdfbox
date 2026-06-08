@@ -230,7 +230,8 @@ class RandomAccessReadBufferTest
             os.write(new byte[4096]);
         }
         assertEquals(4096, path.toFile().length());
-        try (RandomAccessRead rar = new RandomAccessReadBuffer(Files.newInputStream(path)))
+        try (InputStream is = Files.newInputStream(path);
+             RandomAccessRead rar = new RandomAccessReadBuffer(is))
         {
             assertEquals(0, rar.read());
         }

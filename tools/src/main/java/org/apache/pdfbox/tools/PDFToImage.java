@@ -166,6 +166,11 @@ public final class PDFToImage implements Callable<Integer>
             long startTime = System.nanoTime();
 
             // render the pages
+            if (page != -1)
+            {
+                startPage = page;
+                endPage = page;
+            }
             boolean success = true;
             endPage = Math.min(endPage, document.getNumberOfPages());
             PDFRenderer renderer = new PDFRenderer(document);

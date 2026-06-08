@@ -103,13 +103,15 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
             }
             cs.setLineWidth(ab.width);
 
+            String startPointEndingStyle = annotation.getStartPointEndingStyle();
+            String endPointEndingStyle = annotation.getEndPointEndingStyle();
             for (int i = 0; i < pathsArray.length / 2; ++i)
             {
                 float x = pathsArray[i * 2];
                 float y = pathsArray[i * 2 + 1];
                 if (i == 0)
                 {
-                    if (SHORT_STYLES.contains(annotation.getStartPointEndingStyle()))
+                    if (SHORT_STYLES.contains(startPointEndingStyle))
                     {
                         // modify coordinate to shorten the segment
                         // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
@@ -126,8 +128,7 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
                 }
                 else
                 {
-                    if (i == pathsArray.length / 2 - 1 &&
-                        SHORT_STYLES.contains(annotation.getEndPointEndingStyle()))
+                    if (i == pathsArray.length / 2 - 1 && SHORT_STYLES.contains(endPointEndingStyle))
                     {
                         // modify coordinate to shorten the segment
                         // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
@@ -150,7 +151,7 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
             // which would be more work and produce code difficult to understand
 
             // paint the styles here and after polyline draw, to avoid line crossing a filled shape
-            if (!LE_NONE.equals(annotation.getStartPointEndingStyle()))
+            if (!LE_NONE.equals(startPointEndingStyle))
             {
                 // check only needed to avoid q cm Q if LE_NONE
                 float x2 = pathsArray[2];
@@ -158,7 +159,7 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
                 float x1 = pathsArray[0];
                 float y1 = pathsArray[1];
                 cs.saveGraphicsState();
-                if (ANGLED_STYLES.contains(annotation.getStartPointEndingStyle()))
+                if (ANGLED_STYLES.contains(startPointEndingStyle))
                 {
                     double angle = Math.atan2(y2 - y1, x2 - x1);
                     cs.transform(Matrix.getRotateInstance(angle, x1, y1));
@@ -167,11 +168,11 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
                 {
                     cs.transform(Matrix.getTranslateInstance(x1, y1));
                 }
-                drawStyle(annotation.getStartPointEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground, false);
+                drawStyle(startPointEndingStyle, cs, 0, 0, ab.width, hasStroke, hasBackground, false);
                 cs.restoreGraphicsState();
             }
 
-            if (!LE_NONE.equals(annotation.getEndPointEndingStyle()))
+            if (!LE_NONE.equals(endPointEndingStyle))
             {
                 // check only needed to avoid q cm Q if LE_NONE
                 float x1 = pathsArray[pathsArray.length - 4];
@@ -179,7 +180,7 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
                 float x2 = pathsArray[pathsArray.length - 2];
                 float y2 = pathsArray[pathsArray.length - 1];
                 // save / restore not needed because it's the last one
-                if (ANGLED_STYLES.contains(annotation.getEndPointEndingStyle()))
+                if (ANGLED_STYLES.contains(endPointEndingStyle))
                 {
                     double angle = Math.atan2(y2 - y1, x2 - x1);
                     cs.transform(Matrix.getRotateInstance(angle, x2, y2));
@@ -188,7 +189,7 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
                 {
                     cs.transform(Matrix.getTranslateInstance(x2, y2));
                 }
-                drawStyle(annotation.getEndPointEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground, true);
+                drawStyle(endPointEndingStyle, cs, 0, 0, ab.width, hasStroke, hasBackground, true);
             }
         }
         catch (IOException ex)

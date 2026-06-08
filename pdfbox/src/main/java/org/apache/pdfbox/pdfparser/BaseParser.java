@@ -67,6 +67,12 @@ public abstract class BaseParser
 
     private static final Charset ALTERNATIVE_CHARSET;
 
+    private static final int MAX_RECURSION_DEPTH = 500;
+    private static final String MAX_RECUSRION_MSG = //
+            "Reached maximum recursion depth " + Integer.toString(MAX_RECURSION_DEPTH);
+    
+    private int recursionDepth = 0;
+
     private final Map<Long, COSObjectKey> keyCache = new HashMap<>();
 
     static
@@ -269,51 +275,63 @@ public abstract class BaseParser
      */
     protected COSDictionary parseCOSDictionary(boolean isDirect) throws IOException
     {
-        readExpectedChar('<');
-        readExpectedChar('<');
-        skipSpaces();
-        COSDictionary obj = new COSDictionary();
-        obj.setDirect(isDirect);
-        while (true)
-        {
-            skipSpaces();
-            char c = (char) source.peek();
-            if (c == '>')
-            {
-                break;
-            }
-            else if (c == '/')
-            {
-                // something went wrong, most likely the dictionary is corrupted
-                // stop immediately and return everything read so far
-                if (!parseCOSDictionaryNameValuePair(obj))
-                {
-                    return obj;
-                }
-            }
-            else
-            {
-                // invalid dictionary, we were expecting a /Name, read until the end or until we can recover
-                LOG.warn("Invalid dictionary, found: '" + c + "' but expected: '/' at offset "
-                        + source.getPosition());
-                if (readUntilEndOfCOSDictionary())
-                {
-                    // we couldn't recover
-                    return obj;
-                }
-            }
-        }
         try
         {
-            readExpectedChar('>');
-            readExpectedChar('>');
+            recursionDepth++;
+            if (recursionDepth > MAX_RECURSION_DEPTH)
+            {
+                throw new IOException(MAX_RECUSRION_MSG);
+            }
+	        readExpectedChar('<');
+	        readExpectedChar('<');
+	        skipSpaces();
+	        COSDictionary obj = new COSDictionary();
+	        obj.setDirect(isDirect);
+	        while (true)
+	        {
+	            skipSpaces();
+	            char c = (char) source.peek();
+	            if (c == '>')
+	            {
+	                break;
+	            }
+	            else if (c == '/')
+	            {
+	                // something went wrong, most likely the dictionary is corrupted
+	                // stop immediately and return everything read so far
+	                if (!parseCOSDictionaryNameValuePair(obj))
+	                {
+	                    return obj;
+	                }
+	            }
+	            else
+	            {
+	                // invalid dictionary, we were expecting a /Name, read until the end or until we can recover
+	                LOG.warn("Invalid dictionary, found: '" + c + "' but expected: '/' at offset "
+	                        + source.getPosition());
+	                if (readUntilEndOfCOSDictionary())
+	                {
+	                    // we couldn't recover
+	                    return obj;
+	                }
+	            }
+	        }
+	        try
+	        {
+	            readExpectedChar('>');
+	            readExpectedChar('>');
+	        }
+	        catch (IOException exception)
+	        {
+	            LOG.warn("Invalid dictionary, can't find end of dictionary at offset "
+	                    + source.getPosition());
+	        }
+	        return obj;
         }
-        catch (IOException exception)
+        finally
         {
-            LOG.warn("Invalid dictionary, can't find end of dictionary at offset "
-                    + source.getPosition());
+            recursionDepth--;
         }
-        return obj;
     }
 
     /**
@@ -745,71 +763,83 @@ public abstract class BaseParser
      */
     protected COSArray parseCOSArray() throws IOException
     {
-        long startPosition = source.getPosition();
-        readExpectedChar('[');
-        COSArray po = new COSArray();
-        COSBase pbo;
-        skipSpaces();
-        int i;
-        while (((i = source.peek()) > 0) && ((char) i != ']'))
+        try
         {
-            pbo = parseDirObject();
-            if( pbo instanceof COSObject )
+            recursionDepth++;
+            if (recursionDepth > MAX_RECURSION_DEPTH)
             {
-                // the current empty COSObject is replaced with the correct one
-                pbo = null;
-                // We have to check if the expected values are there or not PDFBOX-385
-                if (po.size() > 1 && po.get(po.size() - 1) instanceof COSInteger)
-                {
-                    COSInteger genNumber = (COSInteger)po.remove( po.size() -1 );
-                    if (po.size() > 0 && po.get(po.size() - 1) instanceof COSInteger)
-                    {
-                        COSInteger number = (COSInteger)po.remove( po.size() -1 );
-                        if (number.longValue() >= 0 && genNumber.intValue() >= 0)
-                        {
-                            COSObjectKey key = getObjectKey(number.longValue(),
-                                    genNumber.intValue());
-                            pbo = getObjectFromPool(key);
-                        }
-                        else
-                        {
-                            LOG.warn("Invalid value(s) for an object key " + number.longValue()
-                                    + " " + genNumber.intValue());
-                        }
-                    }
-                }
+                throw new IOException(MAX_RECUSRION_MSG);
             }
-            // something went wrong
-            if (pbo == null)
-            {
-                //it could be a bad object in the array which is just skipped
-                LOG.warn("Corrupt array element at offset " + source.getPosition()
-                        + ", start offset: " + startPosition);
-                String isThisTheEnd = readString();
-                // return immediately if a corrupt element is followed by another array
-                // to avoid a possible infinite recursion as most likely the whole array is corrupted
-                if (isThisTheEnd.isEmpty() && source.peek() == '[')
-                {
-                    return po;
-                }
-                source.rewind(isThisTheEnd.getBytes(StandardCharsets.ISO_8859_1).length);
-                // This could also be an "endobj" or "endstream" which means we can assume that
-                // the array has ended.
-                if(ENDOBJ_STRING.equals(isThisTheEnd) || ENDSTREAM_STRING.equals(isThisTheEnd))
-                {
-                    return po;
-                }
-            }
-            else
-            {
-                po.add(pbo);
-            }
-            skipSpaces();
+	        long startPosition = source.getPosition();
+	        readExpectedChar('[');
+	        COSArray po = new COSArray();
+	        COSBase pbo;
+	        skipSpaces();
+	        int i;
+	        while (((i = source.peek()) > 0) && ((char) i != ']'))
+	        {
+	            pbo = parseDirObject();
+	            if( pbo instanceof COSObject )
+	            {
+	                // the current empty COSObject is replaced with the correct one
+	                pbo = null;
+	                // We have to check if the expected values are there or not PDFBOX-385
+	                if (po.size() > 1 && po.get(po.size() - 1) instanceof COSInteger)
+	                {
+	                    COSInteger genNumber = (COSInteger)po.remove( po.size() -1 );
+	                    if (po.size() > 0 && po.get(po.size() - 1) instanceof COSInteger)
+	                    {
+	                        COSInteger number = (COSInteger)po.remove( po.size() -1 );
+	                        if (number.longValue() >= 0 && genNumber.intValue() >= 0)
+	                        {
+	                            COSObjectKey key = getObjectKey(number.longValue(),
+	                                    genNumber.intValue());
+	                            pbo = getObjectFromPool(key);
+	                        }
+	                        else
+	                        {
+	                            LOG.warn("Invalid value(s) for an object key " + number.longValue()
+	                                    + " " + genNumber.intValue());
+	                        }
+	                    }
+	                }
+	            }
+	            // something went wrong
+	            if (pbo == null)
+	            {
+	                //it could be a bad object in the array which is just skipped
+	                LOG.warn("Corrupt array element at offset " + source.getPosition()
+	                        + ", start offset: " + startPosition);
+	                String isThisTheEnd = readString();
+	                // return immediately if a corrupt element is followed by another array
+	                // to avoid a possible infinite recursion as most likely the whole array is corrupted
+	                if (isThisTheEnd.isEmpty() && source.peek() == '[')
+	                {
+	                    return po;
+	                }
+	                source.rewind(isThisTheEnd.getBytes(StandardCharsets.ISO_8859_1).length);
+	                // This could also be an "endobj" or "endstream" which means we can assume that
+	                // the array has ended.
+	                if(ENDOBJ_STRING.equals(isThisTheEnd) || ENDSTREAM_STRING.equals(isThisTheEnd))
+	                {
+	                    return po;
+	                }
+	            }
+	            else
+	            {
+	                po.add(pbo);
+	            }
+	            skipSpaces();
+	        }
+	        // read ']'
+	        source.read();
+	        skipSpaces();
+	        return po;
         }
-        // read ']'
-        source.read();
-        skipSpaces();
-        return po;
+        finally
+        {
+            recursionDepth--;
+        }
     }
 
     /**
@@ -905,7 +935,7 @@ public abstract class BaseParser
             source.rewind(1);
         }
 
-        return COSName.getPDFName(decodeBuffer(buffer));
+        return COSName.getPDFName(buffer.toByteArray());
     }
 
     /**
@@ -938,72 +968,84 @@ public abstract class BaseParser
      */
     protected COSBase parseDirObject() throws IOException
     {
-        skipSpaces();
-        char c = (char) source.peek();
-        switch(c)
+        try
         {
-        case '<':
-            // pull off first left bracket
-            source.read();
-            // check for second left bracket
-            c = (char) source.peek();
-            source.rewind(1);
-            return c == '<' ? parseCOSDictionary(true) : parseCOSString();
-        case '[':
-            // array
-            return parseCOSArray();
-        case '(':
-            return parseCOSString();
-        case '/':   
-            // name
-            return parseCOSName();
-        case 'n':   
-            // null
-            readExpectedString(NULL, false);
-            return COSNull.NULL;
-        case 't':
-            readExpectedString(TRUE, false);
-            return COSBoolean.TRUE;
-        case 'f':
-            readExpectedString(FALSE, false);
-            return COSBoolean.FALSE;
-        case 'R':
-            source.read();
-            return new COSObject(null);
-        case (char)-1:
-            return null;
-        default:
-            if( Character.isDigit(c) || c == '-' || c == '+' || c == '.')
+            recursionDepth++;
+            if (recursionDepth > MAX_RECURSION_DEPTH)
             {
-                return parseCOSNumber();
+                throw new IOException(MAX_RECUSRION_MSG);
             }
-            // This is not suppose to happen, but we will allow for it
-            // so we are more compatible with POS writers that don't
-            // follow the spec
-            long startOffset = source.getPosition();
-            String badString = readString();
-            if (badString.isEmpty())
-            {
-                int peek = source.peek();
-                // we can end up in an infinite loop otherwise
-                throw new IOException("Unknown dir object c='" + c + "' cInt=" + (int) c + " peek='"
-                        + (char) peek + "' peekInt=" + peek + " at offset " + source.getPosition()
-                        + " (start offset: " + startOffset + ")");
-            }
-
-            // if it's an endstream/endobj, we want to put it back so the caller will see it
-            if (ENDOBJ_STRING.equals(badString) || ENDSTREAM_STRING.equals(badString))
-            {
-                source.rewind(badString.getBytes(StandardCharsets.ISO_8859_1).length);
-            }
-            else
-            {
-                LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
-                        + source.getPosition() + " (start offset: " + startOffset + ")");
-                return this instanceof PDFStreamParser ? null : COSNull.NULL;
-            }
-        }
-        return null;
+	        skipSpaces();
+	        char c = (char) source.peek();
+	        switch(c)
+	        {
+	        case '<':
+	            // pull off first left bracket
+	            source.read();
+	            // check for second left bracket
+	            c = (char) source.peek();
+	            source.rewind(1);
+	            return c == '<' ? parseCOSDictionary(true) : parseCOSString();
+	        case '[':
+	            // array
+	            return parseCOSArray();
+	        case '(':
+	            return parseCOSString();
+	        case '/':   
+	            // name
+	            return parseCOSName();
+	        case 'n':   
+	            // null
+	            readExpectedString(NULL, false);
+	            return COSNull.NULL;
+	        case 't':
+	            readExpectedString(TRUE, false);
+	            return COSBoolean.TRUE;
+	        case 'f':
+	            readExpectedString(FALSE, false);
+	            return COSBoolean.FALSE;
+	        case 'R':
+	            source.read();
+	            return new COSObject(null);
+	        case (char)-1:
+	            return null;
+	        default:
+	            if( Character.isDigit(c) || c == '-' || c == '+' || c == '.')
+	            {
+	                return parseCOSNumber();
+	            }
+	            // This is not suppose to happen, but we will allow for it
+	            // so we are more compatible with POS writers that don't
+	            // follow the spec
+	            long startOffset = source.getPosition();
+	            String badString = readString();
+	            if (badString.isEmpty())
+	            {
+	                int peek = source.peek();
+	                // we can end up in an infinite loop otherwise
+	                throw new IOException("Unknown dir object c='" + c + "' cInt=" + (int) c + " peek='"
+	                        + (char) peek + "' peekInt=" + peek + " at offset " + source.getPosition()
+	                        + " (start offset: " + startOffset + ")");
+	            }
+	
+	            // if it's an endstream/endobj, we want to put it back so the caller will see it
+	            if (ENDOBJ_STRING.equals(badString) || ENDSTREAM_STRING.equals(badString))
+	            {
+	                source.rewind(badString.getBytes(StandardCharsets.ISO_8859_1).length);
+	            }
+	            else
+	            {
+	                LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
+	                        + source.getPosition() + " (start offset: " + startOffset + ")");
+	                return this instanceof PDFStreamParser ? null : COSNull.NULL;
+	            }
+	        }
+	        return null;
+	    }
+	    finally
+	    {
+	        recursionDepth--;
+	    }
     }
 
     private COSNumber parseCOSNumber() throws IOException

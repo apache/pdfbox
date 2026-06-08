@@ -16,9 +16,13 @@
 package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -28,6 +32,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -115,47 +120,47 @@ class CCITTFactoryTest
     {
         String tiffPath = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4multi.tif";
         
-        ImageInputStream is = ImageIO.createImageInputStream(new File(tiffPath));
-        ImageReader imageReader = ImageIO.getImageReaders(is).next();
-        imageReader.setInput(is);
-        int countTiffImages = imageReader.getNumImages(true);
-        assertTrue(countTiffImages > 1);
-        
-        try (PDDocument document = new PDDocument())
+        try (ImageInputStream is = ImageIO.createImageInputStream(new File(tiffPath)))
         {
-            int pdfPageNum = 0;
-            while (true)
+            ImageReader imageReader = ImageIO.getImageReaders(is).next();
+            imageReader.setInput(is);
+            int countTiffImages = imageReader.getNumImages(true);
+            assertTrue(countTiffImages > 1);
+            try (PDDocument document = new PDDocument())
             {
-                PDImageXObject ximage = CCITTFactory.createFromFile(document, new File(tiffPath), pdfPageNum);
-                if (ximage == null)
+                int pdfPageNum = 0;
+                while (true)
                 {
-                    break;
+                    PDImageXObject ximage = CCITTFactory.createFromFile(document, new File(tiffPath), pdfPageNum);
+                    if (ximage == null)
+                    {
+                        break;
+                    }
+                    BufferedImage bim = imageReader.read(pdfPageNum);
+                    validate(ximage, 1, bim.getWidth(), bim.getHeight(), "tiff", PDDeviceGray.INSTANCE.getName());
+                    checkIdent(bim, ximage.getOpaqueImage(null, 1));
+                    PDPage page = new PDPage(PDRectangle.A4);
+                    float fX = ximage.getWidth() / page.getMediaBox().getWidth();
+                    float fY = ximage.getHeight() / page.getMediaBox().getHeight();
+                    float factor = Math.max(fX, fY);
+                    document.addPage(page);
+                    try (PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false))
+                    {
+                        contentStream.drawImage(ximage, 0, 0, ximage.getWidth() / factor, ximage.getHeight() / factor);
+                    }
+                    ++pdfPageNum;
                 }
-                BufferedImage bim = imageReader.read(pdfPageNum);
-                validate(ximage, 1, bim.getWidth(), bim.getHeight(), "tiff", PDDeviceGray.INSTANCE.getName());
-                checkIdent(bim, ximage.getOpaqueImage(null, 1));
-                PDPage page = new PDPage(PDRectangle.A4);
-                float fX = ximage.getWidth() / page.getMediaBox().getWidth();
-                float fY = ximage.getHeight() / page.getMediaBox().getHeight();
-                float factor = Math.max(fX, fY);
-                document.addPage(page);
-                try (PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false))
-                {
-                    contentStream.drawImage(ximage, 0, 0, ximage.getWidth() / factor, ximage.getHeight() / factor);
-                }
-                ++pdfPageNum;
+                
+                assertEquals(countTiffImages, pdfPageNum);
+                
+                document.save(TESTRESULTSDIR + "/multitiff.pdf");
             }
-            
-            assertEquals(countTiffImages, pdfPageNum);
-            
-            document.save(TESTRESULTSDIR + "/multitiff.pdf");
+            try (PDDocument document = Loader.loadPDF(new File(TESTRESULTSDIR, "multitiff.pdf"), (String) null))
+            {
+                assertEquals(countTiffImages, document.getNumberOfPages());
+            }
+            imageReader.dispose();
         }
-        
-        try (PDDocument document = Loader.loadPDF(new File(TESTRESULTSDIR, "multitiff.pdf"), (String) null))
-        {
-            assertEquals(countTiffImages, document.getNumberOfPages());
-        }  
-        imageReader.dispose();
     }
 
     @Test
@@ -234,9 +239,11 @@ class CCITTFactoryTest
         String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
         File copiedTiffFile = new File(TESTRESULTSDIR, "ccittg3.tif");
         Files.copy(new File(tiffG3Path).toPath(), copiedTiffFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        PDDocument document = new PDDocument();
-        CCITTFactory.createFromFile(document, copiedTiffFile);
-        assertTrue(copiedTiffFile.delete());
+        try (PDDocument document = new PDDocument())
+        {
+            CCITTFactory.createFromFile(document, copiedTiffFile);
+            assertTrue(copiedTiffFile.delete());
+        }
     }
 
     /**
@@ -250,9 +257,11 @@ class CCITTFactoryTest
         String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
         File copiedTiffFile = new File(TESTRESULTSDIR, "ccittg3n.tif");
         Files.copy(new File(tiffG3Path).toPath(), copiedTiffFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        PDDocument document = new PDDocument();
-        CCITTFactory.createFromFile(document, copiedTiffFile, 0);
-        assertTrue(copiedTiffFile.delete());
+        try (PDDocument document = new PDDocument())
+        {
+            CCITTFactory.createFromFile(document, copiedTiffFile, 0);
+            assertTrue(copiedTiffFile.delete());
+        }
     }
 
     /**
@@ -271,6 +280,42 @@ class CCITTFactoryTest
                 PDImageXObject ximage3 = CCITTFactory.createFromFile(document, new File(tiffPath));
                 validate(ximage3, 1, 344, 287, "tiff", PDDeviceGray.INSTANCE.getName());
             }
+        }
+    }
+
+    /**
+     * PDFBOX-6164: test support of TIFF-files with FillOrder=2
+     *
+     * @throws IOException
+     * @throws URISyntaxException 
+     */
+    @Test
+    void testFillOrder2() throws IOException, URISyntaxException
+    {
+        byte[] ba;
+        try (InputStream is = new URI("https://issues.apache.org/jira/secure/attachment/12558110/Wing.tif").
+                toURL().openStream())
+        {
+            ba = IOUtils.toByteArray(is);
+        }
+        try (PDDocument document = new PDDocument())
+        {
+            PDImageXObject ximg = CCITTFactory.createFromByteArray(document, ba);
+            validate(ximg, 1, 4575, 2232, "tiff", PDDeviceGray.INSTANCE.getName());
+            BufferedImage bim = ImageIO.read(new ByteArrayInputStream(ba));
+            checkIdent(bim, ximg.getOpaqueImage(null, 1));
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false))
+            {
+                contentStream.drawImage(ximg, 0, 0, ximg.getWidth() / 8, ximg.getHeight() / 8);
+            }
+            document.save(TESTRESULTSDIR + "/Wing.pdf");
+        }
+
+        try (PDDocument document = Loader.loadPDF(new File(TESTRESULTSDIR, "Wing.pdf")))
+        {
+            assertEquals(1, document.getNumberOfPages());
         }
     }
 }

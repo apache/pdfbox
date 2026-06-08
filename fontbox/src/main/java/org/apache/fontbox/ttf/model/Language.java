@@ -36,6 +36,7 @@ public enum Language
     DEVANAGARI(new String[] { "dev2", "deva" }),
     GUJARATI(new String[] { "gjr2", "gujr" }),
     LATIN(new String[] { "latn" }),
+    DFLT(new String[] { "DFLT" }),
 
     /**
      * An entry explicitly denoting the absence of any concrete language. May be useful when no actual glyph

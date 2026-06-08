@@ -210,7 +210,8 @@ public class Splitter
         PDNumberTreeNode srcParentTree = srcStructureTreeRoot.getParentTree();
         Map<Integer, COSObjectable> srcNumberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(srcParentTree);
         Map<Integer, COSObjectable> dstNumberTreeAsMap = new LinkedHashMap<>();
-        for (int p = 0; p < dstPageTree.getCount(); ++p)
+        int dstPageTreeCount = dstPageTree.getCount();
+        for (int p = 0; p < dstPageTreeCount; ++p)
         {
             PDPage page = dstPageTree.get(p);
             int sp1 = page.getStructParents();
@@ -782,6 +783,8 @@ public class Splitter
         destCatalog.setLanguage(sourceCatalog.getLanguage());
         destCatalog.setMarkInfo(sourceCatalog.getMarkInfo());
         destCatalog.setMetadata(sourceCatalog.getMetadata());
+        // reset reused object keys to avoid gaps in the xref table
+        destCatalog.getCOSObject().resetImportedObjectKeys();
         return document;
     }
 

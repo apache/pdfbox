@@ -188,6 +188,9 @@ public class PDFRenderer
      * @param pageIndex the zero-based index of the page to be converted.
      * @return the rendered page image
      * @throws IOException if the PDF cannot be read
+     * @throws IllegalStateException if the requested index isn't found or doesn't point to a valid
+     * page dictionary
+     * @throws IndexOutOfBoundsException if the requested index is higher than the page count
      */
     public BufferedImage renderImage(int pageIndex) throws IOException
     {
@@ -201,6 +204,9 @@ public class PDFRenderer
      * @param scale the scaling factor, where 1 = 72 DPI
      * @return the rendered page image
      * @throws IOException if the PDF cannot be read
+     * @throws IllegalStateException if the requested index isn't found or doesn't point to a valid
+     * page dictionary
+     * @throws IndexOutOfBoundsException if the requested index is higher than the page count
      */
     public BufferedImage renderImage(int pageIndex, float scale) throws IOException
     {
@@ -213,6 +219,9 @@ public class PDFRenderer
      * @param dpi the DPI (dots per inch) to render at
      * @return the rendered page image
      * @throws IOException if the PDF cannot be read
+     * @throws IllegalStateException if the requested index isn't found or doesn't point to a valid
+     * page dictionary
+     * @throws IndexOutOfBoundsException if the requested index is higher than the page count
      */
     public BufferedImage renderImageWithDPI(int pageIndex, float dpi) throws IOException
     {
@@ -226,6 +235,9 @@ public class PDFRenderer
      * @param imageType the type of image to return
      * @return the rendered page image
      * @throws IOException if the PDF cannot be read
+     * @throws IllegalStateException if the requested index isn't found or doesn't point to a valid
+     * page dictionary
+     * @throws IndexOutOfBoundsException if the requested index is higher than the page count
      */
     public BufferedImage renderImageWithDPI(int pageIndex, float dpi, ImageType imageType)
             throws IOException
@@ -240,6 +252,9 @@ public class PDFRenderer
      * @param imageType the type of image to return
      * @return the rendered page image
      * @throws IOException if the PDF cannot be read
+     * @throws IllegalStateException if the requested index isn't found or doesn't point to a valid
+     * page dictionary
+     * @throws IndexOutOfBoundsException if the requested index is higher than the page count
      */
     public BufferedImage renderImage(int pageIndex, float scale, ImageType imageType)
             throws IOException
@@ -256,6 +271,9 @@ public class PDFRenderer
      * @param destination controlling visibility of optional content groups
      * @return the rendered page image
      * @throws IOException if the PDF cannot be read
+     * @throws IllegalStateException if the requested index isn't found or doesn't point to a valid
+     * page dictionary
+     * @throws IndexOutOfBoundsException if the requested index is higher than the page count
      */
     public BufferedImage renderImage(int pageIndex, float scale, ImageType imageType, RenderDestination destination)
             throws IOException
@@ -308,28 +326,33 @@ public class PDFRenderer
 
         // use a transparent background if the image type supports alpha
         Graphics2D g = image.createGraphics();
-        if (image.getType() == BufferedImage.TYPE_INT_ARGB)
+        try
         {
-            g.setBackground(new Color(0, 0, 0, 0));
-        }
-        else
-        {
-            g.setBackground(Color.WHITE);
-        }
-        g.clearRect(0, 0, image.getWidth(), image.getHeight());
-        
-        transform(g, page.getRotation(), cropBox, scale, scale);
+            if (image.getType() == BufferedImage.TYPE_INT_ARGB)
+            {
+                g.setBackground(new Color(0, 0, 0, 0));
+            }
+            else
+            {
+                g.setBackground(Color.WHITE);
+            }
+            g.clearRect(0, 0, image.getWidth(), image.getHeight());
 
-        // the end-user may provide a custom PageDrawer
-        RenderingHints actualRenderingHints =
-                renderingHints == null ? createDefaultRenderingHints(g) : renderingHints;
-        PageDrawerParameters parameters =
-                new PageDrawerParameters(this, page, subsamplingAllowed, destination,
-                        actualRenderingHints, imageDownscalingOptimizationThreshold);
-        PageDrawer drawer = createPageDrawer(parameters);
-        drawer.drawPage(g, cropBox);
-        
-        g.dispose();
+            transform(g, page.getRotation(), cropBox, scale, scale);
+
+            // the end-user may provide a custom PageDrawer
+            RenderingHints actualRenderingHints =
+                    renderingHints == null ? createDefaultRenderingHints(g) : renderingHints;
+            PageDrawerParameters parameters =
+                    new PageDrawerParameters(this, page, subsamplingAllowed, destination,
+                            actualRenderingHints, imageDownscalingOptimizationThreshold);
+            PageDrawer drawer = createPageDrawer(parameters);
+            drawer.drawPage(g, cropBox);
+        }
+        finally
+        {
+            g.dispose();
+        }
 
         if (image.getType() != imageType.toBufferedImageType())
         {
@@ -419,6 +442,9 @@ public class PDFRenderer
      * @param scaleY the scale to draw the page at for the y-axis, where 1 = 72 DPI
      * @param destination controlling visibility of optional content groups
      * @throws IOException if the PDF cannot be read
+     * @throws IllegalStateException if the requested index isn't found or doesn't point to a valid
+     * page dictionary
+     * @throws IndexOutOfBoundsException if the requested index is higher than the page count
      */
     public void renderPageToGraphics(int pageIndex, Graphics2D graphics, float scaleX, float scaleY, RenderDestination destination)
             throws IOException

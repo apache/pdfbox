@@ -128,11 +128,9 @@ class TestTextStripper
 
     /**
      * Test class initialization.
-     *
-     * @throws IOException If there is an error initializing the test.
      */
     @BeforeAll
-    static void init() throws IOException
+    static void init()
     {
         stripper = new PDFTextStripper();
         stripper.setLineSeparator("\n");

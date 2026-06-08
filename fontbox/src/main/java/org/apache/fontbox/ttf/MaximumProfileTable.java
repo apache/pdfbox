@@ -18,6 +18,7 @@ package org.apache.fontbox.ttf;
 
 import java.io.IOException;
 
+
 /**
  * This 'maxp'-table is a required table in a TrueType font.
  *
@@ -48,7 +49,6 @@ public class MaximumProfileTable extends TTFTable
 
     MaximumProfileTable()
     {
-        super();
     }
 
     /**
@@ -289,6 +289,11 @@ public class MaximumProfileTable extends TTFTable
             maxSizeOfInstructions = data.readUnsignedShort();
             maxComponentElements = data.readUnsignedShort();
             maxComponentDepth = data.readUnsignedShort();
+            if (maxComponentDepth == 0)
+            {
+                // PDFBOX-6105
+                maxComponentDepth = 1;
+            }
         }
         initialized = true;
     }

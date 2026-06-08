@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.io;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -93,9 +94,16 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
     @Override
     public void skip(int length) throws IOException
     {
-        for (int i = 0; i < length; i++)
+        byte[] skipBuffer = new byte[Math.min(length, BUFFER_SIZE)];
+        int remaining = length;
+        while (remaining > 0)
         {
-            read();
+            int bytesRead = read(skipBuffer, 0, Math.min(remaining, skipBuffer.length));
+            if (bytesRead == -1)
+            {
+                break;
+            }
+            remaining -= bytesRead;
         }
     }
 
@@ -136,6 +144,20 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
     public int read(byte[] b, int offset, int length) throws IOException
     {
         checkClosed();
+        // Parameter validation as defined in InputStream.read(byte[], int, int)
+        if (b == null)
+        {
+            throw new NullPointerException("buffer is null");
+        }
+        if (offset < 0 || length < 0 || offset + length > b.length)
+        {
+            throw new IndexOutOfBoundsException("buffer length=" + b.length + " offset=" + offset
+                    + " length=" + length);
+        }
+        if (length == 0)
+        {
+            return 0;
+        }
         if (isEOF())
         {
             return -1;
@@ -159,7 +181,24 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
                 break;
             }
         }
-        return numberOfBytesRead;
+        return numberOfBytesRead > 0 ? numberOfBytesRead : -1;
+    }
+
+    @Override
+    public void readFully(byte[] b, int offset, int length) throws IOException
+    {
+        // override the default implementation as the return value from length isn't reliable
+        checkClosed();
+        int bytesReadTotal = 0;
+        while (bytesReadTotal < length)
+        {
+            int bytesReadNow = read(b, offset + bytesReadTotal, length - bytesReadTotal);
+            if (bytesReadNow <= 0)
+            {
+                throw new EOFException("EOF, should have been detected earlier");
+            }
+            bytesReadTotal += bytesReadNow;
+        }
     }
 
     private void switchBuffers(int firstBuffer, int secondBuffer)
@@ -170,6 +209,18 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
         int tmpBufferBytes = bufferBytes[firstBuffer];
         bufferBytes[firstBuffer] = bufferBytes[secondBuffer];
         bufferBytes[secondBuffer] = tmpBufferBytes;
+    }
+
+    /**
+     * Returns an estimate of the number of bytes that can be read (or skipped over) from the underlying input stream
+     * without blocking, which may be 0, or 0 when end of stream is detected.
+     */
+    @Override
+    public int available() throws IOException
+    {
+        checkClosed();
+        int buffered = Math.max(0, bufferBytes[CURRENT] - currentBufferPointer);
+        return buffered + is.available();
     }
 
     private boolean fetch() throws IOException
@@ -212,8 +263,7 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
         }
         catch (IOException exception)
         {
-            // some data could be read -> don't throw an exception
-            LOG.warn("FlateFilter: premature end of stream due to a DataFormatException");
+            LOG.warn("premature end of stream, some data could be read ", exception);
             isEOF = true;
             throw exception;
         }
@@ -227,7 +277,7 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
     public long length() throws IOException
     {
         checkClosed();
-        return size;
+        return size + is.available();
     }
 
     @Override
@@ -238,8 +288,9 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
         {
             currentBufferPointer -= bytes;
             position -= bytes;
+            isEOF = false;
         }
-        else if (bufferBytes[LAST] > 0)
+        else if (bufferBytes[LAST] > 0 && (bytes - currentBufferPointer) <= bufferBytes[LAST])
         {
             // there is a former buffer
             int remainingBytesToRewind = bytes - currentBufferPointer;
@@ -256,7 +307,7 @@ public class NonSeekableRandomAccessReadInputStream implements RandomAccessRead
         else
         {
             // there aren't enough bytes left in the buffers to perform the rewind operation
-            throw new IOException("not enough bytes available to perfomr the rewind operation");
+            throw new IOException("not enough bytes available to perform the rewind operation");
         }
     }
 

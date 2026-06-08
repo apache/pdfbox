@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -92,7 +93,7 @@ public class BruteForceParser extends COSParser
     }
 
     /**
-     * Indicates wether the brute force search for objects was triggered.
+     * Indicates whether the brute force search for objects was triggered.
      * 
      * @return true if the search was triggered
      */
@@ -305,14 +306,15 @@ public class BruteForceParser extends COSParser
 
         Map<Long, COSObjectKey> bfSearchForObjStreamOffsets = bfSearchForObjStreamOffsets();
         Map<COSObjectKey, Long> bfCOSObjectOffsets = getBFCOSObjectOffsets();
+        Set<Entry<Long, COSObjectKey>> entries = bfSearchForObjStreamOffsets.entrySet();
         // log warning about skipped stream
-        bfSearchForObjStreamOffsets.entrySet().stream() //
+        entries.stream() //
                 .filter(o -> bfCOSObjectOffsets.get(o.getValue()) == null) //
                 .forEach(o -> LOG.warn(
                         "Skipped incomplete object stream:" + o.getValue() + " at " + o.getKey()));
 
         // collect all stream offsets
-        List<Long> objStreamOffsets = bfSearchForObjStreamOffsets.entrySet().stream() //
+        List<Long> objStreamOffsets = entries.stream() //
                 .filter(o -> bfCOSObjectOffsets.get(o.getValue()) != null) //
                 .filter(o -> o.getKey().equals(bfCOSObjectOffsets.get(o.getValue()))) //
                 .map(Map.Entry::getKey) //
@@ -415,23 +417,17 @@ public class BruteForceParser extends COSParser
                 {
                     trailer.setItem(COSName.ROOT, rootObj);
                     trailer.setItem(COSName.INFO, infoObj);
-                    if (trailerDict.containsKey(COSName.ENCRYPT))
+                    COSObject encObj = trailerDict.getCOSObject(COSName.ENCRYPT);
+                    // check if the dictionary can be dereferenced
+                    // TODO check if the dictionary is an encryption dictionary?
+                    if (encObj != null && encObj.getObject() instanceof COSDictionary)
                     {
-                        COSObject encObj = trailerDict.getCOSObject(COSName.ENCRYPT);
-                        // check if the dictionary can be dereferenced
-                        // TODO check if the dictionary is an encryption dictionary?
-                        if (encObj != null && encObj.getObject() instanceof COSDictionary)
-                        {
-                            trailer.setItem(COSName.ENCRYPT, encObj);
-                        }
+                        trailer.setItem(COSName.ENCRYPT, encObj);
                     }
-                    if (trailerDict.containsKey(COSName.ID))
+                    COSBase idObj = trailerDict.getItem(COSName.ID);
+                    if (idObj instanceof COSArray)
                     {
-                        COSBase idObj = trailerDict.getItem(COSName.ID);
-                        if (idObj instanceof COSArray)
-                        {
-                            trailer.setItem(COSName.ID, idObj);
-                        }
+                        trailer.setItem(COSName.ID, idObj);
                     }
                     return true;
                 }

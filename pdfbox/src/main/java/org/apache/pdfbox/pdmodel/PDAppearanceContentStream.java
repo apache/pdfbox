@@ -241,7 +241,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
         // Acrobat doesn't write a line width command
         // for a line width of 1 as this is default.
         // Will do the same.
-        if (!(Math.abs(lineWidth - 1) < 1e-6))
+        if (Math.abs(lineWidth - 1) >= 1e-6)
         {
             setLineWidth(lineWidth);
         }

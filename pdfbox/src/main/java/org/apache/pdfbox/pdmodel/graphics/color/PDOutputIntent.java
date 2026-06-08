@@ -40,6 +40,14 @@ public final class PDOutputIntent implements COSObjectable
 {
     private final COSDictionary dictionary;
 
+    /**
+     * Create an output intent of GTS_PDFA1 subtype.
+     *
+     * @param doc The document.
+     * @param colorProfile the ICC color profile input stream. You can close it after construction.
+     * @throws IOException If an I/O error occurs while reading the stream.
+     * @throws IllegalArgumentException If the stream does not contain valid ICC Profile data.
+     */
     public PDOutputIntent(PDDocument doc, InputStream colorProfile) throws IOException
     {
         dictionary = new COSDictionary();

@@ -152,6 +152,11 @@ public class GlyphSubstitutionTable extends TTFTable
         }
         for (int i = 0; i < scriptCount; i++)
         {
+            if (resultScriptList.get(scriptTags[i]) != null)
+            {
+                // PDFBOX-6146
+                continue;
+            }
             ScriptTable scriptTable = readScriptTable(data, offset + scriptOffsets[i]);
             resultScriptList.put(scriptTags[i], scriptTable);
         }
@@ -161,7 +166,7 @@ public class GlyphSubstitutionTable extends TTFTable
     private ScriptTable readScriptTable(TTFDataStream data, long offset) throws IOException
     {
         data.seek(offset);
-        int defaultLangSys = data.readUnsignedShort();
+        int defaultLangSysOffset = data.readUnsignedShort();
         int langSysCount = data.readUnsignedShort();
         String[] langSysTags = new String[langSysCount];
         int[] langSysOffsets = new int[langSysCount];
@@ -189,9 +194,9 @@ public class GlyphSubstitutionTable extends TTFTable
 
         LangSysTable defaultLangSysTable = null;
 
-        if (defaultLangSys != 0)
+        if (defaultLangSysOffset != 0)
         {
-            defaultLangSysTable = readLangSysTable(data, offset + defaultLangSys);
+            defaultLangSysTable = readLangSysTable(data, offset + defaultLangSysOffset);
         }
         Map<String, LangSysTable> langSysTables = new LinkedHashMap<>(langSysCount);
         for (int i = 0; i < langSysCount; i++)
@@ -287,9 +292,16 @@ public class GlyphSubstitutionTable extends TTFTable
             }
         }
         LookupTable[] lookupTables = new LookupTable[lookupCount];
+        Map<Integer, LookupTable> lookupTableMap = new HashMap<>(); // PDFBOX-6146
         for (int i = 0; i < lookupCount; i++)
         {
-            lookupTables[i] = readLookupTable(data, offset + lookups[i]);
+            LookupTable lookupTable = lookupTableMap.get(lookups[i]);
+            if (lookupTable == null)
+            {
+                lookupTable = readLookupTable(data, offset + lookups[i]);
+                lookupTableMap.put(lookups[i], lookupTable);
+            }
+            lookupTables[i] = lookupTable;
         }
         return new LookupListTable(lookupCount, lookupTables);
     }

@@ -20,7 +20,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.BufferedInputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
@@ -185,27 +185,30 @@ public class TextToPDF implements Callable<Integer>
             setTopMargin(margins[2]);
             setBottomMargin(margins[3]);
 
-            boolean hasUtf8BOM = false;
-            if (charset.equals(StandardCharsets.UTF_8))
+            try (BufferedInputStream is = new BufferedInputStream(new FileInputStream(infile)))
             {
-                // check for utf8 BOM
-                // FileInputStream doesn't support mark/reset
-                try (InputStream is = new FileInputStream(infile))
+                if (charset.equals(StandardCharsets.UTF_8))
                 {
-                    if (is.read() == 0xEF && is.read() == 0xBB && is.read() == 0xBF)
+                    final int readLimit = 3;
+                    is.mark(readLimit);
+
+                    byte[] firstBytes = new byte[readLimit];
+                    if (is.read(firstBytes) != readLimit)
                     {
-                        hasUtf8BOM = true;
+                        throw new IOException("Could not read 3 bytes, size changed?!");
                     }
-                }
-            }
-            try (InputStream is = new FileInputStream(infile))
-            {
-                if (hasUtf8BOM)
-                {
-                    long skipped = is.skip(3);
-                    if (skipped != 3)
+
+                    if (firstBytes[0] == (byte) 0xEF &&
+                        firstBytes[1] == (byte) 0xBB &&
+                        firstBytes[2] == (byte) 0xBF)
                     {
-                        throw new IOException("Could not skip 3 bytes, size changed?!");
+                        //UTF-8 with BOM
+                        //3 bytes already read (skipped)
+                    }
+                    else
+                    {
+                        //It looks like UTF with no BOM or file was corrupted
+                        is.reset();
                     }
                 }
                 try (Reader reader = new InputStreamReader(is, charset))
@@ -279,7 +282,7 @@ public class TextToPDF implements Callable<Integer>
             // the text.
             textIsEmpty = false;
 
-            String[] lineWords = nextLine.replaceAll("[\\n\\r]+$", "").split(" ", -1);
+            String[] lineWords = nextLine.split(" ", -1);
             int lineIndex = 0;
             while (lineIndex < lineWords.length)
             {
@@ -300,10 +303,7 @@ public class TextToPDF implements Callable<Integer>
                     {
                         ff = true;
                         word1 = word.substring(0, indexFF);
-                        if (indexFF < word.length())
-                        {
-                            word2 = word.substring(indexFF + 1);
-                        }
+                        word2 = word.substring(indexFF + 1);
                     }
                     // word1 is the part before ff, word2 after
                     // both can be empty

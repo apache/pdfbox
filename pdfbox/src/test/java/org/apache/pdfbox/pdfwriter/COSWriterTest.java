@@ -23,12 +23,17 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Paths;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObjectKey;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.multipdf.PageExtractor;
 import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -146,6 +151,62 @@ class COSWriterTest
             pdDocument.saveIncremental(out);
             return out.toByteArray();
         }
+    }
+
+    /**
+     * Test if overlapping object numbers are eliminated when merging pdfs.
+     * 
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    @Test
+    void testPDFBox6036() throws IOException, URISyntaxException
+    {
+        URL emptyURL = new URI(
+                "https://issues.apache.org/jira/secure/attachment/13066015/empty.pdf").toURL();
+        URL roboURL = new URI(
+                "https://issues.apache.org/jira/secure/attachment/13066016/roboto-14.pdf").toURL();
+        byte[] emptyPDF = null;
+        byte[] roboPDF = null;
+        try (InputStream isEmpty = emptyURL.openStream(); InputStream isRobo = roboURL.openStream())
+        {
+            emptyPDF = IOUtils.toByteArray(isEmpty);
+            roboPDF = IOUtils.toByteArray(isRobo);
+        }
+        // write merge result using compressed streams
+        ByteArrayOutputStream baosCompressed = new ByteArrayOutputStream();
+        try (PDDocument targetDoc = Loader.loadPDF(emptyPDF);
+                PDDocument doc2 = Loader.loadPDF(roboPDF))
+        {
+            PDPage sourcePage = doc2.getPage(0);
+            targetDoc.importPage(sourcePage);
+            targetDoc.save(baosCompressed);
+        }
+        try (PDDocument targetDoc = Loader.loadPDF(baosCompressed.toByteArray()))
+        {
+            assertNotNull(targetDoc.getDocumentCatalog().getStructureTreeRoot());
+            PDResources res = targetDoc.getPage(1).getResources();
+            assertEquals("BCDEEE+Roboto-Regular", res.getFont(COSName.getPDFName("F1")).getName());
+            assertEquals("BCDFEE+Roboto-Regular", res.getFont(COSName.getPDFName("F2")).getName());
+        }
+
+        // write merge result without compressed streams
+        ByteArrayOutputStream baosUncompressed = new ByteArrayOutputStream();
+        try (PDDocument targetDoc = Loader.loadPDF(emptyPDF);
+                PDDocument doc2 = Loader.loadPDF(roboPDF))
+        {
+            PDPage sourcePage = doc2.getPage(0);
+            targetDoc.importPage(sourcePage);
+            targetDoc.save(baosUncompressed, CompressParameters.NO_COMPRESSION);
+        }
+        try (PDDocument targetDoc = Loader.loadPDF(baosUncompressed.toByteArray()))
+        {
+            assertNotNull(targetDoc.getDocumentCatalog().getStructureTreeRoot());
+            PDResources res = targetDoc.getPage(1).getResources();
+            assertEquals("BCDEEE+Roboto-Regular", res.getFont(COSName.getPDFName("F1")).getName());
+            assertEquals("BCDFEE+Roboto-Regular", res.getFont(COSName.getPDFName("F2")).getName());
+        }
+
     }
 
 }

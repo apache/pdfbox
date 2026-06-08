@@ -42,4 +42,34 @@ public class DimensionsType extends AbstractStructuredType
         super(metadata);
     }
 
+    public Float getH()
+    {
+        AbstractField prop = getProperty(H);
+        if (prop instanceof RealType)
+        {
+            return ((RealType) prop).getValue();
+        }
+        return null;
+    }
+
+    public Float getW()
+    {
+        AbstractField prop = getProperty(W);
+        if (prop instanceof RealType)
+        {
+            return ((RealType) prop).getValue();
+        }
+        return null;
+    }
+
+    public String getUnit()
+    {
+        return getPropertyValueAsString(UNIT);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "DimensionsType{" + getW() + " x " + getH() + " " + getUnit() + '}';
+    }
 }

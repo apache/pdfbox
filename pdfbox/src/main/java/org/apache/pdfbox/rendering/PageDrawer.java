@@ -69,6 +69,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
@@ -87,6 +88,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
+import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroupAttributes;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
@@ -104,6 +106,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.AnnotationFilter;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationUnknown;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 
@@ -608,12 +611,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return parentPaint;
         }
         PDColor backdropColor = null;
-        if (COSName.LUMINOSITY.equals(softMask.getSubType()))
+        COSName subType = softMask.getSubType();
+        PDTransparencyGroup form = softMask.getGroup();
+        if (COSName.LUMINOSITY.equals(subType))
         {
             COSArray backdropColorArray = softMask.getBackdropColor();
             if (backdropColorArray != null)
             {
-                PDTransparencyGroup form = softMask.getGroup();
                 PDColorSpace colorSpace = form.getGroup().getColorSpace(form.getResources());
                 if (colorSpace != null &&
                     colorSpace.getNumberOfComponents() == backdropColorArray.size()) // PDFBOX-5795
@@ -622,7 +626,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 }
             }
         }
-        TransparencyGroup transparencyGroup = new TransparencyGroup(softMask.getGroup(), true, 
+        TransparencyGroup transparencyGroup = new TransparencyGroup(form, true, 
                 softMask.getInitialTransformationMatrix(), backdropColor);
         BufferedImage image = transparencyGroup.getImage();
         if (image == null)
@@ -632,11 +636,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return parentPaint;
         }
         BufferedImage gray = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-        if (COSName.ALPHA.equals(softMask.getSubType()))
+        if (COSName.ALPHA.equals(subType))
         {
             gray.setData(image.getAlphaRaster());
         }
-        else if (COSName.LUMINOSITY.equals(softMask.getSubType()))
+        else if (COSName.LUMINOSITY.equals(subType))
         {
             Graphics g = gray.getGraphics();
             g.drawImage(image, 0, 0, null);
@@ -644,7 +648,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         else
         {
-            throw new IOException("Invalid soft mask subtype.");
+            throw new IOException("Invalid soft mask subtype: " + subType);
         }
         gray = adjustImage(gray);
         
@@ -1084,7 +1088,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             return;
         }
-        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+        PDGraphicsState graphicsState = getGraphicsState();
+        Matrix ctm = graphicsState.getCurrentTransformationMatrix();
         AffineTransform at = ctm.createAffineTransform();
 
         if (!pdImage.getInterpolate())
@@ -1113,12 +1118,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
         }
 
-        graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
+        graphics.setComposite(graphicsState.getNonStrokingJavaComposite());
         setClip();
 
         if (pdImage.isStencil())
         {
-            if (getGraphicsState().getNonStrokingColor().getColorSpace() instanceof PDPattern)
+            if (graphicsState.getNonStrokingColor().getColorSpace() instanceof PDPattern)
             {
                 // The earlier code for stencils (see "else") doesn't work with patterns because the
                 // CTM is not taken into consideration.
@@ -1497,9 +1502,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             LOG.error("shading " + shadingName + " does not exist in resources dictionary");
             return;
         }
-        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+        PDGraphicsState graphicsState = getGraphicsState();
+        Matrix ctm = graphicsState.getCurrentTransformationMatrix();
 
-        graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
+        graphics.setComposite(graphicsState.getNonStrokingJavaComposite());
         Shape savedClip = graphics.getClip();
         graphics.setClip(null);
         lastClips = null;
@@ -1508,10 +1514,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // need to do it here and not in shading getRaster() because it may have been rotated
         PDRectangle bbox = shading.getBBox();
         Area area;
+        Area currentClippingPath = graphicsState.getCurrentClippingPath();
         if (bbox != null)
         {
             area = new Area(bbox.transform(ctm));
-            area.intersect(getGraphicsState().getCurrentClippingPath());
+            area.intersect(currentClippingPath);
         }
         else
         {
@@ -1523,18 +1530,18 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 bounds.add(new Point2D.Double(Math.ceil(bounds.getMaxX() + 1),
                         Math.ceil(bounds.getMaxY() + 1)));
                 area = new Area(bounds);
-                area.intersect(getGraphicsState().getCurrentClippingPath());
+                area.intersect(currentClippingPath);
             }
             else
             {
-                area = getGraphicsState().getCurrentClippingPath();
+                area = currentClippingPath;
             }
         }
         if (!area.isEmpty())
         {
             // creating Paint is sometimes a costly operation, so avoid if possible
             Paint paint = shading.toPaint(ctm);
-            paint = applySoftMaskToPaint(paint, getGraphicsState().getSoftMask());
+            paint = applySoftMaskToPaint(paint, graphicsState.getSoftMask());
             graphics.setPaint(paint);
             graphics.fill(area);
         }
@@ -1560,14 +1567,17 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (annotation.isNoRotate() && getCurrentPage().getRotation() != 0)
         {
             appearance = annotation.getAppearance();
-            if (appearance != null && appearance.getNormalAppearance() != null &&
-                appearance.getNormalAppearance().isStream() &&
-                hasTransparency(appearance.getNormalAppearance().getAppearanceStream()))
+            if (appearance != null)
             {
-                // PDFBOX-4744: avoid appearances with transparency groups until we have fixed
-                // the rendering. A real solution should probably be
-                // in PDFStreamEngine.processAnnotation().
-                annotation.constructAppearances();
+                PDAppearanceEntry appearanceEntry = appearance.getNormalAppearance();
+                if (appearanceEntry != null && appearanceEntry.isStream() &&
+                    hasTransparency(appearanceEntry.getAppearanceStream()))
+                {
+                    // PDFBOX-4744: avoid appearances with transparency groups until we have fixed
+                    // the rendering. A real solution should probably be
+                    // in PDFStreamEngine.processAnnotation().
+                    annotation.constructAppearances();
+                }
             }
             PDRectangle rect = annotation.getRectangle();
             AffineTransform savedTransform = graphics.getTransform();
@@ -1678,8 +1688,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             return;
         }
+        PDGraphicsState graphicsState = getGraphicsState();
         TransparencyGroup group
-                = new TransparencyGroup(form, false, getGraphicsState().getCurrentTransformationMatrix(), null);
+                = new TransparencyGroup(form, false, graphicsState.getCurrentTransformationMatrix(), null);
         BufferedImage image = group.getImage();
         if (image == null)
         {
@@ -1687,7 +1698,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return;
         }
 
-        graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
+        graphics.setComposite(graphicsState.getNonStrokingJavaComposite());
         setClip();
 
         // both the DPI xform and the CTM were already applied to the group, so all we do
@@ -1712,7 +1723,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             graphics.translate(x * xformScalingFactorX, y * xformScalingFactorY);
         }
 
-        PDSoftMask softMask = getGraphicsState().getSoftMask();
+        PDSoftMask softMask = graphicsState.getSoftMask();
         if (softMask != null)
         {
             Paint awtPaint = new TexturePaint(image,
@@ -1819,7 +1830,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             height = maxY - minY;
 
             // FIXME - color space
-            if (isGray(form.getGroup().getColorSpace(form.getResources())))
+            PDTransparencyGroupAttributes group = form.getGroup();
+            if (isGray(group.getColorSpace(form.getResources())))
             {
                 image = create2ByteGrayAlphaImage(width, height);
             }
@@ -1828,7 +1840,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             }
 
-            boolean needsBackdrop = !isSoftMask && !form.getGroup().isIsolated() &&
+            boolean needsBackdrop = !isSoftMask && !group.isIsolated() &&
                 hasBlendMode(form, new HashSet<>());
             BufferedImage backdropImage = null;
             // Position of this group in parent group's coordinates
@@ -2025,14 +2037,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private boolean hasBlendMode(PDTransparencyGroup group, Set<COSBase> groupsDone)
     {
-        if (groupsDone.contains(group.getCOSObject()))
+        COSStream groupCOSStream = group.getCOSObject();
+        if (groupsDone.contains(groupCOSStream))
         {
             // The group is being processed. Avoid endless recursion.
             return false;
         }
-        groupsDone.add(group.getCOSObject());
+        groupsDone.add(groupCOSStream);
 
-        Boolean val = blendModeMap.get(group.getCOSObject());
+        Boolean val = blendModeMap.get(groupCOSStream);
         if (val != null)
         {
             return val;
@@ -2041,7 +2054,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         PDResources resources = group.getResources();
         if (resources == null)
         {
-            blendModeMap.put(group.getCOSObject(), false);
+            blendModeMap.put(groupCOSStream, false);
             return false;
         }
         for (COSName name : resources.getExtGStateNames())
@@ -2054,7 +2067,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             BlendMode blendMode = extGState.getBlendMode();
             if (blendMode != BlendMode.NORMAL)
             {
-                blendModeMap.put(group.getCOSObject(), true);
+                blendModeMap.put(groupCOSStream, true);
                 return true;
             }
         }
@@ -2074,12 +2087,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             if (xObject instanceof PDTransparencyGroup &&
                 hasBlendMode((PDTransparencyGroup)xObject, groupsDone))
             {
-                blendModeMap.put(group.getCOSObject(), true);
+                blendModeMap.put(groupCOSStream, true);
                 return true;
             }
         }
 
-        blendModeMap.put(group.getCOSObject(), false);
+        blendModeMap.put(groupCOSStream, false);
         return false;
     }
 
@@ -2158,7 +2171,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             return false;
         }
-        List<Boolean> visibles = new ArrayList<>();
+        List<Boolean> visibles = new ArrayList<>(oCGs.size());
         oCGs.forEach(prop -> visibles.add(!isHiddenOCG(prop)));
         COSName visibilityPolicy = ocmd.getVisibilityPolicy();
         

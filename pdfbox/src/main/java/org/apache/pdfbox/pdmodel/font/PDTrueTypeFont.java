@@ -46,6 +46,7 @@ import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
@@ -76,10 +77,8 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     private static final Map<String, Integer> INVERTED_MACOS_ROMAN = new HashMap<>(250);
     static
     {
-        MacOSRomanEncoding.INSTANCE.getCodeToNameMap().forEach((key, value) ->
-        {
-            INVERTED_MACOS_ROMAN.putIfAbsent(value, key);
-        });
+        MacOSRomanEncoding.INSTANCE.getCodeToNameMap().forEach((key, value) -> 
+                INVERTED_MACOS_ROMAN.putIfAbsent(value, key));
     }
 
     private final TrueTypeFont ttf;
@@ -99,10 +98,26 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
      * @param fontDictionary The font dictionary according to the PDF specification.
      * 
      * @throws IOException if the font could not be created
+     * 
+     * @deprecated use {@link #PDTrueTypeFont(COSDictionary, ResourceCache)} instead
      */
     public PDTrueTypeFont(COSDictionary fontDictionary) throws IOException
     {
-        super(fontDictionary);
+        this(fontDictionary, null);
+    }
+
+    /**
+     * Creates a new TrueType font from a Font dictionary.
+     *
+     * @param fontDictionary The font dictionary according to the PDF specification.
+     * @param resourceCache ResourceCache, can be null.
+     * 
+     * @throws IOException if the font could not be created
+     */
+    public PDTrueTypeFont(COSDictionary fontDictionary, ResourceCache resourceCache)
+            throws IOException
+    {
+        super(fontDictionary, resourceCache);
 
         TrueTypeFont ttfFont = null;
         boolean fontIsDamaged = false;
@@ -275,7 +290,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             // non-symbolic fonts don't have a built-in encoding per se, but there encoding is
             // assumed to be StandardEncoding by the PDF spec unless an explicit Encoding is present
             // which will override this anyway
-            if (getSymbolicFlag() != null &&!getSymbolicFlag())
+            if (Boolean.FALSE.equals(getSymbolicFlag()))
             {
                 return StandardEncoding.INSTANCE;
             }

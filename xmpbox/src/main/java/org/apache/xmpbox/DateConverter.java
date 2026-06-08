@@ -22,18 +22,17 @@
 package org.apache.xmpbox;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -52,18 +51,9 @@ import java.util.regex.Pattern;
 public final class DateConverter
 {
 
-    // The Date format is supposed to be the PDF_DATE_FORMAT, but not all PDF
-    // documents
-    // will use that date, so I have added a couple other potential formats
-    // to try if the original one does not work.
-    private static final SimpleDateFormat[] POTENTIAL_FORMATS = new SimpleDateFormat[] {
-            new SimpleDateFormat("EEEE, dd MMM yyyy hh:mm:ss a"),
-            new SimpleDateFormat("EEEE, MMM dd, yyyy hh:mm:ss a"),
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz"),
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"),
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S")
-        };
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder().parseCaseInsensitive()
+            .append(DateTimeFormatter.ISO_LOCAL_DATE_TIME).parseLenient().appendOffset("+HH:MM", "Z").parseStrict()
+            .toFormatter();
 
     /**
      * According to check-style, Utility classes should not have a public or default constructor.
@@ -100,23 +90,26 @@ public final class DateConverter
             try
             {
                 SimpleTimeZone zone = null;
-                
+
                 if (Pattern.matches("^\\d{4}-\\d{2}-\\d{2}T.*", date))
                 {
-                    // Assuming ISO860 date string
                     try
                     {
-                        return fromISO8601(date, "yyyy-MM-dd'T'HH:mm:ss[.SSS][XXX][zzz]");
+                        return fromISO8601(date);
                     }
-                    catch (DateTimeParseException e)
+                    catch (DateTimeParseException ex)
                     {
-                        // PDFBOX-6062: support nanoseconds
-                        return fromISO8601(date, "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS][XXX][zzz]");
+                        throw new IOException(ex);
                     }
                 }
                 if (date.startsWith("D:"))
                 {
                     date = date.substring(2);
+                }
+                int posOfT = date.indexOf('T');
+                if (posOfT != 10 && posOfT != -1)
+                {
+                    throw new IOException("Error converting date:" + date);
                 }
 
                 date = date.replaceAll("[-:T]", "");
@@ -144,7 +137,7 @@ public final class DateConverter
                 }
 
                 int timeZonePos = 12;
-                if (date.length() - 12 > 5 || (date.length() - 12 == 3 && date.endsWith("Z")))
+                if (date.length() == 14 || date.length() - 12 > 5 || (date.length() - 12 == 3 && date.endsWith("Z")))
                 {
                     second = Integer.parseInt(date.substring(12, 14));
                     timeZonePos = 14;
@@ -205,32 +198,7 @@ public final class DateConverter
             }
             catch (NumberFormatException e)
             {
-
-                // remove the arbitrary : in the timezone. SimpleDateFormat can't handle it
-                if (date.charAt(date.length() - 3) == ':' && 
-                    (date.charAt(date.length() - 6) == '+' || date.charAt(date.length() - 6) == '-'))
-                {
-                    // that's a timezone string, remove the :
-                    date = date.substring(0, date.length() - 3) + date.substring(date.length() - 2);
-                }
-                for (int i = 0; (retval == null) && (i < POTENTIAL_FORMATS.length); i++)
-                {
-                    try
-                    {
-                        Date utilDate = POTENTIAL_FORMATS[i].parse(date);
-                        retval = new GregorianCalendar();
-                        retval.setTime(utilDate);
-                    }
-                    catch (ParseException pe)
-                    {
-                        // ignore and move to next potential format
-                    }
-                }
-                if (retval == null)
-                {
-                    // we didn't find a valid date format so throw an exception
-                    throw new IOException("Error converting date:" + date, e);
-                }
+                throw new IOException("Error converting date:" + date, e);
             }
         }
         return retval;
@@ -295,7 +263,7 @@ public final class DateConverter
     {
         StringBuilder retval = new StringBuilder();
 
-        retval.append(cal.get(Calendar.YEAR));
+        retval.append(String.format(Locale.US, "%04d", cal.get(Calendar.YEAR)));
         retval.append('-');
         retval.append(String.format(Locale.US, "%02d", cal.get(Calendar.MONTH) + 1));
         retval.append('-');
@@ -339,77 +307,18 @@ public final class DateConverter
         retval.append(minutes);
         return retval.toString();
     }
-    
-    /**
-     * Get a Calendar from an ISO8601 date string.
-     * 
-     * @param dateString
-     * @return the Calendar instance.
-     */
-    private static Calendar fromISO8601(String dateString, String pattern)
+
+    private static Calendar fromISO8601(String dateString)
     {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
-
-        // Pattern to test for a time zone string
-        Pattern timeZonePattern = Pattern.compile(
-                    "[\\d-]*T?[\\d-\\.]([A-Z]{1,4})$|(.*\\d*)([A-Z][a-z]+\\/[A-Z][a-z]+)$"
-                );
-        Matcher timeZoneMatcher = timeZonePattern.matcher(dateString);
-        
-        String timeZoneString = null;
-        
-        while (timeZoneMatcher.find())
+        try
         {
-            for (int i = 1; i <= timeZoneMatcher.groupCount(); i++)
-            {
-                String group = timeZoneMatcher.group(i);
-                if (group != null)
-                {
-                    timeZoneString = group;
-                }
-            }
-        }
-
-        if (timeZoneString != null)
-        {
-            // can't use parseDateTime immediately, first do handling for time that has no seconds
-            int teeIndex = dateString.indexOf('T');
-            int tzIndex = dateString.indexOf(timeZoneString);
-            String toParse = dateString.substring(0, tzIndex);
-            if (tzIndex - teeIndex == 6)
-            {
-                toParse = dateString.substring(0, tzIndex) + ":00";
-            }
-
-            ZonedDateTime zonedDateTime = ZonedDateTime.parse(toParse + timeZoneString, dateTimeFormatter);
-
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateString, DATE_TIME_FORMATTER);
             return GregorianCalendar.from(zonedDateTime);
         }
-        else
+        catch (DateTimeParseException e)
         {
-            // can't use parseDateTime immediately, first do handling for time that has no seconds
-            int teeIndex = dateString.indexOf('T');
-            if (teeIndex == -1)
-            {
-                ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateString, dateTimeFormatter);
-                return GregorianCalendar.from(zonedDateTime);
-            }
-            int plusIndex = dateString.indexOf('+', teeIndex + 1);
-            int minusIndex = dateString.indexOf('-', teeIndex + 1);
-            if (plusIndex == -1 && minusIndex == -1)
-            {
-                ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateString, dateTimeFormatter);
-                return GregorianCalendar.from(zonedDateTime);
-            }
-            plusIndex = Math.max(plusIndex, minusIndex);
-            if (plusIndex - teeIndex == 6)
-            {
-                String toParse = dateString.substring(0, plusIndex) + ":00" + dateString.substring(plusIndex);
-                ZonedDateTime zonedDateTime = ZonedDateTime.parse(toParse, dateTimeFormatter);
-                return GregorianCalendar.from(zonedDateTime);
-            }
-            ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateString, dateTimeFormatter);
-            return GregorianCalendar.from(zonedDateTime);
+            LocalDateTime localDateTime = LocalDateTime.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            return GregorianCalendar.from(localDateTime.atZone(ZoneId.of("UTC")));
         }
     }
 }

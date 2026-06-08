@@ -68,19 +68,9 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void add( COSBase object )
     {
-        // wrap indirect objects
-        if ((object instanceof COSDictionary || object instanceof COSArray) && !object.isDirect()
-                && object.getKey() != null)
-        {
-            COSObject cosObject = new COSObject(object, object.getKey());
-            objects.add(cosObject);
-            getUpdateState().update(cosObject);
-        }
-        else
-        {
-            objects.add(object);
-            getUpdateState().update(object);
-        }
+        COSBase objectToAdd = maybeWrap(object);
+        objects.add(objectToAdd);
+        getUpdateState().update(objectToAdd);
     }
 
     /**
@@ -107,19 +97,9 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void add( int i, COSBase object)
     {
-        // wrap indirect objects
-        if ((object instanceof COSDictionary || object instanceof COSArray) && !object.isDirect()
-                && object.getKey() != null)
-        {
-            COSObject cosObject = new COSObject(object, object.getKey());
-            objects.add(i, cosObject);
-            getUpdateState().update(cosObject);
-        }
-        else
-        {
-            objects.add(i, object);
-            getUpdateState().update(object);
-        }
+        COSBase objectToAdd = maybeWrap(object);
+        objects.add(i, objectToAdd);
+        getUpdateState().update(objectToAdd);
     }
 
     /**
@@ -173,14 +153,16 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      *
      * @param objectList The list of objects to add.
      */
-    public void addAll( COSArray objectList )
+    public void addAll(COSArray objectList)
     {
-        if( objectList != null )
+        if (objectList == null)
         {
-            if (objects.addAll(objectList.objects))
-            {
-                getUpdateState().update(objectList);
-            }
+            return;
+        }
+
+        if (objects.addAll(objectList.objects))
+        {
+            getUpdateState().update(objectList);
         }
     }
 
@@ -207,19 +189,9 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public void set( int index, COSBase object )
     {
-        // wrap indirect objects
-        if ((object instanceof COSDictionary || object instanceof COSArray) && !object.isDirect()
-                && object.getKey() != null)
-        {
-            COSObject cosObject = new COSObject(object, object.getKey());
-            objects.set(index, cosObject);
-            getUpdateState().update(cosObject);
-        }
-        else
-        {
-            objects.set(index, object);
-            getUpdateState().update(object);
-        }
+        COSBase objectToAdd = maybeWrap(object);
+        objects.set(index, objectToAdd);
+        getUpdateState().update(objectToAdd);
     }
 
     /**
@@ -595,7 +567,6 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         while( size() < size )
         {
             add( object );
-            getUpdateState().update(object);
         }
         getUpdateState().update();
     }
@@ -784,7 +755,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      * 
      * @param indirectObjects a list of already found indirect objects.
      * 
-     * @deprecated, use {@link #getIndirectObjectKeys(Collection)} instead
+     * @deprecated, will be removed in 4.0
      */
     public void getIndirectObjectKeys(List<COSObjectKey> indirectObjects)
     {
@@ -799,6 +770,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      * 
      * @param indirectObjects a collection of already found indirect objects.
      * 
+     * @deprecated, will be removed in 4.0
      */
     public void getIndirectObjectKeys(Collection<COSObjectKey> indirectObjects)
     {
@@ -814,25 +786,21 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
             {
                 return;
             }
-            else
-            {
-                indirectObjects.add(key);
-            }
+            indirectObjects.add(key);
         }
-
         for (COSBase cosBase : objects)
         {
             if (cosBase == null)
             {
                 continue;
             }
-            COSObjectKey cosBaseKey = cosBase.getKey();
-            if (cosBaseKey != null && indirectObjects.contains(cosBaseKey))
+            COSObjectKey indirectObjectKey = cosBase instanceof COSObject ? cosBase.getKey() : null;
+            if (indirectObjectKey != null)
             {
-                continue;
-            }
-            if (cosBase instanceof COSObject)
-            {
+                if (indirectObjects.contains(indirectObjectKey))
+                {
+                    continue;
+                }
                 // dereference object
                 cosBase = ((COSObject) cosBase).getObject();
             }
@@ -846,11 +814,89 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
                 // descend to included array to collect all included indirect objects
                 ((COSArray) cosBase).getIndirectObjectKeys(indirectObjects);
             }
-            else if (cosBaseKey != null)
+            else if (indirectObjectKey != null)
             {
                 // add key for all indirect objects other than COSDictionary/COSArray
-                indirectObjects.add(cosBaseKey);
+                indirectObjects.add(indirectObjectKey);
             }
         }
+    }
+
+    /**
+     * Resets the object key of all indirect objects numbers within this array and all included dictionaries and arrays.
+     * It is used to avoid overlapping object numbers when importing an existing page to another pdf.
+     * 
+     * Expert use only. This might trigger some unwanted side effects.
+     * 
+     * @param indirectObjects a collection of already found indirect objects.
+     * 
+     * @return the updated collection of indirect objects
+     */
+    protected Collection<COSObjectKey> resetObjectKeys(Collection<COSObjectKey> indirectObjects)
+    {
+        if (indirectObjects == null)
+        {
+            return indirectObjects;
+        }
+        COSObjectKey key = getKey();
+        if (key != null)
+        {
+            // avoid endless recursions
+            if (indirectObjects.contains(key))
+            {
+                return indirectObjects;
+            }
+            indirectObjects.add(key);
+            // reset key
+            setKey(null);
+        }
+        for (COSBase cosBase : objects)
+        {
+            if (cosBase == null)
+            {
+                continue;
+            }
+            COSObjectKey indirectObjectKey = cosBase instanceof COSObject ? cosBase.getKey() : null;
+            if (indirectObjectKey != null)
+            {
+                if (indirectObjects.contains(indirectObjectKey))
+                {
+                    continue;
+                }
+                // dereference object first
+                COSBase dereferencedObject = ((COSObject) cosBase).getObject();
+                // reset key
+                cosBase.setKey(null);
+                cosBase = dereferencedObject;
+            }
+            if (cosBase instanceof COSDictionary)
+            {
+                // descend to included dictionary to reset all included indirect objects
+                ((COSDictionary) cosBase).resetObjectKeys(indirectObjects);
+            }
+            else if (cosBase instanceof COSArray)
+            {
+                // descend to included array to reset all included indirect objects
+                ((COSArray) cosBase).resetObjectKeys(indirectObjects);
+            }
+            else if (indirectObjectKey != null)
+            {
+                // add key for all indirect objects other than COSDictionary/COSArray
+                indirectObjects.add(indirectObjectKey);
+            }
+        }
+        return indirectObjects;
+    }
+
+    // wrap indirect objects
+    private COSBase maybeWrap(COSBase object)
+    {
+        COSBase objectToAdd = object;
+        if ((object instanceof COSDictionary || object instanceof COSArray) && !object.isDirect()
+                && object.getKey() != null)
+        {
+            objectToAdd = new COSObject(object, object.getKey());
+        }
+        return objectToAdd;
     }
 }

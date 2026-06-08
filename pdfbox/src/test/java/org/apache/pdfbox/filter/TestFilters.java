@@ -20,8 +20,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-
 import java.util.Random;
 
 import org.apache.pdfbox.Loader;
@@ -148,9 +148,12 @@ class TestFilters
     @Test
     void testPDFBOX1977() throws IOException
     {
-        Filter lzwFilter = FilterFactory.INSTANCE.getFilter(COSName.LZW_DECODE);
-        byte[] byteArray = IOUtils.toByteArray(this.getClass().getResourceAsStream("PDFBOX-1977.bin"));
-        checkEncodeDecode(lzwFilter, byteArray);
+        try (InputStream is = this.getClass().getResourceAsStream("PDFBOX-1977.bin"))
+        {
+            Filter lzwFilter = FilterFactory.INSTANCE.getFilter(COSName.LZW_DECODE);
+            byte[] byteArray = IOUtils.toByteArray(is);
+            checkEncodeDecode(lzwFilter, byteArray);
+        }
     }
 
     /**

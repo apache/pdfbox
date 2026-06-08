@@ -24,6 +24,7 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -57,7 +58,10 @@ public final class PDIndexed extends PDSpecialColorSpace
     /**
      * Creates a new Indexed color space.
      * Default DeviceRGB, hival 255.
+     * 
+     * @deprecated This will be removed in 4.0. If you need it, please contact us.
      */
+    @Deprecated
     public PDIndexed()
     {
         array = new COSArray();
@@ -93,6 +97,50 @@ public final class PDIndexed extends PDSpecialColorSpace
         baseColorSpace = PDColorSpace.create(array.get(1), resources);
         readColorTable();
         initRgbColorTable();
+    }
+
+    /**
+     * Factory method to create a new indexed color space.
+     * 
+     * @param base base colorspace, mandantory has to be != null
+     * @param hival maximum valid index value for lookup data
+     * @param lookupData array for lookup data, mandantory has to be != null
+     * 
+     * @return an instance of PDIndedex initialized with the given values
+     * 
+     * @throws IOException if the colorspace could not be created
+     */
+    public static PDIndexed create(PDColorSpace base, int hival, byte[] lookupData)
+            throws IOException
+    {
+        if (base == null)
+        {
+            throw new IllegalArgumentException("base must not be null");
+        }
+        if (lookupData == null)
+        {
+            throw new IllegalArgumentException("lookupData must not be null");
+        }
+        if (hival < 0 || hival > 255)
+        {
+            throw new IllegalArgumentException(" hival has to be a positive value <= 255");
+        }
+        int expected = (hival + 1) * base.getNumberOfComponents();
+        if (lookupData.length < expected)
+        {
+            throw new IllegalArgumentException("lookupData too short: expected at least " + expected
+                    + " bytes ((hival+1) * components), got " + lookupData.length);
+        }
+        PDIndexed pdIndexed = new PDIndexed();
+        pdIndexed.baseColorSpace = base;
+        pdIndexed.array.set(1, base.getCOSObject());
+        pdIndexed.array.set(2, hival);
+        pdIndexed.lookupData = Arrays.copyOf(lookupData, lookupData.length);
+        COSString cosLookupData = new COSString(pdIndexed.lookupData, true);
+        pdIndexed.array.set(3, cosLookupData);
+        pdIndexed.readColorTable();
+        pdIndexed.initRgbColorTable();
+        return pdIndexed;
     }
 
     @Override
@@ -198,15 +246,14 @@ public final class PDIndexed extends PDSpecialColorSpace
         BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         WritableRaster rgbRaster = rgbImage.getRaster();
 
-        int[] src = new int[1];
+        int[] src = new int[width];
         for (int y = 0; y < height; y++)
         {
+            raster.getPixels(0, y, width, 1, src);
             for (int x = 0; x < width; x++)
             {
-                raster.getPixel(x, y, src);
-
                 // lookup
-                int index = Math.min(src[0], actualMaxIndex);
+                int index = Math.min(src[x], actualMaxIndex);
                 rgbRaster.setPixel(x, y, rgbColorTable[index]);
             }
         }
@@ -308,7 +355,10 @@ public final class PDIndexed extends PDSpecialColorSpace
     /**
      * Sets the base color space.
      * @param base the base color space
+     *
+     * @deprecated This will be removed in 4.0. If you need it, please contact us.
      */
+    @Deprecated
     public void setBaseColorSpace(PDColorSpace base)
     {
         array.set(1, base.getCOSObject());
@@ -318,7 +368,10 @@ public final class PDIndexed extends PDSpecialColorSpace
     /**
      * Sets the highest value that is allowed. This cannot be higher than 255.
      * @param high the highest value for the lookup table
+     *
+     * @deprecated This will be removed in 4.0. If you need it, please contact us.
      */
+    @Deprecated
     public void setHighValue(int high)
     {
         array.set(2, high);

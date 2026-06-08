@@ -55,6 +55,7 @@ public class XmpSerializer
 
     private final TransformerFactory transformerFactory;
     private final DocumentBuilder documentBuilder;
+    private Element rdf;
 
     /**
      * Default constructor.
@@ -91,7 +92,7 @@ public class XmpSerializer
     {
         Document doc = documentBuilder.newDocument();
         // fill document
-        Element rdf = createRdfElement(doc, metadata, withXpacket);
+        rdf = createRdfElement(doc, metadata, withXpacket);
         for (XMPSchema schema : metadata.getAllSchemas())
         {
             rdf.appendChild(serializeSchema(doc, schema));
@@ -157,6 +158,13 @@ public class XmpSerializer
                                                attribute.getValue());
                     }
                 }
+
+                // PDFBOX-2378: add namespace declaration to the top
+                if (!field.getPrefix().isEmpty() && field.getNamespace() != null && !field.getNamespace().isEmpty())
+                {
+                    rdf.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:" + field.getPrefix(), field.getNamespace());
+                }
+
                 parent.appendChild(esimple);
             }
             else if (field instanceof ArrayProperty)
@@ -196,11 +204,10 @@ public class XmpSerializer
                 // all properties
                 serializeFields(doc, estructured, innerFields,resourceNS, null, true);
             }
-            else
-            {
-                // XXX finish serialization classes
-                System.err.println(">> TODO >> " + field.getClass());
-            }
+            // else doesn't happen:
+            // AbstractField is only extended by AbstractSimpleProperty and AbstractComplexProperty
+            // AbstractComplexProperty is only extended by AbstractStructuredType and ArrayProperty
+            // And all these are handled here.
         }
     }
 
@@ -282,11 +289,11 @@ public class XmpSerializer
             doc.appendChild(endXPacket);
         }
         // rdf element
-        Element rdf = doc.createElementNS(XmpConstants.RDF_NAMESPACE, "rdf:RDF");
+        Element rdfElement = doc.createElementNS(XmpConstants.RDF_NAMESPACE, "rdf:RDF");
         // rdf.setAttributeNS(XMPSchema.NS_NAMESPACE, qualifiedName, value)
-        xmpmeta.appendChild(rdf);
+        xmpmeta.appendChild(rdfElement);
         // return the rdf element where all will be put
-        return rdf;
+        return rdfElement;
     }
 
     /**

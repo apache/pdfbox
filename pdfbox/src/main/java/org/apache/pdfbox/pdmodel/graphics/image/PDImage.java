@@ -68,7 +68,7 @@ public interface PDImage extends COSObjectable
      * Use this method if you want to extract the image without loosing any color information, as no color conversion
      * will be performed.
      *
-     * You can alwoys use {@link #getRawRaster()}, if you want to access the raw data even if no matching
+     * You can always use {@link #getRawRaster()}, if you want to access the raw data even if no matching
      * java.awt.ColorSpace exists
      *
      * @return the raw image with a java.awt.ColorSpace or null
@@ -144,7 +144,7 @@ public interface PDImage extends COSObjectable
     boolean isStencil();
 
     /**
-     * Sets whether or not the image is a stencil.
+     * Sets whether the image is a stencil.
      * This corresponds to the {@code ImageMask} entry in the image stream's dictionary.
      * @param isStencil True to make the image a stencil.
      */

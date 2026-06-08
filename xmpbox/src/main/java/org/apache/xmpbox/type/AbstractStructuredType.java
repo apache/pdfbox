@@ -133,15 +133,12 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty
 
     protected String getPropertyValueAsString(String fieldName)
     {
-        AbstractSimpleProperty absProp = (AbstractSimpleProperty) getProperty(fieldName);
-        if (absProp == null)
+        AbstractField absProp = getProperty(fieldName);
+        if (absProp instanceof AbstractSimpleProperty)
         {
-            return null;
+            return ((AbstractSimpleProperty) absProp).getStringValue();
         }
-        else
-        {
-            return absProp.getStringValue();
-        }
+        return null;
     }
 
     protected Calendar getDatePropertyAsCalendar(String fieldName)

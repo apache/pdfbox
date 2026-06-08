@@ -44,6 +44,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -311,7 +312,8 @@ class TestCOSIncrement
             document.save(baos);
         }
 
-        try (PDDocument document = Loader.loadPDF(baos.toByteArray()))
+        try (PDDocument document = Loader.loadPDF(baos.toByteArray());
+             OutputStream os = new FileOutputStream("target/test-output/PDFBOX-5627.pdf"))
         {
             PDPage page = document.getPage(0);
 
@@ -333,7 +335,7 @@ class TestCOSIncrement
             pages.setNeedToBeUpdated(true);
             page.getCOSObject().setNeedToBeUpdated(true);
 
-            document.saveIncremental(new FileOutputStream("target/test-output/PDFBOX-5627.pdf"));
+            document.saveIncremental(os);
         }
 
         try (PDDocument document = Loader.loadPDF(new File("target/test-output/PDFBOX-5627.pdf")))

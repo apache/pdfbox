@@ -185,11 +185,13 @@ class RandomAccessReadDataStream extends TTFDataStream
     }
 
     @Override
+    @SuppressWarnings("java:S2095") // buffer is intentionally not closed, must remain alive for the lifetime of the view
     public RandomAccessRead createSubView(long length)
     {
         try
         {
-            return new RandomAccessReadBuffer(data).createView(currentPosition, length);
+            RandomAccessReadBuffer buffer = new RandomAccessReadBuffer(data);
+            return buffer.createView(currentPosition, length);
         }
         catch (IOException e)
         {

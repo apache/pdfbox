@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.util.BoundingBox;
@@ -65,7 +66,9 @@ class AppearanceGeneratorHelper
 
     private static final Operator BMC = Operator.getOperator("BMC");
     private static final Operator EMC = Operator.getOperator("EMC");
- 
+
+    private static final Pattern PATTERN = Pattern.compile("\\u000D\\u000A|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029]");
+
     private final PDVariableText field;
     
     private PDDefaultAppearanceString defaultAppearance;
@@ -94,7 +97,6 @@ class AppearanceGeneratorHelper
      * The minimum/maximum font sizes used for multiline text auto sizing
      */
     private static final float MINIMUM_FONT_SIZE = 4;
-    private static final float MAXIMUM_FONT_SIZE = 300;
     
     /**
      * The default padding applied by Acrobat to the fields bbox.
@@ -193,7 +195,7 @@ class AppearanceGeneratorHelper
         // see PDFBOX-3911
         if (field instanceof PDTextField && !((PDTextField) field).isMultiline())
         {
-            value = value.replaceAll("\\u000D\\u000A|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029]", " ");
+            value = PATTERN.matcher(value).replaceAll(" ");
         }
 
         for (PDAnnotationWidget widget : field.getWidgets())
@@ -276,9 +278,9 @@ class AppearanceGeneratorHelper
         PDAction actionF = actions.getF();
         if (actionF != null)
         {
-            if (field.getAcroForm().getScriptingHandler() != null)
+            ScriptingHandler scriptingHandler = field.getAcroForm().getScriptingHandler();
+            if (scriptingHandler != null)
             {
-                ScriptingHandler scriptingHandler = field.getAcroForm().getScriptingHandler();
                 return scriptingHandler.format((PDActionJavaScript) actionF, apValue);
             }
             LOG.info("Field contains a formatting action but no ScriptingHandler " +
@@ -513,7 +515,7 @@ class AppearanceGeneratorHelper
             {
                 throw new IllegalArgumentException("font is null, check whether /DA entry is incomplete or incorrect");
             }
-            if (font.getName().contains("+"))
+            if (font.getName() != null && font.getName().contains("+"))
             {
                 LOG.warn("Font '" + defaultAppearance.getFontName().getName() +
                          "' of field '" + field.getFullyQualifiedName() + 
