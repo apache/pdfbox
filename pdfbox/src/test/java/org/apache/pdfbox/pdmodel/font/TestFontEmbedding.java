@@ -22,9 +22,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
@@ -47,6 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -439,6 +442,88 @@ class TestFontEmbedding
         // check that the extracted text matches what we wrote
         String extracted = getUnicodeText(file);
         assertEquals(text, extracted.trim());
+    }
+
+    /**
+     * When several code points map to one glyph, the ToUnicode CMap must reflect the code point
+     * actually used, not the lowest one sharing the glyph. Finds such an ambiguous glyph in the
+     * test font and verifies that each code point sharing it round-trips as itself.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testToUnicodePrefersUsedCodePoint() throws IOException
+    {
+        File ipafont = new File("target/fonts/ipag00303", "ipag.ttf");
+        Assumptions.assumeTrue(ipafont.exists(),
+                "testToUnicodePrefersUsedCodePoint skipped, font not available");
+
+        // Find a glyph reachable from at least two distinct, printable code points. The lower one
+        // (lowCp) is what the old reverse mapping always picked; the higher one (highCp) is the one
+        // that used to be mis-extracted as lowCp.
+        int lowCp = -1;
+        int highCp = -1;
+        try (TrueTypeFont ttf = new TTFParser().parse(
+                new org.apache.pdfbox.io.RandomAccessReadBufferedFile(ipafont)))
+        {
+            CmapLookup cmap = ttf.getUnicodeCmapLookup();
+            int numGlyphs = ttf.getMaximumProfile().getNumGlyphs();
+            for (int gid = 1; gid <= numGlyphs && highCp == -1; gid++)
+            {
+                List<Integer> codes = cmap.getCharCodes(gid); // sorted ascending
+                if (codes == null || codes.size() < 2)
+                {
+                    continue;
+                }
+                for (int cp : codes)
+                {
+                    if (cp <= 0xFFFF && !Character.isWhitespace(cp) && !Character.isISOControl(cp))
+                    {
+                        if (lowCp == -1)
+                        {
+                            lowCp = cp;
+                        }
+                        else
+                        {
+                            highCp = cp;
+                            break;
+                        }
+                    }
+                }
+                if (highCp == -1)
+                {
+                    lowCp = -1; // not enough usable code points on this glyph, keep looking
+                }
+            }
+        }
+        assertTrue(highCp != -1, "test font has no glyph shared between two printable code points");
+
+        // Each code point must round-trip as itself. Without the fix, highCp was extracted as lowCp.
+        assertEquals(new String(Character.toChars(highCp)),
+                renderAndExtract(ipafont, highCp).trim());
+        assertEquals(new String(Character.toChars(lowCp)),
+                renderAndExtract(ipafont, lowCp).trim());
+    }
+
+    private String renderAndExtract(File fontFile, int codePoint) throws IOException
+    {
+        File file = new File(OUT_DIR, "ToUnicode-U+" + Integer.toHexString(codePoint) + ".pdf");
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            PDType0Font font = PDType0Font.load(document, fontFile);
+            try (PDPageContentStream stream = new PDPageContentStream(document, page))
+            {
+                stream.beginText();
+                stream.setFont(font, 20);
+                stream.newLineAtOffset(50, 700);
+                stream.showText(new String(Character.toChars(codePoint)));
+                stream.endText();
+            }
+            document.save(file);
+        }
+        return getUnicodeText(file);
     }
 
     private void validateCIDFontType2(boolean useSubset) throws IOException
