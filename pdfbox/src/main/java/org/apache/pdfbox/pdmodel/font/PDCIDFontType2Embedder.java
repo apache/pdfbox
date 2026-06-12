@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -128,6 +129,19 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
 
     private void buildToUnicodeCMap(Map<Integer, Integer> newGIDToOldCID) throws IOException
     {
+        // When several code points map to one glyph, prefer the one actually used in the
+        // document (first occurrence wins) instead of cmapLookup.getCharCodes(gid).get(0),
+        // which is the lowest code point and often an unexpected compatibility character.
+        Map<Integer, Integer> inputCodePointByGID = new HashMap<>();
+        for (int codePoint : getSubsetCodePoints())
+        {
+            int inputGid = cmapLookup.getGlyphId(codePoint);
+            if (inputGid > 0)
+            {
+                inputCodePointByGID.putIfAbsent(inputGid, codePoint);
+            }
+        }
+
         ToUnicodeWriter toUniWriter = new ToUnicodeWriter();
         boolean hasSurrogates = false;
         for (int gid = 1, max = ttf.getMaximumProfile().getNumGlyphs(); gid <= max; gid++)
@@ -152,10 +166,11 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
 
             // skip composite glyph components that have no code point
             List<Integer> codes = cmapLookup.getCharCodes(cid); // old GID -> Unicode
-            if (codes != null)
+            Integer inputCodePoint = inputCodePointByGID.get(cid);
+            if (inputCodePoint != null || codes != null)
             {
-                // use the first entry even for ambiguous mappings
-                int codePoint = codes.get(0);
+                // fall back to the cmap's first entry for glyphs with no recorded input
+                int codePoint = inputCodePoint != null ? inputCodePoint : codes.get(0);
                 if (codePoint > 0xFFFF)
                 {
                     hasSurrogates = true;
