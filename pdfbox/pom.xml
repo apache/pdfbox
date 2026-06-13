@@ -896,6 +896,18 @@
                             <sha512>3c8020c1114e2267fdc4e525eed04fd452c75eab4fb0c5d60340983d91af52aca330383a4430934de82e73ddfcd17eec55f1426bd0756b7d11510fadf1043cf9</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-6210</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://github.com/googlefonts/noto-cjk/raw/main/Sans/Variable/TTF/NotoSansCJKkr-VF.ttf</url>
+                            <outputDirectory>${project.build.directory}/fonts</outputDirectory>
+                            <sha512>a426c59e4e00dca438014ccb7d28263e76319060be9e49ff1237fdcb25d05d4a46553ed4612740f3101afc5dd7a98e9a87fda0b2c5a2b46c559b564f12f54035</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
