@@ -965,6 +965,18 @@
                             <sha512>a426c59e4e00dca438014ccb7d28263e76319060be9e49ff1237fdcb25d05d4a46553ed4612740f3101afc5dd7a98e9a87fda0b2c5a2b46c559b564f12f54035</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-6172</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13081021/NotoSansSC-Regular.otf</url>
+                            <outputDirectory>${project.build.directory}/fonts</outputDirectory>
+                            <sha512>2ee83beb6658792c6b963010462515ff1187aafe64930c1a7465dc26e86ab5236dc98cb006986e5fcd60876bedef7f00e4e1cb86bbf590bba000a00187af0ee3</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
