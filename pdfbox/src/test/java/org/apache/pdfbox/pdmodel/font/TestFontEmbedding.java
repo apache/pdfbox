@@ -48,6 +48,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -499,7 +500,7 @@ class TestFontEmbedding
                 }
             }
         }
-        assertTrue(highCp != -1, "test font has no glyph shared between two printable code points");
+        assertNotEquals(-1, highCp, "test font has no glyph shared between two printable code points");
 
         // Each code point must round-trip as itself. Without the fix, highCp was extracted as lowCp.
         assertEquals(new String(Character.toChars(highCp)), renderAndExtract(1, highCp).trim());
