@@ -1899,8 +1899,10 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      * characters, the order of the characters in a word or words in a line may wrong, due to RTL and LTR marks and
      * characters!
      * 
-     * Based on http://www.nesterovsky-bros.com/weblog/2013/07/28/VisualToLogicalConversionInJava.aspx
-     * 
+     * Based on
+     * <a href="http://www.nesterovsky-bros.com/weblog/2013/07/28/VisualToLogicalConversionInJava.aspx">an
+     * article "Visual to logical conversion in Java"</a>.
+     *
      * @param word The word that shall be processed
      * @return new word with the correct direction of the containing characters
      */
