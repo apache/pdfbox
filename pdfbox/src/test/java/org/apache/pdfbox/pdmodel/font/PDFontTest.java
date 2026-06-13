@@ -32,6 +32,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.fontbox.ttf.OTFParser;
+import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeCollection;
 import org.apache.fontbox.ttf.TrueTypeFont;
@@ -529,6 +531,21 @@ class PDFontTest
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(doc);
             assertEquals("\u0391 \u2126", text.trim());
+        }
+    }
+
+    // PDFBOX-6172: test that exception is thrown on otf font with CID and GID not identical.
+    @Test
+    void testPDFBox6172() throws IOException
+    {
+        try (PDDocument document = new PDDocument())
+        {
+            InputStream is = new FileInputStream("target/fonts/NotoSansSC-Regular.otf");
+            OpenTypeFont otf = new OTFParser().parse(new RandomAccessReadBuffer(is));
+            Throwable t = assertThrows(IllegalStateException.class,
+                    () -> PDType0Font.load(document, otf, false),
+                    "should have thrown IllegalStateException");
+            assertEquals("CID and GID not identical: CID 628 != GID 372, use a ttf font instead", t.getMessage());
         }
     }
 }
