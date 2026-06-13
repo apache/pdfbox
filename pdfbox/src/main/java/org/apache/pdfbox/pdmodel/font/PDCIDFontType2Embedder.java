@@ -141,9 +141,9 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         for (int codePoint : getSubsetCodePoints())
         {
             int inputGid = cmapLookup.getGlyphId(codePoint);
-            if (inputGid > 0)
+            if (inputGid > 0 && inputCodePointByGID.get(inputGid) == null)
             {
-                inputCodePointByGID.putIfAbsent(inputGid, codePoint);
+                inputCodePointByGID.put(inputGid, codePoint);
             }
         }
 
