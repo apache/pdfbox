@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -41,7 +40,7 @@ class PDIndexedTest
      * Test of factory method for PDFBOX-6192.
      */
     @Test
-    void testFactory()
+    void testFactory() throws IOException
     {
         final PDColorSpace baseColorspace = PDDeviceRGB.INSTANCE;
         // define 6 color values
@@ -52,36 +51,29 @@ class PDIndexedTest
         // expected written string for COSArray
         final String outputString = "/Indexed /DeviceRGB 5 <" + stringLookupData + ">";
 
-        try
-        {
-            byte[] lookupData = COSString.parseHex(stringLookupData).getBytes();
-            PDIndexed pdIndexed = PDIndexed.create(baseColorspace, hival, lookupData);
-            COSArray indexedCOSArray = ((COSArray) pdIndexed.getCOSObject());
-            assertEquals(hival, ((COSNumber) indexedCOSArray.getObject(2)).intValue(),
-                    "unexpected value for hival");
-            assertEquals(COSName.INDEXED.getName(), pdIndexed.getName(),
-                    "unexpected value for name");
-            assertEquals(baseColorspace, pdIndexed.getBaseColorSpace(),
-                    "unexpected value for base colorspace");
-            String lookupDataString = ((COSString) indexedCOSArray.getObject(3)).toHexString();
-            assertEquals(stringLookupData, lookupDataString, "unexpected value for lookup data");
+        byte[] lookupData = COSString.parseHex(stringLookupData).getBytes();
+        PDIndexed pdIndexed = PDIndexed.create(baseColorspace, hival, lookupData);
+        COSArray indexedCOSArray = ((COSArray) pdIndexed.getCOSObject());
+        assertEquals(hival, ((COSNumber) indexedCOSArray.getObject(2)).intValue(),
+                "unexpected value for hival");
+        assertEquals(COSName.INDEXED.getName(), pdIndexed.getName(),
+                "unexpected value for name");
+        assertEquals(baseColorspace, pdIndexed.getBaseColorSpace(),
+                "unexpected value for base colorspace");
+        String lookupDataString = ((COSString) indexedCOSArray.getObject(3)).toHexString();
+        assertEquals(stringLookupData, lookupDataString, "unexpected value for lookup data");
 
-            try (PDDocument document = new PDDocument())
-            {
-                PDPage page = new PDPage();
-                PDResources resources = new PDResources();
-                resources.add(pdIndexed);
-                page.setResources(resources);
-                document.addPage(page);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                document.save(baos, CompressParameters.NO_COMPRESSION);
-                String pdfAsString = baos.toString();
-                assertTrue(pdfAsString.contains(outputString), "output doesn't match expected string");
-            }
-        }
-        catch (IOException e)
+        try (PDDocument document = new PDDocument())
         {
-            fail("Unexpected exception", e);
+            PDPage page = new PDPage();
+            PDResources resources = new PDResources();
+            resources.add(pdIndexed);
+            page.setResources(resources);
+            document.addPage(page);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            document.save(baos, CompressParameters.NO_COMPRESSION);
+            String pdfAsString = baos.toString();
+            assertTrue(pdfAsString.contains(outputString), "output doesn't match expected string");
         }
     }
 
@@ -89,7 +81,7 @@ class PDIndexedTest
      * Test parameter of factory method.
      */
     @Test
-    void testFactoryParameterChecks()
+    void testFactoryParameterChecks() throws IOException
     {
         final PDColorSpace baseColorspace = PDDeviceRGB.INSTANCE;
         // empty lookupData as placeholder
@@ -99,15 +91,7 @@ class PDIndexedTest
         // create s string containing 6 RGB values. Spaces are added for a better readability
         final String stringLookupData = "AA1166 112233 000000 FEDC01 4561FE DC34DA" //
                 .replace(" ", "");
-        byte[] lookupData = null;
-        try
-        {
-            lookupData = COSString.parseHex(stringLookupData).getBytes();
-        }
-        catch (IOException e)
-        {
-            fail("Unexpected exception", e);
-        }
+        byte[] lookupData = COSString.parseHex(stringLookupData).getBytes();
 
         // check lookupData not null
         assertThrows(IllegalArgumentException.class,
