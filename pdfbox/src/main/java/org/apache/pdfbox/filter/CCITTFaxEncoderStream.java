@@ -46,7 +46,7 @@ import java.io.OutputStream;
 final class CCITTFaxEncoderStream extends OutputStream {
     
     private int currentBufferLength = 0;
-    private final byte[] inputBuffer;
+    private byte[] inputBuffer;
     private final int inputBufferLength;
     private final int columns;
     private final int rows;
@@ -93,9 +93,10 @@ final class CCITTFaxEncoderStream extends OutputStream {
 
     @Override
     public void close() throws IOException {
-        stream.close();
         changesCurrentRow = null;
         changesReferenceRow = null;
+        inputBuffer = null;
+        stream.close();
     }
 
     private void encodeRow() throws IOException {
