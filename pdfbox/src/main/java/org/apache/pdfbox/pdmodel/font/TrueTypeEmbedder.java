@@ -23,7 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -75,7 +75,7 @@ abstract class TrueTypeEmbedder implements Subsetter
     protected final CmapSubtable cmap;
 
     protected final CmapLookup cmapLookup;
-    private final Set<Integer> subsetCodePoints = new HashSet<Integer>();
+    private final Set<Integer> subsetCodePoints = new LinkedHashSet<Integer>();
     private final boolean embedSubset;
 
     /**
@@ -325,7 +325,19 @@ abstract class TrueTypeEmbedder implements Subsetter
     {
         subsetCodePoints.add(codePoint);
     }
-    
+
+    /**
+     * Returns the Unicode code points that were passed to {@link #addToSubset(int)}, i.e. the code
+     * points actually used in the document, in first-occurrence order. Used when building the
+     * ToUnicode CMap to map a glyph back to the code point that was really typed.
+     *
+     * @return the code points added to the subset, in insertion order
+     */
+    Set<Integer> getSubsetCodePoints()
+    {
+        return subsetCodePoints;
+    }
+
     @Override
     public void subset() throws IOException
     {
