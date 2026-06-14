@@ -39,16 +39,9 @@ import org.junit.jupiter.api.Test;
 class TestCOSFloat extends TestCOSNumber
 {
     @BeforeAll
-    static void setUp()
+    static void setUp() throws IOException
     {
-        try
-        {
-            testCOSBase = COSNumber.get("1.1");
-        }
-        catch (IOException e)
-        {
-            fail("Failed to create a COSNumber in setUp()");
-        }
+        testCOSBase = COSNumber.get("1.1");
     }
 
     /**
