@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 
@@ -57,10 +56,6 @@ class RandomAccessReadWriteBufferTest
             assertEquals(0, randomAccessReadWrite.length());
             assertEquals(0, randomAccessReadWrite.getPosition());
         }
-        catch (Throwable throwable)
-        {
-            fail("Unexpected exception " + throwable.getMessage());
-        }
     }
 
     @Test
@@ -73,10 +68,6 @@ class RandomAccessReadWriteBufferTest
             randomAccessReadWrite.write(2);
             randomAccessReadWrite.write(3);
             assertEquals(3, randomAccessReadWrite.length());
-        }
-        catch (Throwable throwable)
-        {
-            fail("Unexpected exception " + throwable.getMessage());
         }
     }
 
@@ -91,10 +82,6 @@ class RandomAccessReadWriteBufferTest
             randomAccessReadWrite.write(new byte[] { 8, 9, 10, 11, });
             assertEquals(11, randomAccessReadWrite.length());
         }
-        catch (Throwable throwable)
-        {
-            fail("Unexpected exception " + throwable.getMessage());
-        }
     }
 
     @Test
@@ -107,10 +94,6 @@ class RandomAccessReadWriteBufferTest
             assertEquals(7, randomAccessReadWrite.length());
             randomAccessReadWrite.write(new byte[] { 8, 9, 10, 11, });
             assertEquals(11, randomAccessReadWrite.length());
-        }
-        catch (Throwable throwable)
-        {
-            fail("Unexpected exception " + throwable.getMessage());
         }
     }
 
@@ -129,10 +112,6 @@ class RandomAccessReadWriteBufferTest
             assertEquals(7, bytesRead[6]);
             assertEquals(8, bytesRead[7]);
             assertEquals(11, bytesRead[10]);
-        }
-        catch (Throwable throwable)
-        {
-            fail("Unexpected exception " + throwable.getMessage());
         }
     }
 
