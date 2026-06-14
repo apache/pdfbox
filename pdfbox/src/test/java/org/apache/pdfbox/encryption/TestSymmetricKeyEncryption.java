@@ -20,7 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -53,13 +54,13 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.encryption.PDEncryption;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.StandardSecurityHandler;
 import org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -94,12 +95,10 @@ class TestSymmetricKeyEncryption
     static void setUp() throws NoSuchAlgorithmException
     {
         TESTRESULTSDIR.mkdirs();
-
-        if (Cipher.getMaxAllowedKeyLength("AES") != Integer.MAX_VALUE)
-        {
-            // we need strong encryption for these tests
-            fail("JCE unlimited strength jurisdiction policy files are not installed");
-        }
+        
+        // we need strong encryption for these tests
+        assertEquals(Integer.MAX_VALUE, Cipher.getMaxAllowedKeyLength("AES"),
+                "JCE unlimited strength jurisdiction policy files are not installed");
 
         permission = new AccessPermission();
         permission.setCanAssembleDocument(false);
@@ -133,48 +132,25 @@ class TestSymmetricKeyEncryption
         restrAP.setCanExtractContent(false);
         restrAP.setCanModify(false);
 
-        byte[] inputFileAsByteArray = getFileResourceAsByteArray("PasswordSample-40bit.pdf");
-        checkPerms(inputFileAsByteArray, "owner", fullAP);
-        checkPerms(inputFileAsByteArray, "user", restrAP);
-        try
-        {
-            checkPerms(inputFileAsByteArray, "", null);
-            fail("wrong password not detected");
-        }
-        catch (IOException ex)
-        {
-            assertEquals("Cannot decrypt PDF, the password is incorrect", ex.getMessage());
-        }
+        checkSeveralPerms(getFileResourceAsByteArray("PasswordSample-40bit.pdf"), fullAP, restrAP);
 
         restrAP.setCanAssembleDocument(false);
         restrAP.setCanExtractForAccessibility(false);
         restrAP.setCanPrintFaithful(false);
 
-        inputFileAsByteArray = getFileResourceAsByteArray("PasswordSample-128bit.pdf");
-        checkPerms(inputFileAsByteArray, "owner", fullAP);
-        checkPerms(inputFileAsByteArray, "user", restrAP);
-        try
-        {
-            checkPerms(inputFileAsByteArray, "", null);
-            fail("wrong password not detected");
-        }
-        catch (IOException ex)
-        {
-            assertEquals("Cannot decrypt PDF, the password is incorrect", ex.getMessage());
-        }
+        checkSeveralPerms(getFileResourceAsByteArray("PasswordSample-128bit.pdf"), fullAP, restrAP);
+        checkSeveralPerms(getFileResourceAsByteArray("PasswordSample-256bit.pdf"), fullAP, restrAP);
+    }
 
-        inputFileAsByteArray = getFileResourceAsByteArray("PasswordSample-256bit.pdf");
-        checkPerms(inputFileAsByteArray, "owner", fullAP);
-        checkPerms(inputFileAsByteArray, "user", restrAP);
-        try
-        {
-            checkPerms(inputFileAsByteArray, "", null);
-            fail("wrong password not detected");
-        }
-        catch (IOException ex)
-        {
-            assertEquals("Cannot decrypt PDF, the password is incorrect", ex.getMessage());
-        }
+    private void checkSeveralPerms(final byte[] inputFileAsByteArray1, AccessPermission fullAP, AccessPermission restrAP) throws IOException
+    {
+        InvalidPasswordException ex;
+        checkPerms(inputFileAsByteArray1, "owner", fullAP);
+        checkPerms(inputFileAsByteArray1, "user", restrAP);
+        ex = assertThrows(InvalidPasswordException.class,
+                () -> checkPerms(inputFileAsByteArray1, "", null),
+                "wrong password not detected");
+        assertEquals("Cannot decrypt PDF, the password is incorrect", ex.getMessage());
     }
 
     private void checkPerms(byte[] inputFileAsByteArray, String password,
