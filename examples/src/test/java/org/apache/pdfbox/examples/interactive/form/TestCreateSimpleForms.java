@@ -20,12 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -45,6 +46,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDPushButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 import org.apache.pdfbox.rendering.PDFRenderer;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -75,15 +77,9 @@ class TestCreateSimpleForms
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
             PDTextField textBox = (PDTextField) acroForm.getField("SampleField");
             assertEquals("Sample field content", textBox.getValue());
-            try
-            {
-                textBox.setValue("Łódź");
-                fail("should have failed with IllegalArgumentException");
-            }
-            catch (IllegalArgumentException ex)
-            {
-                assertTrue(ex.getMessage().contains("U+0141 ('Lslash') is not available"));
-            }
+            IllegalArgumentException ex =
+                    assertThrows(IllegalArgumentException.class, () -> textBox.setValue("Łódź"));
+            assertTrue(ex.getMessage().contains("U+0141 ('Lslash') is not available"));
             PDFont font = getFontFromWidgetResources(textBox, "Helv");
             assertEquals("Helvetica", font.getName());
             assertTrue(font.isStandard14());
