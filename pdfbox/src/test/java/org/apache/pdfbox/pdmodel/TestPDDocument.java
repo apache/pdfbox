@@ -29,6 +29,7 @@ import java.util.Locale;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -185,14 +186,7 @@ class TestPDDocument
             pw.write("<script language='JavaScript'>");
         }
         assertThrows(IOException.class, () -> Loader.loadPDF(f), "parsing should fail");
-        try
-        {
-            Files.delete(f.toPath());
-        }
-        catch (IOException ex)
-        {
-            fail("delete bad file failed after failed load");
-        }
+        assertDoesNotThrow(() -> Files.delete(f.toPath()), "delete bad file failed after failed load");
     }
 
     /**
