@@ -24,6 +24,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ class TestPDPage
             acroForm.getFields().add(textField);
 
             // Adding page AFTER creating form fields causes a StackOverflowError
-            document.addPage(page);
+            assertDoesNotThrow(() -> document.addPage(page));
 
             document.save(OutputStream.nullOutputStream());
             document.close();

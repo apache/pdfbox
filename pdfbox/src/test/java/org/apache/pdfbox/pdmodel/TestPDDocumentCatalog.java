@@ -26,6 +26,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -90,7 +91,7 @@ class TestPDDocumentCatalog
         {
             PDDocumentCatalog cat = doc.getDocumentCatalog();
             // getLabelsByPageIndices() should not throw an exception
-            cat.getPageLabels().getLabelsByPageIndices();
+            assertDoesNotThrow(() -> cat.getPageLabels().getLabelsByPageIndices());
         }
     }
 

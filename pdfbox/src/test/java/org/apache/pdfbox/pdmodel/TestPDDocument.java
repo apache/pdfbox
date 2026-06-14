@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -205,15 +204,8 @@ class TestPDDocument
         }
 
         Loader.loadPDF(f).close();
-        
-        try
-        {
-            Files.delete(f.toPath());
-        }
-        catch (IOException ex)
-        {
-            fail("delete good file failed after successful load() and close()");
-        }
+        assertDoesNotThrow(() -> Files.delete(f.toPath()), 
+                "delete good file failed after successful load() and close()");
     }
 
     /**
@@ -237,7 +229,7 @@ class TestPDDocument
             doc.save(baos);
         }
 
-        Loader.loadPDF(baos.toByteArray()).close();
+        assertDoesNotThrow(() -> Loader.loadPDF(baos.toByteArray()).close());
 
         Locale.setDefault(defaultLocale);
     }
