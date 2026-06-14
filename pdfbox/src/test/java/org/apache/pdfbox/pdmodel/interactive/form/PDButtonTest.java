@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -102,9 +101,11 @@ class PDButtonTest
      * Test a radio button with options.
      * This was causing an ArrayIndexOutOfBoundsException when trying to set to "Off", as this
      * wasn't treated to be a valid option.
+     *
+     * @throws IOException
      */
     @Test
-    void testRadioButtonWithOptions()
+    void testRadioButtonWithOptions() throws IOException
     {
         File file = new File(TARGET_PDF_DIR, "PDFBOX-3656.pdf");
         
@@ -116,10 +117,6 @@ class PDButtonTest
                 assertEquals(COSName.Off, widget.getCOSObject().getItem(COSName.AS),
                         "The widget should be set to Off"));
         }
-        catch (IOException e)
-        {
-            fail("Unexpected IOException " + e.getMessage());
-        }
     }
     
     /**
@@ -129,9 +126,10 @@ class PDButtonTest
      * Special handling for a radio button with /Opt and the On state not being named
      * after the index.
      * 
+     * @throws IOException
      */
     @Test
-    void testOptionsAndNamesNotNumbers()
+    void testOptionsAndNamesNotNumbers() throws IOException
     {
         File file = new File(TARGET_PDF_DIR, "PDFBOX-3682.pdf");
         try (PDDocument pdfDocument = Loader.loadPDF(file))
@@ -151,10 +149,6 @@ class PDButtonTest
             assertEquals("c",
                     radioButton.getWidgets().get(2).getCOSObject().getNameAsString(COSName.AS),
                     "This shall be c");
-        }
-        catch (IOException e)
-        {
-            fail("Unexpected IOException " + e.getMessage());
         }
     }
         
