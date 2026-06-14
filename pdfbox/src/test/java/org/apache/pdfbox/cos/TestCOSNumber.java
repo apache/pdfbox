@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 
@@ -52,39 +51,31 @@ abstract class TestCOSNumber extends TestCOSBase
      * Tests get() - tests a static constructor for COSNumber classes.
      */
     @Test
-    void testGet()
+    void testGet() throws IOException
     {
-        try
-        {
-            
-            // Ensure the basic static numbers are recognized
-            assertEquals(COSInteger.ZERO, COSNumber.get("0"));
-            assertEquals(COSInteger.ZERO, COSNumber.get("-"));
-            assertEquals(COSInteger.ZERO, COSNumber.get("."));
-            assertEquals(COSInteger.ONE, COSNumber.get("1"));
-            assertEquals(COSInteger.TWO, COSNumber.get("2"));
-            assertEquals(COSInteger.THREE, COSNumber.get("3"));
-            // Test some arbitrary ints
-            assertEquals(COSInteger.get(100), COSNumber.get("100"));
-            assertEquals(COSInteger.get(256), COSNumber.get("256"));
-            assertEquals(COSInteger.get(-1000), COSNumber.get("-1000"));
-            assertEquals(COSInteger.get(2000), COSNumber.get("+2000"));
-            // Some arbitrary floats
-            assertEquals(new COSFloat(1.1f), COSNumber.get("1.1"));
-            assertEquals(new COSFloat(100f), COSNumber.get("100.0"));
-            assertEquals(new COSFloat(-100.001f), COSNumber.get("-100.001"));
-            // according to the specs the exponential shall not be used
-            // but obviously there some
-            assertNotNull(COSNumber.get("-2e-006"));
-            assertNotNull(COSNumber.get("-8e+05"));
+        // Ensure the basic static numbers are recognized
+        assertEquals(COSInteger.ZERO, COSNumber.get("0"));
+        assertEquals(COSInteger.ZERO, COSNumber.get("-"));
+        assertEquals(COSInteger.ZERO, COSNumber.get("."));
+        assertEquals(COSInteger.ONE, COSNumber.get("1"));
+        assertEquals(COSInteger.TWO, COSNumber.get("2"));
+        assertEquals(COSInteger.THREE, COSNumber.get("3"));
+        // Test some arbitrary ints
+        assertEquals(COSInteger.get(100), COSNumber.get("100"));
+        assertEquals(COSInteger.get(256), COSNumber.get("256"));
+        assertEquals(COSInteger.get(-1000), COSNumber.get("-1000"));
+        assertEquals(COSInteger.get(2000), COSNumber.get("+2000"));
+        // Some arbitrary floats
+        assertEquals(new COSFloat(1.1f), COSNumber.get("1.1"));
+        assertEquals(new COSFloat(100f), COSNumber.get("100.0"));
+        assertEquals(new COSFloat(-100.001f), COSNumber.get("-100.001"));
+        // according to the specs the exponential shall not be used
+        // but obviously there some
+        assertNotNull(COSNumber.get("-2e-006"));
+        assertNotNull(COSNumber.get("-8e+05"));
 
-            assertThrows(NullPointerException.class, () -> COSNumber.get(null));
-            assertThrows(IOException.class, () -> COSNumber.get("a"));
-        }
-        catch (IOException e)
-        {
-            fail("Failed to convert a number " + e.getMessage());
-        }
+        assertThrows(NullPointerException.class, () -> COSNumber.get(null));
+        assertThrows(IOException.class, () -> COSNumber.get("a"));
     }
 
     /**
@@ -121,14 +112,7 @@ abstract class TestCOSNumber extends TestCOSBase
     @Test
     void testInvalidNumber()
     {
-        try
-        {
-            COSNumber.get("18446744073307F448448");
-            fail("Was expecting an IOException");
-        }
-        catch (IOException e)
-        {
-        }
+        assertThrows(IOException.class, () -> COSNumber.get("18446744073307F448448"));
     }
 
 }
