@@ -1279,7 +1279,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // calculate subsampling according to the resulting image size
         double scale = Math.abs(at.getDeterminant() * xform.getDeterminant());
 
-        int subsampling = (int) Math.floor(Math.sqrt(pdImage.getWidth() * pdImage.getHeight() / scale));
+        int imageWidth = pdImage.getWidth();
+        int imageHeight = pdImage.getHeight();
+        int subsampling = (int) Math.floor(Math.sqrt(imageWidth * imageHeight / scale));
         if (subsampling > 8)
         {
             subsampling = 8;
@@ -1288,11 +1290,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             subsampling = 1;
         }
-        if (subsampling > pdImage.getWidth() || subsampling > pdImage.getHeight())
+        if (subsampling > imageWidth || subsampling > imageHeight)
         {
             // For very small images it is possible that the subsampling would imply 0 size.
             // To avoid problems, the subsampling is set to no less than the smallest dimension.
-            subsampling = Math.min(pdImage.getWidth(), pdImage.getHeight());
+            subsampling = Math.min(imageWidth, imageHeight);
         }
         return subsampling;
     }
