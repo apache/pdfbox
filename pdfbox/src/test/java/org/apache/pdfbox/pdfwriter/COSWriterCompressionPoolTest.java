@@ -23,6 +23,8 @@ import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class COSWriterCompressionPoolTest
@@ -48,7 +50,8 @@ class COSWriterCompressionPoolTest
                 {
                     outline.addLast(new PDOutlineItem());
                 }
-                new COSWriterCompressionPool(document, CompressParameters.DEFAULT_COMPRESSION);
+                Assertions.assertDoesNotThrow(() ->
+                        new COSWriterCompressionPool(document, CompressParameters.DEFAULT_COMPRESSION));
             }
         }
     }
