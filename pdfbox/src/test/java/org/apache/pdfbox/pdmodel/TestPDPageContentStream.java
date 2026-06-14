@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.List;
@@ -280,10 +279,6 @@ class TestPDPageContentStream
             // ri, i are not supported with a specific setter
             contentStream.endText();
             contentStream.close();
-        }
-        catch (IllegalArgumentException exception)
-        {
-            fail(exception);
         }
     }
 }

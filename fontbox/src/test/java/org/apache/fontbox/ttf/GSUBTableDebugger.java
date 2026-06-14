@@ -17,7 +17,6 @@
 
 package org.apache.fontbox.ttf;
 
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +37,7 @@ public class GSUBTableDebugger
     private static final String LOHIT_BENGALI_FONT_FILE = "/ttf/Lohit-Bengali.ttf";
 
     @Test
-    void printLohitBengaliTTF()
+    void printLohitBengaliTTF() throws IOException
     {
         try(InputStream is1 = GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE);
             InputStream is2 = GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE))
@@ -59,10 +58,6 @@ public class GSUBTableDebugger
             GsubData gsubData = glyphSubstitutionTable.getGsubData();
             new GSUBTablePrintUtil().printCharacterToGlyph(gsubData,
                     trueTypeFont.getUnicodeCmapLookup());
-        }
-        catch (IOException exception)
-        {
-            fail(exception);
         }
     }
 
