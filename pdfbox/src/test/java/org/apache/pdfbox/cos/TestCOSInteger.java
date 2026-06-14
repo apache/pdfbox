@@ -19,13 +19,13 @@ package org.apache.pdfbox.cos;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.pdfbox.pdfwriter.COSWriter;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -125,21 +125,16 @@ class TestCOSInteger extends TestCOSNumber
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         COSWriter visitor = new COSWriter(outStream);
-        int index = 0;
-        try
+        for (int i = -1000; i < 3000; i += 200)
         {
-            for (int i = -1000; i < 3000; i += 200)
+            final int index = i;
+            assertDoesNotThrow(() -> 
             {
-                index = i;
-                COSInteger cosInt = COSInteger.get(i);
+                COSInteger cosInt = COSInteger.get(index);
                 cosInt.accept(visitor);
-                testByteArrays(String.valueOf(i).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
+                testByteArrays(String.valueOf(index).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
                 outStream.reset();
-            }
-        }
-        catch (Exception e)
-        {
-            fail("Failed to write " + index + " exception: " + e.getMessage());
+            }, "Failed to write " + index);
         }
     }
 
@@ -150,21 +145,16 @@ class TestCOSInteger extends TestCOSNumber
     void testWritePDF()
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        int index = 0;
-        try
+        for (int i = -1000; i < 3000; i += 200)
         {
-            for (int i = -1000; i < 3000; i += 200)
+            final int index = i;
+            assertDoesNotThrow(() -> 
             {
-                index = i;
-                COSInteger cosInt = COSInteger.get(i);
+                COSInteger cosInt = COSInteger.get(index);
                 cosInt.writePDF(outStream);
-                testByteArrays(String.valueOf(i).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
+                testByteArrays(String.valueOf(index).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
                 outStream.reset();
-            }
-        }
-        catch (Exception e)
-        {
-            fail("Failed to write " + index + " exception: " + e.getMessage());
+            }, "Failed to write " + index);
         }
     }
 }
