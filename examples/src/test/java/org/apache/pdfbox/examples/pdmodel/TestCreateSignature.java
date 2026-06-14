@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.net.URI;
@@ -690,11 +691,11 @@ class TestCreateSignature
         document.addSignature(signature);
         int[] reserveByteRange = signature.getByteRange();
 
-        String digestString = calculateDigestString(document.saveIncrementalForExternalSigning(new ByteArrayOutputStream()).getContent());
+        String digestString = calculateDigestString(document.saveIncrementalForExternalSigning(OutputStream.nullOutputStream()).getContent());
         boolean caught = false;
         try
         {
-            document.saveIncrementalForExternalSigning(new ByteArrayOutputStream());
+            document.saveIncrementalForExternalSigning(OutputStream.nullOutputStream());
         }
         catch (IllegalStateException ex)
         {
@@ -702,7 +703,7 @@ class TestCreateSignature
         }
         assertTrue(caught, "IllegalStateException should have been thrown");
         signature.setByteRange(reserveByteRange);
-        assertEquals(digestString, calculateDigestString(document.saveIncrementalForExternalSigning(new ByteArrayOutputStream()).getContent()));
+        assertEquals(digestString, calculateDigestString(document.saveIncrementalForExternalSigning(OutputStream.nullOutputStream()).getContent()));
     }
 
     /**

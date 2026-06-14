@@ -16,9 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -82,7 +82,7 @@ class TestFDF
     {
         try (FDFDocument fdf = Loader.loadFDF(new File(TestFDF.class.getResource(name).toURI())))
         {
-            fdf.saveXFDF(new PrintWriter(new ByteArrayOutputStream()));
+            fdf.saveXFDF(new PrintWriter(OutputStream.nullOutputStream()));
             
             List<FDFField> fields = fdf.getCatalog().getFDF().getFields();
             

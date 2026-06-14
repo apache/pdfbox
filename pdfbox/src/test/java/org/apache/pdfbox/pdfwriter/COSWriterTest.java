@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -83,7 +84,7 @@ class COSWriterTest
             PageExtractor pageExtractor = new PageExtractor(pdfDocument, 2, 2);
             try (PDDocument pdfPages = pageExtractor.extract())
             {
-                pdfPages.save(new ByteArrayOutputStream());
+                pdfPages.save(OutputStream.nullOutputStream());
             }
         }
     }

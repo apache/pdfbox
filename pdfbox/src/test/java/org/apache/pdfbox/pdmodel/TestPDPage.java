@@ -16,8 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -53,7 +53,7 @@ class TestPDPage
             // Adding page AFTER creating form fields causes a StackOverflowError
             document.addPage(page);
 
-            document.save(new ByteArrayOutputStream());
+            document.save(OutputStream.nullOutputStream());
             document.close();
         }
     }
