@@ -34,16 +34,9 @@ import org.junit.Assert;
 public class TestCOSFloat extends TestCOSNumber
 {
     @Override
-    public void setUp()
+    public void setUp() throws IOException
     {
-        try
-        {
-            testCOSBase = COSNumber.get("1.1");
-        }
-        catch (IOException e)
-        {
-            fail("Failed to create a COSNumber in setUp()");
-        }
+        testCOSBase = COSNumber.get("1.1");
     }
 
     /**
