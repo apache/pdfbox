@@ -38,7 +38,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -96,10 +95,6 @@ class TestCOSIncrement
             document.addPage(new PDPage(new PDRectangle(100, 100)));
             document.saveIncremental(documentOutput);
             documentData = documentOutput.toByteArray();
-        }
-        catch (IOException e)
-        {
-            fail("Closing streams failed.");
         }
 
         // Remove page 2.
