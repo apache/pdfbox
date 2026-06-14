@@ -19,7 +19,6 @@ package org.apache.pdfbox.cos;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
@@ -33,9 +32,11 @@ public class TestCOSUpdateInfo
     
     /**
      * Tests isNeedToBeUpdate() and setNeedToBeUpdate() - tests the getter/setter methods.
+     * 
+     * @throws IOException
      */
     @Test
-    public void testIsSetNeedToBeUpdate()
+    public void testIsSetNeedToBeUpdate() throws IOException
     {
         // COSDictionary
         COSUpdateInfo testCOSDictionary = new COSDictionary();
@@ -46,18 +47,11 @@ public class TestCOSUpdateInfo
 
         // COSObject
         COSUpdateInfo testCOSObject;
-        try
-        {
-            testCOSObject = new COSObject(null);
-            testCOSObject.setNeedToBeUpdated(true);
-            assertTrue(testCOSObject.isNeedToBeUpdated());
-            testCOSObject.setNeedToBeUpdated(false);
-            assertFalse(testCOSObject.isNeedToBeUpdated());
-        }
-        catch (IOException e)
-        {
-            fail(e.getMessage());
-        }
+        testCOSObject = new COSObject(null);
+        testCOSObject.setNeedToBeUpdated(true);
+        assertTrue(testCOSObject.isNeedToBeUpdated());
+        testCOSObject.setNeedToBeUpdated(false);
+        assertFalse(testCOSObject.isNeedToBeUpdated());
     }
 
 }

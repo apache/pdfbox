@@ -22,7 +22,6 @@
 package org.apache.pdfbox.preflight.utils;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -148,16 +147,9 @@ public class TestCOSUtils
     }
 
     @Test
-    public void testCloseCOSDocumentIO()
+    public void testCloseCOSDocumentIO() throws IOException
     {
-        try
-        {
-            COSUtils.closeDocumentQuietly(new IOCOSDocument());
-        }
-        catch (IOException e)
-        {
-            fail(e.getMessage());
-        }
+        COSUtils.closeDocumentQuietly(new IOCOSDocument());
     }
 
     protected void addToXref(COSDocument doc, COSObjectKey key, long value)
