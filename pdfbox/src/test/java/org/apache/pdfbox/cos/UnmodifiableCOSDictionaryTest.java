@@ -30,8 +30,7 @@ class UnmodifiableCOSDictionaryTest
     {
         COSDictionary unmodifiableCOSDictionary = new COSDictionary().asUnmodifiableDictionary();
 
-        assertThrows(UnsupportedOperationException.class,
-                () -> unmodifiableCOSDictionary.clear());
+        assertThrows(UnsupportedOperationException.class, unmodifiableCOSDictionary::clear);
 
         assertThrows(UnsupportedOperationException.class,
                 () -> unmodifiableCOSDictionary.removeItem(COSName.A));
