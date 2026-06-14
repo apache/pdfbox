@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.common.function.type4;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -182,15 +181,7 @@ class TestOperators
         Type4Tester.create("3 2 idiv").pop(1).isEmpty();
         Type4Tester.create("4 2 idiv").pop(2).isEmpty();
         Type4Tester.create("-5 2 idiv").pop(-2).isEmpty();
-        try
-        {
-            Type4Tester.create("4.4 2 idiv");
-            fail("Expected typecheck");
-        }
-        catch (ClassCastException cce)
-        {
-            //expected
-        }
+        assertThrows(ClassCastException.class, () -> Type4Tester.create("4.4 2 idiv"), "Expected typecheck");
     }
 
     /**
@@ -224,15 +215,7 @@ class TestOperators
         Type4Tester.create("5 3 mod").pop(2).isEmpty();
         Type4Tester.create("5 2 mod").pop(1).isEmpty();
         Type4Tester.create("-5 3 mod").pop(-2).isEmpty();
-        try
-        {
-            Type4Tester.create("4.4 2 mod");
-            fail("Expected typecheck");
-        }
-        catch (ClassCastException cce)
-        {
-            //expected
-        }
+        assertThrows(ClassCastException.class, () -> Type4Tester.create("4.4 2 mod"), "Expected typecheck");
     }
 
     /**
