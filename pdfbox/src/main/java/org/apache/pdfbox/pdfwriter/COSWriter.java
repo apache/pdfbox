@@ -270,7 +270,7 @@ public class COSWriter implements ICOSVisitor
     public COSWriter(OutputStream outputStream, RandomAccessRead inputData) throws IOException
     {
         // write to buffer instead of output
-        setOutput(OutputStream.nullOutputStream());
+        setOutput(new ByteArrayOutputStream());
         setStandardOutput(new COSStandardOutputStream(output, inputData.length()));
         // disable compressed object streams
         compressParameters = CompressParameters.NO_COMPRESSION;
