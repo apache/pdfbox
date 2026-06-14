@@ -20,9 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.pdfbox.pdfwriter.COSWriter;
@@ -92,23 +92,14 @@ class TestCOSBoolean extends TestCOSBase
 
     @Override
     @Test
-    void testAccept()
+    void testAccept() throws IOException
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         COSWriter visitor = new COSWriter(outStream);
-        int index = 0;
-        try
-        {
-            cosBooleanTrue.accept(visitor);
-            testByteArrays(String.valueOf(cosBooleanTrue).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
-            outStream.reset();
-            cosBooleanFalse.accept(visitor);
-            testByteArrays(String.valueOf(cosBooleanFalse).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
-            outStream.reset();
-        }
-        catch (Exception e)
-        {
-            fail("Failed to write " + index + " exception: " + e.getMessage());
-        }
+        cosBooleanTrue.accept(visitor);
+        testByteArrays(String.valueOf(cosBooleanTrue).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
+        outStream.reset();
+        cosBooleanFalse.accept(visitor);
+        testByteArrays(String.valueOf(cosBooleanFalse).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
     }
 }
