@@ -23,7 +23,7 @@ package org.apache.xmpbox.parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -214,12 +214,8 @@ class DeserializationTest
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/invalidxmp/noxpacket.xml"))
         {
-            xdb.parse(is);
-            fail("Should fail during parse");
-        }
-        catch (XmpParsingException e)
-        {
-            assertEquals(ErrorType.XpacketBadStart, e.getErrorType());
+            XmpParsingException ex = assertThrows(XmpParsingException.class, () -> xdb.parse(is));
+            assertEquals(ErrorType.XpacketBadStart, ex.getErrorType());
         }
     }
 
@@ -228,12 +224,8 @@ class DeserializationTest
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/invalidxmp/noxpacketend.xml"))
         {
-            xdb.parse(is);
-            fail("Should fail during parse");
-        }
-        catch (XmpParsingException e)
-        {
-            assertEquals(ErrorType.XpacketBadEnd, e.getErrorType());
+            XmpParsingException ex = assertThrows(XmpParsingException.class, () -> xdb.parse(is));
+            assertEquals(ErrorType.XpacketBadEnd, ex.getErrorType());
         }
     }
 
@@ -242,12 +234,8 @@ class DeserializationTest
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/invalidxmp/noroot.xml"))
         {
-            xdb.parse(is);
-            fail("Should fail during parse");
-        }
-        catch (XmpParsingException e)
-        {
-            assertEquals(ErrorType.Format, e.getErrorType());
+            XmpParsingException ex = assertThrows(XmpParsingException.class, () -> xdb.parse(is));
+            assertEquals(ErrorType.Format, ex.getErrorType());
         }
     }
 
@@ -256,12 +244,8 @@ class DeserializationTest
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/invalidxmp/tworoot.xml"))
         {
-            xdb.parse(is);
-            fail("Should fail during parse");
-        }
-        catch (XmpParsingException e)
-        {
-            assertEquals(ErrorType.Format, e.getErrorType());
+            XmpParsingException ex = assertThrows(XmpParsingException.class, () -> xdb.parse(is));
+            assertEquals(ErrorType.Format, ex.getErrorType());
         }
     }
 
@@ -270,12 +254,8 @@ class DeserializationTest
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/invalidxmp/invalidroot2.xml"))
         {
-            xdb.parse(is);
-            fail("Should fail during parse");
-        }
-        catch (XmpParsingException e)
-        {
-            assertEquals(ErrorType.Format, e.getErrorType());
+            XmpParsingException ex = assertThrows(XmpParsingException.class, () -> xdb.parse(is));
+            assertEquals(ErrorType.Format, ex.getErrorType());
         }
     }
 
@@ -284,12 +264,8 @@ class DeserializationTest
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/invalidxmp/invalidroot.xml"))
         {
-            xdb.parse(is);
-            fail("Should fail during parse");
-        }
-        catch (XmpParsingException e)
-        {
-            assertEquals(ErrorType.Format, e.getErrorType());
+            XmpParsingException ex = assertThrows(XmpParsingException.class, () -> xdb.parse(is));
+            assertEquals(ErrorType.Format, ex.getErrorType());
         }
     }
 
@@ -298,12 +274,8 @@ class DeserializationTest
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/invalidxmp/undefinedschema.xml"))
         {
-            xdb.parse(is);
-            fail("Should fail during parse");
-        }
-        catch (XmpParsingException e)
-        {
-            assertEquals(ErrorType.NoSchema, e.getErrorType());
+            XmpParsingException ex = assertThrows(XmpParsingException.class, () -> xdb.parse(is));
+            assertEquals(ErrorType.NoSchema, ex.getErrorType());
         }
     }
 
@@ -312,12 +284,8 @@ class DeserializationTest
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/invalidxmp/undefinedpropertyindefinedschema.xml"))
         {
-            xdb.parse(is);
-            fail("Should fail during parse");
-        }
-        catch (XmpParsingException e)
-        {
-            assertEquals(ErrorType.NoType, e.getErrorType());
+            XmpParsingException ex = assertThrows(XmpParsingException.class, () -> xdb.parse(is));
+            assertEquals(ErrorType.NoType, ex.getErrorType());
         }
     }
 
@@ -326,12 +294,8 @@ class DeserializationTest
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/invalidxmp/undefinedstructuredindefinedschema.xml"))
         {
-            xdb.parse(is);
-            fail("Should fail during parse");
-        }
-        catch (XmpParsingException e)
-        {
-            assertEquals(ErrorType.NoValueType, e.getErrorType());
+            XmpParsingException ex = assertThrows(XmpParsingException.class, () -> xdb.parse(is));
+            assertEquals(ErrorType.NoValueType, ex.getErrorType());
         }
     }
 
