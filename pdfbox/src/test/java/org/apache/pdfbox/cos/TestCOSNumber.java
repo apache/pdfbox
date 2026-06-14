@@ -46,57 +46,52 @@ public abstract class TestCOSNumber extends TestCOSBase
 
     /**
      * Tests get() - tests a static constructor for COSNumber classes.
+     * 
+     * @throws IOException
      */
-    public void testGet()
+    public void testGet() throws IOException
     {
+        // Ensure the basic static numbers are recognized
+        assertEquals(COSInteger.ZERO, COSNumber.get("0"));
+        assertEquals(COSInteger.ZERO, COSNumber.get("-"));
+        assertEquals(COSInteger.ZERO, COSNumber.get("."));
+        assertEquals(COSInteger.ONE, COSNumber.get("1"));
+        assertEquals(COSInteger.TWO, COSNumber.get("2"));
+        assertEquals(COSInteger.THREE, COSNumber.get("3"));
+        // Test some arbitrary ints
+        assertEquals(COSInteger.get(100), COSNumber.get("100"));
+        assertEquals(COSInteger.get(256), COSNumber.get("256"));
+        assertEquals(COSInteger.get(-1000), COSNumber.get("-1000"));
+        assertEquals(COSInteger.get(2000), COSNumber.get("+2000"));
+        // Some arbitrary floats
+        assertEquals(new COSFloat(1.1f), COSNumber.get("1.1"));
+        assertEquals(new COSFloat(100f), COSNumber.get("100.0"));
+        assertEquals(new COSFloat(-100.001f), COSNumber.get("-100.001"));
+        // according to the specs the exponential shall not be used
+        // but obviously there some
+        assertNotNull(COSNumber.get("-2e-006"));
+        assertNotNull(COSNumber.get("-8e+05"));
         try
         {
-            // Ensure the basic static numbers are recognized
-            assertEquals(COSInteger.ZERO, COSNumber.get("0"));
-            assertEquals(COSInteger.ZERO, COSNumber.get("-"));
-            assertEquals(COSInteger.ZERO, COSNumber.get("."));
-            assertEquals(COSInteger.ONE, COSNumber.get("1"));
-            assertEquals(COSInteger.TWO, COSNumber.get("2"));
-            assertEquals(COSInteger.THREE, COSNumber.get("3"));
-            // Test some arbitrary ints
-            assertEquals(COSInteger.get(100), COSNumber.get("100"));
-            assertEquals(COSInteger.get(256), COSNumber.get("256"));
-            assertEquals(COSInteger.get(-1000), COSNumber.get("-1000"));
-            assertEquals(COSInteger.get(2000), COSNumber.get("+2000"));
-            // Some arbitrary floats
-            assertEquals(new COSFloat(1.1f), COSNumber.get("1.1"));
-            assertEquals(new COSFloat(100f), COSNumber.get("100.0"));
-            assertEquals(new COSFloat(-100.001f), COSNumber.get("-100.001"));
-            // according to the specs the exponential shall not be used
-            // but obviously there some
-            assertNotNull(COSNumber.get("-2e-006"));
-            assertNotNull(COSNumber.get("-8e+05"));
-            try
-            {
-                assertEquals("Null Value...", COSNumber.get(null));
-                fail("Failed to throw a NullPointerException");
-            }
-            catch (NullPointerException e)
-            {
-                // PASS
-            }
-            try
-            {
-                assertEquals(0, COSNumber.get("a"));
-                fail("Failed to throw an IOException");
-            }
-            catch (IOException e)
-            {
-                // PASS
-            }
-            // PDFBOX-2569: some numbers start with "+"
-            assertEquals(COSNumber.get("1"), COSNumber.get("+1"));
-            assertEquals(COSNumber.get("123"), COSNumber.get("+123"));
+            assertEquals("Null Value...", COSNumber.get(null));
+            fail("Failed to throw a NullPointerException");
+        }
+        catch (NullPointerException e)
+        {
+            // PASS
+        }
+        try
+        {
+            assertEquals(0, COSNumber.get("a"));
+            fail("Failed to throw an IOException");
         }
         catch (IOException e)
         {
-            fail("Failed to convert a number " + e.getMessage());
+            // PASS
         }
+        // PDFBOX-2569: some numbers start with "+"
+        assertEquals(COSNumber.get("1"), COSNumber.get("+1"));
+        assertEquals(COSNumber.get("123"), COSNumber.get("+123"));
     }
 
     /**
