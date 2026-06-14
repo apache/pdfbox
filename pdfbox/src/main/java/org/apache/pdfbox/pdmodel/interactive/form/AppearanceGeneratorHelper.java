@@ -177,6 +177,8 @@ class AppearanceGeneratorHelper {
      *
      * @param apValue the String value which the appearance should represent
      * @throws IOException If there is an error creating the stream.
+     * @throws IllegalArgumentException if the string contains a character that is not in the field
+     * font, see {@link #setDefaultAppearance(java.lang.String)}.
      */
     public void setAppearanceValue(String apValue) throws IOException {
         value = getFormattedValue(apValue);
