@@ -18,11 +18,9 @@
 package org.apache.pdfbox.pdfparser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
@@ -33,6 +31,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocume
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.DateConverter;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.Test;
 
 class TestPDFParser
@@ -40,18 +39,12 @@ class TestPDFParser
     private static final File TARGETPDFDIR = new File("target/pdfs");
 
     @Test
-    void testPDFParserMissingCatalog() throws URISyntaxException
+    void testPDFParserMissingCatalog()
     {
         // PDFBOX-3060
-        try
-        {
+        assertDoesNotThrow(() ->
             Loader.loadPDF(new File(TestPDFParser.class.getResource("MissingCatalog.pdf").toURI()))
-                .close();
-        }
-        catch (Exception exception)
-        {
-            fail("Unexpected Exception");
-        }
+                    .close());
     }
 
     /**
@@ -107,17 +100,12 @@ class TestPDFParser
     @Test
     void testPDFBox3783()
     {
-        try
+        assertDoesNotThrow(() ->
         {
             Loader.loadPDF(
                     new File(TARGETPDFDIR, "PDFBOX-3783-72GLBIGUC6LB46ELZFBARRJTLN4RBSQM.pdf"))
                     .close();
-        }
-        catch (Exception exception)
-        {
-            fail("Unexpected IOException");
-        }
-
+        });
     }
 
     /**
@@ -141,14 +129,10 @@ class TestPDFParser
     @Test
     void testPDFBox3947()
     {
-        try
+        assertDoesNotThrow(() ->
         {
             Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-3947-670064.pdf")).close();
-        }
-        catch (Exception exception)
-        {
-            fail("Unexpected Exception");
-        }
+        });
     }
 
     /**
@@ -157,16 +141,12 @@ class TestPDFParser
     @Test
     void testPDFBox3948()
     {
-        try
+        assertDoesNotThrow(() ->
         {
             Loader.loadPDF(
                     new File(TARGETPDFDIR, "PDFBOX-3948-EUWO6SQS5TM4VGOMRD3FLXZHU35V2CP2.pdf"))
                     .close();
-        }
-        catch (Exception exception)
-        {
-            fail("Unexpected Exception");
-        }
+        });
     }
 
     /**
@@ -175,16 +155,12 @@ class TestPDFParser
     @Test
     void testPDFBox3949()
     {
-        try
+        assertDoesNotThrow(() ->
         {
             Loader.loadPDF(
                     new File(TARGETPDFDIR, "PDFBOX-3949-MKFYUGZWS3OPXLLVU2Z4LWCTVA5WNOGF.pdf"))
                     .close();
-        }
-        catch (Exception exception)
-        {
-            fail("Unexpected Exception");
-        }
+        });
     }
 
     /**
@@ -275,14 +251,10 @@ class TestPDFParser
     @Test
     void testParseGenko()
     {
-        try
+        assertDoesNotThrow(() ->
         {
             Loader.loadPDF(new File(TARGETPDFDIR, "genko_oc_shiryo1.pdf")).close();
-        }
-        catch (Exception exception)
-        {
-            fail("Unexpected Exception");
-        }
+        });
     }
 
     /**
@@ -292,14 +264,10 @@ class TestPDFParser
     @Test
     void testPDFBox4338()
     {
-        try
+        assertDoesNotThrow(() ->
         {
             Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4338.pdf")).close();
-        }
-        catch (Exception exception)
-        {
-            fail("Unexpected Exception");
-        }
+        });
     }
 
     /**
@@ -309,14 +277,10 @@ class TestPDFParser
     @Test
     void testPDFBox4339()
     {
-        try
+        assertDoesNotThrow(() ->
         {
             Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4339.pdf")).close();
-        }
-        catch (Exception exception)
-        {
-            fail("Unexpected Exception");
-        }
+        });
     }
 
     /**
