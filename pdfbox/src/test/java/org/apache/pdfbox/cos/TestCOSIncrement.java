@@ -50,7 +50,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import java.util.ConcurrentModificationException;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
@@ -70,7 +69,7 @@ class TestCOSIncrement
      * Create a document from scratch - incrementally making changes - checking results of previous steps.
      */
     @Test
-    void testIncrementallyCreateDocument()
+    void testIncrementallyCreateDocument() throws IOException
     {
         byte[] documentData = new byte[0];
 
@@ -84,10 +83,6 @@ class TestCOSIncrement
             document.addPage(new PDPage(new PDRectangle(100, 100)));
             document.save(documentOutput);
             documentData = documentOutput.toByteArray();
-        }
-        catch (IOException e)
-        {
-            fail("Closing streams failed.");
         }
 
         // Add page 2 and 3.
@@ -118,10 +113,6 @@ class TestCOSIncrement
             document.saveIncremental(documentOutput);
             documentData = documentOutput.toByteArray();
         }
-        catch (IOException e)
-        {
-            fail("Closing streams failed.");
-        }
 
         // Add an image to page 1.
         try (
@@ -145,10 +136,6 @@ class TestCOSIncrement
             }
             document.saveIncremental(documentOutput);
             documentData = documentOutput.toByteArray();
-        }
-        catch (IOException e)
-        {
-            fail("Closing streams failed.");
         }
 
         // Write a text to page 2.
@@ -176,10 +163,6 @@ class TestCOSIncrement
             document.saveIncremental(documentOutput);
             documentData = documentOutput.toByteArray();
         }
-        catch (IOException e)
-        {
-            fail("Closing streams failed.");
-        }
 
         // add an annotation to page 2.
         try (
@@ -190,7 +173,7 @@ class TestCOSIncrement
             assertTrue(document.getPage(0).hasContents(), "Page 1 should have had contents.");
             assertNotNull(document.getPage(0).getResources(), "Page 1 should have contained resources");
             assertNotNull(document.getPage(1).getResources(), "Page 2 should have contained resources");
-            assertFalse(document.getPage(1).getAnnotations().size() > 0,
+            assertTrue(document.getPage(1).getAnnotations().isEmpty(),
                 "Page 2 should not have contained an annotation.");
             assertTrue(document.getPage(1).hasContents(), "Page 2 should have had contents.");
             assertTrue(document.getPage(1).getResources().getFontNames().iterator().hasNext(),
@@ -208,10 +191,6 @@ class TestCOSIncrement
             document.saveIncremental(documentOutput);
             documentData = documentOutput.toByteArray();
         }
-        catch (IOException e)
-        {
-            fail("Closing streams failed.");
-        }
 
         // Do nothing.
         try (
@@ -223,10 +202,6 @@ class TestCOSIncrement
 
             document.saveIncremental(documentOutput);
             documentData = documentOutput.toByteArray();
-        }
-        catch (IOException e)
-        {
-            fail("Closing streams failed.");
         }
 
         // Check the result.
@@ -249,10 +224,6 @@ class TestCOSIncrement
             assertTrue(document.getPage(1).getResources().getFontNames().iterator().hasNext(),
                 "Page 2 should have contained a font");
         }
-        catch (IOException e)
-        {
-            fail("Closing streams failed.");
-        }
 
         // TODO: remove the following - Convenience code - this creates the output file at some path,
         // to see and touch it.
@@ -266,7 +237,7 @@ class TestCOSIncrement
 
     /**
      * PDFBOX-5263: There was a ConcurrentModificationException with
-     * YTW2VWJQTDAE67PGJT6GS7QSKW3GNUQR.pdf - test that this issues has been resolved.
+     * YTW2VWJQTDAE67PGJT6GS7QSKW3GNUQR.pdf - test that this issue has been resolved.
      * 
      * @throws IOException
      * @throws URISyntaxException
@@ -276,19 +247,12 @@ class TestCOSIncrement
     {
         URL pdfLocation = 
             new URI("https://issues.apache.org/jira/secure/attachment/12891316/YTW2VWJQTDAE67PGJT6GS7QSKW3GNUQR.pdf").toURL();
-        
+
         try (PDDocument document = Loader
                 .loadPDF(RandomAccessReadBuffer.createBufferFromStream(pdfLocation.openStream())))
         {
             document.setAllSecurityToBeRemoved(true);
-            try
-            {
-                document.save(new ByteArrayOutputStream());
-            }
-            catch (ConcurrentModificationException e)
-            {
-                fail("There shouldn't be a ConcurrentModificationException", e.getCause());
-            }
+            assertDoesNotThrow(() -> document.save(OutputStream.nullOutputStream()));
         }
     }
 
