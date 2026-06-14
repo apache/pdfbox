@@ -29,7 +29,7 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -38,25 +38,8 @@ class COSObjectKeyTest
     @Test
     void testInputValues()
     {
-        try
-        {
-            new COSObjectKey(-1L, 0);
-            fail("An IllegalArgumentException shouzld have been thrown");
-        }
-        catch (IllegalArgumentException exception)
-        {
-
-        }
-
-        try
-        {
-            new COSObjectKey(1L, -1);
-            fail("An IllegalArgumentException shouzld have been thrown");
-        }
-        catch (IllegalArgumentException exception)
-        {
-
-        }
+        assertThrows(IllegalArgumentException.class, () -> new COSObjectKey(-1L, 0));
+        assertThrows(IllegalArgumentException.class, () -> new COSObjectKey(1L, -1));
     }
 
     @Test
