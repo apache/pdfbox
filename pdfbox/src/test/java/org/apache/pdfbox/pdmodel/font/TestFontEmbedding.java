@@ -50,6 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
@@ -826,16 +827,10 @@ this.getClass().getResourceAsStream("/org/apache/pdfbox/resources/ttf/Liberation
                 contents.beginText();
                 contents.setFont(font, 64);
                 contents.newLineAtOffset(100, 700);
-                contents.showText(message);
+                Exception ex = assertThrows(IllegalStateException.class, () -> contents.showText(message));
+                assertEquals("could not find the glyphId for the character: あ, codePoint: 12354 (0x3042)", ex.getMessage());
                 contents.endText();
             }
-            catch (IllegalStateException e)
-            {
-                assertEquals("could not find the glyphId for the character: あ, codePoint: 12354 (0x3042)", e.getMessage());
-                return;
-            }
-
-            fail();
         }
     }
 
