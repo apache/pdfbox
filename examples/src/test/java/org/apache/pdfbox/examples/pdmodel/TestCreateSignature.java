@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -312,16 +313,10 @@ class TestCreateSignature
         // sign PDF (will fail due to nonce and timestamp differing)
         CreateSignature signing1 = new CreateSignature(keyStore, PASSWORD.toCharArray());
         signing1.setExternalSigning(externallySign);
-        try
-        {
-            signing1.signDetached(new File(inPath), new File(outPath), brokenMockTSA);
-            fail("This should have failed");
-        }
-        catch (IOException e)
-        {
-            assertTrue(e.getCause() instanceof TSPValidationException);
-            new File(outPath).delete();
-        }
+        IOException ex = assertThrows(IOException.class,
+                () -> signing1.signDetached(new File(inPath), new File(outPath), brokenMockTSA));
+        assertTrue(ex.getCause() instanceof TSPValidationException);
+        new File(outPath).delete();
 
         mockServer.stopServer();
 
