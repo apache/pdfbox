@@ -52,10 +52,12 @@ class TestCOSString extends TestCOSBase
 
     /**
      * Test setForceHexForm() and setForceLiteralForm() - tests these two methods do enforce the
-     * different String output forms within PDF. 
+     * different String output forms within PDF.
+     * 
+     * @throws IOException
      */
     @Test
-    void testSetForceHexLiteralForm()
+    void testSetForceHexLiteralForm() throws IOException
     {
         String inputString = "Test with a text and a few numbers 1, 2 and 3";
         String pdfHex = "<" + createHex(inputString) + ">";
@@ -75,18 +77,13 @@ class TestCOSString extends TestCOSBase
      * 
      * @param expected the String expected when writePDF() is invoked
      * @param testSubj the test subject
+     * 
+     * @throws IOException
      */
-    private void writePDFTests(String expected, COSString testSubj)
+    private void writePDFTests(String expected, COSString testSubj) throws IOException
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        try
-        {
-            COSWriter.writeString(testSubj, outStream);
-        }
-        catch (IOException e)
-        {
-            fail("IOException: " + e.getMessage());
-        }
+        COSWriter.writeString(testSubj, outStream);
         assertEquals(expected, outStream.toString());
     }
 
@@ -179,9 +176,11 @@ class TestCOSString extends TestCOSBase
 
     /**
      * Tests writePDF() - tests that the string is in PDF format.
+     * 
+     * @throws IOException
      */
     @Test
-    void testWritePDF()
+    void testWritePDF() throws IOException
     {
         // This has been tested quite thorougly above but do a couple tests anyway
         COSString testSubj = new COSString(ESC_CHAR_STRING);
