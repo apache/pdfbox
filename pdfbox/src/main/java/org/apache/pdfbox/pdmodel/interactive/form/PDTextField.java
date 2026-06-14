@@ -210,6 +210,8 @@ public final class PDTextField extends PDVariableText
      * 
      * @param value Plain text
      * @throws IOException if the value could not be set
+     * @throws IllegalArgumentException if the string contains a character that is not in the field
+     * font, see {@link #setDefaultAppearance(java.lang.String)}.
      */
     @Override
     public void setValue(String value) throws IOException
