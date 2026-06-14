@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdfwriter;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -46,6 +47,7 @@ import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
+
 import org.junit.jupiter.api.Test;
 
 class COSWriterTest
@@ -60,17 +62,19 @@ class COSWriterTest
     {
         try (PDDocument doc = new PDDocument())
         {
-            
             PDPage page = new PDPage();
             doc.addPage(page);
-            doc.save(new BufferedOutputStream(new ByteArrayOutputStream(1024)
+            assertDoesNotThrow(() ->
             {
-                @Override
-                public void close() throws IOException
+                doc.save(new BufferedOutputStream(new ByteArrayOutputStream(1024)
                 {
-                    throw new IOException("Stream was closed");
-                }
-            }));
+                    @Override
+                    public void close() throws IOException
+                    {
+                        throw new IOException("Stream was closed");
+                    }
+                }));
+            });
         }
     }
 
@@ -84,7 +88,7 @@ class COSWriterTest
             PageExtractor pageExtractor = new PageExtractor(pdfDocument, 2, 2);
             try (PDDocument pdfPages = pageExtractor.extract())
             {
-                pdfPages.save(OutputStream.nullOutputStream());
+                assertDoesNotThrow(() -> pdfPages.save(OutputStream.nullOutputStream()));
             }
         }
     }
