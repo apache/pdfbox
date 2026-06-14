@@ -220,7 +220,7 @@ class DeserializationTest
     }
 
     @Test
-    void testWithNoXPacketEnd() throws XmpParsingException, IOException
+    void testWithNoXPacketEnd() throws IOException
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/invalidxmp/noxpacketend.xml"))
         {
@@ -230,7 +230,7 @@ class DeserializationTest
     }
 
     @Test
-    void testWithNoRDFElement() throws XmpParsingException, IOException
+    void testWithNoRDFElement() throws IOException
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/invalidxmp/noroot.xml"))
         {
@@ -240,7 +240,7 @@ class DeserializationTest
     }
 
     @Test
-    void testWithTwoRDFElement() throws XmpParsingException, IOException
+    void testWithTwoRDFElement() throws IOException
     {
         try (InputStream is = DomXmpParser.class.getResourceAsStream("/invalidxmp/tworoot.xml"))
         {
