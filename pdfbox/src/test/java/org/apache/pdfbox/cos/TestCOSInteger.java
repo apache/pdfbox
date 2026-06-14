@@ -32,16 +32,9 @@ import org.junit.Assert;
  */
 public class TestCOSInteger extends TestCOSNumber
 {
-    public void setUp()
+    public void setUp() throws IOException
     {
-        try
-        {
-            testCOSBase = COSNumber.get("0");
-        }
-        catch (IOException e)
-        {
-            fail("Failed to create a COSNumber in setUp()");
-        }
+        testCOSBase = COSNumber.get("0");
     }
 
     /**
