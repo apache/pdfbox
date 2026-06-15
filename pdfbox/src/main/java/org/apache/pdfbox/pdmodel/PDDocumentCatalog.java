@@ -421,7 +421,7 @@ public class PDDocumentCatalog implements COSObjectable
         COSArray array = root.getCOSArray(COSName.OUTPUT_INTENTS);
         if (array != null)
         {
-            retval = new ArrayList<>(array.size());
+            retval = new ArrayList<PDOutputIntent>(array.size());
             for (COSBase cosBase : array)
             {
                 if (cosBase instanceof COSObject)
@@ -434,7 +434,7 @@ public class PDDocumentCatalog implements COSObjectable
         }
         else
         {
-            retval = new ArrayList<>();
+            retval = new ArrayList<PDOutputIntent>();
         }
         return retval;
     }
