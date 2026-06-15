@@ -1407,13 +1407,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private BufferedImage applyTransferFunction(BufferedImage image, COSBase transfer) throws IOException
     {
         BufferedImage bim;
+        int imageWidth = image.getWidth();
+        int imageHeight = image.getHeight();
         if (image.getColorModel().hasAlpha())
         {
-            bim = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            bim = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
         }
         else
         {
-            bim = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+            bim = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
         }
 
         // prepare transfer functions (either one per color or one for all) 
@@ -1446,9 +1448,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         // apply the transfer function to each color, but keep alpha
         float[] input = new float[1];
-        for (int x = 0; x < image.getWidth(); ++x)
+        for (int x = 0; x < imageWidth; ++x)
         {
-            for (int y = 0; y < image.getHeight(); ++y)
+            for (int y = 0; y < imageHeight; ++y)
             {
                 int rgb = image.getRGB(x, y);
                 int ri = (rgb >> 16) & 0xFF;
