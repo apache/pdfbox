@@ -1232,16 +1232,18 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 // draw the mask
                 BufferedImage mask = pdImage.getImage();
                 AffineTransform imageTransform = new AffineTransform(at);
-                imageTransform.scale(1.0 / mask.getWidth(), -1.0 / mask.getHeight());
-                imageTransform.translate(0, -mask.getHeight());
+                int maskWidth = mask.getWidth();
+                int maskHeight = mask.getHeight();
+                imageTransform.scale(1.0 / maskWidth, -1.0 / maskHeight);
+                imageTransform.translate(0, -maskHeight);
                 AffineTransform full = new AffineTransform(g.getTransform());
                 full.concatenate(imageTransform);
                 Matrix m = new Matrix(full);
                 double scaleX = Math.abs(m.getScalingFactorX());
                 double scaleY = Math.abs(m.getScalingFactorY());
 
-                boolean smallMask = mask.getWidth() <= 8 && mask.getHeight() <= 8;
-                if (mask.getWidth() == 1 && mask.getHeight() == 1)
+                boolean smallMask = maskWidth <= 8 && maskHeight <= 8;
+                if (maskWidth == 1 && maskHeight == 1)
                 {
                     // PDFBOX-5802: force usage of the lookup table if it is only 1 pixel
                     // (See the comment for PDFBOX-5403 that it isn't done for some
@@ -1262,7 +1264,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     // PDFBOX-2171-002-002710-p14.pdf where the "New Harmony Consolidated" and
                     // "Sailor Springs" patterns became almost invisible.
                     // (We may have to decide this differently in the future, e.g. on b/w relationship)
-                    BufferedImage tmp = new BufferedImage(mask.getWidth(), mask.getHeight(), BufferedImage.TYPE_INT_RGB);
+                    BufferedImage tmp = new BufferedImage(maskWidth, maskHeight, BufferedImage.TYPE_INT_RGB);
                     mask = new LookupOp(getInvLookupTable(), graphics.getRenderingHints()).filter(mask, tmp);
                 }
 
@@ -1277,16 +1279,16 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 }
                 else if (scaleX != 0 && scaleY != 0)
                 {
-                    while (scaleX < 0.25 || Math.round(mask.getWidth() * scaleX) < 1)
+                    while (scaleX < 0.25 || Math.round(maskWidth * scaleX) < 1)
                     {
                         scaleX *= 2.0;
                     }
-                    while (scaleY < 0.25 || Math.round(mask.getHeight() * scaleY) < 1)
+                    while (scaleY < 0.25 || Math.round(maskHeight * scaleY) < 1)
                     {
                         scaleY *= 2.0;
                     }
-                    int w2 = (int) Math.round(mask.getWidth() * scaleX);
-                    int h2 = (int) Math.round(mask.getHeight() * scaleY);
+                    int w2 = (int) Math.round(maskWidth * scaleX);
+                    int h2 = (int) Math.round(maskHeight * scaleY);
 
                     Image scaledMask = mask.getScaledInstance(w2, h2, Image.SCALE_SMOOTH);
                     imageTransform.scale(1f / Math.abs(scaleX), 1f / Math.abs(scaleY));
