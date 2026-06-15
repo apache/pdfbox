@@ -18,11 +18,11 @@
 package org.apache.fontbox.afm;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 
 import org.apache.fontbox.util.BoundingBox;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 class CharMetricTest
@@ -84,14 +84,6 @@ class CharMetricTest
         List<Ligature> ligatures = charMetric.getLigatures();
         assertEquals(1, ligatures.size());
         assertEquals("successor", ligatures.get(0).getSuccessor());
-        try
-        {
-            ligatures.add(ligature);
-            fail("An UnsupportedOperationException should have been thrown");
-        }
-        catch (UnsupportedOperationException exception)
-        {
-            // do nothing
-        }
+        assertThrows(UnsupportedOperationException.class, () -> ligatures.add(ligature));
     }
 }

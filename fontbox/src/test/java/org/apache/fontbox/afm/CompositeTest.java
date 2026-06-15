@@ -18,7 +18,7 @@
 package org.apache.fontbox.afm;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
@@ -37,14 +37,6 @@ class CompositeTest
         List<CompositePart> parts = composite.getParts();
         assertEquals(1, parts.size());
         assertEquals("name", parts.get(0).getName());
-        try
-        {
-            parts.add(compositePart);
-            fail("An UnsupportedOperationException should have been thrown");
-        }
-        catch (UnsupportedOperationException exception)
-        {
-            // do nothing
-        }
+        assertThrows(UnsupportedOperationException.class, () -> parts.add(compositePart));
     }
 }

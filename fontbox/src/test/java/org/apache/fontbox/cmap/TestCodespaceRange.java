@@ -18,8 +18,8 @@ package org.apache.fontbox.cmap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
@@ -61,15 +61,8 @@ class TestCodespaceRange
         // other cases of different lengths are not
         byte[] startBytes3 = { 0x01 };
         byte[] endBytes4 = { 0x01, 0x20 };
-        try
-        {
-            new CodespaceRange(startBytes3, endBytes4);
-            fail("The constructor should have thrown an IllegalArgumentException exception.");
-        }
-        catch (IllegalArgumentException exception)
-        {
-            // everything is fine as the expected exception is thrown
-        }
+
+        assertThrows(IllegalArgumentException.class, () -> new CodespaceRange(startBytes3, endBytes4));
     }
 
     @Test
