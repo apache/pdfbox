@@ -58,7 +58,7 @@ public interface PDImage extends COSObjectable
     WritableRaster getRawRaster() throws IOException;
 
     /**
-     * Try to get the raw image as AWT buffered image with it's original colorspace. No color conversion is performed.
+     * Try to get the raw image as AWT buffered image with its original colorspace. No color conversion is performed.
      *
      * You could use the returned BufferedImage for draw operations. But this would be very slow as the color conversion
      * would happen on demand. You rather should use {@link #getImage()} for that.
