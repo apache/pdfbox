@@ -19,7 +19,6 @@ package org.apache.fontbox.ttf;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedOutputStream;
 import java.io.EOFException;
@@ -51,12 +50,8 @@ class RandomAccessReadBufferDataStreamTest
             int value = dataStream.read();
             while (value > -1)
             {
-                value = dataStream.read();
+                value = assertDoesNotThrow(() -> dataStream.read());
             }
-        }
-        catch (ArrayIndexOutOfBoundsException exception)
-        {
-            fail("EOF not detected!");
         }
     }
 
