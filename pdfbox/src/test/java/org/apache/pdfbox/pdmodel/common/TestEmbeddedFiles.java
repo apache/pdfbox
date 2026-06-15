@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -68,10 +67,6 @@ class TestEmbeddedFiles
             assertNotNull(spec);
             assertNull(spec.getFile());
             assertNull(spec.getEmbeddedFile());
-        }
-        catch (NullPointerException e)
-        {
-            fail("null pointer exception");
         }
         assertTrue(ok, "Was able to get file without exception");
         assertNull(embeddedFile, "EmbeddedFile was correctly null");

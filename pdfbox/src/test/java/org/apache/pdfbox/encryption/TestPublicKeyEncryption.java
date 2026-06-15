@@ -18,8 +18,8 @@ package org.apache.pdfbox.encryption;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -95,11 +95,9 @@ class TestPublicKeyEncryption
     @BeforeAll
     static void init() throws NoSuchAlgorithmException
     {
-        if (Cipher.getMaxAllowedKeyLength("AES") != Integer.MAX_VALUE)
-        {
-            // we need strong encryption for these tests
-            fail("JCE unlimited strength jurisdiction policy files are not installed");
-        }
+        // we need strong encryption for these tests
+        assertEquals(Integer.MAX_VALUE, Cipher.getMaxAllowedKeyLength("AES"),
+                "JCE unlimited strength jurisdiction policy files are not installed");
         TESTRESULTSDIR.mkdirs();
     }
 
@@ -169,16 +167,11 @@ class TestPublicKeyEncryption
         document.protect(policy);
 
         File file = save("testProtectionError");
-        try (PDDocument encryptedDoc = reload(file, password2, getKeyStore(keyStore2)))
-        {
-            assertTrue(encryptedDoc.isEncrypted());
-            fail("No exception when using an incorrect decryption key");
-        }
-        catch (IOException ex)
-        {
-            String msg = ex.getMessage();
-            assertTrue(msg.contains("serial-#: rid 2 vs. cert 3"), "not the expected exception: " + msg);
-        }
+        IOException ex = assertThrows(IOException.class,
+                () -> reload(file, password2, getKeyStore(keyStore2)),
+                "No exception when using an incorrect decryption key");
+        String msg = ex.getMessage();
+        assertTrue(msg.contains("serial-#: rid 2 vs. cert 3"), "not the expected exception: " + msg);
     }
 
 
