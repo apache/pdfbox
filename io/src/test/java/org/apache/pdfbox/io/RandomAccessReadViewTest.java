@@ -18,8 +18,8 @@ package org.apache.pdfbox.io;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -185,12 +185,9 @@ class RandomAccessReadViewTest
              RandomAccessReadView randomAccessReadView =
                 new RandomAccessReadView(randomAccessSource, 10, 20))
         {
-            randomAccessReadView.createView(0, 20);
-            fail("CreateView() should have throw an IOException");
-        }
-        catch (IOException exception)
-        {
-
+            IOException ex =
+                    assertThrows(IOException.class, () -> randomAccessReadView.createView(0, 20));
+            assertEquals("org.apache.pdfbox.io.RandomAccessReadView.createView isn't supported.", ex.getMessage());
         }
     }
 }
