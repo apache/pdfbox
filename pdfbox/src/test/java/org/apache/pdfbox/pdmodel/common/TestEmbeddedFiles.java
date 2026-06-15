@@ -38,37 +38,30 @@ public class TestEmbeddedFiles extends TestCase
     {
         PDEmbeddedFile embeddedFile = null;
         boolean ok = false;
-        try
+        PDDocument doc = PDDocument.load(TestEmbeddedFiles.class.getResourceAsStream(
+            "null_PDComplexFileSpecification.pdf"));
+
+        PDDocumentCatalog catalog = doc.getDocumentCatalog();
+        PDDocumentNameDictionary names = catalog.getNames();
+        assertEquals("expected two files", 2, names.getEmbeddedFiles().getNames().size());
+        PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
+
+        PDComplexFileSpecification spec = embeddedFiles.getNames().get("non-existent-file.docx");
+
+        if (spec != null)
         {
-            PDDocument doc = PDDocument.load(TestEmbeddedFiles.class.getResourceAsStream(
-                "null_PDComplexFileSpecification.pdf"));
-
-            PDDocumentCatalog catalog = doc.getDocumentCatalog();
-            PDDocumentNameDictionary names = catalog.getNames();
-            assertEquals("expected two files", 2, names.getEmbeddedFiles().getNames().size());
-            PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
-
-            PDComplexFileSpecification spec = embeddedFiles.getNames().get("non-existent-file.docx");
-
-            if (spec != null)
-            {
-                embeddedFile = spec.getEmbeddedFile();
-                ok = true;
-            }
-            //now test for actual attachment
-            spec = embeddedFiles.getNames().get("My first attachment");
-            assertNotNull("one attachment actually exists", spec);
-            assertEquals("existing file length", 17660, spec.getEmbeddedFile().getLength());
-            spec = embeddedFiles.getNames().get("non-existent-file.docx");
-            assertNotNull(spec);
-            assertNull(spec.getFile());
-            assertNull(spec.getEmbeddedFile());
-            doc.close();
+            embeddedFile = spec.getEmbeddedFile();
+            ok = true;
         }
-        catch (NullPointerException e)
-        {
-            assertNotNull("null pointer exception", null);
-        }
+        //now test for actual attachment
+        spec = embeddedFiles.getNames().get("My first attachment");
+        assertNotNull("one attachment actually exists", spec);
+        assertEquals("existing file length", 17660, spec.getEmbeddedFile().getLength());
+        spec = embeddedFiles.getNames().get("non-existent-file.docx");
+        assertNotNull(spec);
+        assertNull(spec.getFile());
+        assertNull(spec.getEmbeddedFile());
+        doc.close();
         assertTrue("Was able to get file without exception", ok);
         assertNull("EmbeddedFile was correctly null", embeddedFile);
     }
