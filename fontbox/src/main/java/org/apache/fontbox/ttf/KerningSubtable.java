@@ -290,10 +290,6 @@ public class KerningSubtable
         @Override
         public int compare(int[] p1, int[] p2)
         {
-            assert p1 != null;
-            assert p1.length >= 2;
-            assert p2 != null;
-            assert p2.length >= 2;
             int cmp1 = Integer.compare(p1[0], p2[0]);
             if (cmp1 != 0)
             {
