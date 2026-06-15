@@ -18,6 +18,9 @@
  */
 package org.apache.fontbox.type1;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -72,20 +75,16 @@ class Type1LexerTest
     {
         String s = "dup 127 / put";
         Type1Lexer t1l = new Type1Lexer(s.getBytes(StandardCharsets.US_ASCII));
-        Token nextToken;
-        try
+        DamagedFontException ex = assertThrows(DamagedFontException.class, () ->
         {
+            Token nextToken;
             do
             {
                 nextToken = t1l.nextToken();
             }
             while (nextToken != null);
-            Assertions.fail("DamagedFontException expected");
-        }
-        catch (DamagedFontException ex)
-        {
-            Assertions.assertEquals("Could not read token at position 9", ex.getMessage());
-        }
+        });
+        assertEquals("Could not read token at position 9", ex.getMessage());
     }
 
     @Test
