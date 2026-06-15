@@ -52,7 +52,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -851,16 +850,11 @@ class TestFontEmbedding
                 contents.beginText();
                 contents.setFont(font, 64);
                 contents.newLineAtOffset(100, 700);
-                contents.showText(message);
+                IllegalStateException ex =
+                        assertThrows(IllegalStateException.class, () -> contents.showText(message));
+                assertEquals("could not find the glyphId for the character: 𩸽, codePoint: 171581 (0x29E3D)" ,ex.getMessage());
                 contents.endText();
             }
-            catch (IllegalStateException e)
-            {
-                assertEquals("could not find the glyphId for the character: 𩸽, codePoint: 171581 (0x29E3D)", e.getMessage());
-                return;
-            }
-
-            fail();
         }
     }
 

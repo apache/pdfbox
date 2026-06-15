@@ -18,7 +18,6 @@
 package org.apache.pdfbox.pdfparser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,10 +40,6 @@ class TestBaseParser
         catch (IOException exception)
         {
             assertEquals("Missing root object specification in trailer.", exception.getMessage());
-        }
-        catch (Exception exception)
-        {
-            fail("Unexpected Exception");
         }
     }
 
