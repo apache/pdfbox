@@ -309,7 +309,7 @@
                   <configuration>
                       <failBuildOnCVSS>0</failBuildOnCVSS>
                       <!-- alternatively: use ossIndexUsername and ossIndexPassword for mail-address and token -->
-                      <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
+                      <ossIndexAnalyzerEnabled>false</ossIndexAnalyzerEnabled>
                       <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
                       <skipSystemScope>true</skipSystemScope>
                       <suppressionFile>suppressions.xml</suppressionFile>
