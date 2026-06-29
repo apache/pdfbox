@@ -406,48 +406,47 @@ class TestSymmetricKeyEncryption
             PDDocument doc, String prefix, AccessPermission permission,
             String userpassword, String ownerpassword) throws IOException
     {
-        StandardProtectionPolicy spp = new StandardProtectionPolicy(ownerpassword, userpassword,
-                permission);
-        spp.setEncryptionKeyLength(keyLength);
-        spp.setPreferAES(preferAES);
-        
-        // This must have no effect and should only log a warning.
-        doc.setAllSecurityToBeRemoved(true);
-        
-        doc.protect(spp);
-
-        File pdfFile = new File(TESTRESULTSDIR, prefix + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + "-encrypted.pdf");
-
-        doc.save(pdfFile);
-        doc.close();
+        File pdfFile;
+        try (doc)
+        {
+            StandardProtectionPolicy spp = new StandardProtectionPolicy(ownerpassword, userpassword,
+                    permission);
+            spp.setEncryptionKeyLength(keyLength);
+            spp.setPreferAES(preferAES);
+            // This must have no effect and should only log a warning.
+            doc.setAllSecurityToBeRemoved(true);
+            doc.protect(spp);
+            pdfFile = new File(TESTRESULTSDIR, prefix + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + "-encrypted.pdf");
+            doc.save(pdfFile);
+        }
         long sizeEncrypted = pdfFile.length();
         assertNotEquals(sizeEncrypted, sizePriorToEncr,
             keyLength + "-bit " + (preferAES ? "AES" : "RC4") + " encrypted pdf should not have same size as plain one");
 
         // test with owner password => full permissions
-        PDDocument encryptedDoc = Loader.loadPDF(pdfFile, ownerpassword);
-        assertTrue(encryptedDoc.isEncrypted());
-        assertTrue(encryptedDoc.getCurrentAccessPermission().isOwnerPermission());
-
-        // Older encryption allows to get the user password when the owner password is known
-        PDEncryption encryption = encryptedDoc.getEncryption();
-        int revision = encryption.getRevision();
-        if (revision < 5)
+        try (PDDocument encryptedDoc = Loader.loadPDF(pdfFile, ownerpassword))
         {
-            StandardSecurityHandler standardSecurityHandler = new StandardSecurityHandler();
-            int keyLengthInBytes = encryption.getVersion() == 1 ? 5 : encryption.getLength() / 8;
-            byte[] computedUserPassword = standardSecurityHandler.getUserPassword(
-                    ownerpassword.getBytes(StandardCharsets.ISO_8859_1),
-                    encryption.getOwnerKey(),
-                    revision,
-                    keyLengthInBytes);
-            assertEquals(userpassword.substring(0, 32), new String(computedUserPassword, StandardCharsets.ISO_8859_1));
+            assertTrue(encryptedDoc.isEncrypted());
+            assertTrue(encryptedDoc.getCurrentAccessPermission().isOwnerPermission());
+            
+            // Older encryption allows to get the user password when the owner password is known
+            PDEncryption encryption = encryptedDoc.getEncryption();
+            int revision = encryption.getRevision();
+            if (revision < 5)
+            {
+                StandardSecurityHandler standardSecurityHandler = new StandardSecurityHandler();
+                int keyLengthInBytes = encryption.getVersion() == 1 ? 5 : encryption.getLength() / 8;
+                byte[] computedUserPassword = standardSecurityHandler.getUserPassword(
+                        ownerpassword.getBytes(StandardCharsets.ISO_8859_1),
+                        encryption.getOwnerKey(),
+                        revision,
+                        keyLengthInBytes);
+                assertEquals(userpassword.substring(0, 32), new String(computedUserPassword, StandardCharsets.ISO_8859_1));
+            }
         }
 
-        encryptedDoc.close();
-
         // test with user password => restricted permissions
-        encryptedDoc = Loader.loadPDF(pdfFile, userpassword);
+        PDDocument encryptedDoc = Loader.loadPDF(pdfFile, userpassword);
         assertTrue(encryptedDoc.isEncrypted());
         assertFalse(encryptedDoc.getCurrentAccessPermission().isOwnerPermission());
 
