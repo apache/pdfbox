@@ -107,6 +107,11 @@ public class PDDocument implements Closeable
         {
             LOG.debug("voodoo error", ex);
         }
+        catch (UnsatisfiedLinkError ex)
+        {
+            // PDFBOX-6214: awt missing with Graal
+            LOG.debug("UnsatisfiedLinkError", ex);
+        }
     }
     
     private final COSDocument document;
