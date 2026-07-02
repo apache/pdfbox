@@ -686,7 +686,9 @@ public abstract class SecurityHandler<TPOLICY extends ProtectionPolicy>
         try
         {
             encryptData(objNum, genNum, data, outputStream, true /* decrypt */);
-            return new COSString(outputStream.toByteArray());
+            // don't change this in 3.0 by returning a new COSString, see PDFBOX-6213
+            string.setValue(outputStream.toByteArray());
+            return string;
         }
         catch (IOException ex)
         {
