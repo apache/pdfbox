@@ -665,7 +665,8 @@ public abstract class SecurityHandler
         try
         {
             encryptData(objNum, genNum, data, outputStream, true /* decrypt */);
-            return new COSString(outputStream.toByteArray());
+            string.setValue(outputStream.toByteArray());
+            return string;
         }
         catch (IOException ex)
         {
