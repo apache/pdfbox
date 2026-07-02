@@ -75,8 +75,6 @@ public class TestCMapSubtable
         CmapLookup unicodeCmapLookup2 = ttf.getUnicodeCmapLookup();
         int vgid1 = unicodeCmapLookup2.getGlyphId('「');
         int vgid2 = unicodeCmapLookup2.getGlyphId('」');
-        System.out.println(hgid1 + " " + hgid2);
-        System.out.println(vgid1 + " " + vgid2);
         Assert.assertEquals(441, hgid1);
         Assert.assertEquals(442, hgid2);
         Assert.assertEquals(7392, vgid1);
