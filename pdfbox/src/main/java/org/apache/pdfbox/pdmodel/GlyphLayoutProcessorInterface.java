@@ -21,6 +21,12 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
 import java.io.IOException;
 
+/**
+ * Interface for glyph layout that is independent of a specific implementation so that more
+ * implementations can be tried in the future.
+ *
+ * @author Volker Kunert
+ */
 public interface GlyphLayoutProcessorInterface
 {
 

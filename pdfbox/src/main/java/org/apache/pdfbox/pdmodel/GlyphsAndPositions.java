@@ -22,6 +22,8 @@ import java.util.Collections;
 
 /**
  * Stores sublists of glyphs and positions in a list
+ *
+ * @author Volker Kunert
  */
 public class GlyphsAndPositions
 {
