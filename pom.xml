@@ -36,6 +36,7 @@
     <module>fontbox</module>
     <module>xmpbox</module>
     <module>pdfbox</module>
+    <module>pdfbox-layout-awt</module>
     <module>debugger</module>
     <module>tools</module>
     <module>app</module>
