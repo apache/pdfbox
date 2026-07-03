@@ -90,10 +90,10 @@ public class GlyphLayoutFontLoaderAwt
             // Copy font stream into memory to read it twice
             // for creation of PDType0Font and aww.Font
             byte[] buffer = new byte[2048];
-            int bytes_read;
-            while ((bytes_read = inputStream.read(buffer)) > 0)
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) > 0)
             {
-                baos.write(buffer, 0, bytes_read);
+                baos.write(buffer, 0, bytesRead);
             }
             try (ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray()))
             {
@@ -146,7 +146,7 @@ public class GlyphLayoutFontLoaderAwt
      * @throws FontFormatException if the font is bad
      */
     protected void loadAwtFont(PDType0Font pdType0Font, InputStream inputStream, FontOptions fontOptions)
-            throws FontFormatException, java.io.IOException
+            throws FontFormatException, IOException
     {
         Font awtFont;
         if (fontOptions == null)
