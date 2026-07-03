@@ -74,7 +74,7 @@ import org.apache.pdfbox.util.StringUtil;
  *
  * @author Ben Litchfield
  */
-abstract class PDAbstractContentStream implements Closeable
+abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInterface, Closeable
 {
     private static final Logger LOG = LogManager.getLogger(PDAbstractContentStream.class);
 
@@ -85,6 +85,7 @@ abstract class PDAbstractContentStream implements Closeable
 
     protected boolean inTextMode = false;
     protected final Deque<PDFont> fontStack = new ArrayDeque<>();
+    protected final Deque<Float> fontSizeStack = new ArrayDeque<>();
 
     protected final Deque<PDColorSpace> nonStrokingColorSpaceStack = new ArrayDeque<>();
     protected final Deque<PDColorSpace> strokingColorSpaceStack = new ArrayDeque<>();
@@ -95,6 +96,7 @@ abstract class PDAbstractContentStream implements Closeable
 
     private final Map<PDType0Font, GsubWorker> gsubWorkers = new HashMap<>();
     private final GsubWorkerFactory gsubWorkerFactory = new GsubWorkerFactory();
+    private GlyphLayoutProcessorInterface glyphLayoutProcessor;
 
     /**
      * Create a new appearance stream.
@@ -111,6 +113,16 @@ abstract class PDAbstractContentStream implements Closeable
 
         formatDecimal.setMaximumFractionDigits(4);
         formatDecimal.setGroupingUsed(false);
+    }
+
+    /**
+     * Sets the glyph layout processor
+     *
+     * @param glyphLayoutProcessor glyph layout processor
+     */
+    public void setGlyphLayoutProcessor(GlyphLayoutProcessorInterface glyphLayoutProcessor)
+    {
+        this.glyphLayoutProcessor = glyphLayoutProcessor;
     }
 
     /**
@@ -175,6 +187,16 @@ abstract class PDAbstractContentStream implements Closeable
         {
             fontStack.pop();
             fontStack.push(font);
+        }
+
+        if (fontSizeStack.isEmpty())
+        {
+            fontSizeStack.add(fontSize);
+        }
+        else
+        {
+            fontSizeStack.pop();
+            fontSizeStack.push(fontSize);
         }
 
         // keep track of fonts which are configured for subsetting
@@ -253,6 +275,47 @@ abstract class PDAbstractContentStream implements Closeable
     }
 
     /**
+     * Show the given glyphs at the specified positions
+     *
+     * @param glyphsAndPositions List of glyphs and positions
+     * @throws IOException if an IO error occurs
+     */
+    @Override
+    public void showGlyphsWithPositioning(GlyphsAndPositions glyphsAndPositions) throws IOException
+    {
+        write("[");
+
+        for (Object obj : glyphsAndPositions.toArray())
+        {
+            if (obj instanceof GlyphsAndPositions.GlyphSubList)
+            {
+                GlyphsAndPositions.GlyphSubList glyphSubList = (GlyphsAndPositions.GlyphSubList) obj;
+                int[] intGlyphArray = new int[glyphSubList.size()];
+                // Convert Type to int[]
+                for (int i = 0; i < intGlyphArray.length; i++)
+                {
+                    intGlyphArray[i] = glyphSubList.get(i);
+                }
+                writeTextPDType0Font(intGlyphArray);
+            }
+            else if (obj instanceof Float)
+            {
+                writeOperand((Float) obj);
+            }
+            else
+            {
+                if (obj == null)
+                {
+                    throw new NullPointerException("Argument contains null entry");
+                }
+                throw new IllegalArgumentException("Argument must consist of array of Float and GlyphsAndPositions.GlyphSubList types, not " + obj.getClass().getName());
+            }
+        }
+        write("] ");
+        writeOperator(OperatorName.SHOW_TEXT_ADJUSTED);
+    }
+
+    /**
      * Shows the given text at the location specified by the current text matrix.
      *
      * @param text The Unicode text to show.
@@ -261,9 +324,92 @@ abstract class PDAbstractContentStream implements Closeable
      */
     public void showText(String text) throws IOException
     {
-        showTextInternal(text);
+        if (!inTextMode)
+        {
+            throw new IllegalStateException("Must call beginText() before showText()");
+        }
+        if (fontStack.isEmpty())
+        {
+            throw new IllegalStateException("Must call setFont() before showText()");
+        }
+        if (fontSizeStack.isEmpty())
+        {
+            throw new IllegalStateException("Font is set, but fontSize is not set");
+        }
+        PDFont font = fontStack.peek();
+        if (glyphLayoutProcessor != null && glyphLayoutProcessor.supportsFont(font))
+        {
+            float fontSize = fontSizeStack.peek();
+            glyphLayoutProcessor.showText(this, (PDType0Font) font, fontSize, text);
+        }
+        else
+        {
+            showTextInternal(text);
+            write(" ");
+            writeOperator(OperatorName.SHOW_TEXT);
+        }
+    }
+
+    /**
+     * Shows the glyphs for the given glyph codes - only for PDType0Font
+     *
+     * @param glyphCodes Array of glyph codes of the content font
+     * @throws IOException if an I/O exception occurs
+     */
+    @Override
+    public void showGlyphCodes(int[] glyphCodes) throws IOException
+    {
+        writeTextPDType0Font(glyphCodes);
         write(" ");
         writeOperator(OperatorName.SHOW_TEXT);
+    }
+
+    /**
+     * Outputs the given glyph codes - only for PDType0Font
+     *
+     * @param glyphCodes The glyph codes to write
+     *
+     * @throws IOException in case of I/O error
+     */
+    protected void writeTextPDType0Font(int[] glyphCodes) throws IOException
+    {
+        if (!inTextMode)
+        {
+            throw new IllegalStateException("Must call beginText() before showText()");
+        }
+        if (fontStack.isEmpty())
+        {
+            throw new IllegalStateException("Must call setFont() before showText()");
+        }
+        PDFont font = fontStack.peek();
+        if (!(font instanceof PDType0Font))
+        {
+            throw new IllegalStateException("Must be called with current font instance of PDType0Font");
+
+        }
+        PDType0Font pdType0Font = (PDType0Font) font;
+
+        // encode glyphs, update set of used glyphs
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Set<Integer> glyphIds = new HashSet<>();
+
+        for (int glyphCode : glyphCodes)
+        {
+            out.write(pdType0Font.encodeGlyphId(glyphCode));
+            if (glyphCode < 0xFFFF)
+            {
+                glyphIds.add(glyphCode);
+            }
+        }
+        byte[] encodedText = out.toByteArray();
+
+        // add glyphs to subset
+        if (pdType0Font.willBeSubset())
+        {
+            pdType0Font.addGlyphsToSubset(glyphIds);
+        }
+        // write encoded text and the PDF operator
+        COSWriter.writeString(encodedText, outputStream);
     }
 
     /**

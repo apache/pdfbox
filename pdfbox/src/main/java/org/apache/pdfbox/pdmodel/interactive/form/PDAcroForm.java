@@ -37,6 +37,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.GlyphLayoutProcessorInterface;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -78,6 +79,8 @@ public final class PDAcroForm implements COSObjectable
 
     private final Map<COSName, SoftReference<PDFont>> directFontCache = new HashMap<>();
 
+    private GlyphLayoutProcessorInterface glyphLayoutProcessor;
+
     /**
      * Constructor.
      *
@@ -100,6 +103,26 @@ public final class PDAcroForm implements COSObjectable
     {
         document = doc;
         dictionary = form;
+    }
+
+    /**
+     * Sets the glyph layout processor
+     *
+     * @param glyphLayoutProcessor glyph layout processor
+     */
+    public void setGlyphLayoutProcessor(GlyphLayoutProcessorInterface glyphLayoutProcessor)
+    {
+        this.glyphLayoutProcessor = glyphLayoutProcessor;
+    }
+
+    /**
+     * Returns the glyph layout processor or null
+     *
+     * @return the glyph layout processor or null
+     */
+    public GlyphLayoutProcessorInterface getGlyphLayoutProcessor()
+    {
+        return glyphLayoutProcessor;
     }
 
     /**
@@ -289,6 +312,10 @@ public final class PDAcroForm implements COSObjectable
                     try (PDPageContentStream contentStream = new PDPageContentStream(
                             document, page, AppendMode.APPEND, true, !isContentStreamWrapped))
                     {
+                        if (glyphLayoutProcessor != null)
+                        {
+                            contentStream.setGlyphLayoutProcessor(glyphLayoutProcessor);
+                        }
                         isContentStreamWrapped = true;
 
                         PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();

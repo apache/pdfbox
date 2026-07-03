@@ -34,6 +34,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
+import org.apache.pdfbox.pdmodel.GlyphLayoutProcessorInterface;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -494,6 +495,11 @@ class AppearanceGeneratorHelper
     {
         try (PDAppearanceContentStream contents = new PDAppearanceContentStream(appearanceStream, output))
         {
+            GlyphLayoutProcessorInterface glyphLayoutProcessor = field.getAcroForm().getGlyphLayoutProcessor();
+            if (glyphLayoutProcessor != null)
+            {
+                contents.setGlyphLayoutProcessor(glyphLayoutProcessor);
+            }
             PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
             
             // Acrobat calculates the left and right padding dependent on the offset of the border edge
