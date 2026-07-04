@@ -254,6 +254,16 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void showTextWithPositioning(Object[] textWithPositioningArray) throws IOException
     {
+        if (!inTextMode)
+        {
+            throw new IllegalStateException("Must call beginText() before showTextWithPositioning()");
+        }
+
+        if (fontStack.isEmpty())
+        {
+            throw new IllegalStateException("Must call setFont() before showTextWithPositioning()");
+        }
+
         write("[");
         for (Object obj : textWithPositioningArray)
         {
@@ -275,10 +285,12 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
     }
 
     /**
-     * Show the given glyphs at the specified positions
+     * Show the given glyphs at the specified positions. This method is meant to be called from
+     * within a GlyphLayoutProcessorInterface implementation and only for PDType0Font.
      *
      * @param glyphsAndPositions List of glyphs and positions
      * @throws IOException if an IO error occurs
+     * @throws IllegalStateException if the current font isn't a PDType0Font.
      */
     @Override
     public void showGlyphsWithPositioning(GlyphsAndPositions glyphsAndPositions) throws IOException
@@ -355,6 +367,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      *
      * @param glyphCodes Array of glyph codes of the content font
      * @throws IOException if an I/O exception occurs
+     * @throws IllegalStateException if the current font isn't a PDType0Font.
      */
     @Override
     public void showGlyphCodes(int[] glyphCodes) throws IOException
@@ -370,22 +383,22 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      * @param glyphCodes The glyph codes to write
      *
      * @throws IOException in case of I/O error
+     * @throws IllegalStateException if the current font isn't a PDType0Font.
      */
     protected void writeTextPDType0Font(int[] glyphCodes) throws IOException
     {
         if (!inTextMode)
         {
-            throw new IllegalStateException("Must call beginText() before showText()");
+            throw new IllegalStateException("Must call beginText() before writeTextPDType0Font()");
         }
         if (fontStack.isEmpty())
         {
-            throw new IllegalStateException("Must call setFont() before showText()");
+            throw new IllegalStateException("Must call setFont() before writeTextPDType0Font()");
         }
         PDFont font = fontStack.peek();
         if (!(font instanceof PDType0Font))
         {
             throw new IllegalStateException("Must be called with current font instance of PDType0Font");
-
         }
         PDType0Font pdType0Font = (PDType0Font) font;
 
@@ -414,6 +427,8 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
 
     /**
      * Outputs a string using the correct encoding and subsetting as required.
+     * <p>
+     * inTextMode and fontStack must already have already been checked before calling this method.
      *
      * @param text The Unicode text to show.
      * 
@@ -421,16 +436,6 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     protected void showTextInternal(String text) throws IOException
     {
-        if (!inTextMode)
-        {
-            throw new IllegalStateException("Must call beginText() before showText()");
-        }
-
-        if (fontStack.isEmpty())
-        {
-            throw new IllegalStateException("Must call setFont() before showText()");
-        }
-
         PDFont font = fontStack.peek();
 
         // complex text layout
