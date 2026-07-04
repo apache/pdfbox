@@ -40,10 +40,9 @@ import org.junit.jupiter.api.Test;
  * Use of the glyph layout features of Java that are based on HarfBuzz
  *
  * @author Volker Kunert
- * @date 2026-04-04
  */
 
-public class GlyphLayoutDin91379FormTest
+class GlyphLayoutDin91379FormTest
 {
     static String LATIN_CHARS_DIN_91379 =
                     "DIN 91379: Characters in Unicode for the electronic processing of names "
