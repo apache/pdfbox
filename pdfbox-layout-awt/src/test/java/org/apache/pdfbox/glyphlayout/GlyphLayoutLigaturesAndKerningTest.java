@@ -28,8 +28,10 @@ package org.apache.pdfbox.glyphlayout;
  */
 
 import java.awt.FontFormatException;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.pdfbox.Loader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -125,6 +127,11 @@ class GlyphLayoutLigaturesAndKerningTest
                 showComposites(cs, lohitBengaliFont, fontSize, x, y, BENGALI_STRING + " (ভারত)");
             }
             doc.save(outputFilename);
+        }
+        //TODO add rendering comparison
+        try (PDDocument doc = Loader.loadPDF(new File(outputFilename)))
+        {
+            assertEquals(1, doc.getNumberOfPages());
         }
     }
 

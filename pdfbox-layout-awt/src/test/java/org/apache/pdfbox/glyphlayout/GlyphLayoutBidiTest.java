@@ -19,9 +19,13 @@ package org.apache.pdfbox.glyphlayout;
 import org.junit.jupiter.api.Test;
 
 import java.awt.FontFormatException;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -102,6 +106,11 @@ public class GlyphLayoutBidiTest
                 showLine(cs, new PDType0Font[]{ lgcFont, arabicFont, lgcFont }, fontSize, x, y, new String[]{ TEXT2, TEXT3, TEXT4 });
             }
             doc.save(outputFilename);
+        }
+        //TODO add rendering comparison
+        try (PDDocument doc = Loader.loadPDF(new File(outputFilename)))
+        {
+            assertEquals(1, doc.getNumberOfPages());
         }
     }
 
