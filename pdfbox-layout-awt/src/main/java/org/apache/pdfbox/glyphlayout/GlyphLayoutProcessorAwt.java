@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.glyphlayout;
 
-import static java.awt.font.GlyphVector.FLAG_HAS_POSITION_ADJUSTMENTS;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -56,17 +55,6 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
     public GlyphLayoutProcessorAwt()
     {
         this.glyphLayoutFontLoaderAwt = new GlyphLayoutFontLoaderAwt();
-    }
-
-    /**
-     * Checks if the glyphVector contains adjustments that make advanced layout necessary
-     *
-     * @param glyphVector glyph vector containing the positions
-     * @return true if the glyphVector contains adjustments
-     */
-    protected static boolean hasAdjustments(GlyphVector glyphVector)
-    {
-        return (glyphVector.getLayoutFlags() & FLAG_HAS_POSITION_ADJUSTMENTS) != 0;
     }
 
     /**
@@ -279,12 +267,10 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
         Objects.requireNonNull(contentStream, "contentStream must be set");
 
         GlyphVector glyphVector = computeGlyphVector(font, fontSize, text, bidiLevel);
-
-        if (!hasAdjustments(glyphVector))
-        {
-            showGlyphVector(contentStream, glyphVector);
-            return;
-        }
+        
+        // check for adjustment not needed:
+        // glyphVector.getLayoutFlags() & FLAG_HAS_POSITION_ADJUSTMENTS is always true
+        // because of horizontal adjustments in every string except one character string
 
         final float delta = 1e-5f;
         final float factorX = 1000f / fontSize;
@@ -332,21 +318,5 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
         }
         contentStream.showGlyphsWithPositioning(ga);
         ga.clear();
-    }
-
-    /**
-     * Shows the glyphs for the given glyphVector
-     *
-     * @param contentStream the content stream
-     * @param glyphVector the glyphVector to be shown
-     * @throws IOException if an I/O exception occurs
-     */
-    protected void showGlyphVector(ContentStreamForGlyphLayoutInterface contentStream, GlyphVector glyphVector) throws IOException
-    {
-        Objects.requireNonNull(glyphVector, "glyphVector must be set");
-        Objects.requireNonNull(contentStream, "contentStream must be set");
-
-        int[] glyphCodes = glyphVector.getGlyphCodes(0, glyphVector.getNumGlyphs(), new int[glyphVector.getNumGlyphs()]);
-        contentStream.showGlyphCodes(glyphCodes);
     }
 }
