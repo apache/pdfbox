@@ -40,7 +40,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
-public class GlyphLayoutLigaturesAndKerningTest
+class GlyphLayoutLigaturesAndKerningTest
 {
     static final String FIRACODE_STRING = "!= == === >= <=";
     static final String DEJAVU_STRING =  "AVATAR, effective, affiliation, float, film, affluent";
@@ -136,8 +136,7 @@ public class GlyphLayoutLigaturesAndKerningTest
     {
         InputStream fontStream = this.getClass().
                 getResourceAsStream(fontPath);
-        PDType0Font font = glyphLayoutProcessor.loadFont(pdDocument, fontStream);
-        return font;
+        return glyphLayoutProcessor.loadFont(pdDocument, fontStream);
     }
 
     /*
@@ -148,8 +147,7 @@ public class GlyphLayoutLigaturesAndKerningTest
     {
         InputStream fontStream = this.getClass().
                 getResourceAsStream(fontPath);
-        PDType0Font font = glyphLayoutProcessor.loadFont(pdDocument, fontStream, fontOptions);
-        return font;
+        return glyphLayoutProcessor.loadFont(pdDocument, fontStream, fontOptions);
     }
 
     /*
