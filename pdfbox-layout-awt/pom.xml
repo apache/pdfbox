@@ -83,7 +83,7 @@
                 <artifactId>apache-rat-plugin</artifactId>
                 <configuration>
                     <inputExcludes>
-                        <inputExclude>src/main/resources/pdf/PdfForm.pdf</inputExclude>
+                        <inputExclude>src/test/resources/pdf/PdfForm.pdf</inputExclude>
                     </inputExcludes>
                 </configuration>
             </plugin>
