@@ -48,6 +48,10 @@ class GlyphLayoutLigaturesAndKerningTest
     static final String DEJAVU_STRING =  "AVATAR, effective, affiliation, float, film, affluent";
     static final String BENGALI_STRING =  "আমি কোন পথে ক্ষীরের লক্ষ্মী ষন্ড পুতুল রুপো গঙ্গা ঋষি";
     
+    // for code coverage at the end of showTextUni
+    // happens only if font size 20 and the spaces
+    static final String BENGALI_STRING2 =  "    আর সবই গেছে ঋণে।";
+
     /**
      * Check that missing glyph is caught like in main pdfbox.
      *
@@ -124,7 +128,8 @@ class GlyphLayoutLigaturesAndKerningTest
                 y = showComposites(cs, dejavuLigFont, fontSize, x, y, DEJAVU_STRING + " (Ligatures)");
                 y = showComposites(cs, dejavuKernFont, fontSize, x, y, DEJAVU_STRING + " (Kerning)");
                 y = showComposites(cs, dejavuLigKernFont, fontSize, x, y, DEJAVU_STRING + " (Ligatures and kerning)");
-                showComposites(cs, lohitBengaliFont, fontSize, x, y, BENGALI_STRING + " (ভারত)");
+                y = showComposites(cs, lohitBengaliFont, fontSize, x, y, BENGALI_STRING + " (ভারত)");
+                showComposites(cs, lohitBengaliFont, 20, x, y - 20, BENGALI_STRING2 + " (ভারত)");
             }
             doc.save(outputFilename);
         }
