@@ -110,18 +110,15 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
      *
      * @param pdDocument document
      * @param inputStream of the font
-     * @param embedSubset must be false for PDF forms
-     * @param fontOptions options for font
      *
      * @return a PDType0Font font.
-     * 
+     *
      * @throws IOException if font can not be loaded
      * @throws FontFormatException if the font is bad
      */
-    public PDType0Font loadFont(PDDocument pdDocument, InputStream inputStream, boolean embedSubset,
-            GlyphLayoutFontLoaderAwt.FontOptions fontOptions) throws IOException, FontFormatException
+    public PDType0Font loadFont(PDDocument pdDocument, InputStream inputStream) throws IOException, FontFormatException
     {
-        return glyphLayoutFontLoaderAwt.loadFont(pdDocument, inputStream, embedSubset, fontOptions);
+        return glyphLayoutFontLoaderAwt.loadFont(pdDocument, inputStream, true);
     }
 
     /**
@@ -136,7 +133,8 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
      * @throws IOException if font can not be loaded
      * @throws FontFormatException if the font is bad
      */
-    public PDType0Font loadFont(PDDocument pdDocument, InputStream inputStream, boolean embedSubset) throws IOException, FontFormatException
+    public PDType0Font loadFont(PDDocument pdDocument, InputStream inputStream, boolean embedSubset)
+            throws IOException, FontFormatException
     {
         return glyphLayoutFontLoaderAwt.loadFont(pdDocument, inputStream, embedSubset);
     }
@@ -164,15 +162,18 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
      *
      * @param pdDocument document
      * @param inputStream of the font
+     * @param embedSubset must be false for PDF forms
+     * @param fontOptions options for font
      *
      * @return a PDType0Font font.
-     *
+     * 
      * @throws IOException if font can not be loaded
      * @throws FontFormatException if the font is bad
      */
-    public PDType0Font loadFont(PDDocument pdDocument, InputStream inputStream) throws IOException, FontFormatException
+    public PDType0Font loadFont(PDDocument pdDocument, InputStream inputStream, boolean embedSubset,
+            GlyphLayoutFontLoaderAwt.FontOptions fontOptions) throws IOException, FontFormatException
     {
-        return glyphLayoutFontLoaderAwt.loadFont(pdDocument, inputStream, true);
+        return glyphLayoutFontLoaderAwt.loadFont(pdDocument, inputStream, embedSubset, fontOptions);
     }
 
     /**

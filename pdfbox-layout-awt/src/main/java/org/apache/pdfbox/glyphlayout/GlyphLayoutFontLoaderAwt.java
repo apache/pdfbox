@@ -53,6 +53,21 @@ public class GlyphLayoutFontLoaderAwt
      *
      * @param pdDocument document
      * @param inputStream of the font
+     * @return pdType0Font PDFBox font
+     * @throws IOException if font can not be loaded
+     * @throws FontFormatException if the font is bad
+     */
+    public PDType0Font loadFont(PDDocument pdDocument, InputStream inputStream)
+            throws IOException, FontFormatException
+    {
+        return loadFont(pdDocument, inputStream, true, null);
+    }
+
+    /**
+     * Loads the AWT font needed for layout
+     *
+     * @param pdDocument document
+     * @param inputStream of the font
      * @param embedSubset True if the font will be subset before embedding. Set this to false when
      * creating a font for AcroForm.
      * @return pdType0Font PDFBox font
@@ -63,21 +78,6 @@ public class GlyphLayoutFontLoaderAwt
             throws IOException, FontFormatException
     {
         return loadFont(pdDocument, inputStream, embedSubset, null);
-    }
-
-    /**
-     * Loads the AWT font needed for layout
-     *
-     * @param pdDocument document
-     * @param inputStream of the font
-     * @return pdType0Font PDFBox font
-     * @throws IOException if font can not be loaded
-     * @throws FontFormatException if the font is bad
-     */
-    public PDType0Font loadFont(PDDocument pdDocument, InputStream inputStream)
-            throws IOException, FontFormatException
-    {
-        return loadFont(pdDocument, inputStream, true, null);
     }
 
     /**
