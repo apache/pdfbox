@@ -52,6 +52,7 @@ class TestBase
             actualImage = r.renderImage(0);
         }
 
+        // copied from ValidateXImage.checkIdent()
         int w = expectedImage.getWidth();
         int h = expectedImage.getHeight();
         assertEquals(w, actualImage.getWidth());
