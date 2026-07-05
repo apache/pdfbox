@@ -155,7 +155,7 @@ public class GlyphLayoutFontLoaderAwt
      */
     public boolean supportsFont(PDFont font)
     {
-        return font instanceof PDType0Font && awtFontMap.containsKey((PDType0Font) font);
+        return awtFontMap.containsKey(font);
     }
 
     /**
