@@ -267,13 +267,18 @@ public class TTFParser
             //   panose = os2WindowsMetricsTable.getPanose();
             outHeaders.setOs2Windows(font.getOS2Windows());
 
-            boolean isOTFAndPostScript;
+            boolean isOTFAndPostScript = false;
             if (font instanceof OpenTypeFont && ((OpenTypeFont) font).isPostScript())
             {
-                isOTFAndPostScript = true;
                 if (((OpenTypeFont) font).isSupportedOTF())
                 {
+                    isOTFAndPostScript = true;
                     font.readTableHeaders(CFFTable.TAG, outHeaders); // calls CFFTable.readHeaders();
+                }
+                else
+                {
+                    outHeaders.setError("OpenType fonts using CFF2 outlines are not supported");
+                    return outHeaders;
                 }
             }
             else if (!(font instanceof OpenTypeFont) && font.tables.containsKey(CFFTable.TAG))
@@ -283,7 +288,6 @@ public class TTFParser
             }
             else
             {
-                isOTFAndPostScript = false;
                 TTFTable gcid = font.getTableMap().get("gcid");
                 if (gcid != null && gcid.getLength() >= FontHeaders.BYTES_GCID)
                 {
