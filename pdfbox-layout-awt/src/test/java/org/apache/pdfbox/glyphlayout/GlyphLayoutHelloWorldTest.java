@@ -37,7 +37,6 @@ public class GlyphLayoutHelloWorldTest extends TestBase
         String outputName = "HelloWorld.pdf";
         String lohitBengaliPath = "/ttf/Lohit-Bengali.ttf";
         File file = new File(GlyphLayoutHelloWorldTest.class.getResource(lohitBengaliPath).toURI());
-        System.out.println(file.getPath());
         String [] args = new String[]{ "target/" + outputName, "হ্যালো ওয়ার্ল্ড", file.getPath() };
         GlyphLayoutHelloWorld.main(args);
         checkRenderIdent(outputName);
