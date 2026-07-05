@@ -49,7 +49,7 @@ class GlyphLayoutDin91379Test
     static String LATIN_CHARS_DIN_91379 =
                     "DIN 91379: Characters in Unicode for the electronic processing of names \n"
                     + "and data exchange in Europe\n"
-                    + "Font used: DejaVuSans.ttf\n"
+                    + "Font used: Arimo-Regular.ttf\n"
                     + "\n"
                     + "bll; Latin Letters (normative)\n"
                     + "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z\n"
@@ -101,7 +101,8 @@ class GlyphLayoutDin91379Test
 
         try (PDDocument doc = new PDDocument())
         {
-            InputStream fontStream = GlyphLayoutDin91379Test.class.getResourceAsStream("/ttf/DejaVuSans.ttf");
+            // Works poorly with DejaVu Sans, see discussion on PDFBOX-4951 on 5.7.2026
+            InputStream fontStream = GlyphLayoutDin91379Test.class.getResourceAsStream("/ttf/Arimo-Regular.ttf");
             PDType0Font font = glyphLayoutProcessor.loadFont(doc, fontStream);
 
             PDPage page = new PDPage();

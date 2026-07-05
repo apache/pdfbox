@@ -93,15 +93,17 @@ class GlyphLayoutDin91379FormTest
 
         String outputFilename = "target/GlyphLayoutDIN91379Form.pdf";
 
-        String fontSizeString = "10.5";
+        String fontSizeString = "12";
 
-        InputStream fontStream = GlyphLayoutDin91379FormTest.class.getResourceAsStream("/ttf/DejaVuSans.ttf");
+        InputStream fontStream = GlyphLayoutDin91379FormTest.class.getResourceAsStream("/ttf/Arimo-Regular.ttf");
         File pdfForm = new File(GlyphLayoutDin91379FormTest.class.getResource("/pdf/PdfForm.pdf").toURI());
 
         try (PDDocument doc = Loader.loadPDF(pdfForm))
         {
             // embedSubset has to be set to false
-            PDType0Font font = glyphLayoutProcessor.loadFont(doc, fontStream, false);
+            // last parameter is just for test coverage
+            PDType0Font font = glyphLayoutProcessor.loadFont(doc, fontStream, 
+                    false, new GlyphLayoutFontLoaderAwt.FontOptions());
 
             PDDocumentCatalog docCatalog = doc.getDocumentCatalog();
             PDAcroForm acroForm = docCatalog.getAcroForm();
