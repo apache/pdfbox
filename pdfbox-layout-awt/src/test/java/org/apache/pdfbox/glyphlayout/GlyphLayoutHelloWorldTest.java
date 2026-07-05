@@ -29,7 +29,7 @@ import org.apache.pdfbox.glyphlayout.examples.GlyphLayoutHelloWorld;
  *
  * @author Tilman Hausherr
  */
-public class GlyphLayoutHelloWorldTest extends TestBase
+class GlyphLayoutHelloWorldTest extends TestBase
 {
     @Test
     void testGlyphLayoutHelloWorld() throws IOException, FontFormatException, URISyntaxException
