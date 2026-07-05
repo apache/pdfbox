@@ -106,7 +106,7 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
      */
     public PDType0Font loadFont(PDDocument pdDocument, InputStream inputStream) throws IOException, FontFormatException
     {
-        return glyphLayoutFontLoaderAwt.loadFont(pdDocument, inputStream, true);
+        return glyphLayoutFontLoaderAwt.loadFont(pdDocument, inputStream);
     }
 
     /**
@@ -142,7 +142,7 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
     public PDType0Font loadFont(PDDocument pdDocument, InputStream inputStream,
             GlyphLayoutFontLoaderAwt.FontOptions fontOptions) throws IOException, FontFormatException
     {
-        return glyphLayoutFontLoaderAwt.loadFont(pdDocument, inputStream, true, fontOptions);
+        return glyphLayoutFontLoaderAwt.loadFont(pdDocument, inputStream, fontOptions);
     }
 
     /**
