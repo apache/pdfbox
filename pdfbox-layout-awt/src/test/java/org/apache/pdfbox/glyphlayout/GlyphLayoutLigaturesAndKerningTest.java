@@ -28,10 +28,8 @@ package org.apache.pdfbox.glyphlayout;
  */
 
 import java.awt.FontFormatException;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import org.apache.pdfbox.Loader;
+import java.net.URISyntaxException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -42,7 +40,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
-class GlyphLayoutLigaturesAndKerningTest
+class GlyphLayoutLigaturesAndKerningTest extends TestBase
 {
     static final String FIRACODE_STRING = "!= == === >= <=";
     static final String DEJAVU_STRING =  "AVATAR, effective, affiliation, float, film, affluent";
@@ -67,27 +65,31 @@ class GlyphLayoutLigaturesAndKerningTest
 
         try (PDDocument doc = new PDDocument())
         {
-            PDType0Font lohitBengaliFont = createPdType0Font(glyphLayoutProcessor, doc, lohitBengaliPath);
+            PDType0Font lohitBengaliFont = createPdType0Font(glyphLayoutProcessor, doc, lohitBengaliPath, 
+                            new GlyphLayoutFontLoaderAwt.FontOptions());
 
             PDPage page = new PDPage();
             doc.addPage(page);
             try (PDPageContentStream cs = new PDPageContentStream(doc, page))
             {
                 cs.setGlyphLayoutProcessor(glyphLayoutProcessor);
-                
+
                 IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> 
                         showComposites(cs, lohitBengaliFont, 1, 0, 0, "123ABC"));
                 assertEquals("Missing glyph in font 'Lohit Bengali' for the character 'A', codePoint: 65 (U+0041).", ex.getMessage());
+
+                // Ignore the "You did not call endText()" warning, this is because of the premature close
             }
         }
     }
   
     @Test
-    void testLigaturesAndKerning() throws IOException, FontFormatException
+    void testLigaturesAndKerning() throws IOException, FontFormatException, URISyntaxException
     {
         GlyphLayoutProcessorAwt glyphLayoutProcessor = new GlyphLayoutProcessorAwt();
 
-        String outputFilename = "target/GlyphLayoutLigaturesAndKerning.pdf";
+        String outputName = "GlyphLayoutLigaturesAndKerning.pdf";
+        String outputFilename = "target/" + outputName;
         String firaPath = "/ttf/FiraCode-Regular.ttf";
         String dejavuPath = "/ttf/DejaVuSans.ttf"; // ligatures not in Liberation nor in Arimo
         String lohitBengaliPath = "/ttf/Lohit-Bengali.ttf";
@@ -133,39 +135,13 @@ class GlyphLayoutLigaturesAndKerningTest
             }
             doc.save(outputFilename);
         }
-        //TODO add rendering comparison
-        try (PDDocument doc = Loader.loadPDF(new File(outputFilename)))
-        {
-            assertEquals(1, doc.getNumberOfPages());
-        }
+        checkRenderIdent(outputName);
     }
 
-    /*
-     * Create the PDType0Font font
-     */
-    private PDType0Font createPdType0Font(GlyphLayoutProcessorAwt glyphLayoutProcessor, PDDocument pdDocument,
-            String fontPath) throws IOException, FontFormatException
-    {
-        InputStream fontStream = this.getClass().
-                getResourceAsStream(fontPath);
-        return glyphLayoutProcessor.loadFont(pdDocument, fontStream);
-    }
-
-    /*
-     * Create the PDType0Font font with font options
-     */
-    private PDType0Font createPdType0Font(GlyphLayoutProcessorAwt glyphLayoutProcessor, PDDocument pdDocument,
-            String fontPath, GlyphLayoutFontLoaderAwt.FontOptions fontOptions) throws IOException, FontFormatException
-    {
-        InputStream fontStream = this.getClass().
-                getResourceAsStream(fontPath);
-        return glyphLayoutProcessor.loadFont(pdDocument, fontStream, fontOptions);
-    }
-
-    /*
+    /**
      * break the text into lines and show them
      */
-    public static float showComposites(PDPageContentStream cs, PDType0Font font, float fontSize,
+    private float showComposites(PDPageContentStream cs, PDType0Font font, float fontSize,
             float x, float y, String s) throws IOException
     {
 
@@ -183,18 +159,5 @@ class GlyphLayoutLigaturesAndKerningTest
             }
         }
         return y;
-    }
-
-    /*
-     * show one line
-     */
-    public static void showCompositesLine(PDPageContentStream cs, PDType0Font font, float fontSize,
-            float x, float y, String line) throws IOException
-    {
-        cs.beginText();
-        cs.setFont(font, fontSize);
-        cs.newLineAtOffset(x, y);
-        cs.showText(line);
-        cs.endText();
     }
 }

@@ -19,13 +19,9 @@ package org.apache.pdfbox.glyphlayout;
 import org.junit.jupiter.api.Test;
 
 import java.awt.FontFormatException;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URISyntaxException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -36,7 +32,7 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
  *
  * @author Volker Kunert
  */
-public class GlyphLayoutBidiTest
+public class GlyphLayoutBidiTest extends TestBase
 {
     public static final String TEXT1 = "نحن الآن في شهر رمضان 1447 هجري";
     public static final String TEXT2 = "Guten Tag ";
@@ -78,11 +74,12 @@ public class GlyphLayoutBidiTest
     }
 
     @Test
-    void testGlyphLayoutBidi() throws IOException, FontFormatException
+    void testGlyphLayoutBidi() throws IOException, FontFormatException, URISyntaxException
     {
         GlyphLayoutProcessorAwt glyphLayoutProcessorAwt = new GlyphLayoutProcessorAwt();
 
-        String outputFilename = "target/GlyphLayoutBidi.pdf";
+        String outputName = "GlyphLayoutBidi.pdf";
+        String outputFilename = "target/" + outputName;
         String arabicPath = "/ttf/NotoSansArabic-Regular.ttf";
         String lgcPath = "/ttf/DejaVuSans.ttf";
 
@@ -107,20 +104,6 @@ public class GlyphLayoutBidiTest
             }
             doc.save(outputFilename);
         }
-        //TODO add rendering comparison
-        try (PDDocument doc = Loader.loadPDF(new File(outputFilename)))
-        {
-            assertEquals(1, doc.getNumberOfPages());
-        }
-    }
-
-    /*
-     * Create the PDType0Font font
-     */
-    private PDType0Font createPdType0Font(GlyphLayoutProcessorAwt glyphLayoutProcessorAwt, PDDocument doc,
-            String fontPath) throws IOException, FontFormatException
-    {
-        InputStream fontStream = this.getClass().getResourceAsStream(fontPath);
-        return glyphLayoutProcessorAwt.loadFont(doc, fontStream);
+        checkRenderIdent(outputName);
     }
 }

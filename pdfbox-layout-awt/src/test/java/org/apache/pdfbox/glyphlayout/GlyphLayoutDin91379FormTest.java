@@ -29,7 +29,6 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 /*
@@ -42,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * @author Volker Kunert
  */
 
-class GlyphLayoutDin91379FormTest
+class GlyphLayoutDin91379FormTest extends TestBase
 {
     static String LATIN_CHARS_DIN_91379 =
                     "DIN 91379: Characters in Unicode for the electronic processing of names "
@@ -91,7 +90,8 @@ class GlyphLayoutDin91379FormTest
     {
         GlyphLayoutProcessorAwt glyphLayoutProcessor = new GlyphLayoutProcessorAwt();
 
-        String outputFilename = "target/GlyphLayoutDIN91379Form.pdf";
+        String outputName = "GlyphLayoutDIN91379Form.pdf";
+        String outputFilename = "target/" + outputName;
 
         String fontSizeString = "12";
 
@@ -127,11 +127,6 @@ class GlyphLayoutDin91379FormTest
             acroForm.flatten();
             doc.save(outputFilename);
         }
-
-        //TODO add rendering comparison
-        try (PDDocument doc = Loader.loadPDF(new File(outputFilename)))
-        {
-            assertEquals(1, doc.getNumberOfPages());
-        }
+        checkRenderIdent(outputName);
     }
 }

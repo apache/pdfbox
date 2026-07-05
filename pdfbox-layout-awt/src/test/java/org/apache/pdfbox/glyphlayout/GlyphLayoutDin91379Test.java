@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import org.apache.pdfbox.Loader;
 
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author Volker Kunert
  */
-class GlyphLayoutDin91379Test
+class GlyphLayoutDin91379Test extends TestBase
 {
     static String LATIN_CHARS_DIN_91379 =
                     "DIN 91379: Characters in Unicode for the electronic processing of names \n"
@@ -91,11 +92,12 @@ class GlyphLayoutDin91379Test
                     + "Additional non-letters (not included in DIN 91379): – — •�";
 
     @Test
-    void testGlyphLayoutDin91379() throws IOException, FontFormatException
+    void testGlyphLayoutDin91379() throws IOException, FontFormatException, URISyntaxException
     {
         GlyphLayoutProcessorAwt glyphLayoutProcessor = new GlyphLayoutProcessorAwt();
 
-        String outputPDFFilename = "target/GlyphLayoutDIN91379.pdf";
+        String outputName = "GlyphLayoutDIN91379.pdf";
+        String outputPDFFilename = "target/" + outputName;
         String outputTextFilename = "target/GlyphLayoutDIN91379.txt";
         float fontSize = 12.0f;
 
@@ -117,8 +119,8 @@ class GlyphLayoutDin91379Test
             }
             doc.save(outputPDFFilename);
         }
+        checkRenderIdent(outputName);
         
-        //TODO add rendering comparison
         try (PDDocument doc = Loader.loadPDF(new File(outputPDFFilename)))
         {
             assertEquals(1, doc.getNumberOfPages());
@@ -159,18 +161,5 @@ class GlyphLayoutDin91379Test
                 y -= fontSize * 1.5;
             }
         }
-    }
-
-    /*
-     * show one line
-     */
-    private void showCompositesLine(PDPageContentStream cs, PDType0Font font, float fontSize,
-            float x, float y, String line) throws IOException
-    {
-        cs.beginText();
-        cs.setFont(font, fontSize);
-        cs.newLineAtOffset(x, y);
-        cs.showText(line);
-        cs.endText();
     }
 }
