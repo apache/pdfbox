@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.pdfbox.glyphlayout;
+package org.apache.pdfbox.glyphlayout.awt;
 
 import java.awt.FontFormatException;
 import java.io.IOException;

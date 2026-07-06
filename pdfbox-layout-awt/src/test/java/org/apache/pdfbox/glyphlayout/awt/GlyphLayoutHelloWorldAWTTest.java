@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.glyphlayout;
+package org.apache.pdfbox.glyphlayout.awt;
 
 import java.awt.FontFormatException;
 import java.io.File;
@@ -23,22 +23,22 @@ import java.net.URISyntaxException;
 
 import org.junit.jupiter.api.Test;
 
-import org.apache.pdfbox.glyphlayout.examples.GlyphLayoutHelloWorld;
+import org.apache.pdfbox.glyphlayout.examples.GlyphLayoutHelloWorldAWT;
 
 /**
  *
  * @author Tilman Hausherr
  */
-class GlyphLayoutHelloWorldTest extends TestBase
+class GlyphLayoutHelloWorldAWTTest extends TestBase
 {
     @Test
-    void testGlyphLayoutHelloWorld() throws IOException, FontFormatException, URISyntaxException
+    void testGlyphLayoutHelloWorldAWT() throws IOException, FontFormatException, URISyntaxException
     {
         String outputName = "HelloWorld.pdf";
         String lohitBengaliPath = "/ttf/Lohit-Bengali.ttf";
-        File file = new File(GlyphLayoutHelloWorldTest.class.getResource(lohitBengaliPath).toURI());
+        File file = new File(GlyphLayoutHelloWorldAWTTest.class.getResource(lohitBengaliPath).toURI());
         String [] args = new String[]{ "target/" + outputName, "হ্যালো ওয়ার্ল্ড", file.getPath() };
-        GlyphLayoutHelloWorld.main(args);
+        GlyphLayoutHelloWorldAWT.main(args);
         checkRenderIdent(outputName);
     }
 }

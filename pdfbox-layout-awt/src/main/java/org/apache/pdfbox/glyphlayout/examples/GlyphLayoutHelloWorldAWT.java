@@ -21,8 +21,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.pdfbox.glyphlayout.GlyphLayoutFontLoaderAwt;
-import org.apache.pdfbox.glyphlayout.GlyphLayoutProcessorAwt;
+import org.apache.pdfbox.glyphlayout.awt.GlyphLayoutFontLoaderAwt;
+import org.apache.pdfbox.glyphlayout.awt.GlyphLayoutProcessorAwt;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -32,12 +32,12 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
  * Creates a simple document with a TrueType font using GlyphLayoutProcessorAwt
  * adapted from org.apache.pdfbox.examples.pdmodel.HelloWorldTTF
  */
-public class GlyphLayoutHelloWorld
+public class GlyphLayoutHelloWorldAWT
 {
 
     public static void main(String[] args) throws IOException, FontFormatException
     {
-        new GlyphLayoutHelloWorld().test(args);
+        new GlyphLayoutHelloWorldAWT().test(args);
     }
 
     public void test(String[] args) throws IOException, FontFormatException
