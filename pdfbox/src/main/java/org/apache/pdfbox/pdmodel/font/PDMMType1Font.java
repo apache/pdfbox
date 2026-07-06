@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.pdmodel.ResourceCache;
 
 import java.io.IOException;
 
@@ -34,26 +33,11 @@ public class PDMMType1Font extends PDType1Font
      * @param fontDictionary font dictionary
      * 
      * @throws IOException if the font could not be read
-     * 
-     * @deprecated use {@link #PDMMType1Font(COSDictionary, ResourceCache)} instead
      */
-    public PDMMType1Font(COSDictionary fontDictionary) throws IOException
-    {
-        this(fontDictionary, null);
-    }
-
-    /**
-     * Creates an MMType1Font from a Font dictionary in a PDF.
-     *
-     * @param fontDictionary font dictionary
-     * @param resourceCache ResourceCache, can be null.
-     * 
-     * @throws IOException if the font could not be read
-     */
-    public PDMMType1Font(COSDictionary fontDictionary, ResourceCache resourceCache)
+    public PDMMType1Font(COSDictionary fontDictionary)
             throws IOException
     {
-        super(fontDictionary, resourceCache);
+        super(fontDictionary);
     }
 
 }

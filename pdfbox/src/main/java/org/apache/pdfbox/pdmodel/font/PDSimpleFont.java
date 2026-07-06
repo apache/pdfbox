@@ -27,7 +27,6 @@ import org.apache.fontbox.FontBoxFont;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
@@ -72,11 +71,10 @@ public abstract class PDSimpleFont extends PDFont
      * Constructor.
      *
      * @param fontDictionary Font dictionary.
-     * @param resourceCache ResourceCache, can be null.
      */
-    PDSimpleFont(COSDictionary fontDictionary, ResourceCache resourceCache)
+    PDSimpleFont(COSDictionary fontDictionary)
     {
-        super(fontDictionary, resourceCache);
+        super(fontDictionary);
     }
 
     /**

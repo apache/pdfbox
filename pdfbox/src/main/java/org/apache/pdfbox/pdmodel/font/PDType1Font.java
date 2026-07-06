@@ -36,7 +36,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
@@ -187,26 +186,10 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
      * 
      * @throws IOException if there was an error initializing the font.
      * @throws IllegalArgumentException if /FontFile3 was used.
-     * 
-     * @deprecated use {@link #PDType1Font(COSDictionary, ResourceCache)} instead
      */
     public PDType1Font(COSDictionary fontDictionary) throws IOException
     {
-        this(fontDictionary, null);
-    }
-
-    /**
-     * Creates a Type 1 font from a Font dictionary in a PDF.
-     * 
-     * @param fontDictionary font dictionary.
-     * @param resourceCache ResourceCache, can be null.
-     * 
-     * @throws IOException if there was an error initializing the font.
-     * @throws IllegalArgumentException if /FontFile3 was used.
-     */
-    public PDType1Font(COSDictionary fontDictionary, ResourceCache resourceCache) throws IOException
-    {
-        super(fontDictionary, resourceCache);
+        super(fontDictionary);
 
         PDFontDescriptor fd = getFontDescriptor();
         Type1Font t1 = null;

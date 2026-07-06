@@ -81,7 +81,7 @@ public class PDType3Font extends PDSimpleFont
      */
     public PDType3Font(COSDictionary fontDictionary, ResourceCache resourceCache) throws IOException
     {
-        super(fontDictionary, resourceCache);
+        super(fontDictionary);
         this.resourceCache = resourceCache;
         readEncoding();
     }

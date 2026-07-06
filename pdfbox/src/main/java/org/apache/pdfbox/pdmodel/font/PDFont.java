@@ -34,10 +34,8 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.RandomAccessRead;
-import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
@@ -103,39 +101,24 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * Constructor.
      *
      * @param fontDictionary Font dictionary.
-     * @param resourceCache ResourceCache, can be null.
      */
-    protected PDFont(COSDictionary fontDictionary, ResourceCache resourceCache)
+    protected PDFont(COSDictionary fontDictionary)
     {
         dict = fontDictionary;
         codeToWidthMap = new HashMap<>();
 
         // standard 14 fonts use an AFM
         afmStandard14 = Standard14Fonts.getAFM(getName()); // may be null (it usually is)
-        fontDescriptor = loadFontDescriptor(resourceCache);
+        fontDescriptor = loadFontDescriptor();
         toUnicodeCMap = loadUnicodeCmap();
     }
 
-    private PDFontDescriptor loadFontDescriptor(ResourceCache resourceCache)
+    private PDFontDescriptor loadFontDescriptor()
     {
-        COSObject fdIndirectObject = dict.getCOSObject(COSName.FONT_DESC);
-        if (fdIndirectObject != null && resourceCache != null)
-        {
-            PDFontDescriptor pdFontdescriptor = resourceCache.getFontDescriptor(fdIndirectObject);
-            if (pdFontdescriptor != null)
-            {
-                return pdFontdescriptor;
-            }
-        }
         COSDictionary fd = dict.getCOSDictionary(COSName.FONT_DESC);
         if (fd != null)
         {
-            PDFontDescriptor pdFontdescriptor = new PDFontDescriptor(fd);
-            if (resourceCache != null && fdIndirectObject != null)
-            {
-                resourceCache.put(fdIndirectObject, pdFontdescriptor);
-            }
-            return pdFontdescriptor;
+            return new PDFontDescriptor(fd);
         }
         else if (afmStandard14 != null)
         {
