@@ -45,7 +45,8 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
     static final String FIRACODE_STRING = "!= == === >= <=";
     static final String DEJAVU_STRING =  "AVATAR, effective, affiliation, float, film, affluent";
     static final String BENGALI_STRING =  "আমি কোন পথে ক্ষীরের লক্ষ্মী ষন্ড পুতুল রুপো গঙ্গা ঋষি";
-    
+    static final String THAI_STRING =  "กูกินก้งปิ้งอยู่ในถ้ำ";
+
     // for code coverage at the end of showTextUni
     // happens only if font size 20 and the spaces
     static final String BENGALI_STRING2 =  "    আর সবই গেছে ঋণে।";
@@ -92,6 +93,7 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
         String outputFilename = "target/" + outputName;
         String firaPath = "/ttf/FiraCode-Regular.ttf";
         String dejavuPath = "/ttf/DejaVuSans.ttf"; // ligatures not in Liberation nor in Arimo
+        String thaiPath = "/ttf/NotoSansThai-Regular.ttf";
         String lohitBengaliPath = "/ttf/Lohit-Bengali.ttf";
 
         float fontSize = 12.0f;
@@ -112,7 +114,10 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
             
             PDType0Font dejavuLigKernFont = createPdType0Font(glyphLayoutProcessor, doc, dejavuPath,
                     new GlyphLayoutFontLoaderAwt.FontOptions().setLigaturesOn().setKerningOn());
-            
+
+            PDType0Font thaiFont = createPdType0Font(glyphLayoutProcessor, doc, thaiPath,
+                    new GlyphLayoutFontLoaderAwt.FontOptions().setLigaturesOn().setKerningOn());
+
             PDType0Font lohitBengaliFont = createPdType0Font(glyphLayoutProcessor, doc, lohitBengaliPath,
                     new GlyphLayoutFontLoaderAwt.FontOptions());
             
@@ -130,7 +135,8 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
                 y = showComposites(cs, dejavuLigFont, fontSize, x, y, DEJAVU_STRING + " (Ligatures)");
                 y = showComposites(cs, dejavuKernFont, fontSize, x, y, DEJAVU_STRING + " (Kerning)");
                 y = showComposites(cs, dejavuLigKernFont, fontSize, x, y, DEJAVU_STRING + " (Ligatures and kerning)");
-                y = showComposites(cs, lohitBengaliFont, fontSize, x, y, BENGALI_STRING + " (ভারত)");
+                y = showComposites(cs, thaiFont, fontSize, x, y, THAI_STRING);
+                y = showComposites(cs, lohitBengaliFont, fontSize, x, y - 5, BENGALI_STRING + " (ভারত)");
                 showComposites(cs, lohitBengaliFont, 20, x, y - 20, BENGALI_STRING2 + " (ভারত)");
             }
             doc.save(outputFilename);
