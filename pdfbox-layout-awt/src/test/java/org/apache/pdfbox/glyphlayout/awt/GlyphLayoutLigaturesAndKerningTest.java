@@ -46,10 +46,7 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
     static final String DEJAVU_STRING =  "AVATAR, effective, affiliation, float, film, affluent";
     static final String BENGALI_STRING =  "আমি কোন পথে ক্ষীরের লক্ষ্মী ষন্ড পুতুল রুপো গঙ্গা ঋষি";
     static final String THAI_STRING =  "กูกินก้งปิ้งอยู่ในถ้ำ";
-
-    // for code coverage at the end of showTextUni
-    // happens only if font size 20 and the spaces
-    static final String BENGALI_STRING2 =  "    আর সবই গেছে ঋণে।";
+    static final String BENGALI_STRING2 =  "হ্যালো ওয়ার্ল্ড";
 
     /**
      * Check that missing glyph is caught like in main pdfbox.
@@ -137,7 +134,16 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
                 y = showComposites(cs, dejavuLigKernFont, fontSize, x, y, DEJAVU_STRING + " (Ligatures and kerning)");
                 y = showComposites(cs, thaiFont, fontSize, x, y, THAI_STRING);
                 y = showComposites(cs, lohitBengaliFont, fontSize, x, y - 5, BENGALI_STRING + " (ভারত)");
-                showComposites(cs, lohitBengaliFont, 20, x, y - 20, BENGALI_STRING2 + " (ভারত)");
+
+                // Test code coverage at the end of showTextUni ("adjust the end position")
+                // Visual comparison would fail without that adjustment.
+                cs.beginText();
+                cs.setFont(lohitBengaliFont, 20);
+                cs.newLineAtOffset(x, y - 20);
+                cs.showText(BENGALI_STRING2);
+                cs.showText(" ");
+                cs.showText(BENGALI_STRING2);
+                cs.endText();
             }
             doc.save(outputFilename);
         }
