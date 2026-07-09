@@ -104,7 +104,8 @@ class GlyphLayoutDin91379Test extends TestBase
         {
             // Works poorly with DejaVu Sans, see discussion on PDFBOX-4951 on 5.7.2026
             InputStream fontStream = GlyphLayoutDin91379Test.class.getResourceAsStream("/ttf/Arimo-Regular.ttf");
-            PDType0Font font = glyphLayoutProcessor.loadFont(doc, fontStream);
+            // last parameter is just for better code coverage
+            PDType0Font font = glyphLayoutProcessor.loadFont(doc, fontStream, true);
 
             PDPage page = new PDPage();
             doc.addPage(page);
