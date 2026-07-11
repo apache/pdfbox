@@ -39,15 +39,14 @@ class Type5ShadingContext extends GouraudShadingContext
      * Constructor creates an instance to be used for fill operations.
      *
      * @param shading the shading type to be used
-     * @param cm the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @throws IOException if something went wrong
      */
-    Type5ShadingContext(PDShadingType5 shading, ColorModel cm, AffineTransform xform,
+    Type5ShadingContext(PDShadingType5 shading, AffineTransform xform,
                                Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, cm, xform, matrix);
+        super(shading);
 
         LOG.debug("Type5ShadingContext");
 

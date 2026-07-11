@@ -58,7 +58,7 @@ class Type5ShadingPaint extends ShadingPaint<PDShadingType5>
     {
         try
         {
-            return new Type5ShadingContext(shading, cm, xform, matrix, deviceBounds);
+            return new Type5ShadingContext(shading, xform, matrix, deviceBounds);
         }
         catch (IOException e)
         {

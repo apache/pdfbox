@@ -46,15 +46,11 @@ abstract class TriangleBasedShadingContext extends ShadingContext
      * Constructor.
      *
      * @param shading the shading type to be used
-     * @param cm the color model to be used
-     * @param xform transformation for user to device space
-     * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @throws IOException if there is an error getting the color space or doing background color conversion.
      */
-    TriangleBasedShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
-                                       Matrix matrix) throws IOException
+    TriangleBasedShadingContext(PDShading shading) throws IOException
     {
-        super(shading, cm, xform, matrix);
+        super(shading);
     }
 
     /**

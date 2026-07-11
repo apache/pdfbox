@@ -18,14 +18,12 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 import java.awt.PaintContext;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
-import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.io.IOException;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.util.Matrix;
 
 /**
  * A base class to handle what is common to all shading types.
@@ -45,14 +43,10 @@ public abstract class ShadingContext implements PaintContext
      * Constructor.
      *
      * @param shading the shading type to be used
-     * @param cm the color model to be used
-     * @param xform transformation for user to device space
-     * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @throws java.io.IOException if there is an error getting the color space
      * or doing background color conversion.
      */
-    protected ShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
-                          Matrix matrix) throws IOException
+    protected ShadingContext(PDShading shading) throws IOException
     {
         this.shading = shading;
         shadingColorSpace = shading.getColorSpace();

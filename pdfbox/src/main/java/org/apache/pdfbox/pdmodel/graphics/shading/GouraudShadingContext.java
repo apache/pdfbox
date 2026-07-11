@@ -43,15 +43,11 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
      * Constructor creates an instance to be used for fill operations.
      *
      * @param shading the shading type to be used
-     * @param colorModel the color model to be used
-     * @param xform transformation for user to device space
-     * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @throws IOException if something went wrong
      */
-    protected GouraudShadingContext(PDShading shading, ColorModel colorModel, AffineTransform xform,
-                                    Matrix matrix) throws IOException
+    protected GouraudShadingContext(PDShading shading) throws IOException
     {
-        super(shading, colorModel, xform, matrix);
+        super(shading);
     }
 
     final void setTriangleList(List<ShadedTriangle> triangleList)

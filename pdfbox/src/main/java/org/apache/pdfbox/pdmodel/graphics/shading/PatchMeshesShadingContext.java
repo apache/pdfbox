@@ -41,18 +41,17 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
      * Constructor creates an instance to be used for fill operations.
      *
      * @param shading the shading type to be used
-     * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @param deviceBounds device bounds
      * @param controlPoints number of control points, 12 for type 6 shading and 16 for type 7 shading
      * @throws IOException if something went wrong
      */
-    protected PatchMeshesShadingContext(PDMeshBasedShadingType shading, ColorModel colorModel,
+    protected PatchMeshesShadingContext(PDMeshBasedShadingType shading,
             AffineTransform xform, Matrix matrix, Rectangle deviceBounds,
             int controlPoints) throws IOException
     {
-        super(shading, colorModel, xform, matrix);
+        super(shading);
         patchList = shading.collectPatches(xform, matrix, controlPoints);
         createPixelTable(deviceBounds);
     }

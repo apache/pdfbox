@@ -60,7 +60,7 @@ class Type6ShadingPaint extends ShadingPaint<PDShadingType6>
     {
         try
         {
-            return new Type6ShadingContext(shading, cm, xform, matrix, deviceBounds);
+            return new Type6ShadingContext(shading, xform, matrix, deviceBounds);
         }
         catch (IOException e)
         {

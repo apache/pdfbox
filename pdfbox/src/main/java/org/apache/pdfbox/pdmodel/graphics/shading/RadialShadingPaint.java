@@ -60,7 +60,7 @@ public class RadialShadingPaint extends ShadingPaint<PDShadingType3>
     {
         try
         {
-            return new RadialShadingContext(shading, cm, xform, matrix, deviceBounds);
+            return new RadialShadingContext(shading, xform, matrix, deviceBounds);
         }
         catch (IOException e)
         {

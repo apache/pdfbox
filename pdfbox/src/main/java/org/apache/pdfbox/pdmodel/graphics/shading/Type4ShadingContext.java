@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
-import java.awt.image.ColorModel;
 import java.io.IOException;
 
 import org.apache.logging.log4j.Logger;
@@ -40,14 +39,13 @@ class Type4ShadingContext extends GouraudShadingContext
      * Constructor creates an instance to be used for fill operations.
      *
      * @param shading the shading type to be used
-     * @param cm the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      */
-    Type4ShadingContext(PDShadingType4 shading, ColorModel cm, AffineTransform xform,
+    Type4ShadingContext(PDShadingType4 shading, AffineTransform xform,
                                Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, cm, xform, matrix);
+        super(shading);
         LOG.debug("Type4ShadingContext");
 
         bitsPerFlag = shading.getBitsPerFlag();

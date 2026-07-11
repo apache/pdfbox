@@ -58,7 +58,7 @@ class Type4ShadingPaint extends ShadingPaint<PDShadingType4>
     {
         try
         {
-            return new Type4ShadingContext(shading, cm, xform, matrix, deviceBounds);
+            return new Type4ShadingContext(shading, xform, matrix, deviceBounds);
         }
         catch (IOException e)
         {

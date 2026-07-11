@@ -60,7 +60,7 @@ class Type7ShadingPaint extends ShadingPaint<PDShadingType7>
     {
         try
         {
-            return new Type7ShadingContext(shading, cm, xform, matrix, deviceBounds);
+            return new Type7ShadingContext(shading, xform, matrix, deviceBounds);
         }
         catch (IOException e)
         {

@@ -58,7 +58,7 @@ class Type1ShadingPaint extends ShadingPaint<PDShadingType1>
     {
         try
         {
-            return new Type1ShadingContext(shading, cm, xform, matrix);
+            return new Type1ShadingContext(shading, xform, matrix);
         }
         catch (IOException e)
         {
