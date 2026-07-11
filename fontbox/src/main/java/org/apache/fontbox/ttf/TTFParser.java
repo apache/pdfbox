@@ -243,7 +243,7 @@ public class TTFParser
     }
 
     /**
-     * Based on {@link #parseTables()}.
+     * Based on {@link #parseTables(TrueTypeFont)}.
      * Parse all table headers and check if all needed tables are present.
      * 
      * This method can be optimized further by skipping unused portions inside each individual table parser
