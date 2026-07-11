@@ -461,8 +461,9 @@ class TestFontEmbedding
         // what the old reverse mapping always picked; highCp used to be mis-extracted as lowCp.
         int lowCp = -1;
         int highCp = -1;
-        try (TrueTypeFont ttf = new TTFParser().parse(
-                new RandomAccessReadBuffer(getNotoCjk())))
+        try (InputStream is = getNotoCjk();
+             TrueTypeFont ttf = new TTFParser().parse(
+                new RandomAccessReadBuffer(is)))
         {
             CmapLookup cmap = ttf.getUnicodeCmapLookup();
             int numGlyphs = ttf.getMaximumProfile().getNumGlyphs();
@@ -522,7 +523,8 @@ class TestFontEmbedding
 
         // precondition: both code points map to the same glyph and the radical is the lower one,
         // i.e. the entry the old reverse mapping wrongly picked for both
-        try (TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBuffer(getNotoCjk())))
+        try (InputStream is = getNotoCjk();
+             TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBuffer(is)))
         {
             CmapLookup cmap = ttf.getUnicodeCmapLookup();
             int gid = cmap.getGlyphId(ideograph);
