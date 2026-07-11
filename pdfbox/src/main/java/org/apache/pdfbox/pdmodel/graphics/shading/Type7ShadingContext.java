@@ -17,7 +17,6 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
-import java.awt.image.ColorModel;
 import java.io.IOException;
 import org.apache.pdfbox.util.Matrix;
 

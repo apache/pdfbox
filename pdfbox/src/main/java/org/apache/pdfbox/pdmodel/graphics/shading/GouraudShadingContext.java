@@ -17,14 +17,11 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
-import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.pdfbox.util.Matrix;
 
 /**
  * Shades Gouraud triangles for Type4ShadingContext and Type5ShadingContext.

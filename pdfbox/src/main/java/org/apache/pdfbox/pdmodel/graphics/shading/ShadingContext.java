@@ -43,7 +43,7 @@ public abstract class ShadingContext implements PaintContext
      * Constructor.
      *
      * @param shading the shading type to be used
-     * @throws java.io.IOException if there is an error getting the color space
+     * @throws IOException if there is an error getting the color space
      * or doing background color conversion.
      */
     protected ShadingContext(PDShading shading) throws IOException
@@ -91,7 +91,7 @@ public abstract class ShadingContext implements PaintContext
      *
      * @param values color values in shading colorspace.
      * @return RGB values encoded in an integer.
-     * @throws java.io.IOException if the color conversion fails.
+     * @throws IOException if the color conversion fails.
      */
     final int convertToRGB(float[] values) throws IOException
     {

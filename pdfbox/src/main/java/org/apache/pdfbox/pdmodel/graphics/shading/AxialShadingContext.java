@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
-import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
@@ -283,7 +282,7 @@ public class AxialShadingContext extends ShadingContext
      * Returns the function.
      *
      * @return the function
-     * @throws java.io.IOException if we were not able to create the function.
+     * @throws IOException if we were not able to create the function.
      */
     public PDFunction getFunction() throws IOException
     {

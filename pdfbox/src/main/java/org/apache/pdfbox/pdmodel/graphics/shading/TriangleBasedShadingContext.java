@@ -17,14 +17,10 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
-import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.List;
-
-import org.apache.pdfbox.util.Matrix;
 
 /**
  * Intermediate class extended by the shading types 4,5,6 and 7 that contains the common methods
