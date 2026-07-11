@@ -538,9 +538,9 @@ class PDFontTest
     @Test
     void testPDFBox6172() throws IOException
     {
-        try (PDDocument document = new PDDocument())
+        try (PDDocument document = new PDDocument();
+            InputStream is = new FileInputStream("target/fonts/NotoSansSC-Regular.otf"))
         {
-            InputStream is = new FileInputStream("target/fonts/NotoSansSC-Regular.otf");
             OpenTypeFont otf = new OTFParser().parse(new RandomAccessReadBuffer(is));
             Throwable t = assertThrows(IllegalStateException.class,
                     () -> PDType0Font.load(document, otf, false),
