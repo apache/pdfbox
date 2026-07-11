@@ -59,7 +59,7 @@ public class AxialShadingPaint extends ShadingPaint<PDShadingType2>
     {
         try
         {
-            return new AxialShadingContext(shading, cm, xform, matrix, deviceBounds);
+            return new AxialShadingContext(shading, xform, matrix, deviceBounds);
         }
         catch (IOException e)
         {

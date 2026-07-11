@@ -43,14 +43,13 @@ class Type1ShadingContext extends ShadingContext
      * Constructor creates an instance to be used for fill operations.
      *
      * @param shading the shading type to be used
-     * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      */
-    Type1ShadingContext(PDShadingType1 shading, ColorModel colorModel, AffineTransform xform,
+    Type1ShadingContext(PDShadingType1 shading, AffineTransform xform,
                                Matrix matrix) throws IOException
     {
-        super(shading, colorModel, xform, matrix);
+        super(shading);
         this.type1ShadingType = shading;
 
         // (Optional) An array of four numbers [ xmin xmax ymin ymax ] 

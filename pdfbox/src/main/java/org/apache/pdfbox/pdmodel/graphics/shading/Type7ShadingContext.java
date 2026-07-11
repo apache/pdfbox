@@ -33,15 +33,14 @@ class Type7ShadingContext extends PatchMeshesShadingContext
      * Constructor creates an instance to be used for fill operations.
      *
      * @param shading the shading type to be used
-     * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @param deviceBounds device bounds
      * @throws IOException if something went wrong
      */
-    Type7ShadingContext(PDShadingType7 shading, ColorModel colorModel, AffineTransform xform,
+    Type7ShadingContext(PDShadingType7 shading, AffineTransform xform,
                                Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, colorModel, xform, matrix, deviceBounds, 16);
+        super(shading, xform, matrix, deviceBounds, 16);
     }
 }

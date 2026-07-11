@@ -60,16 +60,15 @@ public class AxialShadingContext extends ShadingContext
      * Constructor creates an instance to be used for fill operations.
      *
      * @param shading the shading type to be used
-     * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @param deviceBounds the bounds of the area to paint, in device units
      * @throws IOException if there is an error getting the color space or doing color conversion.
      */
-    public AxialShadingContext(PDShadingType2 shading, ColorModel colorModel, AffineTransform xform,
+    public AxialShadingContext(PDShadingType2 shading, AffineTransform xform,
                                Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, colorModel, xform, matrix);
+        super(shading);
         this.axialShadingType = shading;
         coords = shading.getCoords().toFloatArray();
 

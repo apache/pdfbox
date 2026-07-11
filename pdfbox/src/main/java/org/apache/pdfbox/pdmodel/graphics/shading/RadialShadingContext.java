@@ -62,17 +62,16 @@ public class RadialShadingContext extends ShadingContext
      * Constructor creates an instance to be used for fill operations.
      *
      * @param shading the shading type to be used
-     * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @param deviceBounds the bounds of the area to paint, in device units
      * @throws IOException if there is an error getting the color space or doing color conversion.
      */
-    public RadialShadingContext(PDShadingType3 shading, ColorModel colorModel,
+    public RadialShadingContext(PDShadingType3 shading,
                                 AffineTransform xform, Matrix matrix, Rectangle deviceBounds)
                                 throws IOException
     {
-        super(shading, colorModel, xform, matrix);
+        super(shading);
         this.radialShadingType = shading;
         coords = shading.getCoords().toFloatArray();
 
