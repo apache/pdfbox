@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
-    <version>2.0.37</version>
+    <version>2.0.38-SNAPSHOT</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
@@ -38,9 +38,9 @@
   <url>http://pdfbox.apache.org/</url>
 
   <scm>
-    <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/tags/2.0.37/fontbox</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/tags/2.0.37/fontbox</developerConnection>
-    <url>https://svn.apache.org/viewvc/pdfbox/tags/2.0.37/fontbox</url>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/2.0/fontbox</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/2.0/fontbox</developerConnection>
+    <url>https://svn.apache.org/viewvc/pdfbox/branches/2.0/fontbox</url>
   </scm>
 
   <dependencies>
