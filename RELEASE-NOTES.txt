@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.36
+Release Notes -- Apache PDFBox -- Version 2.0.37
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.35 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.36 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -18,70 +18,34 @@ Release Contents
 
 Bug
 
-[PDFBOX-2378] - XMPBox removes namespaces on serialization
-[PDFBOX-3882] - False negative on PDFA-1b validation : missing field type
-[PDFBOX-5049] - PlainText.Paragraph.getLines extremely slow on long lines
-[PDFBOX-5288] - Valid PDF/A 1B is rejected
-[PDFBOX-6041] - Potential StackOverflows in BaseParser
-[PDFBOX-6080] - Unknown code in Huffman RLE stream
-[PDFBOX-6082] - IllegalArgumentException: Can't add attribute to 0-length text
-[PDFBOX-6085] - TTFSubsetter.buildGlyfTable() modifies glyphIds while iterating over its entries possibly causing ConcurrentModificationException to be thrown
-[PDFBOX-6086] - IndexOutOfBoundsException in Type1CharStringParser.processCallSubr()
-[PDFBOX-6088] - Exception "No type defined for {http://www.aiim.org/pdfa/ns/id/}rev" when trying to determine version of PDF/A-4 document
-[PDFBOX-6090] - allow new PDF/A-4 conformance levels
-[PDFBOX-6091] - pdfbox-app-X.X.X-sources.jar on maven central are empty (and javadoc jar is missing)
-[PDFBOX-6092] - Cmd line docs
-[PDFBOX-6095] - IllegalArgumentException: Multiplying two matrices produces illegal values in PDFStreamEngine.processAnnotation()
-[PDFBOX-6099] - XmpParsingException: Schema is not set in this document : http://ns.adobe.com/xap/1.0/sType/ResourceEvent#
-[PDFBOX-6101] - NullPointerException in FontMapperImpl.getFontMatches()
-[PDFBOX-6104] - border style in FDFAnnotation is not initialized if width is 0
-[PDFBOX-6105] - German umlauts are not rendered
-[PDFBOX-6106] - Invalid type in Schema not detected when in XML attributes
-[PDFBOX-6107] - Serializing produces date "1-01-01T00:00:00+01:00"
-[PDFBOX-6109] - Seconds of date "D:2015-02-03T10:11:12" returned as 0
-[PDFBOX-6110] - Confusing naming of "DerivedFrom" property getter in XMPMediaManagementSchema
-[PDFBOX-6111] - ClassCastException in XMPMediaManagementSchema.getHistory()
-[PDFBOX-6115] - IllegalArgumentException: Input buffer too short in StandardSecurityHandler.computeRC4key()
-[PDFBOX-6118] - IllegalArgumentException: Width (0) and height (0) cannot be <= 0 when printing landscape rotated with RASTERIZE_DPI_AUTO
-[PDFBOX-6119] - DateConverter fails on valid date
-[PDFBOX-6121] - ClassCastException: class org.apache.xmpbox.type.TextType cannot be cast to class org.apache.xmpbox.type.ArrayProperty in DublinCoreSchema.getCreatorsProperty()
-[PDFBOX-6122] - tiff:YCbCrSubSampling and tiff:YCbCrPositioning have wrong cardinality
-[PDFBOX-6125] - ClassCastException: class org.apache.xmpbox.type.FlashType
-[PDFBOX-6126] - Cannot find a definition for the namespace http://www.w3.org/1999/02/22-rdf-syntax-ns#, property: rdf:Description
-[PDFBOX-6128] - XmpParsingException: Schema is not set in this document : http://ns.adobe.com/xap/1.0/sType/ResourceEvent#, property: stEvt:action
-[PDFBOX-6129] - XmpParsingException: Missing pdfaSchema:property in type definition in lenient mode
-[PDFBOX-6131] - XmpParsingException: Unknown property value type : Open Choice of Integer
-[PDFBOX-6133] - XmpParsingException: Property 'CountryCode' not defined in http://www.epo.org/patent-bibliographic-data/1.0/
-[PDFBOX-6134] - date "0-00-00T00:00:00-04:00" read as "0002-11-30T00:00:00-40:00"
-[PDFBOX-6135] - XmpParsingException: Type 'stRef:documentName' not defined in http://ns.adobe.com/xap/1.0/sType/ResourceRef# in lenient mode
-[PDFBOX-6136] - Invalid PDF/A namespace definition, prefix: xmlns, namespace: http://www.aiim.org/pdfa/ns/extension/
-[PDFBOX-6138] - XmpParsingException: Schema is not set in this document : http://www.aiim.org/pdfa/ns/extension/, property: pdfaExtension:schemas
-[PDFBOX-6141] - NegativeArraySizeException in PredictorOutputStream()
-[PDFBOX-6143] - NullpointerException in PDAcroForm.getField(Line 485)
-[PDFBOX-6146] - OutOfMemoryError when trying to extract text from pdf
-[PDFBOX-6153] - Outlines circular reference vulnerability
-[PDFBOX-6165] - Rendered text missing
-[PDFBOX-6171] - Inverted images due to enlarged decode array
-[PDFBOX-6172] - PDF displays garbled characters in Adobe Reader but renders correctly in web browsers
-[PDFBOX-6173] - NullPointerException while merging PDFs with output intents
+[PDFBOX-4076] - PDFBox cannot properly handle PDF Name objects containing bytes with values outside the US_ASCII range
+[PDFBOX-6150] - PDComboBox constructAppearances wrong text
+[PDFBOX-6178] - PdfBox renames RadioButton with Umlaut
+[PDFBOX-6179] - Removing fields not possible
+[PDFBOX-6187] - NullPointerException in AppearanceGeneratorHelper when PDFont.getName() returns null
+[PDFBOX-6189] - Usage of PDF Controlled dimension may cause OOM
+[PDFBOX-6191] - Print border doesn't work if using rastering
+[PDFBOX-6193] - TrueTypeEmbedder.getTag() throws StringIndexOutOfBoundsException for negative Map.hashCode()
+[PDFBOX-6204] - PDType1FontEmbedder sets /Length to uncompressed PFB size
+[PDFBOX-6206] - Rendering fails when bad annotations array
+[PDFBOX-6210] - Incorrect CJK Character Extraction for Shared Glyphs
+[PDFBOX-6214] - PDDocument static AWT warm-up fails hard when AWT native libs are unavailable (GraalVM native-image)
+
+New Feature
+
+[PDFBOX-6198] - Disable deployment of submodule pdfbox-examples
 
 Improvement
 
-[PDFBOX-5292] - Valid XMP Extension Schema rejected
-[PDFBOX-6084] - Remove dead code from PDFMarkedContentExtractor
-[PDFBOX-6096] - Include test file in test class
-[PDFBOX-6108] - Get and Add PageTextSchema
-[PDFBOX-6113] - Remove / deprecate TypeMapping.getAssociatedSchemaObject()
-[PDFBOX-6123] - Support Seq / Bag mixup in lenient mode
-[PDFBOX-6130] - Parse xmp files in lenient mode that have no processing instructions
-[PDFBOX-6137] - deprecate getPDFIdentificationSchema() in favor of getPDFAIdentificationSchema()
-[PDFBOX-6164] - Support TIFF-files with FillOrder=2 conversion to PDF
+[PDFBOX-6180] - Improve directory boundary check in ExtractEmbeddedFiles example
+[PDFBOX-6181] - Create SecureRandom object only once
+[PDFBOX-6207] - Setting checkbox value fails when field has an invalid /Opt entry
+[PDFBOX-6208] - Create support files for AI tooling
+[PDFBOX-6211] - Add test for PDFBOX-6172
 
 Task
 
-[PDFBOX-6089] - Remove / deprecate unused parts of PDIndexed
-[PDFBOX-6139] - modernize rat exclusions
-[PDFBOX-6174] - Run regression tests for 2.0.36
+[PDFBOX-6217] - Run regression tests for 2.0.37
 
 This release consists of a single source archive packaged as a zip file.
 The archive can be unpacked with the jar tool from your JDK installation.
