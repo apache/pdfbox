@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.examples.signature;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -147,8 +148,8 @@ public class CreateEmbeddedTimeStamp
             return;
         }
 
-        byte[] sigBlock = signature.getContents(documentBytes);
-        CMSSignedData signedData = new CMSSignedData(sigBlock);
+        byte[] contents = signature.getContents(documentBytes);
+        CMSSignedData signedData = new CMSSignedData(new ByteArrayInputStream(contents));
 
         System.out.println("INFO: Byte Range: " + Arrays.toString(signature.getByteRange()));
 

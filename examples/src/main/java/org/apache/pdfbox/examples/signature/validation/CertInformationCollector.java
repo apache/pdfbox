@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.examples.signature.validation;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -113,7 +114,7 @@ public class CertInformationCollector
 
         try
         {
-            CMSSignedData signedData = new CMSSignedData(signatureContent);
+            CMSSignedData signedData = new CMSSignedData(new ByteArrayInputStream(signatureContent));
             SignerInformation signerInformation = processSignerStore(signedData, rootCertInfo);
             addTimestampCerts(signerInformation);
         }
