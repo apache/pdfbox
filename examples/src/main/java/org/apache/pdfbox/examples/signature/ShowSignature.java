@@ -364,7 +364,9 @@ public final class ShowSignature
             throws CertificateException, CMSException, IOException, OperatorCreationException,
             TSPException, NoSuchAlgorithmException, CertificateVerificationException
     {
-        TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents));
+        ByteArrayInputStream certStream = new ByteArrayInputStream(contents);
+        TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(certStream));
+        certStream.reset();
         TimeStampTokenInfo timeStampInfo = timeStampToken.getTimeStampInfo();
         System.out.println("Time stamp gen time: " + timeStampInfo.getGenTime());
         if (timeStampInfo.getTsa() != null)
@@ -373,7 +375,6 @@ public final class ShowSignature
         }
         
         CertificateFactory factory = CertificateFactory.getInstance("X.509");
-        ByteArrayInputStream certStream = new ByteArrayInputStream(contents);
         Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
         System.out.println("certs=" + certs);
         
@@ -417,7 +418,7 @@ public final class ShowSignature
         // http://stackoverflow.com/a/26702631/535646
         // http://stackoverflow.com/a/9261365/535646
         CMSProcessable signedContent = new CMSProcessableByteArray(byteArray);
-        CMSSignedData signedData = new CMSSignedData(signedContent, contents);
+        CMSSignedData signedData = new CMSSignedData(signedContent, new ByteArrayInputStream(contents));
         @SuppressWarnings("unchecked")
         Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
         if (certificatesStore.getMatches(null).isEmpty())

@@ -282,8 +282,9 @@ public class TestCreateSignature
         byte[] signedFileContent =
                 signature.getSignedContent(new FileInputStream(new File(outDir, fileName)));
         byte[] contents = signature.getContents();
-        TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents));
         ByteArrayInputStream certStream = new ByteArrayInputStream(contents);
+        TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(certStream));
+        certStream.reset();
         Collection<? extends Certificate> certs = certificateFactory.generateCertificates(certStream);
 
         String hashAlgorithm = timeStampToken.getTimeStampInfo().getMessageImprintAlgOID().getId();
@@ -491,7 +492,7 @@ public class TestCreateSignature
             // inspiration:
             // http://stackoverflow.com/a/26702631/535646
             // http://stackoverflow.com/a/9261365/535646
-            CMSSignedData signedData = new CMSSignedData(new CMSProcessableByteArray(buf), contents);
+            CMSSignedData signedData = new CMSSignedData(new CMSProcessableByteArray(buf), new ByteArrayInputStream(contents));
             Store certificatesStore = signedData.getCertificates();
             Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
             SignerInformation signerInformation = signers.iterator().next();
@@ -759,7 +760,7 @@ public class TestCreateSignature
         hexSignature = bfr.readLine();
         bfr.close();
 
-        CMSSignedData signedData = new CMSSignedData(Hex.decodeHex(hexSignature));
+        CMSSignedData signedData = new CMSSignedData(new ByteArrayInputStream(Hex.decodeHex(hexSignature)));
         Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
         SignerInformation signerInformation = signers.iterator().next();
         Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
@@ -919,7 +920,7 @@ public class TestCreateSignature
         byte[] signatureHash = MessageDigest.getInstance("SHA-1").digest(contents);
         String hexSignatureHash = Hex.getString(signatureHash);
         System.out.println("hexSignatureHash: " + hexSignatureHash);
-        CMSSignedData signedData = new CMSSignedData(contents);
+        CMSSignedData signedData = new CMSSignedData(new ByteArrayInputStream(contents));
         Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
         HashSet<X509CertificateHolder> certificateHolderSet =
                 new HashSet<X509CertificateHolder>(certificatesStore.getMatches(null));
