@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.examples.signature.validation;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -157,7 +158,7 @@ public class AddValidationInformation
                 if ("ETSI.RFC3161".equals(signature.getSubFilter()))
                 {
                     byte[] contents = signature.getContents();
-                    TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents));
+                    TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(new ByteArrayInputStream(contents)));
                     TimeStampTokenInfo timeStampInfo = timeStampToken.getTimeStampInfo();
                     signDate = Calendar.getInstance();
                     signDate.setTime(timeStampInfo.getGenTime());
