@@ -233,6 +233,8 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
      * Returns the Type 0 font which is the parent of this font.
      *
      * @return parent Type 0 font
+     * 
+     * @deprecated will be removed in a future release.
      */
     public final PDType0Font getParent()
     {
