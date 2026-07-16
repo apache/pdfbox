@@ -107,10 +107,11 @@ public class PDDocument implements Closeable
         {
             LOG.debug("voodoo error", ex);
         }
-        catch (UnsatisfiedLinkError ex)
+        catch (UnsatisfiedLinkError | NoClassDefFoundError ex)
         {
-            // PDFBOX-6214: awt missing with Graal
-            LOG.debug("UnsatisfiedLinkError", ex);
+            // PDFBOX-6214: UnsatisfiedLinkError when awt missing with Graal on MacOS
+            // PDFBOX-6219: NoClassDefFoundError when awt missing with Graal on Linux
+            LOG.debug(ex.getMessage(), ex);
         }
     }
     
