@@ -94,7 +94,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
     private final NumberFormat formatDecimal = NumberFormat.getNumberInstance(Locale.US);
     private final byte[] formatBuffer = new byte[32];
 
-    private final Map<PDType0Font, GsubWorker> gsubWorkers = new HashMap<>();
+    private final Map<PDType0Font, GsubWorker> gsubWorkerMap = new HashMap<>();
     private final GsubWorkerFactory gsubWorkerFactory = new GsubWorkerFactory();
     private GlyphLayoutProcessorInterface glyphLayoutProcessor;
 
@@ -225,7 +225,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
             GsubData gsubData = type0Font.getGsubData();
             if (gsubData != GsubData.NO_DATA_FOUND)
             {
-                gsubWorkers.computeIfAbsent(type0Font, 
+                gsubWorkerMap.computeIfAbsent(type0Font, 
                         f -> gsubWorkerFactory.getGsubWorker(f.getCmapLookup(), gsubData));
             }
             else
@@ -442,7 +442,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
         byte[] encodedText = null;
         if (font instanceof PDType0Font)
         {
-            GsubWorker gsubWorker = gsubWorkers.get(font);
+            GsubWorker gsubWorker = gsubWorkerMap.get(font);
             if (gsubWorker != null)
             {
                 PDType0Font type0Font = (PDType0Font) font;
