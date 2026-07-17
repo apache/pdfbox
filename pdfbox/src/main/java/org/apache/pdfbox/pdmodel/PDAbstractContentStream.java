@@ -202,9 +202,8 @@ abstract class PDAbstractContentStream implements Closeable
             GsubData gsubData = type0Font.getGsubData();
             if (gsubData != GsubData.NO_DATA_FOUND)
             {
-                GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(type0Font.getCmapLookup(),
-                        gsubData);
-                gsubWorkers.put((PDType0Font) font, gsubWorker);
+                gsubWorkers.computeIfAbsent(type0Font, 
+                        f -> gsubWorkerFactory.getGsubWorker(f.getCmapLookup(), gsubData));
             }
             else
             {
