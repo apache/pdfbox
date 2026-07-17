@@ -225,8 +225,8 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
             GsubData gsubData = type0Font.getGsubData();
             if (gsubData != GsubData.NO_DATA_FOUND)
             {
-                GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(type0Font.getCmapLookup(), gsubData);
-                gsubWorkers.put(type0Font, gsubWorker);
+                gsubWorkers.computeIfAbsent(type0Font, 
+                        f -> gsubWorkerFactory.getGsubWorker(f.getCmapLookup(), gsubData));
             }
             else
             {
