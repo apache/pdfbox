@@ -227,12 +227,14 @@ class TestFontEmbedding
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
             {
                 contentStream.beginText();
-                contentStream.setFont(font, 18);
                 contentStream.newLineAtOffset(10, 750);
+                contentStream.setFont(font, 18);
                 contentStream.showText(BANGLA_TEXT_1);
                 contentStream.newLineAtOffset(0, -30);
+                contentStream.setFont(font, 18); // to use gsub cache (PDFBOX-6220)
                 contentStream.showText(BANGLA_TEXT_2);
                 contentStream.newLineAtOffset(0, -30);
+                contentStream.setFont(font, 18); // to use gsub cache (PDFBOX-6220)
                 contentStream.showText(BANGLA_TEXT_3);
                 contentStream.endText();
             }
@@ -240,7 +242,7 @@ class TestFontEmbedding
             document.save(pdf);
         }
  
-        // compare rendering
+        // compare rendering (with file created before PDFBOX-6220)
         if (!TestPDFToImage.doTestFile(pdf, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
             // don't fail, rendering is different on different systems, result must be viewed manually
