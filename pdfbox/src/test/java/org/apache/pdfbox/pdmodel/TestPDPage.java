@@ -55,7 +55,6 @@ class TestPDPage
             assertDoesNotThrow(() -> document.addPage(page));
 
             document.save(OutputStream.nullOutputStream());
-            document.close();
         }
     }
     

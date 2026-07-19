@@ -177,8 +177,6 @@ class PDChoiceTest
             List<String> content = TestUtils.getStringsFromStream(field);
             boolean hasContent = content.stream().anyMatch("Deutschland"::equals);
             assertTrue(hasContent, "The content should contain the display value for DE which is Deutschland");
-            
-            document.close();
         }
     }
 }
