@@ -82,7 +82,7 @@ final class ASCIIHexFilter extends Filter
        
             if (REVERSE_HEX[firstByte] == -1)
             {
-                LOG.error("Invalid hex, int: {} char: {}", firstByte, (char) firstByte);
+                LOG.error("Invalid hex, int: {} char: {} (1st byte)", firstByte, (char) firstByte);
             }
             value = REVERSE_HEX[firstByte] * 16;
             secondByte = encoded.read();
@@ -95,7 +95,7 @@ final class ASCIIHexFilter extends Filter
             }
             if (REVERSE_HEX[secondByte] == -1)
             {
-                LOG.error("Invalid hex, int: {} char: {}", secondByte, (char) secondByte);
+                LOG.error("Invalid hex, int: {} char: {} (2nd byte)", secondByte, (char) secondByte);
             }
             value += REVERSE_HEX[secondByte];
             decoded.write(value);
