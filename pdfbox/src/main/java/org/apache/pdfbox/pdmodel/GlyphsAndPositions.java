@@ -35,6 +35,21 @@ public class GlyphsAndPositions
      */
     public static class GlyphSubList extends ArrayList<Integer>
     {
+
+        /**
+         * Creates an int array containing the elements of the list
+         *
+         * @return int array
+         */
+        public int[] toIntArray()
+        {
+            int[] intArray = new int[size()];
+            for (int i = 0; i < intArray.length; i++)
+            {
+                intArray[i] = get(i);
+            }
+            return intArray;
+        }
     }
 
     /**

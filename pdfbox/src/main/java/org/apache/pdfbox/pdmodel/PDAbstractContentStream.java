@@ -302,13 +302,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
             if (obj instanceof GlyphsAndPositions.GlyphSubList)
             {
                 GlyphsAndPositions.GlyphSubList glyphSubList = (GlyphsAndPositions.GlyphSubList) obj;
-                int[] intGlyphArray = new int[glyphSubList.size()];
-                // Convert Type to int[]
-                for (int i = 0; i < intGlyphArray.length; i++)
-                {
-                    intGlyphArray[i] = glyphSubList.get(i);
-                }
-                writeTextPDType0Font(intGlyphArray);
+                writeTextPDType0Font(glyphSubList.toIntArray());
             }
             else if (obj instanceof Float)
             {
