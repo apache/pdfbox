@@ -39,6 +39,7 @@
     <module>fontbox</module>
     <module>xmpbox</module>
     <module>pdfbox</module>
+    <module>pdfbox-layout-awt</module>
     <module>preflight</module>
     <module>preflight-app</module>
     <module>debugger</module>
