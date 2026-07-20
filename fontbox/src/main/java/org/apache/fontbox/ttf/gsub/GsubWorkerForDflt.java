@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.fontbox.ttf.model.ScriptFeature;
@@ -64,6 +66,8 @@ public class GsubWorkerForDflt implements GsubWorker
 
     private final GsubData gsubData;
 
+    private Map<String,GlyphArraySplitter> map = new WeakHashMap<>();
+
     GsubWorkerForDflt(GsubData gsubData)
     {
         this.gsubData = gsubData;
@@ -102,8 +106,8 @@ public class GsubWorkerForDflt implements GsubWorker
             return originalGlyphs;
         }
 
-        GlyphArraySplitter glyphArraySplitter = new GlyphArraySplitterRegexImpl(
-                scriptFeature.getAllGlyphIdsForSubstitution());
+        GlyphArraySplitter glyphArraySplitter =
+                map.computeIfAbsent(scriptFeature.getName(), k -> new GlyphArraySplitterRegexImpl(allGlyphIdsForSubstitution));
 
         List<List<Integer>> tokens = glyphArraySplitter.split(originalGlyphs);
         List<Integer> gsubProcessedGlyphs = new ArrayList<>();

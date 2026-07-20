@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.model.GsubData;
@@ -42,6 +44,8 @@ public class GsubWorkerForDevanagari implements GsubWorker
     
     private static final String RKRF_FEATURE = "rkrf";
     private static final String VATU_FEATURE = "vatu";
+
+    private Map<String,GlyphArraySplitter> map = new WeakHashMap<>();
     
     /**
      * This sequence is very important. This has been taken from <a href=
@@ -212,8 +216,8 @@ public class GsubWorkerForDevanagari implements GsubWorker
             LOG.debug("getAllGlyphIdsForSubstitution() for {} is empty", scriptFeature.getName());
             return originalGlyphs;
         }
-        GlyphArraySplitter glyphArraySplitter = new GlyphArraySplitterRegexImpl(
-                allGlyphIdsForSubstitution);
+        GlyphArraySplitter glyphArraySplitter =
+                map.computeIfAbsent(scriptFeature.getName(), k -> new GlyphArraySplitterRegexImpl(allGlyphIdsForSubstitution));
         List<List<Integer>> tokens = glyphArraySplitter.split(originalGlyphs);
         List<Integer> gsubProcessedGlyphs = new ArrayList<>(tokens.size());
         tokens.forEach(chunk ->
