@@ -86,7 +86,8 @@ public class GsubWorkerForLatin implements GsubWorker
             List<Integer> originalGlyphs)
     {
         Set<List<Integer>> allGlyphIdsForSubstitution = scriptFeature.getAllGlyphIdsForSubstitution();
-        if (allGlyphIdsForSubstitution.isEmpty()){
+        if (allGlyphIdsForSubstitution.isEmpty())
+        {
             LOG.debug("getAllGlyphIdsForSubstitution() for {} is empty",
                         scriptFeature.getName());
             return originalGlyphs;
