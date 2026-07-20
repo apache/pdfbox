@@ -51,7 +51,7 @@ public class GsubWorkerForLatin implements GsubWorker
 
     private final GsubData gsubData;
 
-    private Map<String,GlyphArraySplitter> map = new WeakHashMap<>();
+    private final Map<String,GlyphArraySplitter> map = new WeakHashMap<>();
 
     GsubWorkerForLatin(GsubData gsubData)
     {

@@ -45,7 +45,7 @@ public class GsubWorkerForDevanagari implements GsubWorker
     private static final String RKRF_FEATURE = "rkrf";
     private static final String VATU_FEATURE = "vatu";
 
-    private Map<String,GlyphArraySplitter> map = new WeakHashMap<>();
+    private final Map<String,GlyphArraySplitter> map = new WeakHashMap<>();
     
     /**
      * This sequence is very important. This has been taken from <a href=

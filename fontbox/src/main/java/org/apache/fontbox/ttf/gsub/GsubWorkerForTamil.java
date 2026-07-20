@@ -68,7 +68,7 @@ public class GsubWorkerForTamil implements GsubWorker
     private final List<Integer> beforeRephGlyphIds;
     private final List<Integer> beforeHalfGlyphIds;
 
-    private Map<String,GlyphArraySplitter> map = new WeakHashMap<>();
+    private final Map<String,GlyphArraySplitter> map = new WeakHashMap<>();
 
     GsubWorkerForTamil(CmapLookup cmapLookup, GsubData gsubData)
     {

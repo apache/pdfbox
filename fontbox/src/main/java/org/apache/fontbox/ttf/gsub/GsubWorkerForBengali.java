@@ -65,7 +65,7 @@ public class GsubWorkerForBengali implements GsubWorker
     private final List<Integer> beforeHalfGlyphIds;
     private final Map<Integer, BeforeAndAfterSpanComponent> beforeAndAfterSpanGlyphIds;
 
-    private Map<String,GlyphArraySplitter> map = new WeakHashMap<>();
+    private final Map<String,GlyphArraySplitter> map = new WeakHashMap<>();
 
     GsubWorkerForBengali(CmapLookup cmapLookup, GsubData gsubData)
     {

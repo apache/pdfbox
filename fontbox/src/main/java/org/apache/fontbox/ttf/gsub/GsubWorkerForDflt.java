@@ -67,7 +67,7 @@ public class GsubWorkerForDflt implements GsubWorker
 
     private final GsubData gsubData;
 
-    private Map<String,GlyphArraySplitter> map = new WeakHashMap<>();
+    private final Map<String,GlyphArraySplitter> map = new WeakHashMap<>();
 
     GsubWorkerForDflt(GsubData gsubData)
     {
