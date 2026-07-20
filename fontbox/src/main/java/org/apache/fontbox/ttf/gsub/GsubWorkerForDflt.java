@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.apache.fontbox.ttf.model.GsubData;
@@ -100,7 +101,8 @@ public class GsubWorkerForDflt implements GsubWorker
     private List<Integer> applyGsubFeature(ScriptFeature scriptFeature,
             List<Integer> originalGlyphs)
     {
-        if (scriptFeature.getAllGlyphIdsForSubstitution().isEmpty())
+        Set<List<Integer>> allGlyphIdsForSubstitution = scriptFeature.getAllGlyphIdsForSubstitution();
+        if (allGlyphIdsForSubstitution.isEmpty())
         {
             LOG.debug("getAllGlyphIdsForSubstitution() for {} is empty", scriptFeature.getName());
             return originalGlyphs;
