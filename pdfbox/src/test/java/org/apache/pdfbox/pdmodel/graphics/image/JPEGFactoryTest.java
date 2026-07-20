@@ -170,11 +170,9 @@ class JPEGFactoryTest
     void testCreateFromImageINT_ARGB() throws IOException
     {
         // workaround Open JDK bug
-        // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7044758
-        if (System.getProperty("java.runtime.name").equals("OpenJDK Runtime Environment")
-                && (System.getProperty("java.specification.version").equals("1.6")
-                || System.getProperty("java.specification.version").equals("1.7")
-                || System.getProperty("java.specification.version").equals("1.8")))
+        // https://bugs.java.com/bugdatabase/JDK-7044758
+        if (System.getProperty("java.runtime.name").equals("OpenJDK Runtime Environment") &&
+            System.getProperty("java.specification.version").equals("1.8"))
         {
             return;
         }
