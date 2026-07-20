@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -65,6 +67,8 @@ public class GsubWorkerForDevanagari implements GsubWorker
     private final List<Integer> rephGlyphIds;
     private final List<Integer> beforeRephGlyphIds;
     private final List<Integer> beforeHalfGlyphIds;
+
+    private Map<String,GlyphArraySplitter> map = new WeakHashMap<>();
 
     GsubWorkerForDevanagari(CmapLookup cmapLookup, GsubData gsubData)
     {
@@ -224,8 +228,8 @@ public class GsubWorkerForDevanagari implements GsubWorker
             }
             return originalGlyphs;
         }
-        GlyphArraySplitter glyphArraySplitter = new GlyphArraySplitterRegexImpl(
-                allGlyphIdsForSubstitution);
+        GlyphArraySplitter glyphArraySplitter =
+                map.computeIfAbsent(scriptFeature.getName(), k -> new GlyphArraySplitterRegexImpl(allGlyphIdsForSubstitution));
         List<List<Integer>> tokens = glyphArraySplitter.split(originalGlyphs);
         List<Integer> gsubProcessedGlyphs = new ArrayList<>(tokens.size());
         tokens.forEach(chunk ->

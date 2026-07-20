@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,6 +65,7 @@ public class GsubWorkerForBengali implements GsubWorker
     private final List<Integer> beforeHalfGlyphIds;
     private final Map<Integer, BeforeAndAfterSpanComponent> beforeAndAfterSpanGlyphIds;
 
+    private Map<String,GlyphArraySplitter> map = new WeakHashMap<>();
 
     GsubWorkerForBengali(CmapLookup cmapLookup, GsubData gsubData)
     {
@@ -154,8 +156,8 @@ public class GsubWorkerForBengali implements GsubWorker
             return originalGlyphs;
         }
 
-        GlyphArraySplitter glyphArraySplitter = new GlyphArraySplitterRegexImpl(
-                allGlyphIdsForSubstitution);
+        GlyphArraySplitter glyphArraySplitter =
+                map.computeIfAbsent(scriptFeature.getName(), k -> new GlyphArraySplitterRegexImpl(allGlyphIdsForSubstitution));
 
         List<List<Integer>> tokens = glyphArraySplitter.split(originalGlyphs);
 
