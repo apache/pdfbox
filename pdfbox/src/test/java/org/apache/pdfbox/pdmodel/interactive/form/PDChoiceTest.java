@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -156,10 +157,7 @@ class PDChoiceTest
     {
         File pdfFile = new File("target/pdfs/PDFBOX-6150.pdf");
         
-        if (!pdfFile.exists())
-        {
-            return;  // Skip test if PDF not available
-        }
+        assumeTrue(pdfFile.exists()); // Skip test if PDF not available
 
         // Load document, set value, and save to memory
         try (PDDocument document = Loader.loadPDF(pdfFile))
@@ -176,8 +174,6 @@ class PDChoiceTest
             List<String> content = TestUtils.getStringsFromStream(field);
             boolean hasContent = content.stream().anyMatch("Deutschland"::equals);
             assertTrue(hasContent, "The content should contain the display value for DE which is Deutschland");
-            
-            document.close();
         }
     }
 }
