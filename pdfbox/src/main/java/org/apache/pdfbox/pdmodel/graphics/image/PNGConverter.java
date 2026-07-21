@@ -206,7 +206,7 @@ final class PNGConverter
     }
 
     /**
-     * Build a indexed image
+     * Build an indexed image
      */
     private static PDImageXObject buildIndexImage(PDDocument doc, PNGConverterState state)
             throws IOException
