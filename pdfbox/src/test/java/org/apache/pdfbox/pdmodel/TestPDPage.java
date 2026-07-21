@@ -62,14 +62,11 @@ class TestPDPage
     void testNullThreadBeads() throws IOException
     {
         // PDFBOX-6186
-        try (PDDocument document = new PDDocument())
-        {
-            PDPage page = new PDPage();
-            assertEquals(0, page.getThreadBeads().size());
-            page.setThreadBeads(new ArrayList<>());
-            assertEquals(0, page.getThreadBeads().size());
-            page.setThreadBeads(null);
-            assertEquals(0, page.getThreadBeads().size());
-        }
+        PDPage page = new PDPage();
+        assertEquals(0, page.getThreadBeads().size());
+        page.setThreadBeads(new ArrayList<>());
+        assertEquals(0, page.getThreadBeads().size());
+        page.setThreadBeads(null);
+        assertEquals(0, page.getThreadBeads().size());
     }
 }
