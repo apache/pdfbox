@@ -137,7 +137,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         acroForm.setAppendOnly(true);
         acroFormDict.setDirect(true);
         acroFormFields.add(signatureField);
-        acroForm.setDefaultAppearance("/sylfaen 0 Tf 0 g");
+        acroForm.setDefaultAppearance("/Helv 0 Tf 0 g");
         pdfStructure.setAcroFormFields(acroFormFields);
         pdfStructure.setAcroFormDictionary(acroFormDict);
         LOG.info("AcroForm dictionary has been created");
