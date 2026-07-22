@@ -20,12 +20,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
@@ -59,14 +60,14 @@ class TestPDPage
     }
     
     @Test
-    void testNullThreadBeads() throws IOException
+    void testNullThreadBeads()
     {
         // PDFBOX-6186
         PDPage page = new PDPage();
-        assertEquals(0, page.getThreadBeads().size());
+        assertTrue(page.getThreadBeads().isEmpty());
         page.setThreadBeads(new ArrayList<>());
-        assertEquals(0, page.getThreadBeads().size());
+        assertTrue(page.getThreadBeads().isEmpty());
         page.setThreadBeads(null);
-        assertEquals(0, page.getThreadBeads().size());
+        assertTrue(page.getThreadBeads().isEmpty());
     }
 }
