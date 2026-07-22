@@ -275,8 +275,12 @@ public class PDSeparation extends PDSpecialColorSpace
      */
     public String getColorantName()
     {
-        COSName name = (COSName)array.getObject(COLORANT_NAMES);
-        return name.getName();
+        COSBase base = array.getObject(COLORANT_NAMES);
+        if (base instanceof COSName)
+        {
+            return ((COSName) base).getName();
+        }
+        return null;
     }
 
     /**
