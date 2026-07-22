@@ -144,27 +144,27 @@ final class PNGConverter
 
         if (bitDepth != 1 && bitDepth != 2 && bitDepth != 4 && bitDepth != 8 && bitDepth != 16)
         {
-            LOG.error("Invalid bit depth %d.", bitDepth);
+            LOG.error("Invalid bit depth {}.", bitDepth);
             return null;
         }
         if (width <= 0 || height <= 0)
         {
-            LOG.error("Invalid image size %d x %d", width, height);
+            LOG.error("Invalid image size {} x {}", width, height);
             return null;
         }
         if (compressionMethod != 0)
         {
-            LOG.error("Unknown PNG compression method %d.", compressionMethod);
+            LOG.error("Unknown PNG compression method {}.", compressionMethod);
             return null;
         }
         if (filterMethod != 0)
         {
-            LOG.error("Unknown PNG filtering method %d.", compressionMethod);
+            LOG.error("Unknown PNG filtering method {}.", compressionMethod);
             return null;
         }
         if (interlaceMethod != 0)
         {
-            LOG.debug("Can't handle interlace method %d.", interlaceMethod);
+            LOG.debug("Can't handle interlace method {}.", interlaceMethod);
             return null;
         }
 
@@ -224,7 +224,7 @@ final class PNGConverter
         }
         if (state.bitsPerComponent > 8)
         {
-            LOG.debug("Can only convert indexed images with bit depth <= 8, not %d.",
+            LOG.debug("Can only convert indexed images with bit depth <= 8, not {}.",
                     state.bitsPerComponent);
             return null;
         }
@@ -238,7 +238,7 @@ final class PNGConverter
         int highVal = (plte.length / 3) - 1;
         if (highVal > 255)
         {
-            LOG.error("Too much colors in PLTE, only 256 allowed, found %d colors.",
+            LOG.error("Too much colors in PLTE, only 256 allowed, found {} colors.",
                     highVal + 1);
             return null;
         }
@@ -365,7 +365,7 @@ final class PNGConverter
         {
             if (state.sRGB.length != 1)
             {
-                LOG.error("sRGB chunk has an invalid length of %d", state.sRGB.length);
+                LOG.error("sRGB chunk has an invalid length of {}", state.sRGB.length);
                 return null;
             }
 
@@ -435,7 +435,7 @@ final class PNGConverter
             byte compressionMethod = state.iCCP.bytes[state.iCCP.start + iccProfileDataStart];
             if (compressionMethod != 0)
             {
-                LOG.error("iCCP chunk: invalid compression method %d", compressionMethod);
+                LOG.error("iCCP chunk: invalid compression method {}", compressionMethod);
                 return null;
             }
             // Skip over the compression method
