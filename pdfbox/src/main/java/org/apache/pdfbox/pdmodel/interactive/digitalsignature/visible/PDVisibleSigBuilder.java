@@ -365,16 +365,18 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         String holderFormContent = "q 1 0 0 1 0 0 cm /" + innerFormName.getName() + " Do Q\n";
         String innerFormContent  = "q 1 0 0 1 0 0 cm /n0 Do Q q 1 0 0 1 0 0 cm /" + imageFormName.getName() + " Do Q\n";
 
-        appendRawCommands(pdfStructure.getHolderFormStream().createOutputStream(), holderFormContent);
-        appendRawCommands(pdfStructure.getInnerFormStream().createOutputStream(), innerFormContent);
-        appendRawCommands(pdfStructure.getImageFormStream().createOutputStream(), imgFormContent);
+        writeRawCommands(pdfStructure.getHolderFormStream(), holderFormContent);
+        writeRawCommands(pdfStructure.getInnerFormStream(), innerFormContent);
+        writeRawCommands(pdfStructure.getImageFormStream(), imgFormContent);
         LOG.info("Injected appearance stream to pdf");
     }
 
-    public void appendRawCommands(OutputStream os, String commands) throws IOException
+    public void writeRawCommands(PDStream stream, String commands) throws IOException
     {
-        os.write(commands.getBytes(StandardCharsets.UTF_8));
-        os.close();
+        try (OutputStream os = stream.createOutputStream())
+        {
+            os.write(commands.getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     @Override
