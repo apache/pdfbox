@@ -67,7 +67,7 @@ final class ASCIIHexFilter extends Filter
     public DecodeResult decode(InputStream encoded, OutputStream decoded,
                                          COSDictionary parameters, int index) throws IOException
     {
-        int value, firstByte, secondByte;
+        int firstByte;
         while ((firstByte = encoded.read()) != -1)
         {
             // always after first char
@@ -82,10 +82,10 @@ final class ASCIIHexFilter extends Filter
        
             if (REVERSE_HEX[firstByte] == -1)
             {
-                LOG.error("Invalid hex, int: {} char: {}", firstByte, (char) firstByte);
+                LOG.error("Invalid hex, int: {} char: {} (1st byte)", firstByte, (char) firstByte);
             }
-            value = REVERSE_HEX[firstByte] * 16;
-            secondByte = encoded.read();
+            int value = REVERSE_HEX[firstByte] * 16;
+            int secondByte = encoded.read();
        
             if (secondByte == -1 || isEOD(secondByte)) 
             {
@@ -95,7 +95,7 @@ final class ASCIIHexFilter extends Filter
             }
             if (REVERSE_HEX[secondByte] == -1)
             {
-                LOG.error("Invalid hex, int: {} char: {}", secondByte, (char) secondByte);
+                LOG.error("Invalid hex, int: {} char: {} (2nd byte)", secondByte, (char) secondByte);
             }
             value += REVERSE_HEX[secondByte];
             decoded.write(value);
