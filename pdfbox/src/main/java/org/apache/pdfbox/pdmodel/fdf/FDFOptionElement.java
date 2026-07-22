@@ -80,7 +80,15 @@ public class FDFOptionElement implements COSObjectable
      */
     public String getOption()
     {
-        return ((COSString) option.getObject(0)).getString();
+        if (option != null && !option.isEmpty())
+        {
+            COSBase base = option.getObject(0);
+            if (base instanceof COSString)
+            {
+                return ((COSString) base).getString();
+            }
+        }
+        return "";
     }
 
     /**
@@ -90,6 +98,7 @@ public class FDFOptionElement implements COSObjectable
      */
     public void setOption(String opt)
     {
+        option.growToSize(1);
         option.set(0, new COSString(opt));
     }
 
@@ -100,7 +109,15 @@ public class FDFOptionElement implements COSObjectable
      */
     public String getDefaultAppearanceString()
     {
-        return ((COSString) option.getObject(1)).getString();
+        if (option != null && option.size() > 1)
+        {
+            COSBase base = option.getObject(1);
+            if (base instanceof COSString)
+            {
+                return ((COSString) base).getString();
+            }
+        }
+        return "";
     }
 
     /**
@@ -110,6 +127,7 @@ public class FDFOptionElement implements COSObjectable
      */
     public void setDefaultAppearanceString(String da)
     {
+        option.growToSize(2);
         option.set(1, new COSString(da));
     }
 }
