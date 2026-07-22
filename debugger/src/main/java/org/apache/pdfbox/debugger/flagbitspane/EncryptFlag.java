@@ -26,7 +26,7 @@ import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
  *
  * A class that provides Encrypt flag bits.
  */
-public class EncryptFlag extends Flag
+class EncryptFlag extends Flag
 {
     private final COSDictionary encryptDictionary;
 
