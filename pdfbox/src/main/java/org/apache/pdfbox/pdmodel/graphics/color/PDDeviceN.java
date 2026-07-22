@@ -24,6 +24,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -493,8 +494,15 @@ public class PDDeviceN extends PDSpecialColorSpace
      */
     public final List<String> getColorantNames()
     {
-        COSArray names = (COSArray)array.getObject(COLORANT_NAMES);
-        return COSArrayList.convertCOSNameCOSArrayToList(names);
+        COSBase base = array.getObject(COLORANT_NAMES);
+        if (base instanceof COSArray)
+        {
+            return COSArrayList.convertCOSNameCOSArrayToList((COSArray) base);
+        }
+        else
+        {
+            return Collections.emptyList();
+        }
     }
 
     /**
