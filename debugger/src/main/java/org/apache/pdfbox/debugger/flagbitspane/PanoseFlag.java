@@ -27,7 +27,7 @@ import org.apache.pdfbox.pdmodel.font.PDPanoseClassification;
  * @author Khyrul Bashar
  * A class that provide Panose classification data
  */
-public class PanoseFlag extends Flag
+class PanoseFlag extends Flag
 {
 
     private final byte[] bytes;
@@ -37,12 +37,11 @@ public class PanoseFlag extends Flag
      * Constructor.
      * @param dictionary COSDictionary instance. style dictionary that contains panose object.
      */
-    public PanoseFlag(COSDictionary dictionary)
+    PanoseFlag(COSDictionary dictionary)
     {
-        byteValue = (COSString)dictionary.getDictionaryObject(COSName.PANOSE);
-        bytes = getPanoseBytes(dictionary);
+        byteValue = (COSString) dictionary.getDictionaryObject(COSName.PANOSE);
+        bytes = byteValue.getBytes();
     }
-
 
     @Override
     String getFlagType()
@@ -253,11 +252,5 @@ public class PanoseFlag extends Flag
                 "Ducking/Standard",
                 "Ducking/Large",
         }[index];
-    }
-
-    public final byte[] getPanoseBytes(COSDictionary style)
-    {
-        COSString panose = (COSString)style.getDictionaryObject(COSName.PANOSE);
-        return panose.getBytes();
     }
 }
