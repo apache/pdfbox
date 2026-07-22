@@ -16,15 +16,16 @@
  */
 package org.apache.pdfbox.pdmodel.common.function;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.pdmodel.common.function.type4.ExecutionContext;
 import org.apache.pdfbox.pdmodel.common.function.type4.InstructionSequence;
 import org.apache.pdfbox.pdmodel.common.function.type4.InstructionSequenceBuilder;
 import org.apache.pdfbox.pdmodel.common.function.type4.Operators;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
  * This class represents a Type 4 (PostScript calculator) function in a PDF document.
@@ -47,8 +48,9 @@ public class PDFunctionType4 extends PDFunction
      */
     public PDFunctionType4(COSBase functionStream) throws IOException
     {
-        super( functionStream );
-        byte[] bytes = getPDStream().toByteArray();
+        super(functionStream);
+        PDStream strm = getPDStream();
+        byte[] bytes = strm == null ? new byte[0] : strm.toByteArray();
         String string = new String(bytes, StandardCharsets.ISO_8859_1);
         this.instructions = InstructionSequenceBuilder.parse(string);
     }
