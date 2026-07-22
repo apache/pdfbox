@@ -27,7 +27,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
  *
  * A class that provides signature flag bits.
  */
-public class SigFlag extends Flag
+class SigFlag extends Flag
 {
     private final PDDocument document;
     private final COSDictionary acroFormDictionary;
