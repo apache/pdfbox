@@ -254,6 +254,9 @@ public final class CCITTFactory
             if (magicNumber != 42)
             {
                 throw new IOException("Not a valid tiff file");
+                
+                // 43 is bigtiff. If we need to support this in the future, look here:
+                // https://web.archive.org/web/20240706160214/https://www.awaresystems.be/imaging/tiff/bigtiff.html
             }
 
             // Relocate to the first set of tags
