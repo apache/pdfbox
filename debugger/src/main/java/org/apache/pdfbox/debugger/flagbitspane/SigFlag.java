@@ -35,6 +35,7 @@ class SigFlag extends Flag
     /**
      * Constructor
      *
+     * @param document The current document.
      * @param acroFormDictionary COSDictionary instance.
      */
     SigFlag(PDDocument document, COSDictionary acroFormDictionary)
