@@ -35,7 +35,7 @@ public class FlagBitsPane
     /**
      * Constructor.
      * 
-     * @param document the current document
+     * @param document The current document.
      * @param dictionary COSDictionary instance.
      * @param flagType COSName instance.
      */
