@@ -116,6 +116,8 @@ class CCITTFactoryTest
     /**
      * Tests CCITTFactory#createFromRandomAccess(PDDocument document,
      * RandomAccess reader) with a multi page TIFF
+     *
+     * @throws IOException
      */
     @Test
     void testCreateFromRandomAccessMulti() throws IOException
@@ -233,6 +235,8 @@ class CCITTFactoryTest
     /**
      * Tests that CCITTFactory#createFromFile(PDDocument document, File file) doesn't lock the
      * source file
+     *
+     * @throws IOException
      */
     @Test
     void testCreateFromFileLock() throws IOException
@@ -251,6 +255,8 @@ class CCITTFactoryTest
     /**
      * Tests that CCITTFactory#createFromFile(PDDocument document, File file, int number) doesn't
      * lock the source file
+     *
+     * @throws IOException
      */
     @Test
     void testCreateFromFileNumberLock() throws IOException
@@ -269,6 +275,8 @@ class CCITTFactoryTest
     /**
      * Tests that byte/short tag values are read correctly (ignoring possible garbage in remaining
      * bytes).
+     *
+     * @throws IOException
      */
     @Test
     void testByteShortPaddedWithGarbage() throws IOException
@@ -326,6 +334,8 @@ class CCITTFactoryTest
      * value. The previous implementation returned a (possibly negative) int, which was then
      * sign-extended when widened to long, corrupting IFD offsets/counts whose high bit is set
      * (e.g. 0x80000000 and above).
+     *
+     * @throws IOException
      */
     @Test
     void testReadLongIsUnsigned() throws IOException
