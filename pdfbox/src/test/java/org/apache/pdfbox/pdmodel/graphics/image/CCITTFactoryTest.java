@@ -366,4 +366,30 @@ class CCITTFactoryTest
             assertTrue(value >= 0, "TIFF LONG must be read as unsigned, not sign-extended");
         }
     }
+
+    @Test
+    void testReadShortIsUnsigned() throws IOException
+    {
+        assertReadShortIsUnsigned(65535, new byte[] {(byte) 0xFF, (byte) 0xFF}, 'I');
+        assertReadShortIsUnsigned(128,   new byte[] {(byte) 0x80, (byte) 0x00}, 'I');
+        assertReadShortIsUnsigned(32768, new byte[] {(byte) 0x00, (byte) 0x80}, 'I');
+        assertReadShortIsUnsigned(256,   new byte[] {(byte) 0x00, (byte) 0x01}, 'I');
+        assertReadShortIsUnsigned(1,     new byte[] {(byte) 0x01, (byte) 0x00}, 'I');
+
+        assertReadShortIsUnsigned(65535, new byte[] {(byte) 0xFF, (byte) 0xFF}, 'M');
+        assertReadShortIsUnsigned(128,   new byte[] {(byte) 0x00, (byte) 0x80}, 'M');
+        assertReadShortIsUnsigned(32768, new byte[] {(byte) 0x80, (byte) 0x00}, 'M');
+        assertReadShortIsUnsigned(256,   new byte[] {(byte) 0x01, (byte) 0x00}, 'M');
+        assertReadShortIsUnsigned(1,     new byte[] {(byte) 0x00, (byte) 0x01}, 'M');
+    }
+
+    private static void assertReadShortIsUnsigned(long expected, byte[] bytes, char endianess) throws IOException
+    {
+        try (RandomAccessRead raf = new RandomAccessReadBuffer(bytes))
+        {
+            long value = CCITTFactory.readshort(endianess, raf);
+            assertEquals(expected, value);
+            assertTrue(value >= 0, "TIFF SHORT must be read as unsigned, not sign-extended");
+        }
+    }
 }
