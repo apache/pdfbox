@@ -1092,6 +1092,9 @@ class TestCreateSignature
             {
                 BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
                 assertEquals(OCSPResponseStatus.SUCCESSFUL, ocspResp.getStatus());
+                // A failure here may also be caused by a TSA whose BasicOCSPResponse does not include
+                // embedded responder certificates, e.g. DigiCert's TSA (http://timestamp.digicert.com).
+                // This is optional, see https://datatracker.ietf.org/doc/html/rfc6960 and search for BasicOCSPResponse.
                 assertTrue(basicResponse.getCerts().length >= 1, "OCSP should have at least 1 certificate");
                 BEROctetString encodedSignature = new BEROctetString(basicResponse.getSignature());
                 byte[] ocspSignatureHash = MessageDigest.getInstance("SHA-1").digest(encodedSignature.getEncoded());
