@@ -65,6 +65,8 @@ public class CCITTFactoryTest extends TestCase
     /**
      * Tests CCITTFactory#createFromRandomAccess(PDDocument document,
      * RandomAccess reader) with a single page TIFF
+     *
+     * @throws IOException
      */
     public void testCreateFromRandomAccessSingle() throws IOException
     {
@@ -104,6 +106,8 @@ public class CCITTFactoryTest extends TestCase
     /**
      * Tests CCITTFactory#createFromRandomAccess(PDDocument document,
      * RandomAccess reader) with a multi page TIFF
+     *
+     * @throws IOException
      */
     public void testCreateFromRandomAccessMulti() throws IOException
     {
@@ -214,6 +218,8 @@ public class CCITTFactoryTest extends TestCase
     /**
      * Tests that CCITTFactory#createFromFile(PDDocument document, File file) doesn't lock the
      * source file
+     *
+     * @throws IOException
      */
     public void testCreateFromFileLock() throws IOException
     {
@@ -230,6 +236,8 @@ public class CCITTFactoryTest extends TestCase
     /**
      * Tests that CCITTFactory#createFromFile(PDDocument document, File file, int number) doesn't
      * lock the source file
+     *
+     * @throws IOException
      */
     public void testCreateFromFileNumberLock() throws IOException
     {
@@ -255,14 +263,16 @@ public class CCITTFactoryTest extends TestCase
         }
         finally
         {
-            is.close();
-            os.close();
+            IOUtils.closeQuietly(is);
+            IOUtils.closeQuietly(os);
         }
     }
 
     /**
      * Tests that byte/short tag values are read correctly (ignoring possible garbage in remaining
      * bytes).
+     *
+     * @throws IOException
      */
     public void testByteShortPaddedWithGarbage() throws IOException
     {
@@ -314,6 +324,8 @@ public class CCITTFactoryTest extends TestCase
      * value. The previous implementation returned a (possibly negative) int, which was then
      * sign-extended when widened to long, corrupting IFD offsets/counts whose high bit is set
      * (e.g. 0x80000000 and above).
+     *
+     * @throws IOException
      */
     public void testReadLongIsUnsigned() throws IOException
     {
