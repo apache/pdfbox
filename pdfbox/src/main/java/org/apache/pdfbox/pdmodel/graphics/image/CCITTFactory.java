@@ -349,7 +349,7 @@ public final class CCITTFactory
             {
                 int tag = readshort(endianess, reader);
                 int type = readshort(endianess, reader);
-                int count = readlong(endianess, reader);
+                int count = (int) readlong(endianess, reader);
                 int val;
                 // Note that when the type is shorter than 4 bytes, the rest can be garbage
                 // and must be ignored. E.g. short (2 bytes) from "01 00 38 32" (little endian)
@@ -368,7 +368,7 @@ public final class CCITTFactory
                         reader.read();
                         break;
                     default: // long and other types
-                        val = readlong(endianess, reader);
+                        val = (int) readlong(endianess, reader);
                         break;
                 }
                 switch (tag)
@@ -522,13 +522,14 @@ public final class CCITTFactory
         return (raf.read() << 8) | raf.read();
     }
 
-    private static int readlong(char endianess, RandomAccess raf) throws IOException
+    static long readlong(char endianess, RandomAccess raf) throws IOException
     {
+        // TIFF LONG is an unsigned 32-bit value; mask so it widens correctly
         if (endianess == 'I')
         {
-            return raf.read() | (raf.read() << 8) | (raf.read() << 16) | (raf.read() << 24);
+            return (raf.read() | (raf.read() << 8) | (raf.read() << 16) | (raf.read() << 24)) & 0xFFFFFFFFL;
         }
-        return (raf.read() << 24) | (raf.read() << 16) | (raf.read() << 8) | raf.read();
+        return ((raf.read() << 24) | (raf.read() << 16) | (raf.read() << 8) | raf.read()) & 0xFFFFFFFFL;
     }
 
     private static final byte[] fliptable = new byte[]

@@ -29,8 +29,12 @@ import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+
 import junit.framework.TestCase;
+
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccess;
+import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -40,7 +44,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
-import org.junit.Assert;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Unit tests for CCITTFactory
@@ -177,7 +181,7 @@ public class CCITTFactoryTest extends TestCase
     {
         PDDocument document = new PDDocument();
         BufferedImage bim = new BufferedImage(343, 287, BufferedImage.TYPE_BYTE_BINARY);
-        Assert.assertNotEquals((bim.getWidth() / 8) * 8, bim.getWidth()); // not mult of 8
+        assertNotEquals((bim.getWidth() / 8) * 8, bim.getWidth()); // not mult of 8
         int col = 0;
         for (int x = 0; x < bim.getWidth(); ++x)
         {
@@ -303,5 +307,39 @@ public class CCITTFactoryTest extends TestCase
         document = PDDocument.load(new File(testResultsDir, "Wing.pdf"));
         assertEquals(1, document.getNumberOfPages());
         document.close();
+    }
+
+    /**
+     * Tests that CCITTFactory's private readlong() reads a TIFF LONG as an unsigned 32-bit
+     * value. The previous implementation returned a (possibly negative) int, which was then
+     * sign-extended when widened to long, corrupting IFD offsets/counts whose high bit is set
+     * (e.g. 0x80000000 and above).
+     */
+    public void testReadLongIsUnsigned() throws IOException
+    {
+        // all bits set: 0xFFFFFFFF == 4294967295 as an unsigned TIFF LONG.
+        // The buggy code returned the int -1, which as a long is -1, not 4294967295.
+        byte[] allOnes = { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF };
+        assertReadLongUnsigned('I', allOnes, 0xFFFFFFFFL);
+        assertReadLongUnsigned('M', allOnes, 0xFFFFFFFFL);
+
+        // only the top bit set, in each byte order: 0x80000000 == 2147483648 unsigned.
+        // The buggy code returned the int Integer.MIN_VALUE, which sign-extends to a
+        // large negative long instead of 2147483648.
+        byte[] littleEndianTopBit = { 0x00, 0x00, 0x00, (byte) 0x80 };
+        assertReadLongUnsigned('I', littleEndianTopBit, 0x80000000L);
+
+        byte[] bigEndianTopBit = { (byte) 0x80, 0x00, 0x00, 0x00 };
+        assertReadLongUnsigned('M', bigEndianTopBit, 0x80000000L);
+    }
+
+    private static void assertReadLongUnsigned(char endianess, byte[] bytes,
+                                               long expected) throws IOException
+    {
+        RandomAccess raf = new RandomAccessBuffer(bytes);
+        long value = CCITTFactory.readlong(endianess, raf);
+        assertEquals(expected, value);
+        assertTrue("TIFF LONG must be read as unsigned, not sign-extended", value >= 0);
+        raf.close();
     }
 }
