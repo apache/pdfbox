@@ -513,7 +513,7 @@ public final class CCITTFactory
         }
     }
 
-    private static int readshort(char endianess, RandomAccess raf) throws IOException
+    static int readshort(char endianess, RandomAccess raf) throws IOException
     {
         if (endianess == 'I')
         {
