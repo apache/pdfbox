@@ -137,6 +137,34 @@ class TestRadioButtons
     }
 
     /**
+     * Test getting/setting the NoToggleToOff flag (PDF spec Ff bit 15).
+     *
+     * @throws IOException If there is an error creating the field.
+     */
+    @Test
+    void testNoToggleToOff() throws IOException
+    {
+        try (PDDocument doc = new PDDocument())
+        {
+            PDAcroForm form = new PDAcroForm(doc);
+            PDRadioButton radioButton = new PDRadioButton(form);
+
+            // default shall be false/unset
+            assertFalse(radioButton.isNoToggleToOff());
+
+            radioButton.setNoToggleToOff(true);
+            assertTrue(radioButton.isNoToggleToOff());
+            // spec bit 15 -> mask 1 << 14
+            assertEquals(1 << 14,
+                    radioButton.getCOSObject().getInt(COSName.FF) & (1 << 14));
+
+            radioButton.setNoToggleToOff(false);
+            assertFalse(radioButton.isNoToggleToOff());
+            assertEquals(0, radioButton.getCOSObject().getInt(COSName.FF) & (1 << 14));
+        }
+    }
+
+    /**
      * PDFBOX-3656 Radio button field with FLAG_RADIOS_IN_UNISON false
      * 
      * @throws IOException
