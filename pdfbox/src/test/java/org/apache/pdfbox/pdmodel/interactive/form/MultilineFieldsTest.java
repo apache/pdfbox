@@ -109,31 +109,33 @@ class MultilineFieldsTest
     @Test
     void testMultilineAuto() throws IOException
     {
-        PDDocument document = Loader.loadPDF(new File(IN_DIR, "PDFBOX3812-acrobat-multiline-auto.pdf"));
-        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
-
-        // Get and store the field sizes in the original PDF
-        PDTextField fieldMultiline = (PDTextField) acroForm.getField("Multiline");
-        float fontSizeMultiline = getFontSizeFromAppearanceStream(fieldMultiline);
-
-        PDTextField fieldSingleline = (PDTextField) acroForm.getField("Singleline");
-        float fontSizeSingleline = getFontSizeFromAppearanceStream(fieldSingleline);
-
-        PDTextField fieldMultilineAutoscale = (PDTextField) acroForm.getField("MultilineAutoscale");
-        float fontSizeMultilineAutoscale = getFontSizeFromAppearanceStream(fieldMultilineAutoscale);
-
-        PDTextField fieldSinglelineAutoscale = (PDTextField) acroForm.getField("SinglelineAutoscale");
-        float fontSizeSinglelineAutoscale = getFontSizeFromAppearanceStream(fieldSinglelineAutoscale);
-
-        fieldMultiline.setValue("Multiline - Fixed");
-        fieldSingleline.setValue("Singleline - Fixed");
-        fieldMultilineAutoscale.setValue("Multiline - auto");
-        fieldSinglelineAutoscale.setValue("Singleline - auto");
-
-        assertEquals(fontSizeMultiline, getFontSizeFromAppearanceStream(fieldMultiline), 0.001f);
-        assertEquals(fontSizeSingleline, getFontSizeFromAppearanceStream(fieldSingleline), 0.001f);
-        assertEquals(fontSizeMultilineAutoscale, getFontSizeFromAppearanceStream(fieldMultilineAutoscale), 0.001f);
-        assertEquals(fontSizeSinglelineAutoscale, getFontSizeFromAppearanceStream(fieldSinglelineAutoscale), 0.025f);
+        try (PDDocument document = Loader.loadPDF(new File(IN_DIR, "PDFBOX3812-acrobat-multiline-auto.pdf")))
+        {
+            PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+            
+            // Get and store the field sizes in the original PDF
+            PDTextField fieldMultiline = (PDTextField) acroForm.getField("Multiline");
+            float fontSizeMultiline = getFontSizeFromAppearanceStream(fieldMultiline);
+            
+            PDTextField fieldSingleline = (PDTextField) acroForm.getField("Singleline");
+            float fontSizeSingleline = getFontSizeFromAppearanceStream(fieldSingleline);
+            
+            PDTextField fieldMultilineAutoscale = (PDTextField) acroForm.getField("MultilineAutoscale");
+            float fontSizeMultilineAutoscale = getFontSizeFromAppearanceStream(fieldMultilineAutoscale);
+            
+            PDTextField fieldSinglelineAutoscale = (PDTextField) acroForm.getField("SinglelineAutoscale");
+            float fontSizeSinglelineAutoscale = getFontSizeFromAppearanceStream(fieldSinglelineAutoscale);
+            
+            fieldMultiline.setValue("Multiline - Fixed");
+            fieldSingleline.setValue("Singleline - Fixed");
+            fieldMultilineAutoscale.setValue("Multiline - auto");
+            fieldSinglelineAutoscale.setValue("Singleline - auto");
+            
+            assertEquals(fontSizeMultiline, getFontSizeFromAppearanceStream(fieldMultiline), 0.001f);
+            assertEquals(fontSizeSingleline, getFontSizeFromAppearanceStream(fieldSingleline), 0.001f);
+            assertEquals(fontSizeMultilineAutoscale, getFontSizeFromAppearanceStream(fieldMultilineAutoscale), 0.001f);
+            assertEquals(fontSizeSinglelineAutoscale, getFontSizeFromAppearanceStream(fieldSinglelineAutoscale), 0.025f);
+        }
     }
 
     // Test for PDFBOX-3835
