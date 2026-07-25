@@ -134,6 +134,8 @@ public class MultilineFieldsTest
         assertEquals(fontSizeSingleline, getFontSizeFromAppearanceStream(fieldSingleline), 0.001f);
         assertEquals(fontSizeMultilineAutoscale, getFontSizeFromAppearanceStream(fieldMultilineAutoscale), 0.001f);
         assertEquals(fontSizeSinglelineAutoscale, getFontSizeFromAppearanceStream(fieldSinglelineAutoscale), 0.025f);
+        
+        document.close();
     }
 
     // Test for PDFBOX-3812
