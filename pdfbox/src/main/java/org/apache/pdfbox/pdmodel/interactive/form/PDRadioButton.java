@@ -81,6 +81,29 @@ public final class PDRadioButton extends PDButton
     }
 
     /**
+     * From the PDF Spec <br>
+     * If set, exactly one radio button shall be selected at all times; clicking the currently
+     * selected button has no effect. If clear, clicking the selected button deselects it,
+     * leaving no button selected. This flag is meaningful only if the radio buttons are
+     * mutually exclusive, i.e. {@link #isRadiosInUnison()} is false.
+     *
+     * @param noToggleToOff The new flag for noToggleToOff.
+     */
+    public void setNoToggleToOff(boolean noToggleToOff)
+    {
+        getCOSObject().setFlag(COSName.FF, FLAG_NO_TOGGLE_TO_OFF, noToggleToOff);
+    }
+
+    /**
+     *
+     * @return true if the flag is set preventing a radio button from being toggled to off.
+     */
+    public boolean isNoToggleToOff()
+    {
+        return getCOSObject().getFlag(COSName.FF, FLAG_NO_TOGGLE_TO_OFF);
+    }
+
+    /**
      * This will get the selected index.
      * <p>
      * A RadioButton might have multiple same value options which are not selected jointly if
