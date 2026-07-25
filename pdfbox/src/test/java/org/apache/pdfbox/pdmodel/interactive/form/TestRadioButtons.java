@@ -245,9 +245,9 @@ public class TestRadioButtons
             try
             {
                 field.setValue("Invalid");
-                fail("Expected an IndexOutOfBoundsException to be thrown");
+                fail("Expected an IllegalArgumentException to be thrown");
             }
-            catch (Exception ex)
+            catch (IllegalArgumentException ex)
             {
                 // compare the messages
                 String expectedMessage = "value 'Invalid' is not a valid option for the field Checking/Savings, valid values are: [Checking, Savings] and Off";
@@ -318,9 +318,9 @@ public class TestRadioButtons
             try
             {
                 field.setValue(6);
-                fail("Expected an IndexOutOfBoundsException to be thrown");
+                fail("Expected an IllegalArgumentException to be thrown");
             }
-            catch (Exception ex)
+            catch (IllegalArgumentException ex)
             {
                 // compare the messages
                 String expectedMessage = "index '6' is not a valid index for the field Checking/Savings, valid indices are from 0 to 5";
@@ -337,7 +337,7 @@ public class TestRadioButtons
         }
     }
 
-        /**
+    /**
      * PDFBOX-4617 Enable getting selected index
      * 
      * @throws IOException
