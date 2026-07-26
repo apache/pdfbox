@@ -17,8 +17,8 @@
 package org.apache.pdfbox.contentstream.operator;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public final class OperatorName
 {
@@ -111,7 +111,7 @@ public final class OperatorName
     public static final String BEGIN_COMPATIBILITY_SECTION = "BX";
     public static final String END_COMPATIBILITY_SECTION = "EX";
 
-    private static final Map<String, byte[]> nameAsBytes = new ConcurrentHashMap<>();
+    private static final Map<String, byte[]> nameAsBytes = new HashMap<>();
 
     static
     {
