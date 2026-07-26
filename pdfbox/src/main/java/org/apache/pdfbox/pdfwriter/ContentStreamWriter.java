@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdfwriter;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -95,7 +94,7 @@ public class ContentStreamWriter
         {
             writeObject(token);
         }
-        output.write("\n".getBytes(StandardCharsets.US_ASCII));
+        output.write('\n');
     }
 
     /**
@@ -212,7 +211,7 @@ public class ContentStreamWriter
         }
         else if (o instanceof COSNull)
         {
-            output.write("null".getBytes(StandardCharsets.US_ASCII));
+            output.write(COSNull.NULL_BYTES);
             output.write(SPACE);
         }
         else
