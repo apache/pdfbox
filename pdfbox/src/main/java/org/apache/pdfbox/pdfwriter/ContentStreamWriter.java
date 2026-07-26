@@ -132,7 +132,7 @@ public class ContentStreamWriter
     {
         if (op.getName().equals(OperatorName.BEGIN_INLINE_IMAGE))
         {
-            output.write(OperatorName.BEGIN_INLINE_IMAGE.getBytes(StandardCharsets.ISO_8859_1));
+            output.write(OperatorName.getNameAsBytes(OperatorName.BEGIN_INLINE_IMAGE));
             output.write(EOL);
             COSDictionary dic = op.getImageParameters();
             for (COSName key : dic.keySet())
@@ -143,16 +143,16 @@ public class ContentStreamWriter
                 writeObject(value);
                 output.write(EOL);
             }
-            output.write(OperatorName.BEGIN_INLINE_IMAGE_DATA.getBytes(StandardCharsets.ISO_8859_1));
+            output.write(OperatorName.getNameAsBytes(OperatorName.BEGIN_INLINE_IMAGE_DATA));
             output.write(EOL);
             output.write(op.getImageData());
             output.write(EOL);
-            output.write(OperatorName.END_INLINE_IMAGE.getBytes(StandardCharsets.ISO_8859_1));
+            output.write(OperatorName.getNameAsBytes(OperatorName.END_INLINE_IMAGE));
             output.write(EOL);
         }
         else
         {
-            output.write(op.getName().getBytes(StandardCharsets.ISO_8859_1));
+            output.write(OperatorName.getNameAsBytes(op.getName()));
             output.write(EOL);
         }
     }

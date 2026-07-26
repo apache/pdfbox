@@ -78,6 +78,10 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
 {
     private static final Logger LOG = LogManager.getLogger(PDAbstractContentStream.class);
 
+    private static final byte[] ASCII_SPACE = new byte[] { 0x20 };
+    private static final byte[] ASCII_LEFT_SQUARE_BRACKET = new byte[] { 0x5B };
+    private static final byte[] ASCII_RIGHT_SQUARE_BRACKET_SPACE = new byte[] { 0x5D, 0x20 };
+
     protected final PDDocument document; // may be null
 
     protected final OutputStream outputStream;
@@ -264,7 +268,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
             throw new IllegalStateException("Must call setFont() before showTextWithPositioning()");
         }
 
-        write("[");
+        writeBytes(ASCII_LEFT_SQUARE_BRACKET);
         for (Object obj : textWithPositioningArray)
         {
             if (obj instanceof String)
@@ -280,7 +284,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
                 throw new IllegalArgumentException("Argument must consist of array of Float and String types");
             }
         }
-        write("] ");
+        writeBytes(ASCII_RIGHT_SQUARE_BRACKET_SPACE);
         writeOperator(OperatorName.SHOW_TEXT_ADJUSTED);
     }
 
@@ -295,8 +299,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
     @Override
     public void showGlyphsWithPositioning(GlyphsAndPositions glyphsAndPositions) throws IOException
     {
-        write("[");
-
+        writeBytes(ASCII_LEFT_SQUARE_BRACKET);
         for (Object obj : glyphsAndPositions.toArray())
         {
             if (obj instanceof GlyphsAndPositions.GlyphSubList)
@@ -317,7 +320,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
                 throw new IllegalArgumentException("Argument must consist of array of Float and GlyphsAndPositions.GlyphSubList types, not " + obj.getClass().getName());
             }
         }
-        write("] ");
+        writeBytes(ASCII_RIGHT_SQUARE_BRACKET_SPACE);
         writeOperator(OperatorName.SHOW_TEXT_ADJUSTED);
     }
 
@@ -351,7 +354,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
         else
         {
             showTextInternal(text);
-            write(" ");
+            writeBytes(ASCII_SPACE);
             writeOperator(OperatorName.SHOW_TEXT);
         }
     }
@@ -367,7 +370,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
     public void showGlyphCodes(int[] glyphCodes) throws IOException
     {
         writeTextPDType0Font(glyphCodes);
-        write(" ");
+        writeBytes(ASCII_SPACE);
         writeOperator(OperatorName.SHOW_TEXT);
     }
 
@@ -1427,12 +1430,12 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void setLineDashPattern(float[] pattern, float phase) throws IOException
     {
-        write("[");
+        writeBytes(ASCII_LEFT_SQUARE_BRACKET);
         for (float value : pattern)
         {
             writeOperand(value);
         }
-        write("] ");
+        writeBytes(ASCII_RIGHT_SQUARE_BRACKET_SPACE);
         writeOperand(phase);
         writeOperator(OperatorName.SET_LINE_DASHPATTERN);
     }
@@ -1630,14 +1633,14 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
     }
 
     /**
-     * Writes a string to the content stream as ASCII.
+     * Writes an operator to the content stream as ASCII.
      * 
-     * @param text the text to be added to the content stream followed by a newline
+     * @param operatorname the name of the operator to be added to the content stream followed by a newline
      * @throws IOException If the underlying stream has a problem being written to.
      */
-    protected void writeOperator(String text) throws IOException
+    protected void writeOperator(String operatorname) throws IOException
     {
-        write(text);
+        writeBytes(OperatorName.getNameAsBytes(operatorname));
         writeLine();
     }
 
