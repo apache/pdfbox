@@ -53,7 +53,7 @@ class Type0Font extends FontPane
     {
         Object[][] cidtogid = readCIDToGIDMap(descendantFont, parentFont);
         Map<String, String> attributes = new LinkedHashMap<>();
-        attributes.put("Font", descendantFont.getName());
+        attributes.put("Font", descendantFont.getBaseFont());
         if (cidtogid != null)
         {
             attributes.put("CIDs", Integer.toString(cidtogid.length));
