@@ -108,7 +108,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
         if (cachedCIDFont == null)
         {
             cachedCIDFont = PDFontFactory
-                    .createDescendantFont((COSDictionary) descendantFontDictBase, this);
+                    .createDescendantFont((COSDictionary) descendantFontDictBase);
             if (resourceCache != null && descendantFontBaseObject instanceof COSObject)
             {
                 resourceCache.put((COSObject) descendantFontBaseObject, cachedCIDFont);
@@ -142,7 +142,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
         gsubData = ttf.getGsubData();
         cmapLookup = ttf.getUnicodeCmapLookup();
 
-        embedder = new PDCIDFontType2Embedder(document, dict, ttf, embedSubset, this, vertical);
+        embedder = new PDCIDFontType2Embedder(document, dict, ttf, embedSubset, vertical);
         descendantFont = embedder.getCIDFont();
         readEncoding();
         fetchCMapUCS2();
@@ -493,19 +493,19 @@ public class PDType0Font extends PDFont implements PDVectorFont
     @Override
     public float getHeight(int code) throws IOException
     {
-        return descendantFont.getHeight(code);
+        return descendantFont.getHeight(code, this);
     }
 
     @Override
     protected byte[] encode(int unicode) throws IOException
     {
-        return descendantFont.encode(unicode);
+        return descendantFont.encode(unicode, this);
     }
 
     @Override
     public boolean hasExplicitWidth(int code) throws IOException
     {
-        return descendantFont.hasExplicitWidth(code);
+        return descendantFont.hasExplicitWidth(code, this);
     }
 
     @Override
@@ -518,7 +518,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     public Vector getPositionVector(int code)
     {
         // units are always 1/1000 text space, font matrix is not used, see FOP-2252
-        return descendantFont.getPositionVector(code).scale(-1 / 1000f);
+        return descendantFont.getPositionVector(code, this).scale(-1 / 1000f);
     }
 
     @Override
@@ -526,7 +526,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     {
         if (isVertical())
         {
-            return new Vector(0, descendantFont.getVerticalDisplacementVectorY(code) / 1000f);
+            return new Vector(0, descendantFont.getVerticalDisplacementVectorY(code, this) / 1000f);
         }
         else
         {
@@ -537,7 +537,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     @Override
     public float getWidth(int code) throws IOException
     {
-        return descendantFont.getWidth(code);
+        return descendantFont.getWidth(code, this);
     }
 
     @Override
@@ -549,7 +549,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     @Override
     public float getWidthFromFont(int code) throws IOException
     {
-        return descendantFont.getWidthFromFont(code);
+        return descendantFont.getWidthFromFont(code, this);
     }
 
     @Override
@@ -603,13 +603,13 @@ public class PDType0Font extends PDFont implements PDVectorFont
                         if (descendantFont.isEmbedded())
                         {
                             // original PDFBOX-5324 supported only embedded fonts
-                            gid = descendantFont.codeToGID(code);
+                            gid = descendantFont.codeToGID(code, this);
                         }
                         else
                         {
                             // PDFBOX-5331: this bypasses the fallback attempt in
                             // PDCIDFontType2.codeToGID() which would bring a stackoverflow
-                            gid = descendantFont.codeToCID(code);
+                            gid = descendantFont.codeToCID(code, this);
                         }
                         List<Integer> codes = cmap.getCharCodes(gid);
                         if (codes != null && !codes.isEmpty())
@@ -667,7 +667,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
      */
     public int codeToCID(int code)
     {
-        return descendantFont.codeToCID(code);
+        return descendantFont.codeToCID(code, this);
     }
 
     /**
@@ -680,7 +680,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
      */
     public int codeToGID(int code) throws IOException
     {
-        return descendantFont.codeToGID(code);
+        return descendantFont.codeToGID(code, this);
     }
 
     @Override
@@ -709,20 +709,19 @@ public class PDType0Font extends PDFont implements PDVectorFont
     @Override
     public GeneralPath getPath(int code) throws IOException
     {
-        return descendantFont.getPath(code);
+        return descendantFont.getPath(code, this);
     }
-
     
     @Override
     public GeneralPath getNormalizedPath(int code) throws IOException
     {
-        return descendantFont.getNormalizedPath(code);
+        return descendantFont.getNormalizedPath(code, this);
     }
     
     @Override
     public boolean hasGlyph(int code) throws IOException
     {
-        return descendantFont.hasGlyph(code);
+        return descendantFont.hasGlyph(code, this);
     }
 
     /**

@@ -365,7 +365,7 @@ public final class PDFontFactory
      * @return a PDCIDFont instance, based on the SubType entry of the dictionary
      * @throws IOException if something goes wrong
      */
-    static PDCIDFont createDescendantFont(COSDictionary dictionary, PDType0Font parent)
+    static PDCIDFont createDescendantFont(COSDictionary dictionary)
             throws IOException
     {
         COSName type = dictionary.getCOSName(COSName.TYPE, COSName.FONT);
@@ -376,11 +376,11 @@ public final class PDFontFactory
         COSName subType = dictionary.getCOSName(COSName.SUBTYPE);
         if (COSName.CID_FONT_TYPE0.equals(subType))
         {
-            return new PDCIDFontType0(dictionary, parent);
+            return new PDCIDFontType0(dictionary);
         }
         if (COSName.CID_FONT_TYPE2.equals(subType))
         {
-            return new PDCIDFontType2(dictionary, parent);
+            return new PDCIDFontType2(dictionary);
         }
         throw new IOException("Invalid font type: " + type);
     }

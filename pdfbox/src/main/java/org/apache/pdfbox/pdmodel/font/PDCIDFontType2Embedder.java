@@ -60,7 +60,6 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
     private static final Logger LOG = LogManager.getLogger(PDCIDFontType2Embedder.class);
 
     private final PDDocument document;
-    private final PDType0Font parent;
     private final COSDictionary dict;
     private final COSDictionary cidFont;
     private final boolean vertical;
@@ -71,16 +70,14 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
      * @param document parent document
      * @param dict font dictionary
      * @param ttf True Type Font
-     * @param parent parent Type 0 font
      * @throws IOException if the TTF could not be read
      */
     PDCIDFontType2Embedder(PDDocument document, COSDictionary dict, TrueTypeFont ttf,
-            boolean embedSubset, PDType0Font parent, boolean vertical) throws IOException
+            boolean embedSubset, boolean vertical) throws IOException
     {
         super(document, dict, ttf, embedSubset);
         this.document = document;
         this.dict = dict;
-        this.parent = parent;
         this.vertical = vertical;
 
         // parent Type 0 font
@@ -736,6 +733,6 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
      */
     public PDCIDFont getCIDFont() throws IOException
     {
-        return new PDCIDFontType2(cidFont, parent, ttf);
+        return new PDCIDFontType2(cidFont, ttf);
     }
 }

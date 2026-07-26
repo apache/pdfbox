@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.logging.log4j.LogManager;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -32,6 +34,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 
 /**
@@ -42,11 +45,9 @@ import org.apache.pdfbox.util.Vector;
  *
  * @author Ben Litchfield
  */
-public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFont
+public abstract class PDCIDFont implements COSObjectable
 {
     private static final Logger LOG = LogManager.getLogger(PDCIDFont.class);
-
-    protected final PDType0Font parent;
 
     private final Map<Integer, Float> widths = new HashMap<>();
     private float defaultWidth;
@@ -62,6 +63,9 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
     private final float[] dw2 = { 880, -1000 };
 
     protected final COSDictionary dict;
+    protected boolean isEmbedded;
+    protected boolean isDamaged;
+
     private PDFontDescriptor fontDescriptor;
 
     /**
@@ -69,10 +73,9 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    PDCIDFont(COSDictionary fontDictionary, PDType0Font parent)
+    PDCIDFont(COSDictionary fontDictionary)
     {
         this.dict = fontDictionary;
-        this.parent = parent;
         readWidths();
         readVerticalDisplacements();
     }
@@ -209,13 +212,11 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
         return dict.getNameAsString(COSName.BASE_FONT);
     }
 
-    @Override
-    public String getName()
-    {
-        return getBaseFont();
-    }
-
-    @Override
+    /**
+     * Returns the font descriptor, may be null.
+     * 
+     * @return the font descriptor or null
+     */
     public PDFontDescriptor getFontDescriptor()
     {
         if (fontDescriptor == null)
@@ -230,13 +231,100 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
     }
 
     /**
-     * Returns the Type 0 font which is the parent of this font.
-     *
-     * @return parent Type 0 font
+     * Returns the font matrix, which represents the transformation from glyph space to text space.
+     * 
+     * @return the font matrix
      */
-    public final PDType0Font getParent()
+    protected abstract Matrix getFontMatrix();
+
+    /**
+     * Returns the font's bounding box.
+     * 
+     * @return the bounding box
+     * 
+     * @throws IOException if the bounding box could not be read
+     */
+    protected abstract BoundingBox getBoundingBox() throws IOException;
+
+    /**
+     * Returns the width of a glyph in the embedded font file.
+     *
+     * @param code character code
+     * @param parent the parent Type0 font.
+     * 
+     * @return width in glyph space
+     * @throws IOException if the font could not be read
+     */
+    protected abstract float getWidthFromFont(int code, PDType0Font parent) throws IOException;
+
+    /**
+     * Returns the height of the given character, in glyph space. This can be expensive to calculate. Results are only
+     * approximate.
+     * 
+     * Warning: This method is deprecated in PDFBox 2.0 because there is no meaningful value which it can return, see
+     * {@link PDFontLike#getHeight(int)}
+     * 
+     * @param code character code
+     * @param parent the parent Type0 font.
+     * @return the height of the given character
+     * @throws IOException if the height could not be read
+     */
+    @Deprecated
+    protected abstract float getHeight(int code, PDType0Font parent) throws IOException;
+
+    /**
+     * Returns the glyph path for the given character code.
+     *
+     * @param code character code in a PDF. Not to be confused with unicode.
+     * @param parent the parent Type0 font.
+     * 
+     * @return the glyph path for the given character code
+     * @throws java.io.IOException if the font could not be read
+     */
+    protected abstract GeneralPath getPath(int code, PDType0Font parent) throws IOException;
+
+    /**
+     * Returns the normalized glyph path for the given character code in a PDF. The resulting path is normalized to the
+     * PostScript 1000 unit square, and fallback glyphs are returned where appropriate, e.g. for missing glyphs.
+     *
+     * @param code character code in a PDF. Not to be confused with unicode.
+     * @param parent the parent Type0 font.
+     * 
+     * @return the normalized glyph path for the given character code
+     * @throws java.io.IOException if the font could not be read
+     */
+    protected abstract GeneralPath getNormalizedPath(int code, PDType0Font parent)
+            throws IOException;
+
+    /**
+     * Returns true if this font contains a glyph for the given character code in a PDF.
+     *
+     * @param code character code in a PDF. Not to be confused with unicode.
+     * @param parent the parent Type0 font.
+     * 
+     * @return true if this font contains a glyph for the given character code
+     * @throws java.io.IOException if the font could not be read
+     */
+    protected abstract boolean hasGlyph(int code, PDType0Font parent) throws IOException;
+
+    /**
+     * Returns true if the font file is embedded in the PDF.
+     * 
+     * @return true if the font file is embedded in the PDF
+     */
+    public boolean isEmbedded()
     {
-        return parent;
+        return isEmbedded;
+    }
+
+    /**
+     * Returns true if the embedded font file is damaged.
+     * 
+     * @return true if the embedded font file is damaged
+     */
+    public boolean isDamaged()
+    {
+        return isDamaged;
     }
 
     /**
@@ -281,16 +369,34 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
         return width;
     }
 
-    @Override
-    public boolean hasExplicitWidth(int code) throws IOException
+    /**
+     * Returns true if the Font dictionary specifies an explicit width for the given glyph. This includes Width, W but
+     * not default widths entries.
+     * 
+     * @param code character code
+     * @param parent the parent Type0 font.
+     * 
+     * @return true if the Font dictionary specifies an explicit width for the given glyph
+     * @throws IOException if the font could not be read
+     */
+    protected boolean hasExplicitWidth(int code, PDType0Font parent) throws IOException
     {
-        return widths.get(codeToCID(code)) != null;
+        return widths.get(codeToCID(code, parent)) != null;
     }
 
-    @Override
-    public Vector getPositionVector(int code)
+    /**
+     * Returns the position vector (v), in text space, for the given character. This represents the position of vertical
+     * origin relative to horizontal origin, for horizontal writing it will always be (0, 0). For vertical writing both
+     * x and y are set.
+     *
+     * @param code character code
+     * @param parent the parent Type0 font.
+     * 
+     * @return position vector
+     */
+    protected Vector getPositionVector(int code, PDType0Font parent)
     {
-        int cid = codeToCID(code);
+        int cid = codeToCID(code, parent);
         Vector v = positionVectors.get(cid);
         if (v == null)
         {
@@ -313,11 +419,13 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
      * Returns the y-component of the vertical displacement vector (w1).
      *
      * @param code character code
+     * @param parent the parent Type0 font.
+     * 
      * @return w1y
      */
-    public float getVerticalDisplacementVectorY(int code)
+    protected float getVerticalDisplacementVectorY(int code, PDType0Font parent)
     {
-        int cid = codeToCID(code);
+        int cid = codeToCID(code, parent);
         Float w1y = verticalDisplacementY.get(cid);
         if (w1y == null)
         {
@@ -336,16 +444,28 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
         return w1y;
     }
 
-    @Override
-    public float getWidth(int code) throws IOException
+    /**
+     * Returns the advance width of the given character, in glyph space.
+     * <p>
+     * 
+     * If you want the visual bounds of the glyph then call getPath(..) on the appropriate PDFont subclass to retrieve
+     * the glyph outline as a GeneralPath instead. See the cyan rectangles in the <b>DrawPrintTextLocations.java</b>
+     * example to see this in action.
+     *
+     * @param code character code
+     * @param parent the parent Type0 font.
+     * 
+     * @return the width of the given character
+     * @throws IOException if the width could not be read
+     */
+    protected float getWidth(int code, PDType0Font parent) throws IOException
     {
         // these widths are supposed to be consistent with the actual widths given in the CIDFont
         // program, but PDFBOX-563 shows that when they are not, Acrobat overrides the embedded
         // font widths with the widths given in the font dictionary
-        return getWidthForCID(codeToCID(code));
+        return getWidthForCID(codeToCID(code, parent));
     }
 
-    @Override
     // todo: this method is highly suspicious, the average glyph width is not usually a good metric
     public float getAverageFontWidth()
     {
@@ -391,32 +511,48 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
      * Returns the CID for the given character code. If not found then CID 0 is returned.
      *
      * @param code character code
+     * @param parent the parent Type0 font.
+     * 
      * @return CID
      */
-    public abstract int codeToCID(int code);
+    protected abstract int codeToCID(int code, PDType0Font parent);
 
     /**
      * Returns the GID for the given character code.
      *
      * @param code character code
+     * @param parent the parent Type0 font.
+     * 
      * @return GID
      * @throws java.io.IOException if the mapping could not be read
      */
-    public abstract int codeToGID(int code) throws IOException;
+    protected abstract int codeToGID(int code, PDType0Font parent) throws IOException;
 
-    public abstract byte[] encodeGlyphId(int glyphId);
+    protected abstract byte[] encodeGlyphId(int glyphId);
 
     /**
-     * Encodes the given Unicode code point for use in a PDF content stream.
-     * Content streams use a multi-byte encoding with 1 to 4 bytes.
+     * Encodes the given Unicode code point for use in a PDF content stream. Content streams use a multi-byte encoding
+     * with 1 to 4 bytes.
      *
-     * <p>This method is called when embedding text in PDFs and when filling in fields.
+     * <p>
+     * This method is called when embedding text in PDFs and when filling in fields.
      *
      * @param unicode Unicode code point.
+     * @param parent the parent Type0 font.
+     * 
      * @return Array of 1 to 4 PDF content stream bytes.
      * @throws IOException If the text could not be encoded.
      */
-    protected abstract byte[] encode(int unicode) throws IOException;
+    protected byte[] encode(int unicode, PDType0Font parent) throws IOException
+    {
+        if (this instanceof PDCIDFontType0)
+        {
+            // todo: we can use a known character collection CMap for a CIDFont
+            // and an Encoding for Type 1-equivalent
+            throw new UnsupportedOperationException();
+        }
+        return ((PDCIDFontType2) this).encode(unicode, parent);
+    }
 
     final int[] readCIDToGIDMap() throws IOException
     {

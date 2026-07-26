@@ -55,8 +55,6 @@ public class PDCIDFontType0 extends PDCIDFont
     private final FontBoxFont t1Font; // Top DICT that does not use CIDFont operators
     
     private final Map<Integer, Float> glyphHeights = new HashMap<>();
-    private final boolean isEmbedded;
-    private final boolean isDamaged;
     private final AffineTransform fontMatrixTransform;
     private Float avgWidth = null;
     private Matrix fontMatrix;
@@ -67,13 +65,12 @@ public class PDCIDFontType0 extends PDCIDFont
      * Constructor.
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
-     * @param parent The parent font.
      * 
      * @throws IOException if the font could not be read
      */
-    public PDCIDFontType0(COSDictionary fontDictionary, PDType0Font parent) throws IOException
+    public PDCIDFontType0(COSDictionary fontDictionary) throws IOException
     {
-        super(fontDictionary, parent);
+        super(fontDictionary);
 
         boolean fontIsDamaged = false;
         CFFFont cffFont = null;
@@ -303,7 +300,7 @@ public class PDCIDFontType0 extends PDCIDFont
      * Returns the name of the glyph with the given character code. This is done by looking up the
      * code in the parent font's ToUnicode map and generating a glyph name from that.
      */
-    private String getGlyphName(int code)
+    private String getGlyphName(int code, PDType0Font parent)
     {
         String unicodes = parent.toUnicode(code);
         if (unicodes == null)
@@ -314,9 +311,9 @@ public class PDCIDFontType0 extends PDCIDFont
     }
 
     @Override
-    public GeneralPath getPath(int code) throws IOException
+    protected GeneralPath getPath(int code, PDType0Font parent) throws IOException
     {
-        int cid = codeToCID(code);
+        int cid = codeToCID(code, parent);
         if (cid2gid != null && isEmbedded)
         {
             // PDFBOX-4093: despite being a type 0 font, there is a CIDToGIDMap
@@ -333,20 +330,20 @@ public class PDCIDFontType0 extends PDCIDFont
         }
         else
         {
-            return t1Font.getPath(getGlyphName(code));
+            return t1Font.getPath(getGlyphName(code, parent));
         }
     }
 
     @Override
-    public GeneralPath getNormalizedPath(int code) throws IOException
+    protected GeneralPath getNormalizedPath(int code, PDType0Font parent) throws IOException
     {
-        return getPath(code);
+        return getPath(code, parent);
     }
 
     @Override
-    public boolean hasGlyph(int code) throws IOException
+    protected boolean hasGlyph(int code, PDType0Font parent) throws IOException
     {
-        int cid = codeToCID(code);
+        int cid = codeToCID(code, parent);
         Type2CharString charstring = getType2CharString(cid);
         if (charstring != null)
         {
@@ -358,7 +355,7 @@ public class PDCIDFontType0 extends PDCIDFont
         }
         else
         {
-            return t1Font.hasGlyph(getGlyphName(code));
+            return t1Font.hasGlyph(getGlyphName(code, parent));
         }
     }
 
@@ -369,15 +366,15 @@ public class PDCIDFontType0 extends PDCIDFont
      * @return CID
      */
     @Override
-    public int codeToCID(int code)
+    protected int codeToCID(int code, PDType0Font parent)
     {
         return parent.getCMap().toCID(code);
     }
 
     @Override
-    public int codeToGID(int code)
+    protected int codeToGID(int code, PDType0Font parent)
     {
-        int cid = codeToCID(code);
+        int cid = codeToCID(code, parent);
         if (cidFont != null)
         {
             // The CIDs shall be used to determine the GID value for the glyph procedure using the
@@ -392,23 +389,15 @@ public class PDCIDFontType0 extends PDCIDFont
     }
 
     @Override
-    public byte[] encode(int unicode)
-    {
-        // todo: we can use a known character collection CMap for a CIDFont
-        //       and an Encoding for Type 1-equivalent
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public byte[] encodeGlyphId(int glyphId)
+    protected byte[] encodeGlyphId(int glyphId)
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public float getWidthFromFont(int code) throws IOException
+    protected float getWidthFromFont(int code, PDType0Font parent) throws IOException
     {
-        int cid = codeToCID(code);
+        int cid = codeToCID(code, parent);
         float width;
         if (cidFont != null)
         {
@@ -420,7 +409,7 @@ public class PDCIDFontType0 extends PDCIDFont
         }
         else
         {
-            width = t1Font.getWidth(getGlyphName(code));
+            width = t1Font.getWidth(getGlyphName(code, parent));
         }
         
         Point2D p = new Point2D.Float(width, 0);
@@ -429,21 +418,9 @@ public class PDCIDFontType0 extends PDCIDFont
     }
 
     @Override
-    public boolean isEmbedded()
+    protected float getHeight(int code, PDType0Font parent) throws IOException
     {
-        return isEmbedded;
-    }
-
-    @Override
-    public boolean isDamaged()
-    {
-        return isDamaged;
-    }
-
-    @Override
-    public float getHeight(int code) throws IOException
-    {
-        int cid = codeToCID(code);
+        int cid = codeToCID(code, parent);
 
         float height;
         if (!glyphHeights.containsKey(cid))
