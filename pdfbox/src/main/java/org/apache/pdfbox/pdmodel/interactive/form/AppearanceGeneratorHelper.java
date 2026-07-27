@@ -256,7 +256,7 @@ class AppearanceGeneratorHelper
             }
             else
             {
-                appearanceStream = prepareNormalAppearanceStream(widget, newBBox, widgetRotation);
+                appearanceStream = prepareNormalAppearanceStream(newBBox, widgetRotation);
                 appearanceDict.setNormalAppearance(appearanceStream);
             }
 
@@ -324,7 +324,7 @@ class AppearanceGeneratorHelper
         return Math.abs(bbox.getWidth()) > 0 && Math.abs(bbox.getHeight()) > 0;
     }
 
-    private PDAppearanceStream prepareNormalAppearanceStream(PDAnnotationWidget widget, PDRectangle bbox, int widgetRotation)
+    private PDAppearanceStream prepareNormalAppearanceStream(PDRectangle bbox, int widgetRotation)
     {
         PDAppearanceStream appearanceStream = new PDAppearanceStream(field.getAcroForm().getDocument());
 
