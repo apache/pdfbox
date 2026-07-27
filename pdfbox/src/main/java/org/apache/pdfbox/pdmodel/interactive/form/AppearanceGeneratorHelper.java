@@ -250,7 +250,7 @@ class AppearanceGeneratorHelper
             PDAppearanceStream appearanceStream;
             // We're using the existing appearance if possible (since 2013 or even earlier)
             // However, except for the file from PDFBOX-2586 we could ignore it
-            if (isValidAppearanceStream(appearance, widgetRotation, newBBox))
+            if (isValidAppearanceStream(appearance, newBBox))
             {
                 appearanceStream = appearance.getAppearanceStream();
             }
@@ -259,7 +259,7 @@ class AppearanceGeneratorHelper
                 appearanceStream = prepareNormalAppearanceStream(widget, newBBox, widgetRotation);
                 appearanceDict.setNormalAppearance(appearanceStream);
             }
-                
+
             /*
              * Adobe Acrobat always recreates the complete appearance stream if there is an appearance characteristics
              * entry (the widget dictionaries MK entry). In addition if there is no content yet also create the appearance
@@ -272,8 +272,7 @@ class AppearanceGeneratorHelper
             }
                 
             setAppearanceContent(widget, appearanceStream);
-            
-            
+
             // restore the field level appearance
             defaultAppearance =  acroFormAppearance;
         }
@@ -302,7 +301,7 @@ class AppearanceGeneratorHelper
         return apValue;
     }
 
-    private static boolean isValidAppearanceStream(PDAppearanceEntry appearance, int widgetRotation, PDRectangle newBBox)
+    private static boolean isValidAppearanceStream(PDAppearanceEntry appearance, PDRectangle newBBox)
     {
         if (appearance == null)
         {
@@ -315,6 +314,11 @@ class AppearanceGeneratorHelper
         PDRectangle bbox = appearance.getAppearanceStream().getBBox();
         if (bbox == null)
         {
+            return false;
+        }
+        if (Math.abs(newBBox.getWidth() - bbox.getWidth()) > 1 || Math.abs(newBBox.getHeight() - bbox.getHeight()) > 1)
+        {
+            // PDFBOX-6223: don't like it if bbox and rectangle are of very different sizes
             return false;
         }
         return Math.abs(bbox.getWidth()) > 0 && Math.abs(bbox.getHeight()) > 0;
