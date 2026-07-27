@@ -323,14 +323,9 @@ class AppearanceGeneratorHelper
 
         // Calculate the entries for the bounding box and the transformation matrix
         // settings for the appearance stream
-        int rotation = resolveRotation(widget);
-        PDRectangle rect = widget.getRectangle();
-        Matrix matrix = Matrix.getRotateInstance(Math.toRadians(rotation), 0, 0);
-        Point2D.Float point2D = matrix.transformPoint(rect.getWidth(), rect.getHeight());
-
-        PDRectangle bbox = new PDRectangle(Math.abs((float) point2D.getX()), Math.abs((float) point2D.getY()));
+        PDRectangle bbox = computeBBox(widget);
         appearanceStream.setBBox(bbox);
-
+        int rotation = resolveRotation(widget);
         AffineTransform at = calculateMatrix(bbox, rotation);
         if (!at.isIdentity())
         {
@@ -340,15 +335,23 @@ class AppearanceGeneratorHelper
         appearanceStream.setResources(new PDResources());
         return appearanceStream;
     }
-    
+
+    private static PDRectangle computeBBox(PDAnnotationWidget widget)
+    {
+        PDRectangle rect = widget.getRectangle();
+        Matrix matrix = Matrix.getRotateInstance(Math.toRadians(resolveRotation(widget)), 0, 0);
+        Point2D.Float point2D = matrix.transformPoint(rect.getWidth(), rect.getHeight());
+        return new PDRectangle(Math.abs((float) point2D.getX()), Math.abs((float) point2D.getY()));
+    }
+
     private PDDefaultAppearanceString getWidgetDefaultAppearanceString(PDAnnotationWidget widget) throws IOException
     {
         COSString da = (COSString) widget.getCOSObject().getDictionaryObject(COSName.DA);
         PDResources dr = field.getAcroForm().getDefaultResources();
         return new PDDefaultAppearanceString(da, dr);
     }
-    
-    private int resolveRotation(PDAnnotationWidget widget)
+
+    private static int resolveRotation(PDAnnotationWidget widget)
     {
         PDAppearanceCharacteristicsDictionary  characteristicsDictionary = widget.getAppearanceCharacteristics();
         if (characteristicsDictionary != null)
