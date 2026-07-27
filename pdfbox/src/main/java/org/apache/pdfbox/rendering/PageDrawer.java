@@ -1225,7 +1225,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     {
                         alphaPixel = alpha.getPixel(x, y, alphaPixel);
                         rasterPixel = raster.getPixel(x, y, rasterPixel);
-                        rasterPixel[3] = alphaPixel[0];
+                        // PDFBOX-6077: combine with the paint's own alpha instead of
+                        // overwriting it, so gaps the paint never drew into (e.g. between
+                        // tiles of a tiling pattern) stay transparent instead of turning
+                        // into opaque black.
+                        rasterPixel[3] = rasterPixel[3] * alphaPixel[0] / 255;
                         raster.setPixel(x, y, rasterPixel);
                     }
                 }
