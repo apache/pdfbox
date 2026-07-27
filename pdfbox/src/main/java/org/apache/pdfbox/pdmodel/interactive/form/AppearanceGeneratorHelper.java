@@ -242,20 +242,23 @@ class AppearanceGeneratorHelper
 
             PDAppearanceEntry appearance = appearanceDict.getNormalAppearance();
             // TODO support appearances other than "normal"
-                
+
+            PDAppearanceCharacteristicsDictionary appearanceCharacteristics =
+                    widget.getAppearanceCharacteristics();
+            int widgetRotation = resolveRotation(appearanceCharacteristics);
+            PDRectangle newBBox = computeBBox(widget, widgetRotation);
             PDAppearanceStream appearanceStream;
-            if (isValidAppearanceStream(appearance))
+            // We're using the existing appearance if possible (since 2013 or even earlier)
+            // However, except for the file from PDFBOX-2586 we could ignore it
+            if (isValidAppearanceStream(appearance, widgetRotation, newBBox))
             {
                 appearanceStream = appearance.getAppearanceStream();
             }
             else
             {
-                appearanceStream = prepareNormalAppearanceStream(widget);
+                appearanceStream = prepareNormalAppearanceStream(widget, newBBox, widgetRotation);
                 appearanceDict.setNormalAppearance(appearanceStream);
-                // TODO support appearances other than "normal"
             }
-            PDAppearanceCharacteristicsDictionary appearanceCharacteristics =
-                    widget.getAppearanceCharacteristics();
                 
             /*
              * Adobe Acrobat always recreates the complete appearance stream if there is an appearance characteristics
@@ -299,7 +302,7 @@ class AppearanceGeneratorHelper
         return apValue;
     }
 
-    private static boolean isValidAppearanceStream(PDAppearanceEntry appearance)
+    private static boolean isValidAppearanceStream(PDAppearanceEntry appearance, int widgetRotation, PDRectangle newBBox)
     {
         if (appearance == null)
         {
@@ -317,16 +320,12 @@ class AppearanceGeneratorHelper
         return Math.abs(bbox.getWidth()) > 0 && Math.abs(bbox.getHeight()) > 0;
     }
 
-    private PDAppearanceStream prepareNormalAppearanceStream(PDAnnotationWidget widget)
+    private PDAppearanceStream prepareNormalAppearanceStream(PDAnnotationWidget widget, PDRectangle bbox, int widgetRotation)
     {
         PDAppearanceStream appearanceStream = new PDAppearanceStream(field.getAcroForm().getDocument());
 
-        // Calculate the entries for the bounding box and the transformation matrix
-        // settings for the appearance stream
-        PDRectangle bbox = computeBBox(widget);
         appearanceStream.setBBox(bbox);
-        int rotation = resolveRotation(widget);
-        AffineTransform at = calculateMatrix(bbox, rotation);
+        AffineTransform at = calculateMatrix(bbox, widgetRotation);
         if (!at.isIdentity())
         {
             appearanceStream.setMatrix(at);
@@ -336,10 +335,10 @@ class AppearanceGeneratorHelper
         return appearanceStream;
     }
 
-    private static PDRectangle computeBBox(PDAnnotationWidget widget)
+    private static PDRectangle computeBBox(PDAnnotationWidget widget, int widgetRotation)
     {
         PDRectangle rect = widget.getRectangle();
-        Matrix matrix = Matrix.getRotateInstance(Math.toRadians(resolveRotation(widget)), 0, 0);
+        Matrix matrix = Matrix.getRotateInstance(Math.toRadians(widgetRotation), 0, 0);
         Point2D.Float point2D = matrix.transformPoint(rect.getWidth(), rect.getHeight());
         return new PDRectangle(Math.abs((float) point2D.getX()), Math.abs((float) point2D.getY()));
     }
@@ -351,9 +350,8 @@ class AppearanceGeneratorHelper
         return new PDDefaultAppearanceString(da, dr);
     }
 
-    private static int resolveRotation(PDAnnotationWidget widget)
+    private static int resolveRotation(PDAppearanceCharacteristicsDictionary characteristicsDictionary)
     {
-        PDAppearanceCharacteristicsDictionary  characteristicsDictionary = widget.getAppearanceCharacteristics();
         if (characteristicsDictionary != null)
         {
             // 0 is the default value if the R key doesn't exist
