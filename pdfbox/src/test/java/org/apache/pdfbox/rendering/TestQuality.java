@@ -56,4 +56,48 @@ class TestQuality
             ValidateXImage.checkIdent(extractedImage, renderedImage);
         }
     }
+
+    /**
+     * PDFBOX-6077: a stencil mask filled with a pattern must not paint the gaps between the
+     * pattern's own tiles as opaque black. Before the fix, the stencil mask's alpha overwrote
+     * the pattern paint's own alpha instead of being combined with it, so any pixel the pattern
+     * didn't itself draw into turned solid black instead of staying transparent.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox6077() throws IOException
+    {
+        File file = new File(TARGET_PDF_DIR, "PDFBOX-6077-example.pdf");
+        try (PDDocument doc = Loader.loadPDF(file))
+        {
+            PDFRenderer renderer = new PDFRenderer(doc);
+            BufferedImage renderedImage = renderer.renderImageWithDPI(0, 100);
+            // a gap between the tiling pattern's own painted tiles, which must stay transparent
+            // (i.e. show the white page background) instead of turning opaque black
+            Assertions.assertEquals(0xFFFFFFFF, renderedImage.getRGB(280, 23));
+        }
+    }
+
+    /**
+     * PDFBOX-6077: a soft mask applied to a pattern that is used as a stencil mask fill must
+     * still be visible. Such a pattern is rendered into a separate scratch image rather than
+     * directly onto the page, and the soft mask's own alpha lookup is keyed to absolute
+     * page-device pixel coordinates, so a naive implementation renders it as fully transparent.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox5842() throws IOException
+    {
+        File file = new File(TARGET_PDF_DIR, "PDFBOX-5842-reduced.pdf");
+        try (PDDocument doc = Loader.loadPDF(file))
+        {
+            PDFRenderer renderer = new PDFRenderer(doc);
+            BufferedImage renderedImage = renderer.renderImageWithDPI(0, 100);
+            // a pixel within the soft-masked pattern's map marker icon; if the soft mask's alpha
+            // lookup is broken, this whole region renders as blank white instead
+            Assertions.assertNotEquals(0xFFFFFFFF, renderedImage.getRGB(267, 1329));
+        }
+    }
 }
