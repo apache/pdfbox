@@ -1156,6 +1156,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 g.fill(bounds);
                 g.dispose();
 
+                // PDFBOX-5403: a paint such as a TilingPaint can have hairline, fully
+                // transparent seams of its own (e.g. sub-pixel rounding at tile boundaries),
+                // which used to be invisible because the mask's alpha always overwrote the
+                // paint's alpha below. Now that the two are combined, widen the paint's alpha to
+                // the maximum of its 4-neighbors first, so those seams don't get mistaken for
+                // genuine gaps the paint never painted into.
+                dilateAlpha(renderedPaint);
+
                 if (softMask != null)
                 {
                     applySoftMaskAlpha(renderedPaint, bounds, softMask);
@@ -1282,6 +1290,62 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // JDK 1.7 has a bug where rendering hints are reset by the above call to
             // the setRenderingHint method, so we re-set all hints, see PDFBOX-2302
             setRenderingHints();
+        }
+    }
+
+    /**
+     * PDFBOX-5403: widens each pixel's alpha channel to the maximum of itself and its 4
+     * neighbors, in place. Used to absorb hairline (1 pixel wide) fully-transparent seams in a
+     * paint's own rendering - e.g. rounding seams between adjacent tiles of a TilingPaint -
+     * before that alpha is combined with a stencil mask's alpha, so such a seam isn't mistaken
+     * for a genuine gap the paint never painted into.
+     *
+     * @param image the ARGB image to dilate the alpha channel of, in place.
+     */
+    private static void dilateAlpha(BufferedImage image)
+    {
+        WritableRaster raster = image.getRaster();
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int[] alpha = new int[width * height];
+        int[] pixel = null;
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                pixel = raster.getPixel(x, y, pixel);
+                alpha[y * width + x] = pixel[3];
+            }
+        }
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                int index = y * width + x;
+                int widened = alpha[index];
+                if (x > 0)
+                {
+                    widened = Math.max(widened, alpha[index - 1]);
+                }
+                if (x < width - 1)
+                {
+                    widened = Math.max(widened, alpha[index + 1]);
+                }
+                if (y > 0)
+                {
+                    widened = Math.max(widened, alpha[index - width]);
+                }
+                if (y < height - 1)
+                {
+                    widened = Math.max(widened, alpha[index + width]);
+                }
+                if (widened != alpha[index])
+                {
+                    pixel = raster.getPixel(x, y, pixel);
+                    pixel[3] = widened;
+                    raster.setPixel(x, y, pixel);
+                }
+            }
         }
     }
 
