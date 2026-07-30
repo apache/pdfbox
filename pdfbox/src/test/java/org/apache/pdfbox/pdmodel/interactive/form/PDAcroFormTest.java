@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -433,6 +434,43 @@ class PDAcroFormTest
             myField.setValue("ŞŞ"); // Text with the Ş character made it crash
 
             assertEquals("ŞŞ", myField.getValue());
+        }
+    }
+
+    /**
+     * PDFBOX-6227: Check that cycle is caught in repair.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testCycle() throws IOException
+    {
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            doc.addPage(page);
+
+            PDAcroForm theAcroForm = new PDAcroForm(doc);
+            theAcroForm.setNeedAppearances(true);
+            doc.getDocumentCatalog().setAcroForm(theAcroForm);
+            theAcroForm.setDefaultResources(new PDResources());
+
+            PDTextField textBox = new PDTextField(theAcroForm);
+            textBox.setPartialName("SampleField");
+
+            textBox.setDefaultAppearance("/Helv 0 Ff 0 g");
+            // field not added to force repair
+
+            PDAnnotationWidget widget = textBox.getWidgets().get(0);
+            PDRectangle rect = new PDRectangle(50, 750, 200, 20);
+            assertThrows(IllegalArgumentException.class, () -> widget.setParent(textBox));
+            widget.getCOSObject().setItem(COSName.PARENT, widget.getCOSObject());
+            widget.setRectangle(rect);
+            widget.setPage(page);
+
+            page.getAnnotations().add(widget);
+
+            assertTrue(doc.getDocumentCatalog().getAcroForm().getFields().isEmpty());
         }
     }
 
