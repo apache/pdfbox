@@ -163,7 +163,7 @@ public class GlyphLayoutProcessorFop implements GlyphLayoutProcessorInterface
     protected int[] convertCharsToGlyphIds(PDType0Font font, String text)
     {
         MultiByteFont mbf = glyphLayoutFontLoaderFop.getFopFont(font);
-        return text.codePoints().map(cp -> mbf.findGlyphIndex(cp)).toArray();
+        return text.codePoints().map(mbf::findGlyphIndex).toArray();
     }
 
     /**
