@@ -100,4 +100,30 @@ class TestQuality
             Assertions.assertNotEquals(0xFFFFFFFF, renderedImage.getRGB(267, 1329));
         }
     }
+
+    /**
+     * PDFBOX-5403: a stencil mask filled with a pattern repeated many times over a large area
+     * (e.g. one tiling-pattern-filled image per line of text) must not show a hairline seam
+     * between the pattern's own tiles as a visible gap. Combining the mask's alpha with the
+     * pattern's own alpha (see testPDFBox6077) can expose such a seam as a light gray line
+     * cutting through otherwise-solid text, if it isn't first smoothed over.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox5403() throws IOException
+    {
+        File file = new File(TARGET_PDF_DIR, "PDFBOX-5403-bad-rendering.pdf");
+        try (PDDocument doc = Loader.loadPDF(file))
+        {
+            PDFRenderer renderer = new PDFRenderer(doc);
+            BufferedImage renderedImage = renderer.renderImageWithDPI(2, 100);
+            // a pixel within a line of text rendered via a pattern-filled stencil mask; a
+            // hairline tile-boundary seam previously showed through as a washed-out gray streak
+            int rgb = renderedImage.getRGB(159, 115);
+            int red = (rgb >> 16) & 0xFF;
+            Assertions.assertTrue(red < 100,
+                    "expected a dark text pixel but was too light: " + Integer.toHexString(rgb));
+        }
+    }
 }
