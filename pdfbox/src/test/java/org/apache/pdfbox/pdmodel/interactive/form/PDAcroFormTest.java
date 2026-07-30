@@ -489,6 +489,48 @@ public class PDAcroFormTest
         doc.close();
     }
 
+    /**
+     * PDFBOX-6227: Check that cycle is caught in repair.
+     *
+     * @throws IOException 
+     */
+    @Test
+    public void testCycle() throws IOException
+    {
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage();
+        doc.addPage(page);
+
+        PDAcroForm theAcroForm = new PDAcroForm(doc);
+        theAcroForm.setNeedAppearances(true);
+        doc.getDocumentCatalog().setAcroForm(theAcroForm);
+        theAcroForm.setDefaultResources(new PDResources());
+
+        PDTextField textBox = new PDTextField(theAcroForm);
+        textBox.setPartialName("SampleField");
+
+        textBox.setDefaultAppearance("/Helv 0 Ff 0 g");
+        // field not added to force repair
+
+        PDAnnotationWidget widget = textBox.getWidgets().get(0);
+        PDRectangle rect = new PDRectangle(50, 750, 200, 20);
+        try
+        {
+            widget.setParent(textBox);
+            fail("Should have thrown IllegalArgumentException");
+        }
+        catch (IllegalArgumentException ex)
+        {
+        }
+        widget.getCOSObject().setItem(COSName.PARENT, widget.getCOSObject());
+        widget.setRectangle(rect);
+        widget.setPage(page);
+
+        page.getAnnotations().add(widget);
+        assertTrue(doc.getDocumentCatalog().getAcroForm().getFields().isEmpty());
+        doc.close();
+    }
+
     @After
     public void tearDown() throws IOException
     {
@@ -547,4 +589,3 @@ public class PDAcroFormTest
         return count;
     } 
 }
-
