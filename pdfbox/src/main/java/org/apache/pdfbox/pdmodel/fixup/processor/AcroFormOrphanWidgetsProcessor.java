@@ -198,7 +198,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         {
             if (!visited.add(parent))
             {
-                LOG.warn("Field ignored: + " + parent);
+                LOG.warn("Field ignored: " + parent);
                 return null; // Cycle detected
             }
             parent = parent.getCOSDictionary(COSName.PARENT);
