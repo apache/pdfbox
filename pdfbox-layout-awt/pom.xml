@@ -38,9 +38,9 @@
     <inceptionYear>2002</inceptionYear>    
 
     <scm>
-        <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk/pdfbox-layout-awt</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk/pdfbox-layout-awt</developerConnection>
-        <url>https://svn.apache.org/viewvc/pdfbox/trunk/pdfbox-layout-awt</url>
+        <connection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/pdfbox-layout-awt</connection>
+	<developerConnection>scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/3.0/pdfbox-layout-awt</developerConnection>
+	<url>https://svn.apache.org/viewvc/pdfbox/branches/3.0/pdfbox-layout-awt</url>
     </scm>
     
     <dependencies>
