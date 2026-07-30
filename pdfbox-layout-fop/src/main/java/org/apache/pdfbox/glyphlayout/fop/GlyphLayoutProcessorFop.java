@@ -51,7 +51,7 @@ public class GlyphLayoutProcessorFop implements GlyphLayoutProcessorInterface
         the font size must be multiplied by this factor. Otherwise, the
         positioning is wrong.
      */
-    private final float FOP_FONTSIZE_FACTOR = 1e3f;
+    private static final float FOP_FONTSIZE_FACTOR = 1e3f;
 
     /**
      * Constructs a GlyphLayoutProcessorFop
