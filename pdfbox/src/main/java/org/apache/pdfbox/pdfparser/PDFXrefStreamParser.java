@@ -85,9 +85,9 @@ public class PDFXrefStreamParser extends BaseParser
         {
             throw new IOException("Incorrect /W array in XRef: " + Arrays.toString(w));
         }
-        if (w[0] + w[1] + w[2] > 20)
+        if ((w[0] + w[1] + w[2] > 20) || (w[0] + w[1] + w[2] == 0))
         {
-            // PDFBOX-6037
+            // PDFBOX-6037/PDFBOX-6229
             throw new IOException("Incorrect /W array in XRef: " + Arrays.toString(w));
         }
 
