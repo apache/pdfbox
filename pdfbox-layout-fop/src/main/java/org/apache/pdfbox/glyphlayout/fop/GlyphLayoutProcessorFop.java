@@ -121,7 +121,7 @@ public class GlyphLayoutProcessorFop implements GlyphLayoutProcessorInterface
      */
     public PDType0Font loadFont(PDDocument pdDocument, InputStream inputStream) throws IOException
     {
-        return glyphLayoutFontLoaderFop.loadFont(pdDocument, inputStream, true);
+        return glyphLayoutFontLoaderFop.loadFont(pdDocument, inputStream);
     }
 
     /**
