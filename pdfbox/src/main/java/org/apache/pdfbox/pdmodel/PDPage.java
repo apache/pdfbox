@@ -168,13 +168,28 @@ public class PDPage implements COSObjectable, PDContentStream
                     {
                         resourceCache.removeCIDFont((COSObject) descendantFontBaseObject);
                     }
+                    // the font descriptor of a type0 font is part of the descendant font not of the parent font
+                    COSBase descFont = descendantFonts.getObject(0);
+                    if (descFont instanceof COSDictionary)
+                    {
+                        COSObject fdIndirectObject = ((COSDictionary) descFont)
+                                .getCOSObject(COSName.FONT_DESC);
+                        // remove PDFontDescriptor from cache
+                        if (fdIndirectObject != null)
+                        {
+                            resourceCache.removeFontDescriptor(fdIndirectObject);
+                        }
+                    }
                 }
             }
-            COSObject fdIndirectObject = fontDict.getCOSObject(COSName.FONT_DESC);
-            // remove PDFontDescriptor from cache
-            if (fdIndirectObject != null)
+            else
             {
-                resourceCache.removeFontDescriptor(fdIndirectObject);
+                COSObject fdIndirectObject = fontDict.getCOSObject(COSName.FONT_DESC);
+                // remove PDFontDescriptor from cache
+                if (fdIndirectObject != null)
+                {
+                    resourceCache.removeFontDescriptor(fdIndirectObject);
+                }
             }
         }
         for (COSObject cosObject : getIndirectResourceObjects(resources, COSName.XOBJECT))

@@ -108,7 +108,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
         if (cachedCIDFont == null)
         {
             cachedCIDFont = PDFontFactory
-                    .createDescendantFont((COSDictionary) descendantFontDictBase);
+                    .createDescendantFont((COSDictionary) descendantFontDictBase, resourceCache);
             if (resourceCache != null && descendantFontBaseObject instanceof COSObject)
             {
                 resourceCache.put((COSObject) descendantFontBaseObject, cachedCIDFont);

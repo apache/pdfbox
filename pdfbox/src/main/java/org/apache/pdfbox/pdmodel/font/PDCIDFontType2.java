@@ -37,6 +37,7 @@ import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.Matrix;
@@ -62,11 +63,14 @@ public class PDCIDFontType2 extends PDCIDFont
      * Constructor.
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
+     * @param resourceCache ResourceCache, can be null.
+     * 
      * @throws IOException if the font could not be read
      */
-    public PDCIDFontType2(COSDictionary fontDictionary) throws IOException
+    public PDCIDFontType2(COSDictionary fontDictionary, ResourceCache resourceCache)
+            throws IOException
     {
-        this(fontDictionary, null);
+        this(fontDictionary, null, resourceCache);
     }
     
     /**
@@ -74,14 +78,14 @@ public class PDCIDFontType2 extends PDCIDFont
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
      * @param trueTypeFont The true type font used to create the parent font
+     * @param resourceCache ResourceCache, can be null.
+     * 
      * @throws IOException if the font could not be read
      */
-    public PDCIDFontType2(COSDictionary fontDictionary, TrueTypeFont trueTypeFont)
-            throws IOException
+    public PDCIDFontType2(COSDictionary fontDictionary, TrueTypeFont trueTypeFont,
+            ResourceCache resourceCache) throws IOException
     {
-        super(fontDictionary);
-
-        PDFontDescriptor fd = getFontDescriptor();
+        super(fontDictionary, resourceCache);
         if (trueTypeFont != null)
         {
             ttf = trueTypeFont;
@@ -95,8 +99,8 @@ public class PDCIDFontType2 extends PDCIDFont
         {
             boolean fontIsDamaged = false;
             TrueTypeFont ttfFont = null;
-            
             PDStream stream = null;
+            PDFontDescriptor fd = getFontDescriptor();
             if (fd != null)
             {
                 stream = fd.getFontFile2();
@@ -155,9 +159,8 @@ public class PDCIDFontType2 extends PDCIDFont
     {
         TrueTypeFont ttfFont;
 
-        CIDFontMapping mapping = FontMappers.instance()
-                .getCIDFont(getBaseFont(), getFontDescriptor(),
-                        getCIDSystemInfo());
+        CIDFontMapping mapping = FontMappers.instance().getCIDFont(getBaseFont(),
+                getFontDescriptor(), getCIDSystemInfo());
         if (mapping.isCIDFont())
         {
             ttfFont = mapping.getFont();
@@ -350,6 +353,7 @@ public class PDCIDFontType2 extends PDCIDFont
         return width;
     }
 
+    @Override
     protected byte[] encode(int unicode, PDType0Font parent)
     {
         int cid = -1;

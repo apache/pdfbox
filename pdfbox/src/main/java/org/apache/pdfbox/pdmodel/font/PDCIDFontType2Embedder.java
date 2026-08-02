@@ -733,6 +733,6 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
      */
     public PDCIDFont getCIDFont() throws IOException
     {
-        return new PDCIDFontType2(cidFont, ttf);
+        return new PDCIDFontType2(cidFont, ttf, null);
     }
 }
