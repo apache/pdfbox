@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdfwriter;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.charset.StandardCharsets;
 
@@ -220,4 +221,11 @@ class OperatorNameTest
                 OperatorName.END_COMPATIBILITY_SECTION.getBytes(StandardCharsets.US_ASCII),
                 OperatorName.getNameAsBytes(OperatorName.END_COMPATIBILITY_SECTION));
     }
+
+    @Test
+    void testUnkownOperator()
+    {
+        assertThrows(IllegalArgumentException.class, () -> OperatorName.getNameAsBytes("UNKNOWN"));
+    }
+
 }
