@@ -23,9 +23,11 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.Bidi;
+import java.util.ArrayList;
 import java.util.Objects;
 
 import org.apache.pdfbox.pdmodel.ContentStreamForGlyphLayoutInterface;
@@ -140,7 +142,7 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
      * @throws FontFormatException if the font is bad
      */
     public PDType0Font loadFont(PDDocument pdDocument, InputStream inputStream,
-            GlyphLayoutFontLoaderAwt.FontOptions fontOptions) throws IOException, FontFormatException
+                                GlyphLayoutFontLoaderAwt.FontOptions fontOptions) throws IOException, FontFormatException
     {
         return glyphLayoutFontLoaderAwt.loadFont(pdDocument, inputStream, fontOptions);
     }
@@ -154,12 +156,12 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
      * @param fontOptions options for font
      *
      * @return a PDType0Font font.
-     * 
+     *
      * @throws IOException if font can not be loaded
      * @throws FontFormatException if the font is bad
      */
     public PDType0Font loadFont(PDDocument pdDocument, InputStream inputStream, boolean embedSubset,
-            GlyphLayoutFontLoaderAwt.FontOptions fontOptions) throws IOException, FontFormatException
+                                GlyphLayoutFontLoaderAwt.FontOptions fontOptions) throws IOException, FontFormatException
     {
         return glyphLayoutFontLoaderAwt.loadFont(pdDocument, inputStream, embedSubset, fontOptions);
     }
@@ -193,6 +195,60 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
         return awtFont.layoutGlyphVector(fontRenderContext, chars, 0, chars.length, localFlags);
     }
 
+
+    /**
+     * Class for text and Bidi-Level
+     */
+    public static class TextAndBidiLevel {
+        private final String text;
+        private final int bidiLevel;
+
+        TextAndBidiLevel(String text, int bidiLevel){
+            this.text = text;
+            this.bidiLevel = bidiLevel;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public int getBidiLevel() {
+            return bidiLevel;
+        }
+    }
+
+    /**
+     * Compute the string width for a unidirectional string
+     * @param font
+     * @param fontSize
+     * @param text
+     * @param bidiLevel
+     * @return string width
+     */
+    public float getStringWidthUni(PDType0Font font, float fontSize, String text, int bidiLevel)
+    {
+        GlyphVector glyphVector = computeGlyphVector(font, fontSize, text, bidiLevel);
+        Rectangle2D rect = glyphVector.getLogicalBounds();
+        return (float) rect.getWidth();
+    }
+
+    /**
+     * Compute the string width for a string
+     * @param font
+     * @param fontSize
+     * @param text
+     * @return string width
+     */
+    public float getStringWidth(PDType0Font font, float fontSize, String text)
+    {
+        float width = 0f;
+        ArrayList<TextAndBidiLevel> textAndBidiLevels = doBidiSplittingAndReordering(text);
+        for (TextAndBidiLevel textAndBidiLevel:  textAndBidiLevels) {
+            width += getStringWidthUni(font, fontSize, textAndBidiLevel.getText(), textAndBidiLevel.getBidiLevel());
+        }
+        return width;
+    }
+
     /**
      * Shows a text using glyph positioning (if needed)
      *
@@ -205,8 +261,23 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
      * @throws IllegalArgumentException if glyphs are missing
      */
     @Override
-    public void showText(ContentStreamForGlyphLayoutInterface contentStream, PDType0Font font, float fontSize, String text) throws IOException
+    public void showText(ContentStreamForGlyphLayoutInterface contentStream, PDType0Font font, float fontSize, String text) throws IOException {
+        ArrayList<TextAndBidiLevel> textAndBidiLevels = doBidiSplittingAndReordering(text);
+        for (TextAndBidiLevel textAndBidiLevel:  textAndBidiLevels) {
+            showTextUni(contentStream, font, fontSize, textAndBidiLevel.getText(), textAndBidiLevel.getBidiLevel());
+        }
+    }
+
+    /**
+     * Do Bidi splitting and reordering
+     * @param text
+     * @return
+     * @throws IOException
+     */
+    public ArrayList<TextAndBidiLevel> doBidiSplittingAndReordering(String text)
     {
+        ArrayList<TextAndBidiLevel> textAndBidiLevels = new ArrayList<>();
+
         Objects.requireNonNull(text, "Text must be set");
 
         if (Bidi.requiresBidi(text.toCharArray(), 0, text.length()))
@@ -236,18 +307,19 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
                     int limit = bidi.getRunLimit(index);
                     int bidiLevel = levels[index];
                     String part = text.substring(start, limit);
-                    showTextUni(contentStream, font, fontSize, part, bidiLevel);
+                    textAndBidiLevels.add(new TextAndBidiLevel(part, bidiLevel));
                 }
             }
             else
             {
-                showTextUni(contentStream, font, fontSize, text, bidi.getBaseLevel());
+                textAndBidiLevels.add(new TextAndBidiLevel(text, bidi.getBaseLevel()));
             }
         }
         else
         {
-            showTextUni(contentStream, font, fontSize, text, Bidi.DIRECTION_LEFT_TO_RIGHT);
+            textAndBidiLevels.add(new TextAndBidiLevel(text, Bidi.DIRECTION_LEFT_TO_RIGHT));
         }
+        return textAndBidiLevels;
     }
 
     /**
@@ -267,7 +339,7 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
         Objects.requireNonNull(contentStream, "contentStream must be set");
 
         GlyphVector glyphVector = computeGlyphVector(font, fontSize, text, bidiLevel);
-        
+
         // check for adjustment not needed:
         // glyphVector.getLayoutFlags() & FLAG_HAS_POSITION_ADJUSTMENTS is always true
         // because of horizontal adjustments in every string except one character string

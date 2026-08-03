@@ -30,6 +30,7 @@ package org.apache.pdfbox.glyphlayout.awt;
 import java.awt.FontFormatException;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.text.Bidi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -52,7 +53,7 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
      * Check that missing glyph is caught like in main pdfbox.
      *
      * @throws IOException
-     * @throws FontFormatException 
+     * @throws FontFormatException
      */
     @Test
     void testMissingGlyph() throws IOException, FontFormatException
@@ -63,8 +64,8 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
 
         try (PDDocument doc = new PDDocument())
         {
-            PDType0Font lohitBengaliFont = createPdType0Font(glyphLayoutProcessor, doc, lohitBengaliPath, 
-                            new GlyphLayoutFontLoaderAwt.FontOptions());
+            PDType0Font lohitBengaliFont = createPdType0Font(glyphLayoutProcessor, doc, lohitBengaliPath,
+                    new GlyphLayoutFontLoaderAwt.FontOptions());
 
             PDPage page = new PDPage();
             doc.addPage(page);
@@ -72,7 +73,7 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
             {
                 cs.setGlyphLayoutProcessor(glyphLayoutProcessor);
 
-                IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> 
+                IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                         showComposites(cs, lohitBengaliFont, 1, 0, 0, "123ABC"));
                 assertEquals("Missing glyph in font 'Lohit Bengali' for the character 'A', codePoint: 65 (U+0041).", ex.getMessage());
 
@@ -80,7 +81,7 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
             }
         }
     }
-  
+
     @Test
     void testLigaturesAndKerning() throws IOException, FontFormatException, URISyntaxException
     {
@@ -100,15 +101,15 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
             PDType0Font firaFont = createPdType0Font(glyphLayoutProcessor, doc, firaPath);
             PDType0Font firaLigFont = createPdType0Font(glyphLayoutProcessor, doc, firaPath,
                     new GlyphLayoutFontLoaderAwt.FontOptions().setLigaturesOn());
-            
+
             PDType0Font dejavuFont = createPdType0Font(glyphLayoutProcessor, doc, dejavuPath);
-            
+
             PDType0Font dejavuLigFont = createPdType0Font(glyphLayoutProcessor, doc, dejavuPath,
                     new GlyphLayoutFontLoaderAwt.FontOptions().setLigaturesOn());
-            
+
             PDType0Font dejavuKernFont = createPdType0Font(glyphLayoutProcessor, doc, dejavuPath,
                     new GlyphLayoutFontLoaderAwt.FontOptions().setKerningOn());
-            
+
             PDType0Font dejavuLigKernFont = createPdType0Font(glyphLayoutProcessor, doc, dejavuPath,
                     new GlyphLayoutFontLoaderAwt.FontOptions().setLigaturesOn().setKerningOn());
 
@@ -117,13 +118,29 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
 
             PDType0Font lohitBengaliFont = createPdType0Font(glyphLayoutProcessor, doc, lohitBengaliPath,
                     new GlyphLayoutFontLoaderAwt.FontOptions());
-            
+
+
+            float f1 = dejavuFont.getStringWidth(DEJAVU_STRING) * dejavuFont.getFontMatrix().getScaleX() * fontSize;
+            float f2 = dejavuLigKernFont.getStringWidth(DEJAVU_STRING) * dejavuLigKernFont.getFontMatrix().getScaleX() * fontSize;
+            float f3 = glyphLayoutProcessor.getStringWidth(dejavuFont, fontSize, DEJAVU_STRING);
+            float f4 = glyphLayoutProcessor.getStringWidth(dejavuLigKernFont, fontSize, DEJAVU_STRING);
+            float f5 = glyphLayoutProcessor.getStringWidthUni(dejavuFont, fontSize, DEJAVU_STRING, Bidi.DIRECTION_LEFT_TO_RIGHT);
+            float f6 = glyphLayoutProcessor.getStringWidthUni(dejavuLigKernFont, fontSize, DEJAVU_STRING, Bidi.DIRECTION_LEFT_TO_RIGHT);
+            float f7 = glyphLayoutProcessor.getStringWidthUni(dejavuFont, fontSize, DEJAVU_STRING, Bidi.DIRECTION_DEFAULT_RIGHT_TO_LEFT);
+            float f8 = glyphLayoutProcessor.getStringWidthUni(dejavuLigKernFont, fontSize, DEJAVU_STRING, Bidi.DIRECTION_RIGHT_TO_LEFT);
+
+            System.out.println("widths: " + f1 + " " + f2);
+            System.out.println("widths: " + f3 + " " + f4);
+            System.out.println("widths: " + f5 + " " + f6);
+            System.out.println("widths: " + f7 + " " + f8);
+
+
             PDPage page = new PDPage();
             doc.addPage(page);
             try (PDPageContentStream cs = new PDPageContentStream(doc, page))
             {
                 cs.setGlyphLayoutProcessor(glyphLayoutProcessor);
-                
+
                 float x = page.getBBox().getLowerLeftX() + fontSize;
                 float y = page.getBBox().getUpperRightY() - fontSize;
                 y = showComposites(cs, firaFont, fontSize, x, y, FIRACODE_STRING);
@@ -154,7 +171,7 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
      * break the text into lines and show them
      */
     private float showComposites(PDPageContentStream cs, PDType0Font font, float fontSize,
-            float x, float y, String s) throws IOException
+                                 float x, float y, String s) throws IOException
     {
 
         s = s.replaceAll("\t", "    ");
