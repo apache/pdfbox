@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.Bidi;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.pdfbox.pdmodel.ContentStreamForGlyphLayoutInterface;
@@ -225,7 +227,7 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
      * @param bidiLevel
      * @return string width
      */
-    public float getStringWidthUni(PDType0Font font, float fontSize, String text, int bidiLevel)
+    protected float getStringWidthUni(PDType0Font font, float fontSize, String text, int bidiLevel)
     {
         GlyphVector glyphVector = computeGlyphVector(font, fontSize, text, bidiLevel);
         Rectangle2D rect = glyphVector.getLogicalBounds();
@@ -242,7 +244,7 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
     public float getStringWidth(PDType0Font font, float fontSize, String text)
     {
         float width = 0f;
-        ArrayList<TextAndBidiLevel> textAndBidiLevels = doBidiSplittingAndReordering(text);
+        List<TextAndBidiLevel> textAndBidiLevels = doBidiSplittingAndReordering(text);
         for (TextAndBidiLevel textAndBidiLevel:  textAndBidiLevels) {
             width += getStringWidthUni(font, fontSize, textAndBidiLevel.getText(), textAndBidiLevel.getBidiLevel());
         }
@@ -262,7 +264,7 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
      */
     @Override
     public void showText(ContentStreamForGlyphLayoutInterface contentStream, PDType0Font font, float fontSize, String text) throws IOException {
-        ArrayList<TextAndBidiLevel> textAndBidiLevels = doBidiSplittingAndReordering(text);
+        List<TextAndBidiLevel> textAndBidiLevels = doBidiSplittingAndReordering(text);
         for (TextAndBidiLevel textAndBidiLevel:  textAndBidiLevels) {
             showTextUni(contentStream, font, fontSize, textAndBidiLevel.getText(), textAndBidiLevel.getBidiLevel());
         }
@@ -274,7 +276,7 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
      * @return
      * @throws IOException
      */
-    public ArrayList<TextAndBidiLevel> doBidiSplittingAndReordering(String text)
+    public List<TextAndBidiLevel> doBidiSplittingAndReordering(String text)
     {
         ArrayList<TextAndBidiLevel> textAndBidiLevels = new ArrayList<>();
 
@@ -319,7 +321,7 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
         {
             textAndBidiLevels.add(new TextAndBidiLevel(text, Bidi.DIRECTION_LEFT_TO_RIGHT));
         }
-        return textAndBidiLevels;
+        return Collections.unmodifiableList(textAndBidiLevels);
     }
 
     /**

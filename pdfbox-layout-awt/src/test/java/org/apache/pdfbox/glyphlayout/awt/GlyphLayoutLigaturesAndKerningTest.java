@@ -124,16 +124,9 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
             float f2 = dejavuLigKernFont.getStringWidth(DEJAVU_STRING) * dejavuLigKernFont.getFontMatrix().getScaleX() * fontSize;
             float f3 = glyphLayoutProcessor.getStringWidth(dejavuFont, fontSize, DEJAVU_STRING);
             float f4 = glyphLayoutProcessor.getStringWidth(dejavuLigKernFont, fontSize, DEJAVU_STRING);
-            float f5 = glyphLayoutProcessor.getStringWidthUni(dejavuFont, fontSize, DEJAVU_STRING, Bidi.DIRECTION_LEFT_TO_RIGHT);
-            float f6 = glyphLayoutProcessor.getStringWidthUni(dejavuLigKernFont, fontSize, DEJAVU_STRING, Bidi.DIRECTION_LEFT_TO_RIGHT);
-            float f7 = glyphLayoutProcessor.getStringWidthUni(dejavuFont, fontSize, DEJAVU_STRING, Bidi.DIRECTION_DEFAULT_RIGHT_TO_LEFT);
-            float f8 = glyphLayoutProcessor.getStringWidthUni(dejavuLigKernFont, fontSize, DEJAVU_STRING, Bidi.DIRECTION_RIGHT_TO_LEFT);
 
             System.out.println("widths: " + f1 + " " + f2);
             System.out.println("widths: " + f3 + " " + f4);
-            System.out.println("widths: " + f5 + " " + f6);
-            System.out.println("widths: " + f7 + " " + f8);
-
 
             PDPage page = new PDPage();
             doc.addPage(page);
