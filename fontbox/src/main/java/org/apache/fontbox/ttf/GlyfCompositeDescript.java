@@ -102,6 +102,12 @@ public class GlyfCompositeDescript extends GlyfDescript
 
         for (GlyfCompositeComp comp : components)
         {
+            if (firstIndex > Short.MAX_VALUE)
+            {
+                // PDFBOX-6231: protect against wide nested composite glyphs
+                LOG.error("firstIndex is " + firstIndex + ", aborting resolve");
+                break;
+            }
             comp.setFirstIndex(firstIndex);
             comp.setFirstContour(firstContour);
 
