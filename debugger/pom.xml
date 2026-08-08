@@ -57,8 +57,7 @@
     </dependency>
     <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcpkix-jdk18on</artifactId>
-        <version>${bouncycastle.version}</version>
+        <artifactId>bcpkix-jdk15to18</artifactId>
     </dependency>
     <!-- For legal reasons (incompatible license), these two dependencies 
         are to be used only in the tests and may not be distributed. 
