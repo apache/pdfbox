@@ -55,7 +55,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <bouncycastle.version>1.85</bouncycastle.version>
+    <bouncycastle.version>1.85.2</bouncycastle.version>
     <junit.version>5.13.4</junit.version>
     <jbig2.version>3.0.5</jbig2.version>
     <jai.version>1.4.0</jai.version>
@@ -70,6 +70,17 @@
     <surefireArgLine />
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bc-jdk18on-bom</artifactId>
+            <version>${bouncycastle.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <build>
     <plugins>
