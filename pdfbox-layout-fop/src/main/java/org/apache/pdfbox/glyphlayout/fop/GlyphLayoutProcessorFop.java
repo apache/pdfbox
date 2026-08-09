@@ -279,7 +279,7 @@ public class GlyphLayoutProcessorFop extends AbstractGlyphLayoutProcessor implem
                     contentStream.showGlyphsWithPositioning(ga);
                     ga.clear();
                 }
-                contentStream.setTextRise(-py);
+                contentStream.setTextRise(py);
             }
             if (Math.abs(px) >= delta)
             {
