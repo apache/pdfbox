@@ -17,20 +17,9 @@
 
 package org.apache.pdfbox.glyphlayout.awt;
 
-/**
- * Examples for ligatures and kerning
- * See <a href="https://issues.apache.org/jira/browse/PDFBOX-4951">PDFBOX-4951</a>
- *
- * The default processing of GlyphLayoutProcessor is with ligatures and kerning disabled.
- * You can enable ligatures and kerning using FontOptions, see below.
- *
- * @author Volker Kunert
- */
-
 import java.awt.FontFormatException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.text.Bidi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,6 +30,16 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
+/**
+ * Examples for ligatures and kerning
+ * See <a href="https://issues.apache.org/jira/browse/PDFBOX-4951">PDFBOX-4951</a>
+ *
+ * The default processing of GlyphLayoutProcessor is with ligatures and kerning disabled.
+ * You can enable ligatures and kerning using FontOptions, see below.
+ *
+ * @author Volker Kunert
+ * @author Tilman Hausherr
+ */
 class GlyphLayoutLigaturesAndKerningTest extends TestBase
 {
     static final String FIRACODE_STRING = "!= == === >= <=";
@@ -167,8 +166,8 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
                                  float x, float y, String s) throws IOException
     {
 
-        s = s.replaceAll("\t", "    ");
-        String[] lines = s.split("[\n]");
+        s = s.replaceAll("\\t", "    ");
+        String[] lines = s.split("[\\n]");
 
         float height = font.getBoundingBox().getHeight();
 
