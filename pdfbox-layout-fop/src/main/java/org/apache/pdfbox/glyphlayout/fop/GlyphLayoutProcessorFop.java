@@ -20,7 +20,6 @@ package org.apache.pdfbox.glyphlayout.fop;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.Bidi;
-import java.util.Arrays;
 import java.util.Objects;
 import org.apache.fop.fonts.Font;
 
@@ -139,7 +138,10 @@ public class GlyphLayoutProcessorFop extends AbstractGlyphLayoutProcessor implem
     @Override
     protected float getStringWidthUni(PDType0Font font, float fontSize, String text, int bidiLevel) throws IOException {
         TextAndGpa textAndGpa = computeGlyphsAndPositions(font, fontSize, text, bidiLevel);
-        return font.getStringWidth(textAndGpa.getText());
+        // PDType0Font.getStringWidth returns glyph widths in 1000-units. Convert to user space using font matrix and fontSize
+        float raw = font.getStringWidth(textAndGpa.getText());
+        float scaleX = font.getFontMatrix().getScaleX();
+        return raw * scaleX * fontSize;
     }
 
 
@@ -277,7 +279,7 @@ public class GlyphLayoutProcessorFop extends AbstractGlyphLayoutProcessor implem
                     contentStream.showGlyphsWithPositioning(ga);
                     ga.clear();
                 }
-                contentStream.setTextRise(py);
+                contentStream.setTextRise(-py);
             }
             if (Math.abs(px) >= delta)
             {
@@ -320,8 +322,9 @@ public class GlyphLayoutProcessorFop extends AbstractGlyphLayoutProcessor implem
     protected int[][] createZeroGpa(int length)
     {
         int[][] gpa = new int[length][];
-        int[] z4 = new int[] { 0, 0, 0, 0 };
-        Arrays.fill(gpa, z4);
+        for (int i = 0; i < length; i++) {
+            gpa[i] = new int[] { 0, 0, 0, 0 };
+        }
         return gpa;
     }
 

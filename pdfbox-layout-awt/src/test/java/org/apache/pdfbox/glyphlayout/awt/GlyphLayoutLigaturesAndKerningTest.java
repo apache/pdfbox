@@ -30,7 +30,6 @@ package org.apache.pdfbox.glyphlayout.awt;
 import java.awt.FontFormatException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.text.Bidi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -125,8 +124,8 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
             float f3 = glyphLayoutProcessor.getStringWidth(dejavuFont, fontSize, DEJAVU_STRING);
             float f4 = glyphLayoutProcessor.getStringWidth(dejavuLigKernFont, fontSize, DEJAVU_STRING);
 
-            System.out.println("widths: " + f1 + " " + f2);
-            System.out.println("widths: " + f3 + " " + f4);
+            assertEquals(f1, f3, 0.001f);
+            assertEquals(f2, f4, 0.001f);
 
             PDPage page = new PDPage();
             doc.addPage(page);
@@ -167,8 +166,8 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
                                  float x, float y, String s) throws IOException
     {
 
-        s = s.replaceAll("\t", "    ");
-        String[] lines = s.split("[\n]");
+        s = s.replaceAll("\\t", "    ");
+        String[] lines = s.split("[\\n]");
 
         float height = font.getBoundingBox().getHeight();
 
