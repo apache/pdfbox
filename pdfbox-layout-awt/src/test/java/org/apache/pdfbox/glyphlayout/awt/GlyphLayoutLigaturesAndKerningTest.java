@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -144,6 +145,26 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
                 cs.showText(" ");
                 cs.showText(BENGALI_STRING2);
                 cs.endText();
+
+                // Test code for the string widths - the widths be different due to kerning
+                float f1 = dejavuFont.getStringWidth(DEJAVU_STRING) * dejavuFont.getFontMatrix().getScaleX() * fontSize;
+                float f2 = dejavuLigKernFont.getStringWidth(DEJAVU_STRING) * dejavuLigKernFont.getFontMatrix().getScaleX() * fontSize;
+                float f3 = glyphLayoutProcessor.getStringWidth(dejavuFont, fontSize, DEJAVU_STRING);
+                float f4 = glyphLayoutProcessor.getStringWidth(dejavuLigKernFont, fontSize, DEJAVU_STRING);
+
+                // equality is expected here, but this shows that the ordinary getStringWidth() isn't helpful
+                assertEquals(f1, f2);
+
+                // kerning output is obviously smaller
+                assertTrue(f4 < f1);
+                assertTrue(f4 < f3);
+
+                cs.moveTo(x, 737);
+                cs.lineTo(x + f3, 737);
+                cs.stroke();
+                cs.moveTo(x, 676);
+                cs.lineTo(x + f4, 676);
+                cs.stroke();
             }
             doc.save(outputFilename);
         }
