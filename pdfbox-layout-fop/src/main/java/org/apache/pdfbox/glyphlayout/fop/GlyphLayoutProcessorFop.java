@@ -26,6 +26,7 @@ import org.apache.fop.fonts.GlyphMapping;
 import org.apache.fop.fonts.MultiByteFont;
 import org.apache.fop.traits.MinOptMax;
 
+import org.apache.pdfbox.pdmodel.AbstractGlyphLayoutProcessor;
 import org.apache.pdfbox.pdmodel.ContentStreamForGlyphLayoutInterface;
 import org.apache.pdfbox.pdmodel.GlyphLayoutProcessorInterface;
 import org.apache.pdfbox.pdmodel.GlyphsAndPositions;
@@ -41,7 +42,7 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
  *
  * @author Volker Kunert
  */
-public class GlyphLayoutProcessorFop implements GlyphLayoutProcessorInterface
+public class GlyphLayoutProcessorFop extends AbstractGlyphLayoutProcessor implements GlyphLayoutProcessorInterface
 {
 
     private final GlyphLayoutFontLoaderFop glyphLayoutFontLoaderFop;
@@ -51,7 +52,7 @@ public class GlyphLayoutProcessorFop implements GlyphLayoutProcessorInterface
         the font size must be multiplied by this factor. Otherwise, the
         positioning is wrong.
      */
-    private static final float FOP_FONTSIZE_FACTOR = 1e3f;
+    private static final float FOP_FONTSIZE_FACTOR = 1000f;
 
     /**
      * Constructs a GlyphLayoutProcessorFop
@@ -125,14 +126,66 @@ public class GlyphLayoutProcessorFop implements GlyphLayoutProcessorInterface
     }
 
     /**
+     * Compute the string width for a unidirectional string
+     *
+     * @param font to be used
+     * @param fontSize font size
+     * @param text text
+     * @param bidiLevel Bidi Level
+     * @return string width
+     */
+    @Override
+    protected float getStringWidthUni(PDType0Font font, float fontSize, String text, int bidiLevel) throws IOException
+    {
+        TextAndGpa textAndGpa = computeGlyphsAndPositions(font, fontSize, text, bidiLevel);
+        // PDType0Font.getStringWidth returns glyph widths in 1000-units. Convert to user space using font matrix and fontSize
+        float raw = font.getStringWidth(textAndGpa.getText());
+        float scaleX = font.getFontMatrix().getScaleX();
+        return raw * scaleX * fontSize;
+    }
+
+    /**
+     * Internal class for text, positioning and GPA
+     */
+    protected static class TextAndGpa
+    {
+
+        private final String text;
+        private final boolean positioning;
+        private final int[][] gpa;
+
+        public TextAndGpa(String text, boolean positioning, int[][] gpa)
+        {
+            this.text = text;
+            this.positioning = positioning;
+            this.gpa = gpa;
+        }
+
+        public String getText()
+        {
+            return text;
+        }
+
+        public boolean hasPositioning()
+        {
+            return positioning;
+        }
+
+        public int[][] getGpa()
+        {
+            return gpa;
+        }
+    }
+
+    /**
      * Computes glyph positioning
      *
      * @param font to be used
      * @param fontSize font size
      * @param text text to show
-     * @param bidiLevel
+     * @param bidiLevel Bidi level
      */
-    protected GlyphMapping computeGlyphAndPositions(PDType0Font font, float fontSize, String text, int bidiLevel)
+    protected TextAndGpa computeGlyphsAndPositions(PDType0Font font, float fontSize, String text, int bidiLevel)
     {
         Objects.requireNonNull(font, "Font must be set");
         Objects.requireNonNull(text, "Text must be set");
@@ -146,11 +199,22 @@ public class GlyphLayoutProcessorFop implements GlyphLayoutProcessorInterface
 
         org.apache.fop.fonts.Font fopFont = new Font(mbf.getFontName(), null, mbf, (int) (fontSize * FOP_FONTSIZE_FACTOR));
 
-        return GlyphMapping.doGlyphMapping(
+        GlyphMapping glyphMapping = GlyphMapping.doGlyphMapping(
                 new FopStringTextFragment(text), 0, text.length() - 1, fopFont,
                 letterSpaceIPD, letterSpaceAdjustArray, ' ',
                 ' ', //?
                 false, bidiLevel, false, true, false);
+
+        text = glyphMapping.mapping != null ? glyphMapping.mapping : text;
+        boolean positioning = glyphMapping.gposAdjustments != null;
+        int[][] gpa = positioning ? glyphMapping.gposAdjustments : createZeroGpa(text.length());
+
+        if (bidiLevel % 2 == Bidi.DIRECTION_RIGHT_TO_LEFT)
+        {
+            gpa = reverseGpa(gpa);
+            text = new StringBuilder(text).reverse().toString();
+        }
+        return new TextAndGpa(text, positioning, gpa);
     }
 
     /**
@@ -167,76 +231,18 @@ public class GlyphLayoutProcessorFop implements GlyphLayoutProcessorInterface
     }
 
     /**
-     * Shows a text using glyph positioning (if needed)
+     * Shows unidirectional text using positioning
      *
      * @param contentStream the content stream
      * @param font to be used
      * @param fontSize font size
      * @param text text to show
+     * @param bidiLevel Bidi level*
+     *
      * @throws IOException if an I/O exception occurs
      * @throws IllegalArgumentException if glyphs are missing
      */
     @Override
-    public void showText(ContentStreamForGlyphLayoutInterface contentStream, PDType0Font font, float fontSize, String text) throws IOException
-    {
-        Objects.requireNonNull(text, "Text must be set");
-
-        if (Bidi.requiresBidi(text.toCharArray(), 0, text.length()))
-        {
-            Bidi bidi = new Bidi(text, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT);
-            if (bidi.isMixed())
-            {
-                // Split and Reorder
-                // See PDFTextStripper.handleDirection
-                // collect individual bidi information
-                int runCount = bidi.getRunCount();
-                byte[] levels = new byte[runCount];
-                Integer[] runs = new Integer[runCount];
-
-                for (int i = 0; i < runCount; i++)
-                {
-                    levels[i] = (byte) bidi.getRunLevel(i);
-                    runs[i] = i;
-                }
-                // reorder individual parts based on their levels
-                Bidi.reorderVisually(levels, 0, runs, 0, runCount);
-
-                for (int i = 0; i < runCount; i++)
-                {
-                    int index = runs[i];
-                    int start = bidi.getRunStart(index);
-                    int limit = bidi.getRunLimit(index);
-                    int bidiLevel = levels[index];
-
-                    // Map to correct value for GlyphMapping.doGlyphMapping
-                    // 0 LTR equal in java.text.Bidi and org.apache.fop.traits.Direction
-                    // 1 RTL equal in java.text.Bidi and org.apache.fop.traits.Direction
-                    bidiLevel = bidiLevel % 2; // even LTR, odd RTL
-                    String part = text.substring(start, limit);
-                    showTextUni(contentStream, font, fontSize, part, bidiLevel);
-                }
-            }
-            else
-            {
-                showTextUni(contentStream, font, fontSize, text, bidi.getBaseLevel());
-            }
-        }
-        else
-        {
-            showTextUni(contentStream, font, fontSize, text, Bidi.DIRECTION_LEFT_TO_RIGHT);
-        }
-    }
-
-    /**
-     * Shows a text using FOP positioning
-     *
-     * @param contentStream
-     * @param font
-     * @param text the text to show
-     * @param fontSize
-     * @param bidiLevel
-     * @throws IOException if an I/O error occurs
-     */
     protected void showTextUni(ContentStreamForGlyphLayoutInterface contentStream, PDType0Font font, float fontSize,
             String text, int bidiLevel) throws IOException
     {
@@ -244,33 +250,20 @@ public class GlyphLayoutProcessorFop implements GlyphLayoutProcessorInterface
         Objects.requireNonNull(text, "Text must be set");
         Objects.requireNonNull(contentStream, "contentStream must be set");
 
-        GlyphMapping glyphMapping = computeGlyphAndPositions(font, fontSize, text, bidiLevel);
+        TextAndGpa textAndGpa = computeGlyphsAndPositions(font, fontSize, text, bidiLevel);
+        text = textAndGpa.getText();
+        int[][] gpa = textAndGpa.getGpa();
+        boolean hasPositioning = textAndGpa.hasPositioning();
 
-        text = glyphMapping.mapping == null ? text : glyphMapping.mapping;
-
-        int[][] gpa = glyphMapping.gposAdjustments != null ? glyphMapping.gposAdjustments : createZeroGpa(text.length());
-
-        if (bidiLevel == Bidi.DIRECTION_RIGHT_TO_LEFT)
-        {
-            gpa = reverseGpa(gpa);
-            text = new StringBuilder(text).reverse().toString();
-        }
         int[] glyphIds = convertCharsToGlyphIds(font, text);
 
-        if (glyphIds.length != text.length())
+        if (glyphIds.length != text.length() && hasPositioning)
         {
-            if (glyphMapping.gposAdjustments == null)
-            {
-                gpa = createZeroGpa(glyphIds.length);
-            }
-            else
-            {
-                // This case:
-                // letters from the supplementary multilingual plane AND position adjustments
-                // is not implemented
-                throw new IllegalStateException("glyphIds.length != text.length() and gposAdjustments!=null"
-                        + glyphIds.length + " " + text.length() + " " + text);
-            }
+            // This case:
+            // letters from the supplementary multilingual plane AND position adjustments
+            // is not implemented
+            throw new IllegalStateException("glyphIds.length != text.length() and gposAdjustments!=null"
+                    + glyphIds.length + " " + text.length() + " " + text);
         }
 
         final float delta = Math.ulp(fontSize); // do only adjustments bigger than or equal to one ulp of the font size
@@ -282,7 +275,7 @@ public class GlyphLayoutProcessorFop implements GlyphLayoutProcessorInterface
             float px = gpa[i][0] / fontSize * 1000f / FOP_FONTSIZE_FACTOR;
             float py = gpa[i][1] / FOP_FONTSIZE_FACTOR;
             float ax = gpa[i][2] / fontSize * 1000f / FOP_FONTSIZE_FACTOR;
-            float ay = gpa[i][3] / FOP_FONTSIZE_FACTOR; // ignored in horizontal typesetting
+            // float ay = gpa[i][3] / FOP_FONTSIZE_FACTOR; // ignored in horizontal typesetting
 
             if (Math.abs(py) >= delta)
             {
@@ -334,10 +327,9 @@ public class GlyphLayoutProcessorFop implements GlyphLayoutProcessorInterface
     protected int[][] createZeroGpa(int length)
     {
         int[][] gpa = new int[length][];
-        int[] z4 = new int[] { 0, 0, 0, 0 };
         for (int i = 0; i < length; i++)
         {
-            gpa[i] = z4;
+            gpa[i] = new int[] { 0, 0, 0, 0 };
         }
         return gpa;
     }
