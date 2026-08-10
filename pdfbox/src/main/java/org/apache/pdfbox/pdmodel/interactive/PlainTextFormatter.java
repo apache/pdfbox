@@ -19,7 +19,10 @@ package org.apache.pdfbox.pdmodel.interactive;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.pdfbox.pdmodel.GlyphLayoutProcessorInterface;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.interactive.PlainText.Line;
 import org.apache.pdfbox.pdmodel.interactive.PlainText.Paragraph;
 import org.apache.pdfbox.pdmodel.interactive.PlainText.TextAttribute;
@@ -246,7 +249,15 @@ public class PlainTextFormatter
             for (Word word : words)
             {
                 contents.showText(word.getText());
-                wordWidth = (Float) word.getAttributes().getIterator().getAttribute(TextAttribute.WIDTH);
+                GlyphLayoutProcessorInterface glyphLayoutProcessor = appearanceStyle.getGlyphLayoutProcessor();
+                PDFont font = appearanceStyle.getFont();
+                if (glyphLayoutProcessor == null || !glyphLayoutProcessor.supportsFont(font))
+                {
+                    wordWidth = (Float) word.getAttributes().getIterator().getAttribute(TextAttribute.WIDTH);
+                } else {
+                    wordWidth = glyphLayoutProcessor.getStringWidth(
+                            (PDType0Font) font, appearanceStyle.getFontSize(), word.getText());
+                }
                 if (wordIndex != words.size() -1)
                 {
                     contents.newLineAtOffset(wordWidth + interWordSpacing, 0f);

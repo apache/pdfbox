@@ -637,7 +637,10 @@ class AppearanceGeneratorHelper
                 AppearanceStyle appearanceStyle = new AppearanceStyle();
                 appearanceStyle.setFont(font);
                 appearanceStyle.setFontSize(fontSize);
-                
+                if (glyphLayoutProcessor != null) {
+                    appearanceStyle.setGlyphLayoutProcessor(glyphLayoutProcessor);
+                }
+
                 // Adobe Acrobat uses the font's bounding box for the leading between the lines
                 appearanceStyle.setLeading(font.getBoundingBox().getHeight() * fontScaleY);
                 
