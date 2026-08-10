@@ -117,7 +117,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>https://www.pdfa.org/wp-content/until2016_uploads/2011/08/isartor-pdfa-2008-08-13.zip</url>
+                            <url>https://corpora.openpreservation.org/veraPDF/isartor-pdfa-2008-08-13.zip</url>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
                             <sha512>66bf4ad470b36079c1e0ceca4438053f32649f964fb1de5cd88babce36c5afc0ba6fa7880bc1c9aac791df872cdfc8dc9851bfd3c75ae96786edd8fac61193ae</sha512>
