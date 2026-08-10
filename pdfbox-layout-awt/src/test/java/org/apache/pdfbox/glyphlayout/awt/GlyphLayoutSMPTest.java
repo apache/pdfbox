@@ -68,8 +68,8 @@ class GlyphLayoutSMPTest extends TestBase
             float x, float y, String s) throws IOException
     {
 
-        s = s.replaceAll("\t", "    ");
-        String[] lines = s.split("[\n]");
+        s = s.replace("\t", "    ");
+        String[] lines = s.split("[\\n]");
 
         for (String line : lines)
         {
