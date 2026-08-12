@@ -15,8 +15,11 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,6 +39,7 @@ import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.colorCount
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.doWritePDF;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Unit tests for JPEGFactory
@@ -284,6 +288,38 @@ public class JPEGFactoryTest extends TestCase
         checkJpegStream(testResultsDir, "PDFBOX-5196-lotus.pdf", new ByteArrayInputStream(ba));        
     }
 
+    // PDFBOX-6235
+    public void testCreateFromImageCMYK() throws IOException
+    {
+        // magick -size 200x200 gradient:red-blue -colorspace CMYK PDFBOX-6235-cmyk.jpg
+        InputStream is = JPEGFactoryTest.class.getResourceAsStream("PDFBOX-6235-cmyk.jpg");
+        byte[] ba= IOUtils.toByteArray(is);
+        is.close();
+
+        BufferedImage bim = ImageIO.read(new ByteArrayInputStream(ba));
+
+        // This test works only with the original java imaging, not with twelvemonkeys
+        assumeTrue(bim.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_CMYK);
+        assertEquals(BufferedImage.TYPE_CUSTOM, bim.getType());
+        assertEquals(4, bim.getColorModel().getNumComponents());
+
+        PDDocument document = new PDDocument();
+        PDImageXObject ximage = JPEGFactory.createFromImage(document, bim);
+        validate(ximage, 8, 200, 200, "jpg", PDDeviceCMYK.INSTANCE.getName());
+        // the samples are inverted, so a /Decode array is required
+        assertTrue(Arrays.equals(new float[] { 1, 0, 1, 0, 1, 0, 1, 0 }, ximage.getDecode().toFloatArray()));
+
+        // using the one created from the stream is more reliable than using "bim"
+        // because of flaws in converting CMYK to RGB
+        // See https://stackoverflow.com/questions/19540064/
+        BufferedImage expected = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba)).getImage();
+
+        float meanAbsDiffPerPixel = computeMeanAbsDiffPerPixel(expected, ximage.getImage());
+        assertTrue(meanAbsDiffPerPixel < 1);
+
+        doWritePDF(document, ximage, testResultsDir, "PDFBOX-6235-cmyk.pdf");
+    }
+
     // check whether it is possible to extract the jpeg stream exactly 
     // as it was passed to createFromStream
     private void checkJpegStream(File testResultsDir, String filename, InputStream expected)
@@ -297,5 +333,31 @@ public class JPEGFactoryTest extends TestCase
         expected.close();
         dctStream.close();
         doc.close();
+    }
+
+    private float computeMeanAbsDiffPerPixel(BufferedImage expected, BufferedImage actual)
+    {
+        // assumption: both sizes are identical
+        int w = expected.getWidth();
+        int h = expected.getHeight();
+        long sum = 0;
+        long count = 0;
+        for (int y = 0; y < h; y++)
+        {
+            for (int x = 0; x < w; x++)
+            {
+                count += 3;
+                Color expectedRGB = new Color(expected.getRGB(x, y));
+                Color actualRGB = new Color(actual.getRGB(x, y));
+                if (expectedRGB == actualRGB)
+                {
+                    continue;
+                }
+                sum += Math.abs(expectedRGB.getRed() - actualRGB.getRed());
+                sum += Math.abs(expectedRGB.getGreen() - actualRGB.getGreen());
+                sum += Math.abs(expectedRGB.getBlue() - actualRGB.getBlue());
+            }
+        }
+        return sum / (float) count;
     }
 }
