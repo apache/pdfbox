@@ -28,8 +28,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
@@ -302,16 +305,30 @@ class JPEGFactoryTest
     @Test
     void testCreateFromImageCMYK() throws IOException
     {
+        Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("JPEG");
+        ImageReader reader = null;
+        while (readers.hasNext())
+        {
+            reader = readers.next();
+            if (reader.getClass().getName().startsWith("com.sun.imageio.plugins.jpeg.JPEGImageReader"))
+            {
+                break;
+            }
+            reader = null;
+        }
+        assumeTrue(reader != null, "This test works only with the original java imaging reader");
+
         // magick -size 200x200 gradient:red-blue -colorspace CMYK PDFBOX-6235-cmyk.jpg
         byte[] ba;
         try (InputStream is = JPEGFactoryTest.class.getResourceAsStream("PDFBOX-6235-cmyk.jpg"))
         {
             ba = is.readAllBytes();
         }
-        BufferedImage bim = ImageIO.read(new ByteArrayInputStream(ba));
+        reader.setInput(new MemoryCacheImageInputStream(new ByteArrayInputStream(ba)));
+        BufferedImage bim = reader.read(0);
 
         // This test works only with the original java imaging, not with twelvemonkeys
-        assumeTrue(bim.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_CMYK);
+        assertEquals(ColorSpace.TYPE_CMYK, bim.getColorModel().getColorSpace().getType());
         assertEquals(BufferedImage.TYPE_CUSTOM, bim.getType());
         assertEquals(4, bim.getColorModel().getNumComponents());
 
