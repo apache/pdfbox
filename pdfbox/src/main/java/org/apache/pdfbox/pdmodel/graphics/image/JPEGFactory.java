@@ -384,7 +384,7 @@ public final class JPEGFactory
             ImageTypeSpecifier imageTypeSpecifier = new ImageTypeSpecifier(image);
             IIOMetadata data = imageWriter.getDefaultImageMetadata(imageTypeSpecifier, jpegParam);
             Element tree = (Element) data.getAsTree("javax_imageio_jpeg_image_1.0");
-            Element jfif = (Element) tree.getElementsByTagName("    app0JFIF").item(0);
+            Element jfif = (Element) tree.getElementsByTagName("app0JFIF").item(0);
             // PDFBOX-6235: JFIF APP0 is only defined for 1- and 3-component JPEGs. A 4-component
             // (CMYK) image gets an Adobe APP14 marker instead, so there is no app0JFIF
             // node and the DPI cannot be expressed in the stream at all.
