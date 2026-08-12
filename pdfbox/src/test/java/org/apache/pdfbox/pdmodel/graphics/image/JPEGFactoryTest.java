@@ -71,12 +71,13 @@ public class JPEGFactoryTest extends TestCase
     {
         PDDocument document = new PDDocument();
         InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg");
-        PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
+        byte[] ba = IOUtils.toByteArray(stream);
+        stream.close();
+        PDImageXObject ximage = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba));
         validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
 
         doWritePDF(document, ximage, testResultsDir, "jpegrgbstream.pdf");
-        checkJpegStream(testResultsDir, "jpegrgbstream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
-        stream.close();
+        checkJpegStream(testResultsDir, "jpegrgbstream.pdf", new ByteArrayInputStream(ba));
     }
 
     /*
@@ -87,12 +88,13 @@ public class JPEGFactoryTest extends TestCase
     {
         PDDocument document = new PDDocument();
         InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpegcmyk.jpg");
-        PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
+        byte[] ba = IOUtils.toByteArray(stream);
+        stream.close();
+        PDImageXObject ximage = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba));
         validate(ximage, 8, 343, 287, "jpg", PDDeviceCMYK.INSTANCE.getName());
 
         doWritePDF(document, ximage, testResultsDir, "jpegcmykstream.pdf");
-        checkJpegStream(testResultsDir, "jpegcmykstream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpegcmyk.jpg"));
-        stream.close();
+        checkJpegStream(testResultsDir, "jpegcmykstream.pdf", new ByteArrayInputStream(ba));
     }
 
     /**
@@ -103,12 +105,13 @@ public class JPEGFactoryTest extends TestCase
     {
         PDDocument document = new PDDocument();
         InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg");
-        PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
+        byte[] ba = IOUtils.toByteArray(stream);
+        stream.close();
+        PDImageXObject ximage = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba));
         validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
 
         doWritePDF(document, ximage, testResultsDir, "jpeg256stream.pdf");
-        checkJpegStream(testResultsDir, "jpeg256stream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"));
-        stream.close();
+        checkJpegStream(testResultsDir, "jpeg256stream.pdf", new ByteArrayInputStream(ba));
     }
 
     /**
