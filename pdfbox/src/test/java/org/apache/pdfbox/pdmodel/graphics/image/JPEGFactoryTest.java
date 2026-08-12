@@ -117,11 +117,17 @@ public class JPEGFactoryTest extends TestCase
      */
     public void testCreateFromImageRGB() throws IOException
     {
+        InputStream is = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg");
+        byte[] ba = IOUtils.toByteArray(is);
+        is.close();
         PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(ba));
         assertEquals(3, image.getColorModel().getNumComponents());
         PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
+        BufferedImage expected = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba)).getImage();
+        float meanAbsDiffPerPixel = computeMeanAbsDiffPerPixel(expected, ximage.getImage());
+        assertTrue(meanAbsDiffPerPixel < 5);
 
         doWritePDF(document, ximage, testResultsDir, "jpegrgb.pdf");
     }
@@ -132,11 +138,17 @@ public class JPEGFactoryTest extends TestCase
      */
     public void testCreateFromImage256() throws IOException
     {
+        InputStream is = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg");
+        byte[] ba = IOUtils.toByteArray(is);
+        is.close();
         PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"));
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(ba));
         assertEquals(1, image.getColorModel().getNumComponents());
         PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
+        BufferedImage expected = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba)).getImage();
+        float meanAbsDiffPerPixel = computeMeanAbsDiffPerPixel(expected, ximage.getImage());
+        assertTrue(meanAbsDiffPerPixel < 5);
 
         doWritePDF(document, ximage, testResultsDir, "jpeg256.pdf");
     }
@@ -246,8 +258,12 @@ public class JPEGFactoryTest extends TestCase
             return;
         }
 
+        InputStream is = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg");
+        byte[] ba = IOUtils.toByteArray(is);
+        is.close();
+
         PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(ba));
 
         // create an USHORT_555_RGB image
         int width = image.getWidth();
@@ -268,6 +284,9 @@ public class JPEGFactoryTest extends TestCase
         PDImageXObject ximage = JPEGFactory.createFromImage(document, rgbImage);
         validate(ximage, 8, width, height, "jpg", PDDeviceRGB.INSTANCE.getName());
         assertNull(ximage.getSoftMask());
+        BufferedImage expected = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba)).getImage();
+        float meanAbsDiffPerPixel = computeMeanAbsDiffPerPixel(expected, ximage.getImage());
+        assertTrue(meanAbsDiffPerPixel < 5);
 
         doWritePDF(document, ximage, testResultsDir, "jpeg-ushort555rgb.pdf");
     }
@@ -316,20 +335,20 @@ public class JPEGFactoryTest extends TestCase
         is.close();
 
         reader.setInput(new MemoryCacheImageInputStream(new ByteArrayInputStream(ba)));
-        BufferedImage bim = reader.read(0);
+        BufferedImage image = reader.read(0);
 
         // This test works only with the original java imaging, not with twelvemonkeys
-        assertEquals(ColorSpace.TYPE_CMYK, bim.getColorModel().getColorSpace().getType());
-        assertEquals(BufferedImage.TYPE_CUSTOM, bim.getType());
-        assertEquals(4, bim.getColorModel().getNumComponents());
+        assertEquals(ColorSpace.TYPE_CMYK, image.getColorModel().getColorSpace().getType());
+        assertEquals(BufferedImage.TYPE_CUSTOM, image.getType());
+        assertEquals(4, image.getColorModel().getNumComponents());
 
         PDDocument document = new PDDocument();
-        PDImageXObject ximage = JPEGFactory.createFromImage(document, bim);
+        PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
         validate(ximage, 8, 200, 200, "jpg", PDDeviceCMYK.INSTANCE.getName());
         // the samples are inverted, so a /Decode array is required
         assertTrue(Arrays.equals(new float[] { 1, 0, 1, 0, 1, 0, 1, 0 }, ximage.getDecode().toFloatArray()));
 
-        // using the one created from the stream is more reliable than using "bim"
+        // using the one created from the stream is more reliable than using "image"
         // because of flaws in converting CMYK to RGB
         // See https://stackoverflow.com/questions/19540064/
         BufferedImage expected = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba)).getImage();
