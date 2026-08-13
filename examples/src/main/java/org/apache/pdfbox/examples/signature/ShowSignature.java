@@ -530,7 +530,7 @@ public final class ShowSignature
         if (signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().
                 setProvider(SecurityProvider.getProvider()).build(certFromSignedData)))
         {
-            System.out.println("Signature verified");
+            System.out.println(certFromSignedData.getSigAlgName() + " signature verified");
         }
         else
         {
@@ -539,7 +539,7 @@ public final class ShowSignature
 
         if (CertificateVerifier.isSelfSigned(certFromSignedData))
         {
-            System.err.println("Certificate is self-signed, LOL!");
+            System.err.println("Certificate for '" + certFromSignedData.getSubjectX500Principal().getName() + "' is self-signed, LOL!");
         }
         else
         {
