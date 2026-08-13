@@ -427,7 +427,7 @@ public class SigUtils
     /**
      * Like {@link URL#openStream()} but will follow redirection from http to https.
      *
-     * @param urlString
+     * @param urlString http URL string
      * @return
      * @throws IOException 
      * @throws URISyntaxException 
@@ -435,10 +435,9 @@ public class SigUtils
     public static InputStream openURL(String urlString) throws IOException, URISyntaxException
     {
         URL url = new URI(urlString).toURL();
-        if (!urlString.startsWith("http"))
+        if (!url.getProtocol().startsWith("http"))
         {
-            // so that ftp is still supported
-            return url.openStream();
+            throw new IOException(url.getProtocol() + " protocol not supported");
         }
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         int responseCode = con.getResponseCode();
