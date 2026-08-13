@@ -388,7 +388,7 @@ public class SigUtils
     /**
      * Like {@link URL#openStream()} but will follow redirection from http to https.
      *
-     * @param urlString
+     * @param urlString http URL string
      * @return
      * @throws MalformedURLException
      * @throws IOException 
@@ -396,10 +396,9 @@ public class SigUtils
     public static InputStream openURL(String urlString) throws MalformedURLException, IOException
     {
         URL url = new URL(urlString);
-        if (!urlString.startsWith("http"))
+        if (!url.getProtocol().startsWith("http"))
         {
-            // so that ftp is still supported
-            return url.openStream();
+            throw new IOException(url.getProtocol() + " protocol not supported");
         }
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         int responseCode = con.getResponseCode();
