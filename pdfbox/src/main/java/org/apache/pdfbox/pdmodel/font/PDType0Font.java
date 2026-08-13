@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
@@ -40,6 +41,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
+import org.apache.pdfbox.pdmodel.GlyphLayoutProcessorInterface;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.util.Matrix;
@@ -64,6 +66,8 @@ public class PDType0Font extends PDFont implements PDVectorFont
     private boolean isDescendantCJK;
     private PDCIDFontType2Embedder embedder;
     private TrueTypeFont ttf;
+    private GlyphLayoutProcessorInterface glyphLayoutProcessor;
+
 
     /**
      * Constructor for reading a Type0 font from a PDF file.
@@ -755,4 +759,41 @@ public class PDType0Font extends PDFont implements PDVectorFont
         return cmapLookup;
     }
 
+    /**
+     *
+     * @param glyphLayoutProcessor
+     */
+    public void setGlyphLayoutProcessor(GlyphLayoutProcessorInterface glyphLayoutProcessor) {
+        Objects.requireNonNull(glyphLayoutProcessor, "glyphLayoutProcessor must be not null");
+        this.glyphLayoutProcessor = glyphLayoutProcessor;
+    }
+
+    /**
+     * Returns the width of the given Unicode string.
+     * If a glyph layout processor is set, it is used to compute the string width
+     *
+     * @param text The text to get the width of.
+     * @return The width of the string in 1/1000 units of text space.
+     * @throws IOException If there is an error getting the width information.
+     * @throws IllegalArgumentException if a character isn't supported by the font.
+     */
+    @Override
+    public float getStringWidth(String text) throws IOException
+    {
+        return glyphLayoutProcessor != null && glyphLayoutProcessor.supportsFont(this)
+                ?   glyphLayoutProcessor.getStringWidth((PDType0Font) this, 1.0f, text) / getFontMatrix().getScaleX()
+                :   getStringWidthBasic(text);
+    }
+    /**
+     * Returns the width of the given Unicode string.
+     *
+     * @param text The text to get the width of.
+     * @return The width of the string in 1/1000 units of text space.
+     * @throws IOException If there is an error getting the width information.
+     * @throws IllegalArgumentException if a character isn't supported by the font.
+     */
+    public float getStringWidthBasic(String text) throws IOException
+    {
+        return super.getStringWidth(text);
+    }
 }

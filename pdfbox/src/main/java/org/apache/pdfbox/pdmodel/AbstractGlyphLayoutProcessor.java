@@ -76,9 +76,14 @@ public abstract class AbstractGlyphLayoutProcessor implements GlyphLayoutProcess
      * @param fontSize font size
      * @param text text
      * @return string width
+     * @throws IllegalArgumentException if the font is not supported or glyphs are missing
      */
     public float getStringWidth(PDType0Font font, float fontSize, String text) throws IOException
     {
+        if (!supportsFont(font))
+        {
+            throw new IllegalArgumentException("font must be supported by the GlyphLayoutProcessor");
+        }
         float width = 0f;
         List<TextAndBidiLevel> textAndBidiLevels = doBidiSplittingAndReordering(text);
         for (TextAndBidiLevel textAndBidiLevel:  textAndBidiLevels)
@@ -112,11 +117,15 @@ public abstract class AbstractGlyphLayoutProcessor implements GlyphLayoutProcess
      * @param text text to show
      *
      * @throws IOException if an I/O exception occurs
-     * @throws IllegalArgumentException if glyphs are missing
+     * @throws IllegalArgumentException if the font is not supported or glyphs are missing
      */
     public void showText(ContentStreamForGlyphLayoutInterface contentStream, PDType0Font font, float fontSize, String text)
             throws IOException
     {
+        if (!supportsFont(font))
+        {
+            throw new IllegalArgumentException("font must be supported by the GlyphLayoutProcessor");
+        }
         List<TextAndBidiLevel> textAndBidiLevels = doBidiSplittingAndReordering(text);
         for (TextAndBidiLevel textAndBidiLevel:  textAndBidiLevels)
         {

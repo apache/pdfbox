@@ -34,7 +34,7 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 /**
  * Examples for ligatures and kerning
  * See <a href="https://issues.apache.org/jira/browse/PDFBOX-4951">PDFBOX-4951</a>
- *
+ * <p>
  * The default processing of GlyphLayoutProcessor is with ligatures and kerning disabled.
  * You can enable ligatures and kerning using FontOptions, see below.
  *
@@ -52,8 +52,8 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
     /**
      * Check that missing glyph is caught like in main pdfbox.
      *
-     * @throws IOException
-     * @throws FontFormatException
+     * @throws IOException if an I/O error occurs
+     * @throws FontFormatException if the font contains errors
      */
     @Test
     void testMissingGlyph() throws IOException, FontFormatException
@@ -151,6 +151,11 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
                 float f2 = dejavuLigKernFont.getStringWidth(DEJAVU_STRING) * dejavuLigKernFont.getFontMatrix().getScaleX() * fontSize;
                 float f3 = glyphLayoutProcessor.getStringWidth(dejavuFont, fontSize, DEJAVU_STRING);
                 float f4 = glyphLayoutProcessor.getStringWidth(dejavuLigKernFont, fontSize, DEJAVU_STRING);
+
+                float f5 = glyphLayoutProcessor.getStringWidth(dejavuLigKernFont, fontSize, DEJAVU_STRING+" ");
+                float f6 = glyphLayoutProcessor.getStringWidth(dejavuLigKernFont, fontSize, DEJAVU_STRING);
+                System.out.printf("mit leerz %f ohne %f%n", f5, f6);
+
 
                 // equality is expected here, but this shows that the ordinary getStringWidth() isn't helpful
                 assertEquals(f1, f2);
