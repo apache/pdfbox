@@ -650,9 +650,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             throw new IOException("Invalid soft mask subtype: " + subType);
         }
         gray = adjustImage(gray);
-        
-        Rectangle2D tpgBounds = transparencyGroup.getBounds();
-        return new SoftMask(parentPaint, gray, tpgBounds, backdropColor, softMask.getTransferFunction());
+        Point2D origin = transparencyGroup.getOrigin();
+        PDFunction transferFunction = softMask.getTransferFunction();
+        return new SoftMask(parentPaint, gray, origin, backdropColor, transferFunction);
     }
 
     // returns the image adjusted for applySoftMaskToPaint().
@@ -1371,7 +1371,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         AffineTransform deviceTransform = graphics.getTransform();
         Raster maskRaster = softMask.getMask().getRaster();
-        Rectangle2D bboxDevice = softMask.getBBoxDevice();
+        Point2D origin = softMask.getOrigin();
         int backdropColorValue = softMask.getBackdropColorValue();
         PDFunction transferFunction = softMask.getTransferFunction();
         Float[] map = transferFunction != null ? new Float[256] : null;
@@ -1389,8 +1389,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 point.setLocation(bounds.getMinX() + x, bounds.getMinY() + y);
                 deviceTransform.transform(point, point);
-                int maskX = (int) Math.floor(point.getX() - bboxDevice.getX());
-                int maskY = (int) Math.floor(point.getY() - bboxDevice.getY());
+                int maskX = (int) Math.floor(point.getX() - origin.getX());
+                int maskY = (int) Math.floor(point.getY() - origin.getY());
 
                 int alphaScale;
                 if (maskX >= 0 && maskY >= 0 && maskX < maskRaster.getWidth() && maskY < maskRaster.getHeight())
@@ -2166,7 +2166,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return bbox;
         }
 
-        Rectangle2D getBounds()
+        Point2D getOrigin()
         {
             Rectangle2D r;
             if (flipTG)
@@ -2187,12 +2187,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // apply the underlying Graphics2D device's DPI transform
             // this adjusts the rectangle to the rotated image to put the soft mask at the correct position
             //TODO
-            // 1. change transparencyGroup.getBounds() to getOrigin(), because size isn't used in SoftMask,
-            // 2. Is it possible to create the softmask and transparency group in the correct rotation?
-            //    (needs rendering identity testing before committing!)
+            // Is it possible to create the softmask and transparency group in the correct rotation?
+            // (needs rendering identity testing before committing!)
             AffineTransform adjustedTransform = new AffineTransform(xform);
             adjustedTransform.scale(1.0 / xformScalingFactorX, 1.0 / xformScalingFactorY);
-            return adjustedTransform.createTransformedShape(r).getBounds2D();
+            Rectangle2D b2d = adjustedTransform.createTransformedShape(r).getBounds2D();
+            return new Point2D.Double(b2d.getX(), b2d.getY());
         }
     }
 
