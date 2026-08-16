@@ -23,6 +23,7 @@ import java.awt.PaintContext;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -48,7 +49,7 @@ class SoftMask implements Paint
 
     private final Paint paint;
     private final BufferedImage mask;
-    private final Rectangle2D bboxDevice;
+    private final Point2D origin;
     private int bc = 0;
     private final PDFunction transferFunction;
 
@@ -57,16 +58,16 @@ class SoftMask implements Paint
      *
      * @param paint underlying paint.
      * @param mask soft mask
-     * @param bboxDevice bbox of the soft mask in the underlying Graphics2D device space
+     * @param origin origin of the soft mask in the underlying Graphics2D device space
      * @param backdropColor the color to be used outside the transparency group’s bounding box; if
      * null, black will be used.
      * @param transferFunction the transfer function, may be null.
      */
-    SoftMask(Paint paint, BufferedImage mask, Rectangle2D bboxDevice, PDColor backdropColor, PDFunction transferFunction)
+    SoftMask(Paint paint, BufferedImage mask, Point2D origin, PDColor backdropColor, PDFunction transferFunction)
     {
         this.paint = paint;
         this.mask = mask;
-        this.bboxDevice = bboxDevice;
+        this.origin = origin;
         if (transferFunction instanceof PDFunctionTypeIdentity)
         {
             this.transferFunction = null;
@@ -104,9 +105,9 @@ class SoftMask implements Paint
         return mask;
     }
 
-    Rectangle2D getBBoxDevice()
+    Point2D getOrigin()
     {
-        return bboxDevice;
+        return origin;
     }
 
     int getBackdropColorValue()
@@ -167,8 +168,8 @@ class SoftMask implements Paint
             WritableRaster outputRaster = getColorModel().createCompatibleWritableRaster(w, h);
 
             // the soft mask has its own bbox
-            x1 = x1 - (int)bboxDevice.getX();
-            y1 = y1 - (int)bboxDevice.getY();
+            x1 = x1 - (int) origin.getX();
+            y1 = y1 - (int) origin.getY();
 
             int[] gray = new int[4];
             Object pixelInput = null;
