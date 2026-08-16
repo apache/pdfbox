@@ -1135,6 +1135,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
                 // draw the paint
                 Paint paint = getNonStrokingPaint();
+                // PDFBOX-6077: a soft mask's Paint/PaintContext machinery (see
+                // applySoftMaskToPaint()) assumes it is asked to render directly onto the real
+                // page raster, using its own cached absolute page-device coordinates. This
+                // stencil-mask-with-pattern case instead renders into an isolated scratch image
+                // (see the note above about "device scale is not used"), so unwrap any soft mask
+                // here, fill with the plain underlying paint below, and apply the soft mask's own
+                // alpha afterwards by directly looking up its backing raster (applySoftMaskAlpha).
+                SoftMask softMask = paint instanceof SoftMask ? (SoftMask) paint : null;
+                Paint innerPaint = softMask != null ? softMask.getPaint() : paint;
                 Rectangle2D unitRect = new Rectangle2D.Float(0, 0, 1, 1);
                 Rectangle2D bounds = at.createTransformedShape(unitRect).getBounds2D();
                 int w = (int) Math.ceil(bounds.getWidth());
@@ -1142,10 +1151,24 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 BufferedImage renderedPaint = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D g = (Graphics2D) renderedPaint.getGraphics();
                 g.translate(-bounds.getMinX(), -bounds.getMinY());
-                g.setPaint(paint);
+                g.setPaint(innerPaint);
                 g.setRenderingHints(graphics.getRenderingHints());
                 g.fill(bounds);
                 g.dispose();
+
+                // PDFBOX-6077 (for the file in PDFBOX-5403):
+                // a paint such as a TilingPaint can have hairline, fully
+                // transparent seams of its own (e.g. sub-pixel rounding at tile boundaries),
+                // which used to be invisible because the mask's alpha always overwrote the
+                // paint's alpha below. Now that the two are combined, widen the paint's alpha to
+                // the maximum of its 4-neighbors first, so those seams don't get mistaken for
+                // genuine gaps the paint never painted into.
+                dilateAlpha(renderedPaint);
+
+                if (softMask != null)
+                {
+                    applySoftMaskAlpha(renderedPaint, bounds, softMask);
+                }
 
                 // draw the mask
                 BufferedImage mask = pdImage.getImage();
@@ -1225,7 +1248,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     {
                         alphaPixel = alpha.getPixel(x, y, alphaPixel);
                         rasterPixel = raster.getPixel(x, y, rasterPixel);
-                        rasterPixel[3] = alphaPixel[0];
+                        // PDFBOX-6077 (for the file in PDFBOX-5403):
+                        // combine with the paint's own alpha instead of
+                        // overwriting it, so gaps the paint never drew into (e.g. between
+                        // tiles of a tiling pattern) stay transparent instead of turning
+                        // into opaque black.
+                        rasterPixel[3] = rasterPixel[3] * alphaPixel[0] / 255;
                         raster.setPixel(x, y, rasterPixel);
                     }
                 }
@@ -1264,6 +1292,135 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // JDK 1.7 has a bug where rendering hints are reset by the above call to
             // the setRenderingHint method, so we re-set all hints, see PDFBOX-2302
             setRenderingHints();
+        }
+    }
+
+    /**
+     * PDFBOX-6077 (for the file of PDFBOX-5403):
+     * widens each pixel's alpha channel to the maximum of itself and its 4
+     * neighbors, in place. Used to absorb hairline (1 pixel wide) fully-transparent seams in a
+     * paint's own rendering - e.g. rounding seams between adjacent tiles of a TilingPaint -
+     * before that alpha is combined with a stencil mask's alpha, so such a seam isn't mistaken
+     * for a genuine gap the paint never painted into.
+     *
+     * @param image the ARGB image to dilate the alpha channel of, in place.
+     */
+    private static void dilateAlpha(BufferedImage image)
+    {
+        WritableRaster raster = image.getRaster();
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int[] alpha = new int[width * height];
+        int[] pixel = null;
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                pixel = raster.getPixel(x, y, pixel);
+                alpha[y * width + x] = pixel[3];
+            }
+        }
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                int index = y * width + x;
+                int widened = alpha[index];
+                if (x > 0)
+                {
+                    widened = Math.max(widened, alpha[index - 1]);
+                }
+                if (x < width - 1)
+                {
+                    widened = Math.max(widened, alpha[index + 1]);
+                }
+                if (y > 0)
+                {
+                    widened = Math.max(widened, alpha[index - width]);
+                }
+                if (y < height - 1)
+                {
+                    widened = Math.max(widened, alpha[index + width]);
+                }
+                if (widened != alpha[index])
+                {
+                    pixel = raster.getPixel(x, y, pixel);
+                    pixel[3] = widened;
+                    raster.setPixel(x, y, pixel);
+                }
+            }
+        }
+    }
+
+    /**
+     * PDFBOX-6077: applies a soft mask's alpha directly to "image", which was filled with the
+     * soft mask's underlying paint but not yet masked by it. This re-implements
+     * {@link SoftMask}'s own alpha lookup (see its SoftPaintContext.getRaster()) rather than
+     * relying on the Paint/PaintContext machinery, because "image" is a small scratch buffer -
+     * not the real page raster that the soft mask's absolute device coordinates are relative to
+     * - and unlike a plain coordinate offset, transforming each pixel individually stays correct
+     * even though this scratch buffer isn't rendered at the page's actual device scale (see the
+     * "device scale is not used" note where this method is called from).
+     *
+     * @param image the ARGB image to apply the soft mask's alpha to, in place.
+     * @param bounds the device-independent bounds (see "at" in drawImage()) that image's pixel
+     * (0, 0) to (image.getWidth(), image.getHeight()) covers.
+     * @param softMask the soft mask to apply.
+     */
+    private void applySoftMaskAlpha(BufferedImage image, Rectangle2D bounds, SoftMask softMask) throws IOException
+    {
+        AffineTransform deviceTransform = graphics.getTransform();
+        Raster maskRaster = softMask.getMask().getRaster();
+        Rectangle2D bboxDevice = softMask.getBBoxDevice();
+        int backdropColorValue = softMask.getBackdropColorValue();
+        PDFunction transferFunction = softMask.getTransferFunction();
+        Float[] map = transferFunction != null ? new Float[256] : null;
+        float[] input = transferFunction != null ? new float[1] : null;
+
+        WritableRaster raster = image.getRaster();
+        int width = image.getWidth();
+        int height = image.getHeight();
+        Point2D.Double point = new Point2D.Double();
+        int[] gray = new int[1];
+        int[] rasterPixel = null;
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                point.setLocation(bounds.getMinX() + x, bounds.getMinY() + y);
+                deviceTransform.transform(point, point);
+                int maskX = (int) Math.floor(point.getX() - bboxDevice.getX());
+                int maskY = (int) Math.floor(point.getY() - bboxDevice.getY());
+
+                int alphaScale;
+                if (maskX >= 0 && maskY >= 0 && maskX < maskRaster.getWidth() && maskY < maskRaster.getHeight())
+                {
+                    maskRaster.getPixel(maskX, maskY, gray);
+                    if (transferFunction != null)
+                    {
+                        Float f = map[gray[0]];
+                        if (f == null)
+                        {
+                            input[0] = gray[0] / 255f;
+                            f = transferFunction.eval(input)[0];
+                            map[gray[0]] = f;
+                        }
+                        alphaScale = Math.round(255 * f);
+                    }
+                    else
+                    {
+                        alphaScale = gray[0];
+                    }
+                }
+                else
+                {
+                    alphaScale = backdropColorValue;
+                }
+
+                rasterPixel = raster.getPixel(x, y, rasterPixel);
+                rasterPixel[3] = rasterPixel[3] * alphaScale / 255;
+                raster.setPixel(x, y, rasterPixel);
+            }
         }
     }
 
