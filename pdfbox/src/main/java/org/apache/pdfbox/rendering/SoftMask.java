@@ -98,6 +98,35 @@ class SoftMask implements Paint
         }
     }
 
+    // PDFBOX-6077: accessors used by PageDrawer to re-implement this soft mask's alpha lookup
+    // directly (with its own, correctly-scaled device coordinates) when this Paint is rendered
+    // into a scratch image that isn't the real page raster, e.g. for a stencil mask filled with
+    // a pattern.
+    Paint getPaint()
+    {
+        return paint;
+    }
+
+    BufferedImage getMask()
+    {
+        return mask;
+    }
+
+    Rectangle2D getBBoxDevice()
+    {
+        return bboxDevice;
+    }
+
+    int getBackdropColorValue()
+    {
+        return bc;
+    }
+
+    PDFunction getTransferFunction()
+    {
+        return transferFunction;
+    }
+
     @Override
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
                                       Rectangle2D userBounds, AffineTransform xform,
