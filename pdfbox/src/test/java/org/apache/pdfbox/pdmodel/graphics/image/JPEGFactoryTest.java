@@ -396,7 +396,7 @@ class JPEGFactoryTest
                 count += 3;
                 Color expectedRGB = new Color(expected.getRGB(x, y));
                 Color actualRGB = new Color(actual.getRGB(x, y));
-                if (expectedRGB == actualRGB)
+                if (expectedRGB.equals(actualRGB))
                 {
                     continue;
                 }
