@@ -1254,6 +1254,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                         if (rasterPixel[3] != 0)
                         {
                             alphaPixel = alpha.getPixel(x, y, alphaPixel);
+                            // assign alpha; it's also possible to combine but the visual
+                            // difference is currently minimal (see code of 16.8.2026)
                             rasterPixel[3] = alphaPixel[0];
                             raster.setPixel(x, y, rasterPixel);
                         }
@@ -1394,34 +1396,37 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 int maskX = (int) Math.floor(point.getX() - origin.getX());
                 int maskY = (int) Math.floor(point.getY() - origin.getY());
 
-                int alphaScale;
-                if (maskX >= 0 && maskY >= 0 && maskX < maskRaster.getWidth() && maskY < maskRaster.getHeight())
+                rasterPixel = raster.getPixel(x, y, rasterPixel);
+                if (rasterPixel[3] != 0)
                 {
-                    maskRaster.getPixel(maskX, maskY, gray);
-                    if (transferFunction != null)
+                    int alphaScale;
+                    if (maskX >= 0 && maskY >= 0 && maskX < maskRaster.getWidth() && maskY < maskRaster.getHeight())
                     {
-                        Float f = map[gray[0]];
-                        if (f == null)
+                        maskRaster.getPixel(maskX, maskY, gray);
+                        if (transferFunction != null)
                         {
-                            input[0] = gray[0] / 255f;
-                            f = transferFunction.eval(input)[0];
-                            map[gray[0]] = f;
+                            Float f = map[gray[0]];
+                            if (f == null)
+                            {
+                                input[0] = gray[0] / 255f;
+                                f = transferFunction.eval(input)[0];
+                                map[gray[0]] = f;
+                            }
+                            alphaScale = Math.round(255 * f);
                         }
-                        alphaScale = Math.round(255 * f);
+                        else
+                        {
+                            alphaScale = gray[0];
+                        }
                     }
                     else
                     {
-                        alphaScale = gray[0];
+                        alphaScale = backdropColorValue;
                     }
-                }
-                else
-                {
-                    alphaScale = backdropColorValue;
-                }
 
-                rasterPixel = raster.getPixel(x, y, rasterPixel);
-                rasterPixel[3] = rasterPixel[3] * alphaScale / 255;
-                raster.setPixel(x, y, rasterPixel);
+                    rasterPixel[3] = alphaScale;
+                    raster.setPixel(x, y, rasterPixel);
+                }
             }
         }
     }
