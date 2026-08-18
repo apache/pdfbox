@@ -23,6 +23,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -48,7 +49,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.filter.Filter;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
@@ -81,25 +81,13 @@ public final class JPEGFactory
     public static PDImageXObject createFromStream(PDDocument document, InputStream stream)
             throws IOException
     {
-        return createFromByteArray(document, IOUtils.toByteArray(stream));
-    }
+        if (!stream.markSupported())
+        {
+            stream = new BufferedInputStream(stream);
+        }
+        stream.mark(Integer.MAX_VALUE);
 
-    /**
-     * Creates a new JPEG Image XObject from a byte array containing JPEG data.
-     *
-     * @param document the document where the image will be created
-     * @param byteArray bytes of JPEG image
-     * @return a new Image XObject
-     *
-     * @throws IOException if the input stream cannot be read
-     */
-    public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray)
-            throws IOException
-    {
-        // copy stream
-        ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
-
-        Dimensions meta = retrieveDimensions(byteStream);
+        Dimensions meta = retrieveDimensions(stream);
 
         PDColorSpace colorSpace;
         switch (meta.numComponents)
@@ -119,7 +107,7 @@ public final class JPEGFactory
         }
 
         // create PDImageXObject from stream
-        PDImageXObject pdImage = new PDImageXObject(document, byteStream, 
+        PDImageXObject pdImage = new PDImageXObject(document, stream,
                 COSName.DCT_DECODE, meta.width, meta.height, 8, colorSpace);
 
         if (colorSpace instanceof PDDeviceCMYK)
@@ -139,6 +127,21 @@ public final class JPEGFactory
         return pdImage;
     }
 
+    /**
+     * Creates a new JPEG Image XObject from a byte array containing JPEG data.
+     *
+     * @param document the document where the image will be created
+     * @param byteArray bytes of JPEG image
+     * @return a new Image XObject
+     *
+     * @throws IOException if the input stream cannot be read
+     */
+    public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray)
+            throws IOException
+    {
+        return createFromStream(document, new ByteArrayInputStream(byteArray));
+    }
+
     private static class Dimensions
     {
         private int width;
@@ -146,7 +149,7 @@ public final class JPEGFactory
         private int numComponents;
     }
 
-    private static Dimensions retrieveDimensions(ByteArrayInputStream stream) throws IOException
+    private static Dimensions retrieveDimensions(InputStream stream) throws IOException
     {
         ImageReader reader =
                 Filter.findRasterReader("JPEG", "a suitable JAI I/O image filter is not installed");
