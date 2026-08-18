@@ -81,7 +81,7 @@ public final class JPEGFactory
     public static PDImageXObject createFromStream(PDDocument document, InputStream stream)
             throws IOException
     {
-        if (!(stream instanceof ByteArrayInputStream) && !(stream instanceof BufferedInputStream))
+        if (!stream.markSupported())
         {
             stream = new BufferedInputStream(stream);
         }
