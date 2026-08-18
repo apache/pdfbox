@@ -2193,9 +2193,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
             // apply the underlying Graphics2D device's DPI transform
             // this adjusts the rectangle to the rotated image to put the soft mask at the correct position
-            //TODO
-            // Is it possible to create the softmask and transparency group in the correct rotation?
-            // (needs rendering identity testing before committing!)
             AffineTransform adjustedTransform = new AffineTransform(xform);
             adjustedTransform.scale(1.0 / xformScalingFactorX, 1.0 / xformScalingFactorY);
             Rectangle2D b2d = adjustedTransform.createTransformedShape(r).getBounds2D();
