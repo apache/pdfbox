@@ -21,7 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -129,8 +130,10 @@ public class OcspHelper
      * @throws IOException
      * @throws OCSPException
      * @throws RevokedCertificateException
+     * @throws URISyntaxException
      */
-    public OCSPResp getResponseOcsp() throws IOException, OCSPException, RevokedCertificateException
+    public OCSPResp getResponseOcsp()
+            throws IOException, OCSPException, RevokedCertificateException, URISyntaxException
     {
         OCSPResp ocspResponse = performRequest(ocspUrl);
         verifyOcspResponse(ocspResponse);
@@ -452,12 +455,15 @@ public class OcspHelper
      * @return the OCSPResp, that has been fetched from the ocspUrl
      * @throws IOException
      * @throws OCSPException
+     * @throws URISyntaxException
      */
-    private OCSPResp performRequest(String urlString) throws IOException, OCSPException
+    private OCSPResp performRequest(String urlString)
+            throws IOException, OCSPException, URISyntaxException
     {
         OCSPReq request = generateOCSPRequest();
-        URL url = new URL(urlString);
-        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+        URI uri = new URI(urlString);
+        SigUtils.checkAccess(uri);
+        HttpURLConnection httpConnection = (HttpURLConnection) uri.toURL().openConnection();
         try
         {
             httpConnection.setRequestProperty("Content-Type", "application/ocsp-request");

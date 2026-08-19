@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -310,6 +311,10 @@ public class CertInformationCollector
             LOG.error("Error getting alternative issuer certificate from " + certInfo.issuerUrl, e);
         }
         catch (CertificateException e)
+        {
+            LOG.error("Error getting alternative issuer certificate from " + certInfo.issuerUrl, e);
+        }
+        catch (URISyntaxException e)
         {
             LOG.error("Error getting alternative issuer certificate from " + certInfo.issuerUrl, e);
         }
