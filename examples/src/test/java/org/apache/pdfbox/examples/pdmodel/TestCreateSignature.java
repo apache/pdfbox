@@ -265,6 +265,7 @@ public class TestCreateSignature
      * @throws GeneralSecurityException
      * @throws TSPException
      * @throws CertificateVerificationException 
+     * @throws OCSPException 
      */
     @Test
     public void testCreateSignedTimeStamp()
@@ -306,8 +307,8 @@ public class TestCreateSignature
         String substring = name.substring(0, name.lastIndexOf('.'));
 
         File outFile = new File(outDir, substring + "_LTV.pdf");
-        AddValidationInformation addValidationInformation = new AddValidationInformation();
-        addValidationInformation.validateSignature(inFile, outFile);
+        // use main() for extra coverage, only possible if in the same directory
+        AddValidationInformation.main(new String[] { inFile.getAbsolutePath() });
 
         checkLTV(outFile);
     }
