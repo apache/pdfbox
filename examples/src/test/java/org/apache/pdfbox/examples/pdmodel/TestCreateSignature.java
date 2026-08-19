@@ -1127,6 +1127,24 @@ class TestCreateSignature
         }
     }
 
+    /**
+     * Test SigUtils.getTsaCertificate() by getting the certificate of a TSA.
+     *
+     * @throws GeneralSecurityException
+     * @throws IOException
+     * @throws URISyntaxException 
+     */
+    @Test
+    void testGetTsaCertificate() throws GeneralSecurityException, IOException, URISyntaxException
+    {
+        Assumptions.assumeTrue(tsa != null && !tsa.isEmpty(), "No TSA URL defined, test skipped");
+
+        X509Certificate tsaCert = SigUtils.getTsaCertificate(tsa);
+        tsaCert.checkValidity();
+        SigUtils.checkTimeStampCertificateUsage(tsaCert);
+        SigUtils.checkCertificateUsage(tsaCert);
+    }
+
     private byte[] signEncrypted(SecureRandom secureRandom, Date signingTime) throws IOException, GeneralSecurityException
     {
         CreateSignature signing = new CreateSignature(keyStore, PASSWORD.toCharArray());
