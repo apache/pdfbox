@@ -378,8 +378,8 @@ class TestCreateSignature
         String substring = name.substring(0, name.lastIndexOf('.'));
 
         File outFile = new File(OUT_DIR, substring + "_LTV.pdf");
-        AddValidationInformation addValidationInformation = new AddValidationInformation();
-        addValidationInformation.validateSignature(inFile, outFile);
+        // use main() for extra coverage, only possible if in the same directory
+        AddValidationInformation.main(new String[] { inFile.getAbsolutePath() });
 
         checkLTV(outFile);
     }
