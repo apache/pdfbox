@@ -75,6 +75,26 @@ public class SigUtils
 {
     private static final Logger LOG = LogManager.getLogger(SigUtils.class);
 
+    // Certificates / CRLs / LDAP needed for our unit tests; add yours
+    // or create your own logic in checkAccess()
+    private static final Set<String> allowUrlSet =
+            Set.of("http://www.pki.admin.ch/aia/RegularCA01.crt",
+                   "http://www.pki.admin.ch/aia/RootCAII.crt",
+                   "http://www.pki.admin.ch/aia/RootCAIV.crt",
+                   "http://www.pki.admin.ch/crl/RegularCA01.crl",
+                   "http://www.pki.admin.ch/crl/RootCAII.crl",
+                   "http://www.pki.admin.ch/aia/RegulatedCA02.crt",
+                   "http://www.pki.admin.ch/aia/ocsp",
+                   "http://www.pki.admin.ch/crl/RegulatedCA02.crl",
+                   "http://repository.certum.pl/ctnca2.cer",
+                   "http://repository.certum.pl/ctnca.cer",
+                   "http://subca.repository.certum.pl/ctsca2021.cer",
+                   "http://crl.geotrust.com/crls/adobeca1.crl",
+                   "http://crl.adobe.com/cds.crl",
+                   "http://subca.crl.certum.pl/ctsca2021.crl",
+                   "http://subca.ocsp-certum.com",
+                   "http://crl.certum.pl/ctnca2.crl");
+
     private SigUtils()
     {
     }
@@ -423,6 +443,22 @@ public class SigUtils
             }
         }
     }
+    
+    /**
+     * A simple but very restrictive access control logic.
+     * <p>
+     * Create your own but use a zero-trust mindset.
+     *
+     * @param uri
+     * @throws IOException
+     */
+    public static void checkAccess(URI uri) throws IOException
+    {
+        if (!allowUrlSet.contains(uri.toString()))
+        {
+            throw new IOException("URL '" + uri + "' not in allowUrlSet");
+        }
+    }
 
     /**
      * Like {@link URL#openStream()} but will follow redirection from http to https.
@@ -434,12 +470,15 @@ public class SigUtils
      */
     public static InputStream openURL(String urlString) throws IOException, URISyntaxException
     {
-        URL url = new URI(urlString).toURL();
-        if (!url.getProtocol().startsWith("http"))
+        URI uri = new URI(urlString);
+        if (!uri.getScheme().startsWith("http"))
         {
-            throw new IOException(url.getProtocol() + " protocol not supported");
+            throw new IOException(uri.getScheme() + " schema not supported");
         }
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+        checkAccess(uri);
+
+        HttpURLConnection con = (HttpURLConnection) uri.toURL().openConnection();
         int responseCode = con.getResponseCode();
         LOG.info("{} {}", responseCode, con.getResponseMessage());
         if (responseCode == HttpURLConnection.HTTP_MOVED_TEMP ||
