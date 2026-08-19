@@ -234,7 +234,7 @@ public final class CRLVerifier
     /**
      * Downloads CRL from given URL. Supports http, https and ldap based URLs.
      */
-    private static X509CRL downloadCRL(String crlURL) throws IOException,
+    static X509CRL downloadCRL(String crlURL) throws IOException,
             CertificateVerificationException, NamingException, URISyntaxException, GeneralSecurityException
     {
         if (crlURL.startsWith("http://") || crlURL.startsWith("https://"))

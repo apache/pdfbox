@@ -93,7 +93,14 @@ public class SigUtils
                    "http://crl.adobe.com/cds.crl",
                    "http://subca.crl.certum.pl/ctsca2021.crl",
                    "http://subca.ocsp-certum.com",
-                   "http://crl.certum.pl/ctnca2.crl");
+                   "http://crl.certum.pl/ctnca2.crl",
+                   "http://www.freetsa.org/tsa.crt",
+                   "http://www.freetsa.org:2560",
+                   "http://www.freetsa.org/crl/root_ca.crl",
+                   "http://www.gemboxsoftware.com/test/pki/cert/GemBoxCA.crt",
+                   "http://www.gemboxsoftware.com/test/pki/cert/GemBoxRSA.crt",
+                   "http://www.ca.gov.si/crt/si-trust-root.crt",
+                   "ldap://x500.gov.si/cn=SI-TRUST%20Root,oi=VATSI-17659957,o=Republika%20Slovenija,c=SI?certificateRevocationList");
 
     private SigUtils()
     {
