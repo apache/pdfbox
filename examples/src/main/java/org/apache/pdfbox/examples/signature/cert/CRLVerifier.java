@@ -22,10 +22,9 @@ package org.apache.pdfbox.examples.signature.cert;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
-import java.security.cert.CRLException;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509CRL;
 import java.security.cert.X509CRLEntry;
@@ -256,12 +255,12 @@ public final class CRLVerifier
      * Downloads a CRL from given LDAP url, e.g.
      * ldap://ldap.infonotary.com/dc=identity-ca,dc=infonotary,dc=com
      */
-    private static X509CRL downloadCRLFromLDAP(String ldapURL) throws CertificateException,
-            NamingException, CRLException,
-            CertificateVerificationException
+    private static X509CRL downloadCRLFromLDAP(String ldapURL) throws GeneralSecurityException,
+            NamingException, CertificateVerificationException, URISyntaxException, IOException
     {
         @SuppressWarnings({"squid:S1149"})
         Hashtable<String, String> env = new Hashtable<>();
+        SigUtils.checkAccess(new URI(ldapURL));
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, ldapURL);
 
