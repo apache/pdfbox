@@ -19,7 +19,6 @@ package org.apache.pdfbox.examples.signature;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateParsingException;
@@ -280,7 +279,7 @@ public class SigUtils
             int sigOffset = signature.getByteRange()[1];
             sortedMap.put(sigOffset, signature);
         }
-        if (sortedMap.size() > 0)
+        if (!sortedMap.isEmpty())
         {
             PDSignature lastSignature = sortedMap.get(sortedMap.lastKey());
             COSBase type = lastSignature.getCOSObject().getItem(COSName.TYPE);
@@ -390,10 +389,9 @@ public class SigUtils
      *
      * @param urlString http URL string
      * @return
-     * @throws MalformedURLException
      * @throws IOException 
      */
-    public static InputStream openURL(String urlString) throws MalformedURLException, IOException
+    public static InputStream openURL(String urlString) throws IOException
     {
         URL url = new URL(urlString);
         if (!url.getProtocol().startsWith("http"))
