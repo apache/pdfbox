@@ -765,6 +765,7 @@ public class PDFMergerUtility
                         if (!srcNumberTreeAsMap.isEmpty())
                         {
                             mergeStructTree = true;
+                            destParentTreeNextKey -= Collections.min(srcNumberTreeAsMap.keySet()); // allow for negative struct parent values
                         }
                     }
                 }
@@ -1518,8 +1519,8 @@ public class PDFMergerUtility
         List<PDAnnotation> newannots = new ArrayList<>(annots.size());
         annots.forEach(annot ->
         {
-            int structParent = annot.getStructParent();
-            if (structParent >= 0)
+            int structParent = annot.getCOSObject().getInt(COSName.STRUCT_PARENT, Integer.MIN_VALUE); // allow for negative struct parent values
+            if (structParent > Integer.MIN_VALUE) // allow for negative struct parent values
             {
                 annot.setStructParent(structParent + structParentOffset);
             }
