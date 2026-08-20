@@ -17,12 +17,12 @@
 package org.apache.fontbox.pfb;
 
 import java.io.ByteArrayInputStream;
+import java.io.BufferedInputStream;
 import java.io.EOFException;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -88,7 +88,10 @@ public class PfbParser
      */
     public PfbParser(final String filename) throws IOException 
     {
-        this(Files.readAllBytes(Paths.get(filename)));
+        try(InputStream is = new FileInputStream(filename))
+        {
+            parsePfb(is);
+        }
     }
 
     /**
@@ -98,8 +101,7 @@ public class PfbParser
      */
     public PfbParser(final InputStream in) throws IOException 
     {
-        byte[] pfb = in.readAllBytes();
-        parsePfb(pfb);
+        parsePfb(in);
     }
 
     /**
@@ -109,24 +111,42 @@ public class PfbParser
      */
     public PfbParser(final byte[] bytes) throws IOException
     {
-        parsePfb(bytes);
+        parsePfb(new ByteArrayInputStream(bytes));
     }
 
     /**
-     * Parse the pfb-array.
-     * @param pfb   The pfb-Array
+     * Parse the pfb-stream.
+     * @param pfbStream The pfb-stream
      * @throws IOException in an IO-error occurs.
      */
-    private void parsePfb(final byte[] pfb) throws IOException 
+    private void parsePfb(InputStream pfbStream) throws IOException
     {
-        if (pfb.length < PFB_HEADER_LENGTH)
+        InputStream in;
+
+        if (pfbStream.markSupported() || pfbStream instanceof BufferedInputStream)
+        {
+            in = pfbStream;
+        }
+        else
+        {
+            in = new BufferedInputStream(pfbStream);
+        }
+
+        in.mark(PFB_HEADER_LENGTH + 1);
+
+        int availableSize = in.available();
+
+        byte[] header = in.readNBytes(PFB_HEADER_LENGTH);
+        if (header.length < PFB_HEADER_LENGTH)
         {
             throw new IOException("PFB header missing");
         }
+
+        in.reset();
+
         // read into segments and keep them
         List<Integer> typeList = new ArrayList<>(3);
         List<byte[]> barrList = new ArrayList<>(3);
-        ByteArrayInputStream in = new ByteArrayInputStream(pfb);
         long total = 0;
         do
         {
@@ -158,7 +178,7 @@ public class PfbParser
             {
                 throw new IOException("record size " + size + " is negative");
             }
-            if (size > pfb.length)
+            if (size > availableSize)
             {
                 // PDFBOX-6044: avoid potential OOM
                 throw new IOException("record size " + size + " would be larger than the input");
@@ -179,7 +199,7 @@ public class PfbParser
         // come first, then the binary segments, then the last ASCII segment if it is
         // 0000... cleartomark
 
-        if (total > pfb.length)
+        if (total > availableSize)
         {
             // PDFBOX-6044: avoid potential OOM
             throw new IOException("total record size " + total + " would be larger than the input");
