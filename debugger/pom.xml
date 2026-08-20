@@ -63,6 +63,11 @@
       <artifactId>log4j-core</artifactId>
     </dependency>
     <dependency>
+        <groupId>org.apache.pdfbox</groupId>
+        <artifactId>jbig2-imageio</artifactId>
+        <version>${jbig2.version}</version>
+    </dependency>
+    <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcpkix-jdk18on</artifactId>
     </dependency>
