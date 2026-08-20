@@ -62,6 +62,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import javax.swing.JOptionPane;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.debugger.ui.ErrorDialog;
@@ -487,13 +488,50 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         {
             try
             {
-                Desktop.getDesktop().browse(new URI(currentURI));
+                URI uri = new URI(currentURI);
+                if (!isBrowsableScheme(uri))
+                {
+                    // The URI comes from the document and must not reach the OS URI dispatcher:
+                    // file:, smb: or custom protocol handlers can leak credentials or run code
+                    JOptionPane.showMessageDialog(panel,
+                            "Link not opened, only http, https and mailto links are allowed:\n\n" +
+                                    currentURI,
+                            "Link blocked", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                // ask the user before opening, the link target is document controlled
+                int answer = JOptionPane.showConfirmDialog(panel,
+                        "Open this link in your browser?\n\n" + currentURI,
+                        "Open link", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (answer == JOptionPane.YES_OPTION)
+                {
+                    Desktop.getDesktop().browse(uri);
+                }
             }
             catch (URISyntaxException | IOException ex)
             {
                 new ErrorDialog(ex).setVisible(true);
             }
         }
+    }
+
+    /**
+     * Tells whether a document supplied URI is safe to hand to the operating system, i.e. uses
+     * one of the allowed schemes http, https or mailto. Anything else (file:, smb:, jar: or
+     * custom protocol handlers) must not be dispatched.
+     *
+     * @param uri the URI to check, may be null
+     * @return true if the URI scheme is allowed
+     */
+    static boolean isBrowsableScheme(URI uri)
+    {
+        if (uri == null)
+        {
+            return false;
+        }
+        String scheme = uri.getScheme();
+        return "http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme) ||
+                "mailto".equalsIgnoreCase(scheme);
     }
 
     @Override

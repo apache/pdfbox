@@ -55,7 +55,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <bouncycastle.version>1.85</bouncycastle.version>
+    <bouncycastle.version>1.85.2</bouncycastle.version>
     <log4j2.version>2.26.1</log4j2.version>
     <!-- can't update to 6.0.0, needs jdk17 -->
     <junit.version>5.13.4</junit.version>
@@ -88,6 +88,13 @@
             <version>${log4j2.version}</version>
             <scope>import</scope>
             <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bc-jdk18on-bom</artifactId>
+            <version>${bouncycastle.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
         </dependency>
     </dependencies>
   </dependencyManagement>

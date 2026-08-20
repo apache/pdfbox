@@ -18,7 +18,12 @@ package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -41,6 +46,8 @@ public class PDStructureElement extends PDStructureNode
 {
     
     public static final String TYPE = "StructElem";
+
+    private static final Logger LOG = LogManager.getLogger(PDStructureElement.class);
 
     /**
      * Constructor with required values.
@@ -731,9 +738,15 @@ public class PDStructureElement extends PDStructureNode
      */
     private PDStructureTreeRoot getStructureTreeRoot()
     {
+        Set<COSDictionary> visited = new HashSet<>();
         PDStructureNode parent = this.getParent();
         while (parent instanceof PDStructureElement)
         {
+            if (!visited.add(parent.getCOSObject()))
+            {
+                LOG.warn("Element ignored: {}", parent.getCOSObject());
+                return null; // Cycle detected
+            }
             parent = ((PDStructureElement) parent).getParent();
         }
         if (parent instanceof PDStructureTreeRoot)

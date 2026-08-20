@@ -379,8 +379,8 @@ class TestCreateSignature
         String substring = name.substring(0, name.lastIndexOf('.'));
 
         File outFile = new File(OUT_DIR, substring + "_LTV.pdf");
-        AddValidationInformation addValidationInformation = new AddValidationInformation();
-        addValidationInformation.validateSignature(inFile, outFile);
+        // use main() for extra coverage, only possible if in the same directory
+        AddValidationInformation.main(new String[] { inFile.getAbsolutePath() });
 
         checkLTV(outFile);
     }
@@ -1125,6 +1125,24 @@ class TestCreateSignature
                 assertEquals(certHolder2, ocspCertHolder, "OCSP certificate is not in the VRI array");
             }
         }
+    }
+
+    /**
+     * Test SigUtils.getTsaCertificate() by getting the certificate of a TSA.
+     *
+     * @throws GeneralSecurityException
+     * @throws IOException
+     * @throws URISyntaxException 
+     */
+    @Test
+    void testGetTsaCertificate() throws GeneralSecurityException, IOException, URISyntaxException
+    {
+        Assumptions.assumeTrue(tsa != null && !tsa.isEmpty(), "No TSA URL defined, test skipped");
+
+        X509Certificate tsaCert = SigUtils.getTsaCertificate(tsa);
+        tsaCert.checkValidity();
+        SigUtils.checkTimeStampCertificateUsage(tsaCert);
+        SigUtils.checkCertificateUsage(tsaCert);
     }
 
     private byte[] signEncrypted(SecureRandom secureRandom, Date signingTime) throws IOException, GeneralSecurityException

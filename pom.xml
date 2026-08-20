@@ -37,6 +37,7 @@
     <module>xmpbox</module>
     <module>pdfbox</module>
     <module>pdfbox-layout-awt</module>
+    <module>pdfbox-layout-fop</module>
     <module>debugger</module>
     <module>tools</module>
     <module>app</module>

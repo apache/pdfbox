@@ -34,6 +34,7 @@ import org.apache.fontbox.cff.Type2CharString;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.Matrix;
@@ -65,12 +66,14 @@ public class PDCIDFontType0 extends PDCIDFont
      * Constructor.
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
+     * @param resourceCache ResourceCache, can be null.
      * 
      * @throws IOException if the font could not be read
      */
-    public PDCIDFontType0(COSDictionary fontDictionary) throws IOException
+    public PDCIDFontType0(COSDictionary fontDictionary, ResourceCache resourceCache)
+            throws IOException
     {
-        super(fontDictionary);
+        super(fontDictionary, resourceCache);
 
         boolean fontIsDamaged = false;
         CFFFont cffFont = null;
@@ -122,9 +125,8 @@ public class PDCIDFontType0 extends PDCIDFont
         else
         {
             // find font or substitute
-            CIDFontMapping mapping = FontMappers.instance()
-                                                .getCIDFont(getBaseFont(), getFontDescriptor(),
-                                                            getCIDSystemInfo());
+            CIDFontMapping mapping = FontMappers.instance().getCIDFont(getBaseFont(), fd,
+                    getCIDSystemInfo());
             FontBoxFont font;
             if (mapping.isCIDFont())
             {
@@ -211,7 +213,8 @@ public class PDCIDFontType0 extends PDCIDFont
 
     private BoundingBox generateBoundingBox()
     {
-        if (getFontDescriptor() != null) {
+        if (getFontDescriptor() != null)
+        {
             PDRectangle bbox = getFontDescriptor().getFontBoundingBox();
             if (bbox != null && (Float.compare(bbox.getLowerLeftX(),0) != 0 ||
                 Float.compare(bbox.getLowerLeftY(),0) != 0 ||

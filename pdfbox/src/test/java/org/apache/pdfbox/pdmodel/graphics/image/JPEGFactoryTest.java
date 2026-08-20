@@ -15,7 +15,9 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 
 import java.io.ByteArrayInputStream;
@@ -26,8 +28,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
@@ -44,6 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -74,14 +80,15 @@ class JPEGFactoryTest
     void testCreateFromStream() throws IOException
     {
         try (PDDocument document = new PDDocument();
-             InputStream is1 = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg");
-             InputStream is2 = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"))
+             InputStream is = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"))
         {
-            PDImageXObject ximage = JPEGFactory.createFromStream(document, is1);
+            byte[] ba = is.readAllBytes();
+
+            PDImageXObject ximage = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba));
             validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
 
             doWritePDF(document, ximage, TESTRESULTSDIR, "jpegrgbstream.pdf");
-            checkJpegStream(TESTRESULTSDIR, "jpegrgbstream.pdf", is2);
+            checkJpegStream(TESTRESULTSDIR, "jpegrgbstream.pdf", new ByteArrayInputStream(ba));
         }
     }
 
@@ -92,15 +99,16 @@ class JPEGFactoryTest
     @Test
     void testCreateFromStreamCMYK() throws IOException
     {
-        try (InputStream is1 = JPEGFactoryTest.class.getResourceAsStream("jpegcmyk.jpg");
-             InputStream is2 = JPEGFactoryTest.class.getResourceAsStream("jpegcmyk.jpg"))
+        try (InputStream is = JPEGFactoryTest.class.getResourceAsStream("jpegcmyk.jpg"))
         {
+            byte[] ba = is.readAllBytes();
+
             PDDocument document = new PDDocument();
-            PDImageXObject ximage = JPEGFactory.createFromStream(document, is1);
+            PDImageXObject ximage = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba));
             validate(ximage, 8, 343, 287, "jpg", PDDeviceCMYK.INSTANCE.getName());
 
             doWritePDF(document, ximage, TESTRESULTSDIR, "jpegcmykstream.pdf");
-            checkJpegStream(TESTRESULTSDIR, "jpegcmykstream.pdf", is2);
+            checkJpegStream(TESTRESULTSDIR, "jpegcmykstream.pdf", new ByteArrayInputStream(ba));
         }
     }
 
@@ -111,15 +119,16 @@ class JPEGFactoryTest
     @Test
     void testCreateFromStream256() throws IOException
     {
-        try (InputStream is1 = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg");
-             InputStream is2 = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"))
+        try (InputStream is = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"))
         {
+            byte[] ba = is.readAllBytes();
+
             PDDocument document = new PDDocument();
-            PDImageXObject ximage = JPEGFactory.createFromStream(document, is1);
+            PDImageXObject ximage = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba));
             validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
 
             doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg256stream.pdf");
-            checkJpegStream(TESTRESULTSDIR, "jpeg256stream.pdf", is2);
+            checkJpegStream(TESTRESULTSDIR, "jpeg256stream.pdf", new ByteArrayInputStream(ba));
         }
     }
 
@@ -130,13 +139,18 @@ class JPEGFactoryTest
     @Test
     void testCreateFromImageRGB() throws IOException
     {
+        byte[] ba;
         try (InputStream is = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"))
         {
+            ba = is.readAllBytes();
             PDDocument document = new PDDocument();
-            BufferedImage image = ImageIO.read(is);
+            BufferedImage image = ImageIO.read(new ByteArrayInputStream(ba));
             assertEquals(3, image.getColorModel().getNumComponents());
             PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
             validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
+            BufferedImage expected = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba)).getImage();
+            float meanAbsDiffPerPixel = computeMeanAbsDiffPerPixel(expected, ximage.getImage());
+            assertTrue(meanAbsDiffPerPixel < 5);
 
             doWritePDF(document, ximage, TESTRESULTSDIR, "jpegrgb.pdf");
         }
@@ -149,13 +163,18 @@ class JPEGFactoryTest
     @Test
     void testCreateFromImage256() throws IOException
     {
+        byte[] ba;
         try (InputStream is = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"))
         {
+            ba = is.readAllBytes();
             PDDocument document = new PDDocument();
-            BufferedImage image = ImageIO.read(is);
+            BufferedImage image = ImageIO.read(new ByteArrayInputStream(ba));
             assertEquals(1, image.getColorModel().getNumComponents());
             PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
             validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
+            BufferedImage expected = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba)).getImage();
+            float meanAbsDiffPerPixel = computeMeanAbsDiffPerPixel(expected, ximage.getImage());
+            assertTrue(meanAbsDiffPerPixel < 5);
 
             doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg256.pdf");
         }
@@ -245,10 +264,12 @@ class JPEGFactoryTest
     @Test
     void testCreateFromImageUSHORT_555_RGB() throws IOException
     {
+        byte[] ba;
         try (InputStream is = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"))
         {
+            ba = is.readAllBytes();
             PDDocument document = new PDDocument();
-            BufferedImage image = ImageIO.read(is);
+            BufferedImage image = ImageIO.read(new ByteArrayInputStream(ba));
 
             // create an USHORT_555_RGB image
             int width = image.getWidth();
@@ -269,6 +290,9 @@ class JPEGFactoryTest
             PDImageXObject ximage = JPEGFactory.createFromImage(document, rgbImage);
             validate(ximage, 8, width, height, "jpg", PDDeviceRGB.INSTANCE.getName());
             assertNull(ximage.getSoftMask());
+            BufferedImage expected = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba)).getImage();
+            float meanAbsDiffPerPixel = computeMeanAbsDiffPerPixel(expected, ximage.getImage());
+            assertTrue(meanAbsDiffPerPixel < 5);
 
             doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg-ushort555rgb.pdf");
         }
@@ -295,6 +319,53 @@ class JPEGFactoryTest
         checkJpegStream(TESTRESULTSDIR, "PDFBOX-5196-lotus.pdf", new ByteArrayInputStream(ba));        
     }
 
+    // PDFBOX-6235
+    @Test
+    void testCreateFromImageCMYK() throws IOException
+    {
+        Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("JPEG");
+        ImageReader reader = null;
+        while (readers.hasNext())
+        {
+            reader = readers.next();
+            if (reader.getClass().getName().startsWith("com.sun.imageio.plugins.jpeg.JPEGImageReader"))
+            {
+                break;
+            }
+            reader = null;
+        }
+        assumeTrue(reader != null, "This test works only with the original java imaging reader");
+
+        // magick -size 200x200 gradient:red-blue -colorspace CMYK PDFBOX-6235-cmyk.jpg
+        byte[] ba;
+        try (InputStream is = JPEGFactoryTest.class.getResourceAsStream("PDFBOX-6235-cmyk.jpg"))
+        {
+            ba = is.readAllBytes();
+        }
+        reader.setInput(new MemoryCacheImageInputStream(new ByteArrayInputStream(ba)));
+        BufferedImage image = reader.read(0);
+
+        // This test works only with the original java imaging, not with twelvemonkeys
+        assertEquals(ColorSpace.TYPE_CMYK, image.getColorModel().getColorSpace().getType());
+        assertEquals(BufferedImage.TYPE_CUSTOM, image.getType());
+        assertEquals(4, image.getColorModel().getNumComponents());
+
+        PDDocument document = new PDDocument();
+        PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
+        validate(ximage, 8, 200, 200, "jpg", PDDeviceCMYK.INSTANCE.getName());
+        // the samples are inverted, so a /Decode array is required
+        assertArrayEquals(new float[] { 1, 0, 1, 0, 1, 0, 1, 0 }, ximage.getDecode().toFloatArray());
+
+        // using the one created from the stream is more reliable than using "image"
+        // because of flaws in converting CMYK to RGB
+        // See https://stackoverflow.com/questions/19540064/
+        BufferedImage expected = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba)).getImage();
+        float meanAbsDiffPerPixel = computeMeanAbsDiffPerPixel(expected, ximage.getImage());
+        assertTrue(meanAbsDiffPerPixel < 1);
+
+        doWritePDF(document, ximage, TESTRESULTSDIR, "PDFBOX-6235-cmyk.pdf");
+    }
+
     // check whether it is possible to extract the jpeg stream exactly 
     // as it was passed to createFromStream
     private void checkJpegStream(File testResultsDir, String filename, InputStream expected)
@@ -309,5 +380,31 @@ class JPEGFactoryTest
                 assertArrayEquals(expected.readAllBytes(), dctStream.readAllBytes());
             }
         }
+    }
+
+    private float computeMeanAbsDiffPerPixel(BufferedImage expected, BufferedImage actual)
+    {
+        // assumption: both sizes are identical
+        int w = expected.getWidth();
+        int h = expected.getHeight();
+        long sum = 0;
+        long count = 0;
+        for (int y = 0; y < h; y++)
+        {
+            for (int x = 0; x < w; x++)
+            {
+                count += 3;
+                Color expectedRGB = new Color(expected.getRGB(x, y));
+                Color actualRGB = new Color(actual.getRGB(x, y));
+                if (expectedRGB.equals(actualRGB))
+                {
+                    continue;
+                }
+                sum += Math.abs(expectedRGB.getRed() - actualRGB.getRed());
+                sum += Math.abs(expectedRGB.getGreen() - actualRGB.getGreen());
+                sum += Math.abs(expectedRGB.getBlue() - actualRGB.getBlue());
+            }
+        }
+        return sum / (float) count;
     }
 }

@@ -25,6 +25,7 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.Iterator;
@@ -80,25 +81,13 @@ public final class JPEGFactory
     public static PDImageXObject createFromStream(PDDocument document, InputStream stream)
             throws IOException
     {
-        return createFromByteArray(document, stream.readAllBytes());
-    }
+        if (!stream.markSupported())
+        {
+            stream = new BufferedInputStream(stream);
+        }
+        stream.mark(Integer.MAX_VALUE);
 
-    /**
-     * Creates a new JPEG Image XObject from a byte array containing JPEG data.
-     *
-     * @param document the document where the image will be created
-     * @param byteArray bytes of JPEG image
-     * @return a new Image XObject
-     *
-     * @throws IOException if the input stream cannot be read
-     */
-    public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray)
-            throws IOException
-    {
-        // copy stream
-        ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
-
-        Dimensions meta = retrieveDimensions(byteStream);
+        Dimensions meta = retrieveDimensions(stream);
 
         PDColorSpace colorSpace;
         switch (meta.numComponents)
@@ -118,7 +107,7 @@ public final class JPEGFactory
         }
 
         // create PDImageXObject from stream
-        PDImageXObject pdImage = new PDImageXObject(document, byteStream, 
+        PDImageXObject pdImage = new PDImageXObject(document, stream,
                 COSName.DCT_DECODE, meta.width, meta.height, 8, colorSpace);
 
         if (colorSpace instanceof PDDeviceCMYK)
@@ -138,6 +127,21 @@ public final class JPEGFactory
         return pdImage;
     }
 
+    /**
+     * Creates a new JPEG Image XObject from a byte array containing JPEG data.
+     *
+     * @param document the document where the image will be created
+     * @param byteArray bytes of JPEG image
+     * @return a new Image XObject
+     *
+     * @throws IOException if the input stream cannot be read
+     */
+    public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray)
+            throws IOException
+    {
+        return createFromStream(document, new ByteArrayInputStream(byteArray));
+    }
+
     private static class Dimensions
     {
         private int width;
@@ -145,7 +149,7 @@ public final class JPEGFactory
         private int numComponents;
     }
 
-    private static Dimensions retrieveDimensions(ByteArrayInputStream stream) throws IOException
+    private static Dimensions retrieveDimensions(InputStream stream) throws IOException
     {
         ImageReader reader =
                 Filter.findRasterReader("JPEG", "a suitable JAI I/O image filter is not installed");
@@ -310,10 +314,24 @@ public final class JPEGFactory
         // create XObject
         byte[] encoded = encodeImageToJPEGStream(awtColorImage, quality, dpi);
         ByteArrayInputStream encodedByteStream = new ByteArrayInputStream(encoded);
+        PDColorSpace colorSpace = getColorSpaceFromAWT(awtColorImage);
 
         PDImageXObject pdImage = new PDImageXObject(document, encodedByteStream, COSName.DCT_DECODE,
                 awtColorImage.getWidth(), awtColorImage.getHeight(), 8,
-                getColorSpaceFromAWT(awtColorImage));
+                colorSpace);
+        if (colorSpace instanceof PDDeviceCMYK)
+        {
+            COSArray decode = new COSArray();
+            decode.add(COSInteger.ONE);
+            decode.add(COSInteger.ZERO);
+            decode.add(COSInteger.ONE);
+            decode.add(COSInteger.ZERO);
+            decode.add(COSInteger.ONE);
+            decode.add(COSInteger.ZERO);
+            decode.add(COSInteger.ONE);
+            decode.add(COSInteger.ZERO);
+            pdImage.setDecode(decode);
+        }
 
         // extract alpha channel (if any)
         BufferedImage awtAlphaImage = getAlphaImage(image);
@@ -371,10 +389,16 @@ public final class JPEGFactory
             IIOMetadata data = imageWriter.getDefaultImageMetadata(imageTypeSpecifier, jpegParam);
             Element tree = (Element) data.getAsTree("javax_imageio_jpeg_image_1.0");
             Element jfif = (Element) tree.getElementsByTagName("app0JFIF").item(0);
-            String dpiString = Integer.toString(dpi);
-            jfif.setAttribute("Xdensity", dpiString);
-            jfif.setAttribute("Ydensity", dpiString);
-            jfif.setAttribute("resUnits", "1"); // 1 = dots/inch
+            // PDFBOX-6235: JFIF APP0 is only defined for 1- and 3-component JPEGs. A 4-component
+            // (CMYK) image gets an Adobe APP14 marker instead, so there is no app0JFIF
+            // node and the DPI cannot be expressed in the stream at all.
+            if (jfif != null)
+            {
+                String dpiString = Integer.toString(dpi);
+                jfif.setAttribute("Xdensity", dpiString);
+                jfif.setAttribute("Ydensity", dpiString);
+                jfif.setAttribute("resUnits", "1"); // 1 = dots/inch
+            }
 
             // write
             imageWriter.write(data, new IIOImage(image, null, null), jpegParam);

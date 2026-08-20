@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.pdfbox.glyphlayout.awt;
 
 
@@ -23,11 +24,12 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.Bidi;
 import java.util.Objects;
 
+import org.apache.pdfbox.pdmodel.AbstractGlyphLayoutProcessor;
 import org.apache.pdfbox.pdmodel.ContentStreamForGlyphLayoutInterface;
 import org.apache.pdfbox.pdmodel.GlyphLayoutProcessorInterface;
 import org.apache.pdfbox.pdmodel.GlyphsAndPositions;
@@ -43,7 +45,7 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
  *
  * @author Volker Kunert
  */
-public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
+public class GlyphLayoutProcessorAwt extends AbstractGlyphLayoutProcessor implements GlyphLayoutProcessorInterface
 {
 
     private final GlyphLayoutFontLoaderAwt glyphLayoutFontLoaderAwt;
@@ -132,7 +134,7 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
      *
      * @param pdDocument document
      * @param inputStream of the font
-     * @param fontOptions
+     * @param fontOptions options for font loading
      *
      * @return a PDType0Font font.
      *
@@ -154,7 +156,7 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
      * @param fontOptions options for font
      *
      * @return a PDType0Font font.
-     * 
+     *
      * @throws IOException if font can not be loaded
      * @throws FontFormatException if the font is bad
      */
@@ -194,60 +196,19 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
     }
 
     /**
-     * Shows a text using glyph positioning (if needed)
-     *
-     * @param contentStream the content stream
+     * Compute the string width for a unidirectional string
      * @param font to be used
      * @param fontSize font size
-     * @param text text to show
-     *
-     * @throws IOException if an I/O exception occurs
-     * @throws IllegalArgumentException if glyphs are missing
+     * @param text text
+     * @param bidiLevel Bidi Level
+     * @return string width
      */
     @Override
-    public void showText(ContentStreamForGlyphLayoutInterface contentStream, PDType0Font font, float fontSize, String text) throws IOException
+    protected float getStringWidthUni(PDType0Font font, float fontSize, String text, int bidiLevel)
     {
-        Objects.requireNonNull(text, "Text must be set");
-
-        if (Bidi.requiresBidi(text.toCharArray(), 0, text.length()))
-        {
-            Bidi bidi = new Bidi(text, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT);
-            if (bidi.isMixed())
-            {
-                // Split and Reorder
-                // See PDFTextStripper.handleDirection
-                // collect individual bidi information
-                int runCount = bidi.getRunCount();
-                byte[] levels = new byte[runCount];
-                Integer[] runs = new Integer[runCount];
-
-                for (int i = 0; i < runCount; i++)
-                {
-                    levels[i] = (byte) bidi.getRunLevel(i);
-                    runs[i] = i;
-                }
-                // reorder individual parts based on their levels
-                Bidi.reorderVisually(levels, 0, runs, 0, runCount);
-
-                for (int i = 0; i < runCount; i++)
-                {
-                    int index = runs[i];
-                    int start = bidi.getRunStart(index);
-                    int limit = bidi.getRunLimit(index);
-                    int bidiLevel = levels[index];
-                    String part = text.substring(start, limit);
-                    showTextUni(contentStream, font, fontSize, part, bidiLevel);
-                }
-            }
-            else
-            {
-                showTextUni(contentStream, font, fontSize, text, bidi.getBaseLevel());
-            }
-        }
-        else
-        {
-            showTextUni(contentStream, font, fontSize, text, Bidi.DIRECTION_LEFT_TO_RIGHT);
-        }
+        GlyphVector glyphVector = computeGlyphVector(font, fontSize, text, bidiLevel);
+        Rectangle2D rect = glyphVector.getLogicalBounds();
+        return (float) rect.getWidth();
     }
 
     /**
@@ -261,13 +222,14 @@ public class GlyphLayoutProcessorAwt implements GlyphLayoutProcessorInterface
      * @throws IOException if an IO-exception occurs
      * @throws IllegalArgumentException if glyphs are missing
      */
+    @Override
     protected void showTextUni(ContentStreamForGlyphLayoutInterface contentStream, PDType0Font font, float fontSize, String text, int bidiLevel) throws IOException
     {
         Objects.requireNonNull(text, "Text must be set");
         Objects.requireNonNull(contentStream, "contentStream must be set");
 
         GlyphVector glyphVector = computeGlyphVector(font, fontSize, text, bidiLevel);
-        
+
         // check for adjustment not needed:
         // glyphVector.getLayoutFlags() & FLAG_HAS_POSITION_ADJUSTMENTS is always true
         // because of horizontal adjustments in every string except one character string

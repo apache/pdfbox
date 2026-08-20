@@ -39,6 +39,16 @@ public interface GlyphLayoutProcessorInterface
     boolean supportsFont(PDFont font);
 
     /**
+     * Compute the width for a text
+     * @param font to be used
+     * @param fontSize font size
+     * @param text text
+     * @return string width
+     */
+    float getStringWidth(PDType0Font font, float fontSize, String text) throws IOException;
+
+
+    /**
      * Shows a text using glyph positioning (if needed)
      *
      * @param contentStream the content stream

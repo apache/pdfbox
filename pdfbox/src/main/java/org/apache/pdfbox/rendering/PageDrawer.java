@@ -650,9 +650,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             throw new IOException("Invalid soft mask subtype: " + subType);
         }
         gray = adjustImage(gray);
-        
-        Rectangle2D tpgBounds = transparencyGroup.getBounds();
-        return new SoftMask(parentPaint, gray, tpgBounds, backdropColor, softMask.getTransferFunction());
+        Point2D origin = transparencyGroup.getOrigin();
+        PDFunction transferFunction = softMask.getTransferFunction();
+        return new SoftMask(parentPaint, gray, origin, backdropColor, transferFunction);
     }
 
     // returns the image adjusted for applySoftMaskToPaint().
@@ -1156,7 +1156,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 g.fill(bounds);
                 g.dispose();
 
-                // PDFBOX-5403: a paint such as a TilingPaint can have hairline, fully
+                // PDFBOX-6077 (for the file in PDFBOX-5403):
+                // a paint such as a TilingPaint can have hairline, fully
                 // transparent seams of its own (e.g. sub-pixel rounding at tile boundaries),
                 // which used to be invisible because the mask's alpha always overwrote the
                 // paint's alpha below. Now that the two are combined, widen the paint's alpha to
@@ -1245,14 +1246,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 {
                     for (int x = 0; x < w; x++)
                     {
-                        alphaPixel = alpha.getPixel(x, y, alphaPixel);
                         rasterPixel = raster.getPixel(x, y, rasterPixel);
-                        // PDFBOX-6077: combine with the paint's own alpha instead of
-                        // overwriting it, so gaps the paint never drew into (e.g. between
-                        // tiles of a tiling pattern) stay transparent instead of turning
-                        // into opaque black.
-                        rasterPixel[3] = rasterPixel[3] * alphaPixel[0] / 255;
-                        raster.setPixel(x, y, rasterPixel);
+                        // PDFBOX-6077 + for the file in PDFBOX-5403:
+                        // don't overwrite the paint when transparent,
+                        // so gaps the paint never drew into (e.g. between tiles of a tiling pattern)
+                        // stay transparent instead of turning into opaque black.
+                        if (rasterPixel[3] != 0)
+                        {
+                            alphaPixel = alpha.getPixel(x, y, alphaPixel);
+                            // assign alpha; it's also possible to combine but the visual
+                            // difference is currently minimal (see code of 16.8.2026)
+                            rasterPixel[3] = alphaPixel[0];
+                            raster.setPixel(x, y, rasterPixel);
+                        }
                     }
                 }
 
@@ -1294,7 +1300,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     /**
-     * PDFBOX-5403: widens each pixel's alpha channel to the maximum of itself and its 4
+     * PDFBOX-6077 (for the file of PDFBOX-5403):
+     * widens each pixel's alpha channel to the maximum of itself and its 4
      * neighbors, in place. Used to absorb hairline (1 pixel wide) fully-transparent seams in a
      * paint's own rendering - e.g. rounding seams between adjacent tiles of a TilingPaint -
      * before that alpha is combined with a stencil mask's alpha, so such a seam isn't mistaken
@@ -1368,7 +1375,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         AffineTransform deviceTransform = graphics.getTransform();
         Raster maskRaster = softMask.getMask().getRaster();
-        Rectangle2D bboxDevice = softMask.getBBoxDevice();
+        Point2D origin = softMask.getOrigin();
         int backdropColorValue = softMask.getBackdropColorValue();
         PDFunction transferFunction = softMask.getTransferFunction();
         Float[] map = transferFunction != null ? new Float[256] : null;
@@ -1386,37 +1393,40 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 point.setLocation(bounds.getMinX() + x, bounds.getMinY() + y);
                 deviceTransform.transform(point, point);
-                int maskX = (int) Math.floor(point.getX() - bboxDevice.getX());
-                int maskY = (int) Math.floor(point.getY() - bboxDevice.getY());
+                int maskX = (int) Math.floor(point.getX() - origin.getX());
+                int maskY = (int) Math.floor(point.getY() - origin.getY());
 
-                int alphaScale;
-                if (maskX >= 0 && maskY >= 0 && maskX < maskRaster.getWidth() && maskY < maskRaster.getHeight())
+                rasterPixel = raster.getPixel(x, y, rasterPixel);
+                if (rasterPixel[3] != 0)
                 {
-                    maskRaster.getPixel(maskX, maskY, gray);
-                    if (transferFunction != null)
+                    int alphaScale;
+                    if (maskX >= 0 && maskY >= 0 && maskX < maskRaster.getWidth() && maskY < maskRaster.getHeight())
                     {
-                        Float f = map[gray[0]];
-                        if (f == null)
+                        maskRaster.getPixel(maskX, maskY, gray);
+                        if (transferFunction != null)
                         {
-                            input[0] = gray[0] / 255f;
-                            f = transferFunction.eval(input)[0];
-                            map[gray[0]] = f;
+                            Float f = map[gray[0]];
+                            if (f == null)
+                            {
+                                input[0] = gray[0] / 255f;
+                                f = transferFunction.eval(input)[0];
+                                map[gray[0]] = f;
+                            }
+                            alphaScale = Math.round(255 * f);
                         }
-                        alphaScale = Math.round(255 * f);
+                        else
+                        {
+                            alphaScale = gray[0];
+                        }
                     }
                     else
                     {
-                        alphaScale = gray[0];
+                        alphaScale = backdropColorValue;
                     }
-                }
-                else
-                {
-                    alphaScale = backdropColorValue;
-                }
 
-                rasterPixel = raster.getPixel(x, y, rasterPixel);
-                rasterPixel[3] = rasterPixel[3] * alphaScale / 255;
-                raster.setPixel(x, y, rasterPixel);
+                    rasterPixel[3] = alphaScale;
+                    raster.setPixel(x, y, rasterPixel);
+                }
             }
         }
     }
@@ -2163,7 +2173,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return bbox;
         }
 
-        Rectangle2D getBounds()
+        Point2D getOrigin()
         {
             Rectangle2D r;
             if (flipTG)
@@ -2183,13 +2193,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
             // apply the underlying Graphics2D device's DPI transform
             // this adjusts the rectangle to the rotated image to put the soft mask at the correct position
-            //TODO
-            // 1. change transparencyGroup.getBounds() to getOrigin(), because size isn't used in SoftMask,
-            // 2. Is it possible to create the softmask and transparency group in the correct rotation?
-            //    (needs rendering identity testing before committing!)
             AffineTransform adjustedTransform = new AffineTransform(xform);
             adjustedTransform.scale(1.0 / xformScalingFactorX, 1.0 / xformScalingFactorY);
-            return adjustedTransform.createTransformedShape(r).getBounds2D();
+            Rectangle2D b2d = adjustedTransform.createTransformedShape(r).getBounds2D();
+            return new Point2D.Double(b2d.getX(), b2d.getY());
         }
     }
 

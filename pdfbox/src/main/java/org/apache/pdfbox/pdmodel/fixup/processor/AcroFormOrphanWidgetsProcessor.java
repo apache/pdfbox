@@ -19,8 +19,10 @@ package org.apache.pdfbox.pdmodel.fixup.processor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -188,8 +190,14 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
      */
     private PDField resolveNonRootField(PDAcroForm acroForm, COSDictionary parent, Map<String, PDField> nonTerminalFieldsMap)
     {
+        Set<COSDictionary> visited = new HashSet<>();
         while (parent.containsKey(COSName.PARENT))
         {
+            if (!visited.add(parent))
+            {
+                LOG.warn("Field ignored: {}", parent);
+                return null; // Cycle detected
+            }
             parent = parent.getCOSDictionary(COSName.PARENT);
             if (parent == null)
             {

@@ -30,10 +30,10 @@
     <artifactId>pdfbox-layout-awt</artifactId>
     <packaging>bundle</packaging>
 
-    <name>Apache PDFBox Layout awt</name>
+    <name>Apache PDFBox Layout AWT</name>
     <description>
         The Apache PDFBox library is an open source Java tool for working with PDF documents. 
-        This artifact contains classes for script layout with awt.
+        This artifact contains classes for script layout with AWT.
     </description>
     <inceptionYear>2002</inceptionYear>    
 

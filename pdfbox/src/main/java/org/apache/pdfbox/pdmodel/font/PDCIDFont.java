@@ -32,7 +32,9 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
@@ -66,18 +68,40 @@ public abstract class PDCIDFont implements COSObjectable
     protected boolean isEmbedded;
     protected boolean isDamaged;
 
-    private PDFontDescriptor fontDescriptor;
+    private final PDFontDescriptor fontDescriptor;
 
     /**
      * Constructor.
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
+     * @param resourceCache ResourceCache, can be null.
+     * 
      */
-    PDCIDFont(COSDictionary fontDictionary)
+    PDCIDFont(COSDictionary fontDictionary, ResourceCache resourceCache)
     {
         this.dict = fontDictionary;
         readWidths();
         readVerticalDisplacements();
+        
+        PDFontDescriptor fd = null;
+        COSObject fdIndirectObject = dict.getCOSObject(COSName.FONT_DESC);
+        if (fdIndirectObject != null && resourceCache != null)
+        {
+            fd = resourceCache.getFontDescriptor(fdIndirectObject);
+        }
+        if (fd == null)
+        {
+            COSDictionary fdDict = dict.getCOSDictionary(COSName.FONT_DESC);
+            if (fdDict != null)
+            {
+                fd = new PDFontDescriptor(fdDict);
+                if (resourceCache != null && fdIndirectObject != null)
+                {
+                    resourceCache.put(fdIndirectObject, fd);
+                }
+            }
+        }
+        fontDescriptor = fd;
     }
 
     private void readWidths()
@@ -219,14 +243,6 @@ public abstract class PDCIDFont implements COSObjectable
      */
     public PDFontDescriptor getFontDescriptor()
     {
-        if (fontDescriptor == null)
-        {
-            COSDictionary fd = dict.getCOSDictionary(COSName.FONT_DESC);
-            if (fd != null)
-            {
-                fontDescriptor = new PDFontDescriptor(fd);
-            }
-        }
         return fontDescriptor;
     }
 
