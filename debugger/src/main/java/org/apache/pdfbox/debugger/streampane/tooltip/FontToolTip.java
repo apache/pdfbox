@@ -63,8 +63,52 @@ final class FontToolTip implements ToolTip
         }
         if (font != null)
         {
-            markup = "<html>" + font.getName() + "</html>";
+            markup = "<html>" + escapeHtml(font.getName()) + "</html>";
         }
+    }
+
+    /**
+     * Escape a document-derived string so that Swing's HTML renderer treats it as inert text. Font
+     * names come straight from the PDF (the /BaseFont entry) and may contain arbitrary characters,
+     * including markup such as &lt;img&gt; tags whose URLs Swing would fetch when the tooltip is
+     * shown.
+     *
+     * @param text the raw text, may be null
+     * @return the escaped text, or null if text was null
+     */
+    private static String escapeHtml(String text)
+    {
+        if (text == null)
+        {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder(text.length());
+        for (int i = 0; i < text.length(); i++)
+        {
+            char c = text.charAt(i);
+            switch (c)
+            {
+                case '<':
+                    sb.append("&lt;");
+                    break;
+                case '>':
+                    sb.append("&gt;");
+                    break;
+                case '&':
+                    sb.append("&amp;");
+                    break;
+                case '"':
+                    sb.append("&quot;");
+                    break;
+                case '\'':
+                    sb.append("&#39;");
+                    break;
+                default:
+                    sb.append(c);
+                    break;
+            }
+        }
+        return sb.toString();
     }
 
     private String extractFontReference(String rowText)
