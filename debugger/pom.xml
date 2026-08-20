@@ -55,29 +55,14 @@
       <version>${picocli.version}</version>
     </dependency>
     <dependency>
-        <groupId>org.apache.pdfbox</groupId>
-        <artifactId>jbig2-imageio</artifactId>
-        <version>${jbig2.version}</version>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcpkix-jdk18on</artifactId>
     </dependency>
-    <!-- For legal reasons (incompatible license), these two dependencies 
-        are to be used only in the tests and may not be distributed. 
-        See also LEGAL-195 -->
     <dependency>
-        <groupId>com.github.jai-imageio</groupId>
-        <artifactId>jai-imageio-core</artifactId>
-        <version>${jai.version}</version>
-        <scope>test</scope>
-    </dependency>    
-    <dependency>
-        <groupId>com.github.jai-imageio</groupId>
-        <artifactId>jai-imageio-jpeg2000</artifactId>
-        <version>${jai.version}</version>
-        <scope>test</scope>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
