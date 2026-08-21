@@ -110,7 +110,7 @@ public class ValidateXImage
         }
     }
 
-    static int colorCount(BufferedImage bim)
+    static public int colorCount(BufferedImage bim)
     {
         Set<Integer> colors = new HashSet<Integer>();
         int w = bim.getWidth();
