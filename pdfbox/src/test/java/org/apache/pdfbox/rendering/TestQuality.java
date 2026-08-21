@@ -56,4 +56,74 @@ class TestQuality
             ValidateXImage.checkIdent(extractedImage, renderedImage);
         }
     }
+
+    /**
+     * PDFBOX-6077: a stencil mask filled with a pattern must not paint the gaps between the
+     * pattern's own tiles as opaque black. Before the fix, the stencil mask's alpha overwrote
+     * the pattern paint's own alpha instead of being combined with it, so any pixel the pattern
+     * didn't itself draw into turned solid black instead of staying transparent.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox6077() throws IOException
+    {
+        File file = new File(TARGET_PDF_DIR, "PDFBOX-6077-example.pdf");
+        try (PDDocument doc = Loader.loadPDF(file))
+        {
+            PDFRenderer renderer = new PDFRenderer(doc);
+            BufferedImage renderedImage = renderer.renderImageWithDPI(0, 100);
+            // a gap between the tiling pattern's own painted tiles, which must stay transparent
+            // (i.e. show the white page background) instead of turning opaque black
+            Assertions.assertEquals(0xFFFFFFFF, renderedImage.getRGB(280, 23));
+        }
+    }
+
+    /**
+     * PDFBOX-6077: a soft mask applied to a pattern that is used as a stencil mask fill must
+     * still be visible. Such a pattern is rendered into a separate scratch image rather than
+     * directly onto the page, and the soft mask's own alpha lookup is keyed to absolute
+     * page-device pixel coordinates, so a naive implementation renders it as fully transparent.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox5842() throws IOException
+    {
+        File file = new File(TARGET_PDF_DIR, "PDFBOX-5842-reduced.pdf");
+        try (PDDocument doc = Loader.loadPDF(file))
+        {
+            PDFRenderer renderer = new PDFRenderer(doc);
+            BufferedImage renderedImage = renderer.renderImageWithDPI(0, 100);
+            // a pixel within the soft-masked pattern's map marker icon; if the soft mask's alpha
+            // lookup is broken, this whole region renders as blank white instead
+            Assertions.assertNotEquals(0xFFFFFFFF, renderedImage.getRGB(267, 1329));
+        }
+    }
+
+    /**
+     * PDFBOX-5403: a stencil mask filled with a pattern repeated many times over a large area
+     * (e.g. one tiling-pattern-filled image per line of text) must not show a hairline seam
+     * between the pattern's own tiles as a visible gap. Combining the mask's alpha with the
+     * pattern's own alpha (see testPDFBox6077) can expose such a seam as a light gray line
+     * cutting through otherwise-solid text, if it isn't first smoothed over.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox5403() throws IOException
+    {
+        File file = new File(TARGET_PDF_DIR, "PDFBOX-5403-bad-rendering.pdf");
+        try (PDDocument doc = Loader.loadPDF(file))
+        {
+            PDFRenderer renderer = new PDFRenderer(doc);
+            BufferedImage renderedImage = renderer.renderImageWithDPI(2, 100);
+            // a pixel within a line of text rendered via a pattern-filled stencil mask; a
+            // hairline tile-boundary seam previously showed through as a washed-out gray streak
+            int rgb = renderedImage.getRGB(159, 115);
+            int red = (rgb >> 16) & 0xFF;
+            Assertions.assertTrue(red < 100,
+                    "expected a dark text pixel but was too light: " + Integer.toHexString(rgb));
+        }
+    }
 }
