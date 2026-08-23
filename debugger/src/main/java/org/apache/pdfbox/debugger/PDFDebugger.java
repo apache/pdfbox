@@ -882,12 +882,8 @@ public class PDFDebugger extends JFrame
             ArrayEntry entry = (ArrayEntry) selectedNode;
             if (entry.getValue() instanceof COSStream && parentNode instanceof MapEntry)
             {
-                MapEntry mapEntry = (MapEntry) parentNode;
-                if ((mapEntry.getKey().equals(COSName.CERT) ||
-                     mapEntry.getKey().equals(COSName.CERTS)))
-                {
-                    return true;
-                }
+                COSName key = ((MapEntry) parentNode).getKey();
+                return COSName.CERT.equals(key) || COSName.CERTS.equals(key);
             }
         }
         return false;
@@ -899,18 +895,13 @@ public class PDFDebugger extends JFrame
         if (selectedNode instanceof MapEntry)
         {
             MapEntry entry = (MapEntry) selectedNode;
-            if (entry.getKey().equals(COSName.CERT) && parentNode instanceof MapEntry)
+            if (COSName.CERT.equals(entry.getKey()) && parentNode instanceof MapEntry)
             {
                 MapEntry mapEntry = (MapEntry) parentNode;
-                COSDictionary sigDict;
                 if (mapEntry.getValue() instanceof COSDictionary)
                 {
-                    sigDict = (COSDictionary) mapEntry.getValue();
-                    COSName type = sigDict.getCOSName(COSName.TYPE);
-                    if (type != null && type.equals(COSName.SIG))
-                    {
-                        return true;
-                    }
+                    COSDictionary sigDict = (COSDictionary) mapEntry.getValue();
+                    return COSName.SIG.equals(sigDict.getCOSName(COSName.TYPE));
                 }
             }
         }
