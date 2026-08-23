@@ -824,7 +824,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                     return;
                 }
                 
-                if (isSpecialColorSpace(selectedNode) || isOtherColorSpace(selectedNode))
+                if (isArrayColorSpace(selectedNode))
                 {
                     showColorPane(selectedNode);
                     return;
@@ -947,33 +947,16 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         return false;
     }
 
-    private boolean isSpecialColorSpace(Object selectedNode)
+    private boolean isArrayColorSpace(Object selectedNode)
     {
         COSBase underneathObject = getUnderneathObject(selectedNode);
-
         if (underneathObject instanceof COSArray && ((COSArray) underneathObject).size() > 0)
         {
             COSBase arrayEntry = ((COSArray) underneathObject).get(0);
             if (arrayEntry instanceof COSName)
             {
                 COSName name = (COSName) arrayEntry;
-                return SPECIALCOLORSPACES.contains(name);
-            }
-        }
-        return false;
-    }
-
-    private boolean isOtherColorSpace(Object selectedNode)
-    {
-        COSBase underneathObject = getUnderneathObject(selectedNode);
-
-        if (underneathObject instanceof COSArray && ((COSArray) underneathObject).size() > 0)
-        {
-            COSBase arrayEntry = ((COSArray) underneathObject).get(0);
-            if (arrayEntry instanceof COSName)
-            {
-                COSName name = (COSName) arrayEntry;
-                return OTHERCOLORSPACES.contains(name);
+                return SPECIALCOLORSPACES.contains(name) || OTHERCOLORSPACES.contains(name);
             }
         }
         return false;
@@ -981,16 +964,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
 
     private boolean isPage(Object selectedNode)
     {
-        COSBase underneathObject = getUnderneathObject(selectedNode);
-
-        if (underneathObject instanceof COSDictionary)
+        COSBase base = getUnderneathObject(selectedNode);
+        if (base instanceof COSDictionary)
         {
-            COSDictionary dict = (COSDictionary) underneathObject;
+            COSDictionary dict = (COSDictionary) base;
             COSBase typeItem = dict.getItem(COSName.TYPE);
-            if (COSName.PAGE.equals(typeItem))
-            {
-                return true;
-            }
+            return COSName.PAGE.equals(typeItem);
         }
         return false;
     }
