@@ -908,13 +908,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
     private void showCertificatePane(Object selectedNode)
     {
         COSBase base = getUnderneathObject(selectedNode);
-        if (base instanceof COSStream)
+        if (base instanceof COSStream || base instanceof COSString)
         {
-            replaceRightComponent(new CertificatePane((COSStream) base).getPane());
-        }
-        if (base instanceof COSString)
-        {
-            replaceRightComponent(new CertificatePane((COSString) base).getPane());
+            replaceRightComponent(new CertificatePane(base).getPane());
         }
     }
 
