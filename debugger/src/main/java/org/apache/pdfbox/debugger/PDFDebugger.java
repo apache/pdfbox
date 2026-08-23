@@ -86,6 +86,7 @@ import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.debugger.certificatepane.CertificatePane;
 import org.apache.pdfbox.debugger.colorpane.CSArrayBased;
 import org.apache.pdfbox.debugger.colorpane.CSDeviceN;
 import org.apache.pdfbox.debugger.colorpane.CSIndexed;
@@ -792,6 +793,18 @@ public class PDFDebugger extends JFrame
                     showFlagPane(parentNode, selectedNode);
                     return;
                 }
+                if (path.getParentPath() != null &&
+                    isCertificateStream(selectedNode, path.getParentPath().getLastPathComponent()))
+                {
+                    showCertificatePane(selectedNode);
+                    return;
+                }
+                if (path.getParentPath() != null &&
+                    isCertificateString(selectedNode, path.getParentPath().getLastPathComponent()))
+                {
+                    showCertificatePane(selectedNode);
+                    return;
+                }
                 if (isStream(selectedNode))
                 {
                     showStream((COSStream) getUnderneathObject(selectedNode), path);
@@ -852,7 +865,61 @@ public class PDFDebugger extends JFrame
                     COSName type = sigDict.getCOSName(COSName.TYPE);
                     if (type != null && type.equals(COSName.SIG))
                     {
-                        LOG.info("Found signature contents entry");
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private void showCertificatePane(Object selectedNode)
+    {
+        COSBase base = (COSBase) getUnderneathObject(selectedNode);
+        if (base instanceof COSStream)
+        {
+            replaceRightComponent(new CertificatePane((COSStream) base).getPane());
+        }
+        if (base instanceof COSString)
+        {
+            replaceRightComponent(new CertificatePane((COSString) base).getPane());
+        }
+    }
+
+    private boolean isCertificateStream(Object selectedNode, Object parentNode)
+    {
+        if (selectedNode instanceof ArrayEntry)
+        {
+            ArrayEntry entry = (ArrayEntry) selectedNode;
+            if (entry.getValue() instanceof COSStream && parentNode instanceof MapEntry)
+            {
+                MapEntry mapEntry = (MapEntry) parentNode;
+                if ((mapEntry.getKey().equals(COSName.CERT) ||
+                     mapEntry.getKey().equals(COSName.CERTS)))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isCertificateString(Object selectedNode, Object parentNode)
+    {
+        // adbe.x509.rsa_sha1 signature, eg. in PDFBOX-2693
+        if (selectedNode instanceof MapEntry)
+        {
+            MapEntry entry = (MapEntry) selectedNode;
+            if (entry.getKey().equals(COSName.CERT) && parentNode instanceof MapEntry)
+            {
+                MapEntry mapEntry = (MapEntry) parentNode;
+                COSDictionary sigDict;
+                if (mapEntry.getValue() instanceof COSDictionary)
+                {
+                    sigDict = (COSDictionary) mapEntry.getValue();
+                    COSName type = sigDict.getCOSName(COSName.TYPE);
+                    if (type != null && type.equals(COSName.SIG))
+                    {
                         return true;
                     }
                 }
