@@ -781,7 +781,7 @@ public class PDFDebugger extends JFrame
                     return;
                 }
                 
-                if (isSpecialColorSpace(selectedNode) || isOtherColorSpace(selectedNode))
+                if (isArrayColorSpace(selectedNode))
                 {
                     showColorPane(selectedNode);
                     return;
@@ -904,33 +904,16 @@ public class PDFDebugger extends JFrame
         return false;
     }
 
-    private boolean isSpecialColorSpace(Object selectedNode)
+    private boolean isArrayColorSpace(Object selectedNode)
     {
-        selectedNode = getUnderneathObject(selectedNode);
-
-        if (selectedNode instanceof COSArray && ((COSArray) selectedNode).size() > 0)
+        COSBase underneathObject = getUnderneathObject(selectedNode);
+        if (underneathObject instanceof COSArray && ((COSArray) underneathObject).size() > 0)
         {
-            COSBase arrayEntry = ((COSArray)selectedNode).get(0);
+            COSBase arrayEntry = ((COSArray) underneathObject).get(0);
             if (arrayEntry instanceof COSName)
             {
                 COSName name = (COSName) arrayEntry;
-                return SPECIALCOLORSPACES.contains(name);
-            }
-        }
-        return false;
-    }
-
-    private boolean isOtherColorSpace(Object selectedNode)
-    {
-        selectedNode = getUnderneathObject(selectedNode);
-
-        if (selectedNode instanceof COSArray && ((COSArray) selectedNode).size() > 0)
-        {
-            COSBase arrayEntry = ((COSArray)selectedNode).get(0);
-            if (arrayEntry instanceof COSName)
-            {
-                COSName name = (COSName) arrayEntry;
-                return OTHERCOLORSPACES.contains(name);
+                return SPECIALCOLORSPACES.contains(name) || OTHERCOLORSPACES.contains(name);
             }
         }
         return false;
@@ -938,20 +921,12 @@ public class PDFDebugger extends JFrame
 
     private boolean isPage(Object selectedNode)
     {
-        selectedNode = getUnderneathObject(selectedNode);
-
-        if (selectedNode instanceof COSDictionary)
+        COSBase base = getUnderneathObject(selectedNode);
+        if (base instanceof COSDictionary)
         {
-            COSDictionary dict = (COSDictionary) selectedNode;
+            COSDictionary dict = (COSDictionary) base;
             COSBase typeItem = dict.getItem(COSName.TYPE);
-            if (COSName.PAGE.equals(typeItem))
-            {
-                return true;
-            }
-        }
-        else if (selectedNode instanceof PageEntry)
-        {
-            return true;
+            return COSName.PAGE.equals(typeItem);
         }
         return false;
     }
@@ -1214,26 +1189,26 @@ public class PDFDebugger extends JFrame
         return null;
     }
 
-    private Object getUnderneathObject(Object selectedNode)
+    private COSBase getUnderneathObject(Object selectedNode)
     {
         if (selectedNode instanceof MapEntry)
         {
-            selectedNode = ((MapEntry) selectedNode).getValue();
+            return ((MapEntry) selectedNode).getValue();
         }
         else if (selectedNode instanceof ArrayEntry)
         {
-            selectedNode = ((ArrayEntry) selectedNode).getValue();
+            return ((ArrayEntry) selectedNode).getValue();
         }
         else if (selectedNode instanceof PageEntry)
         {
-            selectedNode = ((PageEntry) selectedNode).getDict();
+            return ((PageEntry) selectedNode).getDict();
         }
 
         if (selectedNode instanceof COSObject)
         {
-            selectedNode = ((COSObject) selectedNode).getObject();
+            return ((COSObject) selectedNode).getObject();
         }
-        return selectedNode;
+        return null;
     }
 
     private String convertToString( Object selectedNode )
