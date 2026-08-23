@@ -864,14 +864,10 @@ public class PDFDebugger extends JFrame
 
     private void showCertificatePane(Object selectedNode)
     {
-        COSBase base = (COSBase) getUnderneathObject(selectedNode);
-        if (base instanceof COSStream)
+        COSBase base = getUnderneathObject(selectedNode);
+        if (base instanceof COSStream || base instanceof COSString)
         {
-            replaceRightComponent(new CertificatePane((COSStream) base).getPane());
-        }
-        if (base instanceof COSString)
-        {
-            replaceRightComponent(new CertificatePane((COSString) base).getPane());
+            replaceRightComponent(new CertificatePane(base).getPane());
         }
     }
 
