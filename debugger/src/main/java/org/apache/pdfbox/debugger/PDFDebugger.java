@@ -786,21 +786,26 @@ public class PDFDebugger extends JFrame
                     showColorPane(selectedNode);
                     return;
                 }
-                if (path.getParentPath() != null
-                        && isFlagNode(selectedNode, path.getParentPath().getLastPathComponent()))
+                Object lastPathComponent = null;
+                if (path.getParentPath() != null)
+                {
+                    lastPathComponent = path.getParentPath().getLastPathComponent();
+                }
+                if (lastPathComponent != null
+                        && isFlagNode(selectedNode, lastPathComponent))
                 {
                     Object parentNode = path.getParentPath().getLastPathComponent();
                     showFlagPane(parentNode, selectedNode);
                     return;
                 }
-                if (path.getParentPath() != null &&
-                    isCertificateStream(selectedNode, path.getParentPath().getLastPathComponent()))
+                if (lastPathComponent != null &&
+                    isCertificateStream(selectedNode, lastPathComponent))
                 {
                     showCertificatePane(selectedNode);
                     return;
                 }
-                if (path.getParentPath() != null &&
-                    isCertificateString(selectedNode, path.getParentPath().getLastPathComponent()))
+                if (lastPathComponent != null &&
+                    isCertificateString(selectedNode, lastPathComponent))
                 {
                     showCertificatePane(selectedNode);
                     return;
@@ -810,8 +815,7 @@ public class PDFDebugger extends JFrame
                     showStream((COSStream) getUnderneathObject(selectedNode), path);
                     return;
                 }
-                if (path.getParentPath() != null &&
-                    isSignature(selectedNode, path.getParentPath().getLastPathComponent()))
+                if (lastPathComponent != null && isSignature(selectedNode, lastPathComponent))
                 {
                     showSignaturePane(selectedNode);
                     return;
