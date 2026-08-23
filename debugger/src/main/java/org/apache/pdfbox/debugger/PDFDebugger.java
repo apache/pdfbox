@@ -898,20 +898,9 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         if (selectedNode instanceof MapEntry)
         {
             MapEntry entry = (MapEntry) selectedNode;
-            if (entry.getKey().equals(COSName.CONTENTS) &&
-                    parentNode instanceof MapEntry)
+            if (COSName.CONTENTS.equals(entry.getKey()) && parentNode instanceof MapEntry)
             {
-                MapEntry mapEntry = (MapEntry) parentNode;
-                COSDictionary sigDict;
-                if (mapEntry.getValue() instanceof COSDictionary)
-                {
-                    sigDict = (COSDictionary)mapEntry.getValue();
-                    COSName type = sigDict.getCOSName(COSName.TYPE);
-                    if (type != null && type.equals(COSName.SIG))
-                    {
-                        return true;
-                    }
-                }
+                return COSName.V.equals(((MapEntry) parentNode).getKey());
             }
         }
         return false;
