@@ -822,8 +822,17 @@ public abstract class PDAnnotation implements COSObjectable
                 colorSpace = PDDeviceGray.INSTANCE;
                 break;
             case 3:
-                colorSpace = PDDeviceRGB.INSTANCE;
-                break;
+                float[] fa = cs.toFloatArray();
+                if (fa[0] == fa[1] && fa[2] == fa[1])
+                {
+                    // discovered while working on AppearanceGenerationTest.rectangleFullStrokeNoFill():
+                    // Adobe converts "rg" into "g" so lets do that too.
+                    return new PDColor(new float[]{fa[0]}, PDDeviceGray.INSTANCE);
+                }
+                else
+                {
+                    return new PDColor(fa, PDDeviceRGB.INSTANCE);
+                }
             case 4:
                 colorSpace = PDDeviceCMYK.INSTANCE;
                 break;
