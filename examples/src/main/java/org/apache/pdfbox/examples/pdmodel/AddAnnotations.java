@@ -25,7 +25,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
@@ -40,6 +42,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitWidthDestination;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
 
 /**
  * Add annotations to pages of a PDF document.
@@ -164,8 +168,8 @@ public final class AddAnnotations
             PDAnnotationSquareCircle aCircle = new PDAnnotationSquareCircle(
                     PDAnnotationSquareCircle.SUB_TYPE_CIRCLE);
             aCircle.setContents("Circle Annotation");
-            aCircle.setInteriorColor(red);  // Fill in circle in red
-            aCircle.setColor(blue); // The border itself will be blue
+            aCircle.setInteriorColor(red);
+            aCircle.setColor(blue);
             aCircle.setBorderStyle(borderThin);
 
             // Place the annotation on the page, we'll make this 1" round
@@ -182,7 +186,8 @@ public final class AddAnnotations
             PDAnnotationSquareCircle aSquare = new PDAnnotationSquareCircle(
                     PDAnnotationSquareCircle.SUB_TYPE_SQUARE);
             aSquare.setContents("Square Annotation");
-            aSquare.setColor(red);  // Outline in red, not setting a fill
+            aSquare.setInteriorColor(blue);
+            aSquare.setColor(red);
             aSquare.setBorderStyle(borderThick);
 
             // Place the annotation on the page, we'll make this 1" (72 points) square
@@ -257,7 +262,8 @@ public final class AddAnnotations
             freeTextAnnotation.setRectangle(position);
             freeTextAnnotation.setTitlePopup("Sophia Lorem");
             freeTextAnnotation.setSubject("Lorem ipsum");
-            freeTextAnnotation.setContents("Lorem ipsum dolor sit amet, consetetur sadipscing elitr,"
+            freeTextAnnotation.setContents("uppercase Δ, lowercase δ\n"
+                    + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr,"
                     + " sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam "
                     + "erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea "
                     + "rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum "
@@ -266,17 +272,13 @@ public final class AddAnnotations
                     + "erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea "
                     + "rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum "
                     + "dolor sit amet.");
-            // Text and border in blue RGB color, "Helv" font, 20 point
-            // setDefaultAppearance() missing in 2.0
-            freeTextAnnotation.getCOSObject().setString(COSName.DA, "0 0 1 rg /Helv 20 Tf");
+            // Text and border in blue RGB color, "Liberation Sans" font, 20 point
+            freeTextAnnotation.setDefaultAppearance("0 0 1 rg /LibSans 20 Tf");
+            // Quadding does not have any effect?!
+            freeTextAnnotation.setQ(PDVariableText.QUADDING_RIGHT);
             freeTextAnnotation.setIntent("FreeTextCallout");
-            COSArray newCallout = new COSArray();
-            newCallout.setFloatArray(new float[]{0, ph - 9 * INCH, 3 * INCH, ph - 9 * INCH, 4 * INCH, ph - 8 * INCH});
-            // setCallout() missing in 2.0
-            freeTextAnnotation.getCOSObject().setItem(COSName.CL, newCallout);
-            freeTextAnnotation.getCOSObject();
-            // setLineEndingStyle() missing in 2.0
-            freeTextAnnotation.getCOSObject().setName(COSName.LE, PDAnnotationLine.LE_OPEN_ARROW);
+            freeTextAnnotation.setCallout(new float[]{0, ph - 9 * INCH, 3 * INCH, ph - 9 * INCH, 4 * INCH, ph - 8 * INCH});
+            freeTextAnnotation.setLineEndingStyle(PDAnnotationLine.LE_OPEN_ARROW);
             annotations.add(freeTextAnnotation);
 
             // create a polygon annotation. Yes this is clunky, it will be easier in 3.0
@@ -301,6 +303,35 @@ public final class AddAnnotations
             polygon.setBorderStyle(borderThick);
             polygon.setContents("Polygon annotation");
             annotations.add(polygon);
+
+            // create a caret annotation. Yes this is clunky, it will be easier in 3.0
+            PDAnnotationMarkup annotationCaret = new PDAnnotationMarkup();
+            annotationCaret.getCOSObject().setName(COSName.SUBTYPE, PDAnnotationMarkup.SUB_TYPE_CARET);
+            annotationCaret.setColor(new PDColor(new float[] { 0, 0, 1 }, PDDeviceRGB.INSTANCE));
+            annotationCaret.setRectangle(new PDRectangle(300, 50, 100, 100));
+            annotations.add(annotationCaret);
+
+            // add the "Helv" font to the default resources
+            PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+            if (acroForm == null)
+            {
+                acroForm = new PDAcroForm(document);
+                document.getDocumentCatalog().setAcroForm(acroForm);
+            }
+            PDResources dr = acroForm.getDefaultResources();
+            if (dr == null)
+            {
+                dr = new PDResources();
+                acroForm.setDefaultResources(dr);
+            }
+            dr.put(COSName.HELV, PDType1Font.HELVETICA);
+            // If you want to use a specific font, add it here but make sure it is not subset
+
+            // add the "Liberation Sans" font to the default resources so we can use greek
+            PDType0Font libSansFont = PDType0Font.load(document, 
+                    AddAnnotations.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"), 
+                    false);
+            dr.put(COSName.getPDFName("LibSans"), libSansFont);
 
             // Create the appearance streams.
             // Adobe Reader will always display annotations without appearance streams nicely,
