@@ -17,12 +17,14 @@
 
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -36,8 +38,10 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
+import org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -188,6 +192,44 @@ class AppearanceGenerationTest
 
             textBox.setValue(""); // mayhem happened here
         }
+    }
+
+    /**
+     * Test the generation of /AP content with our handlers. The test file was created by running
+     * the AddAnnotations example.
+     */
+    @Test
+    void testAnnotationAppearancesGeneration() throws IOException
+    {
+        BufferedImage expectedImage;
+        BufferedImage actualImage;
+        // 1. render with existing /AP
+        try (PDDocument doc = Loader.loadPDF(new File(IN_DIR, "Annotations.pdf")))
+        {
+            PDFRenderer r = new PDFRenderer(doc);
+            expectedImage = r.renderImage(0);
+        }
+        // 2. render with removed /AP
+        try (PDDocument doc = Loader.loadPDF(new File(IN_DIR, "Annotations.pdf")))
+        {
+            List<PDAnnotation> annotations = doc.getPage(0).getAnnotations();
+            annotations.forEach(ann -> { assertNotNull(ann.getAppearance()); });
+            annotations.forEach(ann -> { ann.setAppearance(null); });
+
+            // need to set rectangle because the handler in the example has modified it
+            PDAnnotationFreeText freeTextAnnotation = (PDAnnotationFreeText) annotations.get(6);
+            PDRectangle rectangle = freeTextAnnotation.getRectangle();
+            rectangle.setLowerLeftX(72);
+            rectangle.setLowerLeftY(216);
+            freeTextAnnotation.setRectangle(rectangle);
+            PDAnnotationCaret annotationCaret = (PDAnnotationCaret) annotations.get(8);
+            annotationCaret.setRectangle(new PDRectangle(300, 50, 100, 100));
+
+            PDFRenderer r = new PDFRenderer(doc);
+            actualImage = r.renderImage(0);
+        }
+        // 3. compare
+        ValidateXImage.checkIdent(expectedImage, actualImage);
     }
 
     @AfterEach
