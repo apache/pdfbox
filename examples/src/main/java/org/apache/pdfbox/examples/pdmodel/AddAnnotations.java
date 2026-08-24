@@ -34,6 +34,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationCaret;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationCircle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationFreeText;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationHighlight;
@@ -168,8 +169,8 @@ public final class AddAnnotations
             // Now draw a few more annotations
             PDAnnotationCircle aCircle = new PDAnnotationCircle();
             aCircle.setContents("Circle Annotation");
-            aCircle.setInteriorColor(red);  // Fill in circle in red
-            aCircle.setColor(blue); // The border itself will be blue
+            aCircle.setInteriorColor(red);
+            aCircle.setColor(blue);
             aCircle.setBorderStyle(borderThin);
 
             // Place the annotation on the page, we'll make this 1" round
@@ -185,7 +186,8 @@ public final class AddAnnotations
             // Now a square annotation
             PDAnnotationSquare aSquare = new PDAnnotationSquare();
             aSquare.setContents("Square Annotation");
-            aSquare.setColor(red);  // Outline in red, not setting a fill
+            aSquare.setInteriorColor(blue);
+            aSquare.setColor(red);
             aSquare.setBorderStyle(borderThick);
 
             // Place the annotation on the page, we'll make this 1" (72 points) square
@@ -294,6 +296,11 @@ public final class AddAnnotations
             polygon.setBorderStyle(borderThick);
             polygon.setContents("Polygon annotation");
             annotations.add(polygon);
+
+            PDAnnotationCaret annotationCaret = new PDAnnotationCaret();
+            annotationCaret.setColor(new PDColor(new float[] { 0, 0, 1 }, PDDeviceRGB.INSTANCE));
+            annotationCaret.setRectangle(new PDRectangle(300, 50, 100, 100));
+            annotations.add(annotationCaret);
 
 
             // add the "Helv" font to the default resources
