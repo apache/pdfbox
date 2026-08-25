@@ -16,7 +16,10 @@
 
 package org.apache.pdfbox.debugger.pagepane;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Graphics2D;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.debugger.PDFDebugger;
 import org.apache.pdfbox.debugger.ui.ImageUtil;
@@ -62,6 +65,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.JWindow;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.debugger.ui.ErrorDialog;
@@ -77,6 +82,7 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationFreeText;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
@@ -108,9 +114,13 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private ViewMenu viewMenu;
     private String labelText = "";
     private String currentURI = "";
-    private final Map<PDRectangle,String> rectMap = new HashMap<>();
+    private final Map<PDAnnotation,String> map = new HashMap<>();
     private final AffineTransform defaultTransform = GraphicsEnvironment.getLocalGraphicsEnvironment().
                         getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform();
+    private JWindow hoverWindow;
+    private JTextArea hoverTextArea;
+    private PDRectangle hoveredRectangle;
+
     // more ideas:
     // https://stackoverflow.com/questions/16440159/dragging-of-shapes-on-jpanel
 
@@ -128,7 +138,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     public void init()
     {
         initUI();
-        initRectMap();
+        initHoverPopup();
     }
 
     private void initRectMap()
@@ -137,11 +147,33 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         {
             collectFieldLocations();
             collectLinkLocations();
+            collectPopupLocations();
         }
         catch (IOException ex)
         {
             LOG.error(ex.getMessage(), ex);
         }
+    }
+
+    private void initHoverPopup()
+    {
+        // code for hover window (here and elsewhere) by github copilot
+        hoverWindow = new JWindow();
+        hoverWindow.setAlwaysOnTop(true);
+
+        hoverTextArea = new JTextArea(4, 24);
+        hoverTextArea.setEditable(false);
+        hoverTextArea.setOpaque(true);
+        hoverTextArea.setLineWrap(true);
+        hoverTextArea.setWrapStyleWord(true);
+        hoverTextArea.setBorder(BorderFactory.createEmptyBorder(6, 8, 6, 8));
+
+        JPanel content = new JPanel(new BorderLayout());
+        content.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1)); // thin border
+        content.add(hoverTextArea, BorderLayout.CENTER);
+
+        hoverWindow.setContentPane(content);
+        hoverWindow.pack();
     }
 
     private void collectLinkLocations() throws IOException
@@ -157,7 +189,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
     private void collectLinkLocation(PDAnnotationLink linkAnnotation) throws IOException
     {
-        if (linkAnnotation.getRectangle() == null)
+        PDRectangle rectangle = linkAnnotation.getRectangle();
+        if (rectangle == null)
         {
             return;
         }
@@ -165,7 +198,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         if (action instanceof PDActionURI)
         {
             PDActionURI uriAction = (PDActionURI) action;
-            rectMap.put(linkAnnotation.getRectangle(), "URI: " + uriAction.getURI());
+            map.put(linkAnnotation, "URI: " + uriAction.getURI());
             return;
         }
         PDDestination destination = null;
@@ -196,7 +229,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             int pageNum = pageDestination.retrievePageNumber();
             if (pageNum != -1)
             {
-                rectMap.put(linkAnnotation.getRectangle(), "Page destination: " + (pageNum + 1));
+                map.put(linkAnnotation, "Page destination: " + (pageNum + 1));
             }
         }
     }
@@ -221,11 +254,28 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             {
                 // check if the annotation widget is on this page
                 // (checking widget.getPage() also works, but it is sometimes null)
-                if (dictionarySet.contains(widget.getCOSObject()) && widget.getRectangle() != null)
+                PDRectangle rectangle = widget.getRectangle();
+                if (dictionarySet.contains(widget.getCOSObject()) && rectangle != null)
                 {
-                    rectMap.put(widget.getRectangle(), "Field name: " + field.getFullyQualifiedName() + ", value: " + field.getValueAsString());
+                    map.put(widget, "Field name: " + field.getFullyQualifiedName() + ", value: " + field.getValueAsString());
                 }
             }
+        }
+    }
+
+    private void collectPopupLocations() throws IOException
+    {
+        // collect rectangles where a popup shall be displayed.
+        // Not to be confused with "popup annotations" which are for editing
+        for (PDAnnotation annotation : page.getAnnotations())
+        {
+            PDRectangle rectangle = annotation.getRectangle();
+            String contents = annotation.getContents();
+            if (annotation instanceof PDAnnotationFreeText || rectangle == null || contents == null || contents.isEmpty())
+            {
+                continue;
+            }
+            map.put(annotation, contents);
         }
     }
 
@@ -442,6 +492,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         float y = e.getY() / zoomScale * (float) defaultTransform.getScaleY();
         int x1;
         int y1;
+        PDRectangle hitRect = null;
+        String hitText = null;
+
         switch ((RotationMenu.getRotationDegrees() + page.getRotation()) % 360)
         {
             case 90:
@@ -464,26 +517,73 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         }
         String text = "x: " + x1 + ", y: " + y1;
 
-        // are we in a field widget or a link annotation?
+        // are we in a field widget, a link annotation, or a text annotation with a popup?
         Cursor cursor = Cursor.getDefaultCursor();
         currentURI = "";
-        for (Entry<PDRectangle,String> entry : rectMap.entrySet())
+        for (Entry<PDAnnotation,String> entry : map.entrySet())
         {
-            if (entry.getKey().contains(x1, y1))
+            PDAnnotation annotation = entry.getKey();
+            PDRectangle rectangle = annotation.getRectangle();
+            if (rectangle.contains(x1, y1))
             {
-                String s = rectMap.get(entry.getKey());
-                text += ", " + s;
-                if (s.startsWith("URI: "))
+                String s = entry.getValue();
+                if (annotation instanceof PDAnnotationLink && s.startsWith("URI: "))
                 {
                     currentURI = s.substring(5);
                     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
                 }
+                String contents = annotation.getContents();
+                if (annotation.getContents() != null && !contents.isEmpty())
+                {
+                    hitRect = rectangle;
+                    hitText = entry.getValue();
+                }
+                text += ", " + s;
                 break;
             }
         }
         panel.setCursor(cursor);
 
         statuslabel.setText(text);
+
+        if (hitRect != null)
+        {
+            if (hoveredRectangle != hitRect)
+            {
+                hoveredRectangle = hitRect;
+                showHoverPopup(e, hitText);
+            }
+            else
+            {
+                showHoverPopup(e, hitText);
+            }
+        }
+        else
+        {
+            hideHoverPopup();
+        }
+    }
+
+    private void showHoverPopup(MouseEvent e, String text)
+    {
+        hoverTextArea.setText(text);
+        hoverWindow.pack();
+
+        Point screen = e.getLocationOnScreen();
+        hoverWindow.setLocation(screen.x + 12, screen.y + 12);
+        if (!hoverWindow.isVisible())
+        {
+            hoverWindow.setVisible(true);
+        }
+    }
+
+    private void hideHoverPopup()
+    {
+        if (hoverWindow != null && hoverWindow.isVisible())
+        {
+            hoverWindow.setVisible(false);
+        }
+        hoveredRectangle = null;
     }
 
     @Override
@@ -562,6 +662,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     public void mouseExited(MouseEvent e)
     {
         statuslabel.setText(labelText);
+        hideHoverPopup();
     }
 
     /**
@@ -622,6 +723,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                               (int) Math.ceil(image.getHeight() / defaultTransform.getScaleY()));
                 label.setIcon(new HighResolutionImageIcon(image, label.getWidth(), label.getHeight()));
                 label.setText(null);
+
+                // initialize after rendering because annotation rectangles may have been adjusted
+                initRectMap();
             }
             catch (InterruptedException | ExecutionException ex)
             {
