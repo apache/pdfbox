@@ -108,7 +108,6 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                         getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform();
     private JWindow hoverWindow;
     private JTextArea hoverTextArea;
-    private PDRectangle hoveredRectangle;
 
     public PagePane(PDDocument document, COSDictionary pageDict, JLabel statuslabel)
     {
@@ -469,7 +468,6 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
         if (hitRect != null)
         {
-            hoveredRectangle = hitRect;
             showHoverPopup(e, hitText);
         }
         else
@@ -510,7 +508,6 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         {
             hoverTextArea.setText("");
         }
-        hoveredRectangle = null;
     }
 
     @Override
