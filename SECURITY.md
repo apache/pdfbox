@@ -38,20 +38,17 @@ PDFBox supports processing of untrusted (potentially malicious or malformed)
 PDF files **to a limited degree**:
 
 - **In scope**: Remote code execution, privilege escalation, unauthorized data
-  access, escape from an embedding application's sandbox or security boundary,
-  or disproportionate resource amplification (i.e. small attacker-controlled
-  inputs triggering catastrophic memory or CPU consumption) caused by processing
-  an untrusted PDF document. These are genuine vulnerabilities and should be
-  reported privately.
+  access or escape from an embedding application's sandbox or security boundary,
+  caused by processing an untrusted PDF document. These are genuine vulnerabilities
+  and should be reported privately.
 
 - **Known limitations (not vulnerabilities)**: Malformed PDFs may cause
   unchecked exceptions such as `NullPointerException` or `StackOverflowError`,
   or may consume significant memory or CPU relative to document size. General
   parser and resource exhaustion issues are treated as robustness limitations
   rather than security vulnerabilities. Pure resource exhaustion findings
-  without privilege escalation, unauthorized access, or disproportionate
-  amplification (e.g. tenant starvation, indexing-service disruption from a
-  tiny crafted input) are generally out of scope.
+  without privilege escalation or unauthorized access are generally out of scope
+  (e.g. tenant starvation, indexing-service disruption from a tiny crafted input).
 
 ### Deployment and sandboxing
 
