@@ -114,7 +114,7 @@ public class FDFField implements COSObjectable
     public void writeXML(Writer output) throws IOException
     {
         output.write("<field name=\"");
-        output.write(getPartialFieldName());
+        output.write(FDFUtils.escapeXML10(getPartialFieldName()));
         output.write("\">\n");
 
         Object value = getValue();
@@ -122,7 +122,7 @@ public class FDFField implements COSObjectable
         if (value instanceof String)
         {
             output.write("<value>");
-            output.write(escapeXML((String) value));
+            output.write(FDFUtils.escapeXML10((String) value));
             output.write("</value>\n");
         }
         else if (value instanceof List)
@@ -131,7 +131,7 @@ public class FDFField implements COSObjectable
             for (String item : items)
             {
                 output.write("<value>");
-                output.write(escapeXML(item));
+                output.write(FDFUtils.escapeXML10(item));
                 output.write("</value>\n");
             }
         }
@@ -140,7 +140,7 @@ public class FDFField implements COSObjectable
         if (rt != null)
         {
             output.write("<value-richtext>");
-            output.write(escapeXML(rt));
+            output.write(FDFUtils.escapeXML10(rt));
             output.write("</value-richtext>\n");
         }
         List<FDFField> kids = getKids();
@@ -785,49 +785,5 @@ public class FDFField implements COSObjectable
     public void setRichText(COSStream rv)
     {
         field.setItem(COSName.RV, rv);
-    }
-
-    /**
-     * Escape special characters.
-     * 
-     * @param input the string to be escaped
-     * 
-     * @return the resulting string
-     */
-    private String escapeXML(String input)
-    {
-        StringBuilder escapedXML = new StringBuilder();
-        for (int i = 0; i < input.length(); i++)
-        {
-            char c = input.charAt(i);
-            switch (c)
-            {
-            case '<':
-                escapedXML.append("&lt;");
-                break;
-            case '>':
-                escapedXML.append("&gt;");
-                break;
-            case '\"':
-                escapedXML.append("&quot;");
-                break;
-            case '&':
-                escapedXML.append("&amp;");
-                break;
-            case '\'':
-                escapedXML.append("&apos;");
-                break;
-            default:
-                if (c > 0x7e)
-                {
-                    escapedXML.append("&#").append((int) c).append(';');
-                }
-                else
-                {
-                    escapedXML.append(c);
-                }
-            }
-        }
-        return escapedXML.toString();
     }
 }
