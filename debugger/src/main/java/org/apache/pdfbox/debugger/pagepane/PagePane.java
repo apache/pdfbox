@@ -21,9 +21,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Desktop;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -483,7 +485,15 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         hoverWindow.pack();
 
         Point screen = e.getLocationOnScreen();
-        hoverWindow.setLocation(screen.x + 12, screen.y + 12);
+        Dimension size = hoverWindow.getSize();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+        int x = Math.min(screen.x + 12, screenSize.width - size.width);
+        int y = Math.min(screen.y + 12, screenSize.height - size.height);
+        x = Math.max(0, x);
+        y = Math.max(0, y);
+
+        hoverWindow.setLocation(x, y);
         if (!hoverWindow.isVisible())
         {
             hoverWindow.setVisible(true);
