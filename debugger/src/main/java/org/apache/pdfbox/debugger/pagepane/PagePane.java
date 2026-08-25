@@ -443,7 +443,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         {
             PDAnnotation annotation = entry.getKey();
             PDRectangle rectangle = annotation.getRectangle();
-            if (rectangle.contains(x1, y1))
+            if (rectangle != null && rectangle.contains(x1, y1))
             {
                 String s = entry.getValue();
                 if (annotation instanceof PDAnnotationLink && s.startsWith("URI: "))
