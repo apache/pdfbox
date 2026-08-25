@@ -502,6 +502,13 @@ public class CMapParser
      */
     protected InputStream getExternalCMap(String name) throws IOException
     {
+        // Validate name to point to the (predefined) resources in the classpath.
+        if (name.isEmpty() || name.indexOf('/') > -1 || name.indexOf('\\') > -1
+                || name.charAt(0) == '.')
+        {
+            throw new IOException("Error: Invalid CMap name " + name);
+        }
+
         InputStream resourceAsStream = getClass().getResourceAsStream(name);
         if (resourceAsStream == null)
         {
