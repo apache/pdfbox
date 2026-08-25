@@ -74,7 +74,25 @@ public class PDFText2Markdown extends PDFTextStripper
             case '+':
             case '-':
             case '#':
+            case '\\':
+            case '`':
+            case '[':
+            case ']':
+            case '(':
+            case ')':
+            case '!':
+            case '_':
                 builder.append('\\').append(character);
+                break;
+            // Escape HTML special characters in inline HTML
+            case '<':
+                builder.append("&lt;");
+                break;
+            case '>':
+                builder.append("&gt;");
+                break;
+            case '&':
+                builder.append("&amp;");
                 break;
             case 178:
                 builder.append("<sup>2</sup>");
