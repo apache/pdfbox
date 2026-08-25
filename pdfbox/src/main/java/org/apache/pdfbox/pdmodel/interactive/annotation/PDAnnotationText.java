@@ -145,7 +145,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
      */
     public void setOpen(boolean open)
     {
-        getCOSObject().setBoolean(COSName.getPDFName("Open"), open);
+        getCOSObject().setBoolean(COSName.OPEN, open);
     }
 
     /**
@@ -155,7 +155,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
      */
     public boolean getOpen()
     {
-        return getCOSObject().getBoolean(COSName.getPDFName("Open"), false);
+        return getCOSObject().getBoolean(COSName.OPEN, false);
     }
 
     /**

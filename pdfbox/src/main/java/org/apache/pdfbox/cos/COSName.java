@@ -448,6 +448,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName ON = new COSName("ON");
     public static final COSName OP = new COSName("OP");
     public static final COSName OP_NS = new COSName("op");
+    public static final COSName OPEN = new COSName("Open");
     public static final COSName OPEN_ACTION = new COSName("OpenAction");
     public static final COSName OPEN_TYPE = new COSName("OpenType");
     public static final COSName OPM = new COSName("OPM");
