@@ -560,6 +560,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private void showHoverPopup(MouseEvent e, String text)
     {
         hoverTextArea.setText(text);
+        hoverTextArea.setCaretPosition(0);
         hoverWindow.pack();
 
         Point screen = e.getLocationOnScreen();
