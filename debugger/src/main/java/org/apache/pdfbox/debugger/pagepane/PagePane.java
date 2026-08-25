@@ -551,12 +551,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             if (hoveredRectangle != hitRect)
             {
                 hoveredRectangle = hitRect;
-                showHoverPopup(e, hitText);
             }
-            else
-            {
-                showHoverPopup(e, hitText);
-            }
+            showHoverPopup(e, hitText);
         }
         else
         {
