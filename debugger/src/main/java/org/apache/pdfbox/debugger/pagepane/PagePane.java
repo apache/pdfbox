@@ -107,6 +107,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private final AffineTransform defaultTransform = GraphicsEnvironment.getLocalGraphicsEnvironment().
                         getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform();
     private JWindow hoverWindow;
+    private JLabel hoverTitleLabel;
     private JTextArea hoverTextArea;
 
     public PagePane(PDDocument document, COSDictionary pageDict, JLabel statuslabel)
@@ -146,6 +147,11 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         hoverWindow = new JWindow();
         hoverWindow.setAlwaysOnTop(true);
 
+        hoverTitleLabel = new JLabel("Annotation");
+        hoverTitleLabel.setOpaque(true);
+        hoverTitleLabel.setBackground(new Color(230, 230, 230));
+        hoverTitleLabel.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+
         hoverTextArea = new JTextArea(4, 24);
         hoverTextArea.setEditable(false);
         hoverTextArea.setOpaque(true);
@@ -154,7 +160,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         hoverTextArea.setBorder(BorderFactory.createEmptyBorder(6, 8, 6, 8));
 
         JPanel content = new JPanel(new BorderLayout());
-        content.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1)); // thin border
+        content.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        content.add(hoverTitleLabel, BorderLayout.NORTH);
         content.add(hoverTextArea, BorderLayout.CENTER);
 
         hoverWindow.setContentPane(content);
@@ -414,6 +421,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         int y1;
         PDRectangle hitRect = null;
         String hitText = null;
+        String hitTitle = null;
 
         switch ((RotationMenu.getRotationDegrees() + page.getRotation()) % 360)
         {
@@ -457,6 +465,10 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                 {
                     hitRect = rectangle;
                     hitText = contents;
+                    if (annotation instanceof PDAnnotationMarkup)
+                    {
+                        hitTitle = ((PDAnnotationMarkup) annotation).getTitlePopup();
+                    }
                 }
                 text += ", " + s;
                 break;
@@ -468,7 +480,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
         if (hitRect != null)
         {
-            showHoverPopup(e, hitText);
+            showHoverPopup(e, hitText, hitTitle);
         }
         else
         {
@@ -476,10 +488,19 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         }
     }
 
-    private void showHoverPopup(MouseEvent e, String text)
+    private void showHoverPopup(MouseEvent e, String text, String title)
     {
         hoverTextArea.setText(text);
         hoverTextArea.setCaretPosition(0);
+        if (title != null && !title.isEmpty())
+        {
+            hoverTitleLabel.setVisible(true);
+            hoverTitleLabel.setText(title);
+        }
+        else
+        {
+            hoverTitleLabel.setVisible(false);
+        }
         hoverWindow.pack();
 
         Point screen = e.getLocationOnScreen();
