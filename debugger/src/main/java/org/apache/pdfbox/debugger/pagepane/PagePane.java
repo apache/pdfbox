@@ -577,6 +577,10 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         {
             hoverWindow.setVisible(false);
         }
+        if (hoverTextArea != null)
+        {
+            hoverTextArea.setText("");
+        }
         hoveredRectangle = null;
     }
 
