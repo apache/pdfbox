@@ -533,10 +533,10 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
                 }
                 String contents = annotation.getContents();
-                if (annotation.getContents() != null && !contents.isEmpty())
+                if (contents != null && !contents.isEmpty())
                 {
                     hitRect = rectangle;
-                    hitText = entry.getValue();
+                    hitText = contents;
                 }
                 text += ", " + s;
                 break;
