@@ -119,7 +119,6 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                         getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform();
     private JWindow hoverWindow;
     private JTextArea hoverTextArea;
-    private PDRectangle hoveredRectangle;
 
     // more ideas:
     // https://stackoverflow.com/questions/16440159/dragging-of-shapes-on-jpanel
@@ -541,7 +540,6 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
         if (hitRect != null)
         {
-            hoveredRectangle = hitRect;
             showHoverPopup(e, hitText);
         }
         else
@@ -582,7 +580,6 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         {
             hoverTextArea.setText("");
         }
-        hoveredRectangle = null;
     }
 
     @Override
