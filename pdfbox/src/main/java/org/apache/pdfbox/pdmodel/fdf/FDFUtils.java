@@ -16,7 +16,12 @@
  */
 package org.apache.pdfbox.pdmodel.fdf;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class FDFUtils {
+
+    private static final Log LOG = LogFactory.getLog(FDFUtils.class);
 
     /**
      * Escape special characters.
@@ -28,10 +33,22 @@ public class FDFUtils {
     static String escapeXML10(String input)
     {
         StringBuilder escapedXML = new StringBuilder();
-        for (int i = 0; i < input.length(); i++)
+        int invalidCount = 0;
+        int i = 0;
+        while (i < input.length())
         {
-            char c = input.charAt(i);
-            switch (c)
+            int cp = input.codePointAt(i);
+            int charCount = Character.charCount(cp);
+
+            if (!isValidXML10Char(cp))
+            {
+                invalidCount++;
+                escapedXML.append('\uFFFD');
+                i += charCount;
+                continue;
+            }
+
+            switch (cp)
             {
             case '<':
                 escapedXML.append("&lt;");
@@ -49,16 +66,32 @@ public class FDFUtils {
                 escapedXML.append("&apos;");
                 break;
             default:
-                if (c > 0x7e)
+                if (cp > 0x7e)
                 {
-                    escapedXML.append("&#").append((int) c).append(';');
+                    escapedXML.append("&#").append(cp).append(';');
                 }
                 else
                 {
-                    escapedXML.append(c);
+                    escapedXML.appendCodePoint(cp);
                 }
             }
+            i += charCount;
         }
+
+        if (invalidCount > 0 && LOG.isInfoEnabled())
+        {
+            LOG.info("Replaced " + invalidCount + " character(s) invalid in XML 1.0 with U+FFFD");
+        }
+
+
         return escapedXML.toString();
+    }
+
+    private static boolean isValidXML10Char(int cp)
+    {
+        return cp == 0x9 || cp == 0xA || cp == 0xD
+            || (cp >= 0x20 && cp <= 0xD7FF)
+            || (cp >= 0xE000 && cp <= 0xFFFD)
+            || (cp >= 0x10000 && cp <= 0x10FFFF);
     }
 }
