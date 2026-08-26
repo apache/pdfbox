@@ -1003,6 +1003,8 @@ public class PDDocument implements Closeable
 
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param file file to be loaded
      * 
@@ -1018,6 +1020,8 @@ public class PDDocument implements Closeable
 
     /**
      * Parses a PDF.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param file file to be loaded
      * @param memUsageSetting defines how memory is used for buffering PDF streams 
@@ -1035,6 +1039,8 @@ public class PDDocument implements Closeable
 
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param file file to be loaded
      * @param password password to be used for decryption
@@ -1052,6 +1058,8 @@ public class PDDocument implements Closeable
 
     /**
      * Parses a PDF.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param file file to be loaded
      * @param password password to be used for decryption
@@ -1070,6 +1078,8 @@ public class PDDocument implements Closeable
 
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param file file to be loaded
      * @param password password to be used for decryption
@@ -1088,6 +1098,8 @@ public class PDDocument implements Closeable
 
     /**
      * Parses a PDF.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param file file to be loaded
      * @param password password to be used for decryption
@@ -1136,6 +1148,8 @@ public class PDDocument implements Closeable
     /**
      * Parses a PDF. The given input stream is copied to the memory to enable random access to the
      * pdf. Unrestricted main memory will be used for buffering PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param input stream that contains the document. Don't forget to close it after loading.
      * 
@@ -1152,6 +1166,8 @@ public class PDDocument implements Closeable
     /**
      * Parses a PDF. Depending on the memory settings parameter the given input stream is either
      * copied to main memory or to a temporary file to enable random access to the pdf.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param input stream that contains the document. Don't forget to close it after loading.
      * @param memUsageSetting defines how memory is used for buffering input stream and PDF streams 
@@ -1170,6 +1186,8 @@ public class PDDocument implements Closeable
     /**
      * Parses a PDF. The given input stream is copied to the memory to enable random access to the
      * pdf. Unrestricted main memory will be used for buffering PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      *
      * @param input stream that contains the document. Don't forget to close it after loading.
      * @param password password to be used for decryption
@@ -1188,6 +1206,8 @@ public class PDDocument implements Closeable
     /**
      * Parses a PDF. The given input stream is copied to the memory to enable random access to the
      * pdf. Unrestricted main memory will be used for buffering PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      *
      * @param input stream that contains the document. Don't forget to close it after loading.
      * @param password password to be used for decryption
@@ -1207,6 +1227,8 @@ public class PDDocument implements Closeable
     /**
      * Parses a PDF. Depending on the memory settings parameter the given input stream is either
      * copied to main memory or to a temporary file to enable random access to the pdf.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      *
      * @param input stream that contains the document. Don't forget to close it after loading.
      * @param password password to be used for decryption
@@ -1226,6 +1248,8 @@ public class PDDocument implements Closeable
     /**
      * Parses a PDF. Depending on the memory settings parameter the given input stream is either
      * copied to memory or to a temporary file to enable random access to the pdf.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      *
      * @param input stream that contains the document. Don't forget to close it after loading.
      * @param password password to be used for decryption
@@ -1258,6 +1282,8 @@ public class PDDocument implements Closeable
 
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param input byte array that contains the document.
      * 
@@ -1273,6 +1299,8 @@ public class PDDocument implements Closeable
 
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param input byte array that contains the document.
      * @param password password to be used for decryption
@@ -1290,6 +1318,8 @@ public class PDDocument implements Closeable
 
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param input byte array that contains the document.
      * @param password password to be used for decryption
@@ -1309,6 +1339,8 @@ public class PDDocument implements Closeable
 
     /**
      * Parses a PDF.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param input byte array that contains the document.
      * @param password password to be used for decryption
