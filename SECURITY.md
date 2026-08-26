@@ -49,6 +49,8 @@ PDF files **to a limited degree**:
   rather than security vulnerabilities. Pure resource exhaustion findings
   without privilege escalation or unauthorized access are generally out of scope
   (e.g. tenant starvation, indexing-service disruption from a tiny crafted input).
+  Failure to detect a PDF containing an invalid signature is considered a limitation
+  of unsupported functionality and not a security vulnerability.
 
 ### Deployment and sandboxing
 
