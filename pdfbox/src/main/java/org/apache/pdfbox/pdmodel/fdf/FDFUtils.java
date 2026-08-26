@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class FDFUtils {
 
-    private static final Log LOG = LogFactory.getLog(FDFDocument.class);
+    private static final Log LOG = LogFactory.getLog(FDFUtils.class);
 
     /**
      * Escape special characters.
