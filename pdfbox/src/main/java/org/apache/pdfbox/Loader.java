@@ -156,6 +156,8 @@ public class Loader
     
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffer} is used
      * to read the data.
@@ -172,6 +174,8 @@ public class Loader
     
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffer} is used
      * to read the data.
@@ -189,6 +193,8 @@ public class Loader
     
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffer} is used
      * to read the data.
@@ -209,6 +215,8 @@ public class Loader
     
     /**
      * Parses a PDF.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param input byte array that contains the document. {@link org.apache.pdfbox.io.RandomAccessReadBuffer} is used
      * to read the data.
@@ -243,6 +251,8 @@ public class Loader
     
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param file file to be loaded. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to read the
      * file.
@@ -259,6 +269,8 @@ public class Loader
     
     /**
      * Parses a PDF.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param file file to be loaded. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to read the
      * file.
@@ -278,6 +290,8 @@ public class Loader
     
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param file file to be loaded. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to read the
      * file.
@@ -295,6 +309,8 @@ public class Loader
     
     /**
      * Parses a PDF.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param file file to be loaded. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to read the
      * file.
@@ -316,6 +332,8 @@ public class Loader
     
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param file file to be loaded. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to read the
      * file.
@@ -335,6 +353,8 @@ public class Loader
     
     /**
      * Parses a PDF.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param file file to be loaded. {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile} is used to read the
      * file.
@@ -367,6 +387,8 @@ public class Loader
 
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF new streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param randomAccessRead random access read representing the pdf to be loaded. To pass an
      * InputStream, wrap it into a {@link RandomAccessReadBuffer}.
@@ -383,6 +405,8 @@ public class Loader
 
     /**
      * Parses a PDF.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      * 
      * @param randomAccessRead random access read representing the pdf to be loaded. To pass an
      * InputStream, wrap it into a {@link RandomAccessReadBuffer}.
@@ -403,6 +427,8 @@ public class Loader
 
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering new/altered PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      *
      * @param randomAccessRead random access read representing the pdf to be loaded. To pass an
      * InputStream, wrap it into a {@link RandomAccessReadBuffer}.
@@ -421,6 +447,8 @@ public class Loader
 
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering new/altered PDF streams.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      *
      * @param randomAccessRead random access read representing the pdf to be loaded. To pass an
      * InputStream, wrap it into a {@link RandomAccessReadBuffer}.
@@ -441,6 +469,8 @@ public class Loader
 
     /**
      * Parses a PDF.
+     * <p>
+     * Parsing does not include the verification or the validation of electronic signatures.
      *
      * @param randomAccessRead random access read representing the pdf to be loaded. To pass an
      * InputStream, wrap it into a {@link RandomAccessReadBuffer}.
