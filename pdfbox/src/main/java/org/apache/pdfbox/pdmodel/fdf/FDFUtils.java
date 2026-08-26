@@ -24,11 +24,17 @@ public class FDFUtils {
     private static final Log LOG = LogFactory.getLog(FDFUtils.class);
 
     /**
-     * Escape special characters.
+     * Escapes special characters for use in XML 1.0.
+     * <p>
+     * Characters that are not permitted in XML 1.0 are replaced with the
+     * Unicode replacement character (U+FFFD). If one or more characters are
+     * replaced, the number of replacements is logged at INFO level.
+     * </p>
      *
      * @param input the string to be escaped.
      *
-     * @return the resulting string
+     * @return the resulting string with XML special characters escaped and
+     *         characters invalid in XML 1.0 replaced with U+FFFD.
      */
     static String escapeXML10(String input)
     {
