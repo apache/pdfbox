@@ -39,7 +39,7 @@ PDF files **to a limited degree**:
 
 - **In scope**: Remote code execution, privilege escalation, unauthorized data
   access or escape from an embedding application's sandbox or security boundary,
-  caused by processing an untrusted PDF document. These are genuine vulnerabilities
+  caused by processing an untrusted PDF document. These are vulnerabilities
   and should be reported privately.
 
 - **Known limitations (not vulnerabilities)**: Malformed PDFs may cause
@@ -49,10 +49,24 @@ PDF files **to a limited degree**:
   rather than security vulnerabilities. Pure resource exhaustion findings
   without privilege escalation or unauthorized access are generally out of scope
   (e.g. tenant starvation, indexing-service disruption from a tiny crafted input).
-  PDF signature validation is unsupported. The project does not provide
-  cryptographic validation of PDF signatures, and applications requiring
-  signature validation must perform that validation using a dedicated,
-  trusted component.
+
+- **PDF semantics and validation**: PDFBox is a low-level library for creating,
+  manipulating, and extracting content from PDF documents. Loading or processing a PDF
+  with PDFBox does not imply that the document conforms to a particular PDF standard
+  or profile, or that any security- or application-level properties of the document
+  have been validated.  
+  In particular, PDFBox does not automatically validate PDF signatures, document
+  restrictions or permissions, font requirements, PDF/A or other standards conformance,
+  or similar document-level properties. Applications that require such validation are
+  responsible for performing the appropriate checks using the PDFBox APIs and,
+  where necessary, other suitable validation components.  
+  This does not apply when an application explicitly invokes PDFBox's signature or
+  permission verification APIs and PDFBox produces an incorrect result.
+  **Such correctness issues remain in scope**.  
+  The absence of such automatic validation when loading, processing, or storing a PDF is
+  **not considered a security vulnerability**. Findings  that merely identify missing
+  application-specific PDF signature, permission, conformance, font, or similar validation
+  **are out of scope unless they demonstrate a security impact within PDFBox's security model**.
 
 ### Deployment and sandboxing
 
