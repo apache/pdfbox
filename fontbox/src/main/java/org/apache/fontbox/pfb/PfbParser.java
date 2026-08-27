@@ -45,27 +45,27 @@ public class PfbParser
      * (start-marker (1 byte), ascii-/binary-marker (1 byte), size (4 byte))
      * 3*6 == 18
      */
-    private static final int PFB_HEADER_LENGTH = 18;
+    static final int PFB_HEADER_LENGTH = 18;
 
     /**
      * the start marker.
      */
-    private static final int START_MARKER = 0x80;
+    static final int START_MARKER = 0x80;
 
     /**
      * the ascii marker.
      */
-    private static final int ASCII_MARKER = 0x01;
+    static final int ASCII_MARKER = 0x01;
 
     /**
      * the binary marker.
      */
-    private static final int BINARY_MARKER = 0x02;
+    static final int BINARY_MARKER = 0x02;
 
     /**
      * the EOF marker.
      */
-    private static final int EOF_MARKER = 0x03;
+    static final int EOF_MARKER = 0x03;
     
     /**
      * buffersize.

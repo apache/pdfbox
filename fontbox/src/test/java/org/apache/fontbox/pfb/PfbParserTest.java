@@ -99,7 +99,26 @@ class PfbParserTest
     @Test
     void testEmpty()
     {
-        Assertions.assertThrows(IOException.class, () -> Type1Font.createWithPFB(new byte[0]));
+        IOException ex1 = Assertions.assertThrows(IOException.class,
+                () -> Type1Font.createWithPFB(new byte[0]));
+        Assertions.assertEquals("PFB header missing", ex1.getMessage());
+    }
+
+    /**
+     * Test some bad fonts.
+     */
+    @Test
+    void testMiscBadFonts()
+    {
+        byte[] ba = new byte[PfbParser.PFB_HEADER_LENGTH + 1];
+        IOException ex1 = Assertions.assertThrows(IOException.class,
+                () -> Type1Font.createWithPFB(ba));
+        Assertions.assertEquals("Start marker missing", ex1.getMessage());
+        ba[0] = (byte) PfbParser.START_MARKER;
+        ba[1] = 33;
+        IOException ex2 = Assertions.assertThrows(IOException.class,
+                () -> Type1Font.createWithPFB(ba));
+        Assertions.assertEquals("Incorrect record type: 33", ex2.getMessage());
     }
 
     /**
@@ -120,6 +139,27 @@ class PfbParserTest
             0x27, 0x05, (byte) 0xF8, (byte) 0xFF,
             (byte) 0xD2, 0x40
         };
-        Assertions.assertThrows(IOException.class, () -> new PfbParser(crashInput));
+        IOException ex = Assertions.assertThrows(IOException.class, () -> new PfbParser(crashInput));
+        Assertions.assertEquals("record size -16777215 is negative", ex.getMessage());
+    }
+
+    /**
+     * Test that a PFB with a high size field throws an exception
+     */
+    @Test
+    void testHighRecordSize()
+    {
+        // 18-byte crafted PFB: start marker 0x80, ASCII type 0x01,
+        // size field 0x7f 0x00 0x00 0x00 = 0x7f
+        byte[] crashInput = {
+            (byte) 0x80, 0x01,                         // header
+            0x7f, 0x00, 0x00, 0x00,                    // size too high
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,     // garbage data
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+            0x27, 0x05, (byte) 0xF8, (byte) 0xFF,
+            (byte) 0xD2, 0x40
+        };
+        IOException ex = Assertions.assertThrows(IOException.class, () -> new PfbParser(crashInput));
+        Assertions.assertEquals("record size 127 would be larger than the input", ex.getMessage());
     }
 }
