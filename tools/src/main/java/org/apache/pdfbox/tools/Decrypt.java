@@ -26,7 +26,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 
 /**
- * This will read a document from the filesystem, decrypt it and and then write
+ * This will read a document from the filesystem, decrypt it and then write
  * the result to the filesystem.
  *
  * @author  Ben Litchfield
