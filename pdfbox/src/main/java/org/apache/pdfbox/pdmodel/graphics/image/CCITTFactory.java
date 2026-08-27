@@ -236,233 +236,230 @@ public final class CCITTFactory
             OutputStream os,
             COSDictionary params, int number) throws IOException
     {
-        try (os)
+        // First check the basic tiff header
+        reader.seek(0);
+        char endianess = (char) reader.read();
+        if ((char) reader.read() != endianess)
         {
-            // First check the basic tiff header
-            reader.seek(0);
-            char endianess = (char) reader.read();
-            if ((char) reader.read() != endianess)
-            {
-                throw new IOException("Not a valid tiff file");
-            }
-            // ensure that endianess is either M or I
-            if (endianess != 'M' && endianess != 'I')
-            {
-                throw new IOException("Not a valid tiff file");
-            }
-            int magicNumber = readshort(endianess, reader);
-            if (magicNumber != 42)
-            {
-                throw new IOException("Not a valid tiff file");
-                
-                // 43 is bigtiff. If we need to support this in the future, look here:
-                // https://web.archive.org/web/20240706160214/https://www.awaresystems.be/imaging/tiff/bigtiff.html
-            }
+            throw new IOException("Not a valid tiff file");
+        }
+        // ensure that endianess is either M or I
+        if (endianess != 'M' && endianess != 'I')
+        {
+            throw new IOException("Not a valid tiff file");
+        }
+        int magicNumber = readshort(endianess, reader);
+        if (magicNumber != 42)
+        {
+            throw new IOException("Not a valid tiff file");
 
-            // Relocate to the first set of tags
-            long address = readlong(endianess, reader);
-            reader.seek(address);
+            // 43 is bigtiff. If we need to support this in the future, look here:
+            // https://web.archive.org/web/20240706160214/https://www.awaresystems.be/imaging/tiff/bigtiff.html
+        }
+
+        // Relocate to the first set of tags
+        long address = readlong(endianess, reader);
+        reader.seek(address);
     
-            // If some higher page number is required, skip this page's tags, 
-            // then read the next page's address
-            for (int i = 0; i < number; i++)
-            {
-                int numtags = readshort(endianess, reader);
-                if (numtags > 50)
-                {
-                    throw new IOException("Not a valid tiff file");
-                }
-                reader.seek(address + 2 + numtags * 12L);
-                address = readlong(endianess, reader);
-                if (address == 0)
-                {
-                    return;
-                }
-                reader.seek(address);
-            }
-
+        // If some higher page number is required, skip this page's tags,
+        // then read the next page's address
+        for (int i = 0; i < number; i++)
+        {
             int numtags = readshort(endianess, reader);
-
-            // The number 50 is somewhat arbitrary, it just stops us load up junk from somewhere
-            // and tramping on
             if (numtags > 50)
             {
                 throw new IOException("Not a valid tiff file");
             }
-
-            // Loop through the tags, some will convert to items in the params dictionary
-            // Other point us to where to find the data stream.
-            // The only param which might change as a result of other TIFF tags is K, so
-            // we'll deal with that differently.
-            
-            // Default value to detect error
-            int k = -1000;
-            
-            int dataoffset = 0;
-            int datalength = 0;
-            int fillorder = 1;
-
-            for (int i = 0; i < numtags; i++)
+            reader.seek(address + 2 + numtags * 12L);
+            address = readlong(endianess, reader);
+            if (address == 0)
             {
-                int tag = readshort(endianess, reader);
-                int type = readshort(endianess, reader);
-                int count = (int) readlong(endianess, reader);
-                int val;
-                // Note that when the type is shorter than 4 bytes, the rest can be garbage
-                // and must be ignored. E.g. short (2 bytes) from "01 00 38 32" (little endian)
-                // is 1, not 842530817 (seen in a real-life TIFF image).
-                switch (type)
+                return;
+            }
+            reader.seek(address);
+        }
+
+        int numtags = readshort(endianess, reader);
+
+        // The number 50 is somewhat arbitrary, it just stops us load up junk from somewhere
+        // and tramping on
+        if (numtags > 50)
+        {
+            throw new IOException("Not a valid tiff file");
+        }
+
+        // Loop through the tags, some will convert to items in the params dictionary
+        // Other point us to where to find the data stream.
+        // The only param which might change as a result of other TIFF tags is K, so
+        // we'll deal with that differently.
+
+        // Default value to detect error
+        int k = -1000;
+
+        int dataoffset = 0;
+        int datalength = 0;
+        int fillorder = 1;
+
+        for (int i = 0; i < numtags; i++)
+        {
+            int tag = readshort(endianess, reader);
+            int type = readshort(endianess, reader);
+            int count = (int) readlong(endianess, reader);
+            int val;
+            // Note that when the type is shorter than 4 bytes, the rest can be garbage
+            // and must be ignored. E.g. short (2 bytes) from "01 00 38 32" (little endian)
+            // is 1, not 842530817 (seen in a real-life TIFF image).
+            switch (type)
+            {
+                case 1: // byte value
+                    val = reader.read();
+                    reader.read();
+                    reader.read();
+                    reader.read();
+                    break;
+                case 3: // short value
+                    val = readshort(endianess, reader);
+                    reader.read();
+                    reader.read();
+                    break;
+                default: // long and other types
+                    val = (int) readlong(endianess, reader);
+                    break;
+            }
+            switch (tag)
+            {
+                case 256:
                 {
-                    case 1: // byte value
-                        val = reader.read();
-                        reader.read();
-                        reader.read();
-                        reader.read();
-                        break;
-                    case 3: // short value
-                        val = readshort(endianess, reader);
-                        reader.read();
-                        reader.read();
-                        break;
-                    default: // long and other types
-                        val = (int) readlong(endianess, reader);
-                        break;
+                    params.setInt(COSName.COLUMNS, val);
+                    break;
                 }
-                switch (tag)
+                case 257:
                 {
-                    case 256:
-                    {
-                        params.setInt(COSName.COLUMNS, val);
-                        break;
-                    }
-                    case 257:
-                    {
-                        params.setInt(COSName.ROWS, val);
-                        break;
-                    }
-                    case 259:
-                    {
-                        if (val == 4)
-                        {
-                            k = -1;
-                        }
-                        if (val == 3)
-                        {
-                            k = 0;
-                        }
-                        break; // T6/T4 Compression
-                    }
-                    case 262:
-                    {
-                        if (val == 1)
-                        {
-                            params.setBoolean(COSName.BLACK_IS_1, true);
-                        }
-                        break;
-                    }
-                    case 266:
-                    {
-                        // http://www.awaresystems.be/imaging/tiff/tifftags/fillorder.html
-                        if (val != 1 && val != 2)
-                        {
-                            throw new IOException("FillOrder " + val + " is not supported");
-                        }
-                        fillorder = val;
-                        break;
-                    }
-                    case 273:
-                    {
-                        if (count == 1)
-                        {
-                            dataoffset = val;
-                        }
-                        break;
-                    }
-                    case 274:
-                    {
-                        // http://www.awaresystems.be/imaging/tiff/tifftags/orientation.html
-                        if (val != 1)
-                        {
-                            throw new IOException("Orientation " + val + " is not supported");
-                        }
-                        break;
-                    }
-                    case 279:
-                    {
-                        if (count == 1)
-                        {
-                            datalength = val;
-                        }
-                        break;
-                    }
-                    case 292:
-                    {
-                        if ((val & 1) != 0)
-                        {
-                            // T4 2D - arbitrary positive K value
-                            k = 50;
-                        }
-                        // http://www.awaresystems.be/imaging/tiff/tifftags/t4options.html
-                        if ((val & 4) != 0)
-                        {
-                            throw new IOException("CCITT Group 3 'uncompressed mode' is not supported");
-                        }
-                        if ((val & 2) != 0)
-                        {
-                            throw new IOException("CCITT Group 3 'fill bits before EOL' is not supported");
-                        }
-                        break;
-                    }
-                    case 324:
-                    {
-                        if (count == 1)
-                        {
-                            dataoffset = val;
-                        }
-                        break;
-                    }
-                    case 325:
-                    {
-                        if (count == 1)
-                        {
-                            datalength = val;
-                        }
-                        break;
-                    }
-                    default:
-                    {
-                        // do nothing
-                    }
+                    params.setInt(COSName.ROWS, val);
+                    break;
                 }
-            }
-
-            if (k == -1000)
-            {
-                throw new IOException("First image in tiff is not CCITT T4 or T6 compressed");
-            }
-            if (dataoffset == 0)
-            {
-                throw new IOException("First image in tiff is not a single tile/strip");
-            }
-
-            params.setInt(COSName.K, k);
-
-            reader.seek(dataoffset);
-
-            byte[] buf = new byte[8192];
-            int amountRead;
-            while ((amountRead = reader.read(buf, 0, Math.min(8192, datalength))) > 0)
-            {
-                datalength -= amountRead;
-                if (fillorder == 2)
+                case 259:
                 {
-                    for (int x = 0; x < amountRead; x++)
+                    if (val == 4)
                     {
-                        buf[x] = fliptable[buf[x] & 0xFF];
+                        k = -1;
                     }
+                    if (val == 3)
+                    {
+                        k = 0;
+                    }
+                    break; // T6/T4 Compression
                 }
-                os.write(buf, 0, amountRead);
+                case 262:
+                {
+                    if (val == 1)
+                    {
+                        params.setBoolean(COSName.BLACK_IS_1, true);
+                    }
+                    break;
+                }
+                case 266:
+                {
+                    // http://www.awaresystems.be/imaging/tiff/tifftags/fillorder.html
+                    if (val != 1 && val != 2)
+                    {
+                        throw new IOException("FillOrder " + val + " is not supported");
+                    }
+                    fillorder = val;
+                    break;
+                }
+                case 273:
+                {
+                    if (count == 1)
+                    {
+                        dataoffset = val;
+                    }
+                    break;
+                }
+                case 274:
+                {
+                    // http://www.awaresystems.be/imaging/tiff/tifftags/orientation.html
+                    if (val != 1)
+                    {
+                        throw new IOException("Orientation " + val + " is not supported");
+                    }
+                    break;
+                }
+                case 279:
+                {
+                    if (count == 1)
+                    {
+                        datalength = val;
+                    }
+                    break;
+                }
+                case 292:
+                {
+                    if ((val & 1) != 0)
+                    {
+                        // T4 2D - arbitrary positive K value
+                        k = 50;
+                    }
+                    // http://www.awaresystems.be/imaging/tiff/tifftags/t4options.html
+                    if ((val & 4) != 0)
+                    {
+                        throw new IOException("CCITT Group 3 'uncompressed mode' is not supported");
+                    }
+                    if ((val & 2) != 0)
+                    {
+                        throw new IOException("CCITT Group 3 'fill bits before EOL' is not supported");
+                    }
+                    break;
+                }
+                case 324:
+                {
+                    if (count == 1)
+                    {
+                        dataoffset = val;
+                    }
+                    break;
+                }
+                case 325:
+                {
+                    if (count == 1)
+                    {
+                        datalength = val;
+                    }
+                    break;
+                }
+                default:
+                {
+                    // do nothing
+                }
             }
+        }
+
+        if (k == -1000)
+        {
+            throw new IOException("First image in tiff is not CCITT T4 or T6 compressed");
+        }
+        if (dataoffset == 0)
+        {
+            throw new IOException("First image in tiff is not a single tile/strip");
+        }
+
+        params.setInt(COSName.K, k);
+
+        reader.seek(dataoffset);
+
+        byte[] buf = new byte[8192];
+        int amountRead;
+        while ((amountRead = reader.read(buf, 0, Math.min(8192, datalength))) > 0)
+        {
+            datalength -= amountRead;
+            if (fillorder == 2)
+            {
+                for (int x = 0; x < amountRead; x++)
+                {
+                    buf[x] = fliptable[buf[x] & 0xFF];
+                }
+            }
+            os.write(buf, 0, amountRead);
         }
     }
 
