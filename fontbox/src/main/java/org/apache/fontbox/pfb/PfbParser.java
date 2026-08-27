@@ -132,18 +132,6 @@ public class PfbParser
             in = new BufferedInputStream(pfbStream);
         }
 
-        in.mark(PFB_HEADER_LENGTH + 1);
-
-        int availableSize = in.available();
-
-        byte[] header = in.readNBytes(PFB_HEADER_LENGTH);
-        if (header.length < PFB_HEADER_LENGTH)
-        {
-            throw new IOException("PFB header missing");
-        }
-
-        in.reset();
-
         // read into segments and keep them
         List<Integer> typeList = new ArrayList<>(3);
         List<byte[]> barrList = new ArrayList<>(3);
@@ -178,14 +166,11 @@ public class PfbParser
             {
                 throw new IOException("record size " + size + " is negative");
             }
-            if (size > availableSize)
-            {
-                // PDFBOX-6044: avoid potential OOM
-                throw new IOException("record size " + size + " would be larger than the input");
-            }
-            byte[] ar = new byte[size];
-            int got = in.read(ar);
-            if (got != size)
+            // PDFBOX-6044: avoid potential OOM. readNBytes() grows its buffer
+            // incrementally as bytes actually arrive, so a bogus/huge size can
+            // never force an allocation larger than what the stream really holds.
+            byte[] ar = in.readNBytes(size);
+            if (ar.length != size)
             {
                 throw new EOFException("EOF while reading PFB font");
             }
@@ -194,16 +179,16 @@ public class PfbParser
             barrList.add(ar);
         }
         while (true);
-        
+
+        if (total < PFB_HEADER_LENGTH)
+        {
+            throw new IOException("PFB header missing");
+        }
+
         // We now have ASCII and binary segments. Lets arrange these so that the ASCII segments
         // come first, then the binary segments, then the last ASCII segment if it is
         // 0000... cleartomark
 
-        if (total > availableSize)
-        {
-            // PDFBOX-6044: avoid potential OOM
-            throw new IOException("total record size " + total + " would be larger than the input");
-        }
         pfbdata = new byte[(int) total];
         byte[] cleartomarkSegment = null;
         int dstPos = 0;
