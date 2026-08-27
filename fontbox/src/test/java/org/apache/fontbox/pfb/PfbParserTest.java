@@ -19,9 +19,13 @@ package org.apache.fontbox.pfb;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 
 import org.apache.fontbox.encoding.BuiltInEncoding;
 import org.apache.fontbox.type1.Type1Font;
+import org.apache.pdfbox.io.IOUtils;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -161,5 +165,33 @@ class PfbParserTest
         };
         IOException ex = Assertions.assertThrows(IOException.class, () -> new PfbParser(crashInput));
         Assertions.assertEquals("record size 127 would be larger than the input", ex.getMessage());
+    }
+
+    /**
+     * Misc tests for better coverage.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testPfbParser() throws IOException
+    {
+        PfbParser pfbParser = new PfbParser("target/fonts/OpenSans-Regular.pfb");
+        int[] lengths = pfbParser.getLengths();
+        Assertions.assertArrayEquals(new int[]{4498, 95911, 533}, lengths);
+        byte[] pfbData = pfbParser.getPfbdata();
+        Assertions.assertEquals(pfbParser.size(), pfbData.length);
+        byte[] seg1 = pfbParser.getSegment1();
+        byte[] seg2 = pfbParser.getSegment2();
+        Assertions.assertEquals(pfbData.length, seg1.length + seg2.length + lengths[2]);
+        Assertions.assertEquals(seg1.length, lengths[0]);
+        Assertions.assertEquals(seg2.length, lengths[1]);
+        Assertions.assertArrayEquals(pfbData, IOUtils.toByteArray(pfbParser.getInputStream()));
+        byte [] ba = Files.readAllBytes(Paths.get("target/fonts/OpenSans-Regular.pfb"));
+        Assertions.assertArrayEquals(
+                seg1,
+                Arrays.copyOfRange(ba, 6, 6 + lengths[0]));
+        Assertions.assertArrayEquals(
+                seg2,
+                Arrays.copyOfRange(ba, 6 + lengths[0] + 6, 6 + lengths[0] + 6 + lengths[1]));
     }
 }
