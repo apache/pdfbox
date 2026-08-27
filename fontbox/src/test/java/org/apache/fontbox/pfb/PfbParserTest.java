@@ -104,7 +104,7 @@ class PfbParserTest
     {
         IOException ex1 = Assertions.assertThrows(IOException.class,
                 () -> Type1Font.createWithPFB(new byte[0]));
-        Assertions.assertEquals("PFB header missing", ex1.getMessage());
+        Assertions.assertEquals("Start marker missing", ex1.getMessage());
     }
 
     /**
@@ -163,7 +163,24 @@ class PfbParserTest
             (byte) 0xD2, 0x40
         };
         IOException ex = Assertions.assertThrows(IOException.class, () -> new PfbParser(crashInput));
-        Assertions.assertEquals("record size 127 would be larger than the input", ex.getMessage());
+        Assertions.assertEquals("EOF while reading PFB font", ex.getMessage());
+    }
+
+    /**
+     * Test that a PFB with only 1 short segment throws an exception
+     */
+    @Test
+    void test1SegmentOnly()
+    {
+        // 18-byte crafted PFB: start marker 0x80, ASCII type 0x01,
+        // size field 0x04 0x00 0x00 0x00 = 0x04
+        byte[] crashInput = {
+            (byte) 0x80, 0x01,                         // header
+            0x03, 0x00, 0x00, 0x00,                    // size
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF      // garbage data
+        };
+        IOException ex = Assertions.assertThrows(IOException.class, () -> new PfbParser(crashInput));
+        Assertions.assertEquals("PFB header missing", ex.getMessage());
     }
 
     /**
