@@ -123,10 +123,7 @@ public class PDFTextStripperByArea extends PDFTextStripper
             regionText.put( regionName, new StringWriter() );
         }
         
-        if( page.hasContents() )
-        {
-            processPage( page );
-        }
+        processPage(page);
     }
 
     
