@@ -24,6 +24,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 
 import org.apache.fontbox.encoding.BuiltInEncoding;
+import org.apache.fontbox.encoding.StandardEncoding;
 import org.apache.fontbox.type1.Type1Font;
 
 import org.junit.jupiter.api.Assertions;
@@ -94,6 +95,32 @@ class PfbParserTest
         Assertions.assertEquals(5959, font.getASCIISegment().length);
         Assertions.assertEquals(1056090, font.getBinarySegment().length);
         Assertions.assertEquals(3399, font.getCharStringsDict().size());
+    }
+
+    /**
+     * PDFBOX-3654: font with hex encoded binary segment.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testPfbPDFBox3654() throws IOException
+    {
+        byte[] ba = Files.readAllBytes(Paths.get("target/fonts/KIX-Barcode-Regular.pfb"));
+        Type1Font font = Type1Font.createWithSegments(Arrays.copyOfRange(ba, 0, 1039), 
+                                  Arrays.copyOfRange(ba, 1039, 1039 + 26868));
+        Assertions.assertEquals("001.000", font.getVersion());
+        Assertions.assertEquals("KIX-Barcode-Regular", font.getFontName());
+        Assertions.assertEquals("KIX-Barcode-Regular", font.getFullName());
+        Assertions.assertEquals("KIX-Barcode", font.getFamilyName());
+        Assertions.assertEquals("", font.getNotice());
+        Assertions.assertFalse(font.isFixedPitch());
+        Assertions.assertFalse(font.isForceBold());
+        Assertions.assertEquals(0, font.getItalicAngle());
+        Assertions.assertEquals("Regular", font.getWeight());
+        Assertions.assertInstanceOf(StandardEncoding.class, font.getEncoding());
+        Assertions.assertEquals(1039, font.getASCIISegment().length);
+        Assertions.assertEquals(26868, font.getBinarySegment().length);
+        Assertions.assertEquals(257, font.getCharStringsDict().size());
     }
 
     /**
