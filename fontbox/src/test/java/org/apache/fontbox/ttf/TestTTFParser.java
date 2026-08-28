@@ -16,6 +16,7 @@
 package org.apache.fontbox.ttf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
@@ -108,6 +109,24 @@ class TestTTFParser
         // test an additional name
         gid = cmap.getGlyphId(0x20AC); // EURO SIGN
         assertEquals("Euro", glyphNames[gid]);
+    }
+    
+    @Test
+    void testParseHeaders() throws IOException
+    {
+        final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        TTFParser parser1 = new TTFParser();
+        TrueTypeFont ttf = parser1.parse(new RandomAccessReadBufferedFile(testFile));
+        TTFParser parser2 = new TTFParser();
+        FontHeaders headers = parser2.parseTableHeaders(new RandomAccessReadBufferedFile(testFile));
+        assertEquals(ttf.getName(), headers.getName());
+        assertFalse(headers.isOpenTypePostScript());
+        assertEquals(ttf.getNaming().getFontFamily(), headers.getFontFamily());
+        assertEquals(ttf.getNaming().getFontSubFamily(), headers.getFontSubFamily());
+        assertEquals(ttf.getOS2Windows().getCapHeight(),headers.getOS2Windows().getCapHeight());
+        assertEquals(ttf.getOS2Windows().getHeight(),headers.getOS2Windows().getHeight());
+        assertEquals(ttf.getOS2Windows().getWeightClass(),headers.getOS2Windows().getWeightClass());
+        assertEquals(ttf.getOS2Windows().getWidthClass(),headers.getOS2Windows().getWidthClass());
     }
 
 }
