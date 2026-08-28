@@ -16,11 +16,14 @@
  */
 package org.apache.fontbox.pfb;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 import org.apache.fontbox.encoding.BuiltInEncoding;
+import org.apache.fontbox.encoding.StandardEncoding;
 import org.apache.fontbox.type1.Type1Font;
 
 import org.junit.Assert;
@@ -87,6 +90,36 @@ public class PfbParserTest
         Assert.assertEquals(5959, font.getASCIISegment().length);
         Assert.assertEquals(1056090, font.getBinarySegment().length);
         Assert.assertEquals(3399, font.getCharStringsDict().size());
+    }
+
+    /**
+     * PDFBOX-3654: font with hex encoded binary segment.
+     *
+     * @throws IOException 
+     */
+    @Test
+    public void testPfbPDFBox3654() throws IOException
+    {
+        File file = new File("target/fonts/KIX-Barcode-Regular.pfb");
+        InputStream is = new FileInputStream(file);
+        byte[] ba = new byte[(int) file.length()];
+        is.read(ba);
+        is.close();
+        Type1Font font = Type1Font.createWithSegments(Arrays.copyOfRange(ba, 0, 1039), 
+                                  Arrays.copyOfRange(ba, 1039, 1039 + 26868));
+        Assert.assertEquals("001.000", font.getVersion());
+        Assert.assertEquals("KIX-Barcode-Regular", font.getFontName());
+        Assert.assertEquals("KIX-Barcode-Regular", font.getFullName());
+        Assert.assertEquals("KIX-Barcode", font.getFamilyName());
+        Assert.assertEquals("", font.getNotice());
+        Assert.assertFalse(font.isFixedPitch());
+        Assert.assertFalse(font.isForceBold());
+        Assert.assertEquals(0f, font.getItalicAngle(), 0);
+        Assert.assertEquals("Regular", font.getWeight());
+        Assert.assertTrue(font.getEncoding() instanceof StandardEncoding);
+        Assert.assertEquals(1039, font.getASCIISegment().length);
+        Assert.assertEquals(26868, font.getBinarySegment().length);
+        Assert.assertEquals(257, font.getCharStringsDict().size());
     }
 
     /**
