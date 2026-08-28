@@ -78,16 +78,36 @@ class PfbParserTest
     @Test
     void testPfbPDFBox5713() throws IOException
     {
-        Type1Font font;
-        try (InputStream is = new FileInputStream("target/fonts/DejaVuSerifCondensed.pfb"))
-        {
-            font = Type1Font.createWithPFB(is);
-        }
+        byte[] ba = Files.readAllBytes(Paths.get("target/fonts/DejaVuSerifCondensed.pfb"));
+        Type1Font font = Type1Font.createWithPFB(ba);
         Assertions.assertEquals("Version 2.33", font.getVersion());
         Assertions.assertEquals("DejaVuSerifCondensed", font.getFontName());
+        Assertions.assertEquals("DejaVuSerifCondensed", font.getName());
         Assertions.assertEquals("DejaVu Serif Condensed", font.getFullName());
         Assertions.assertEquals("DejaVu Serif Condensed", font.getFamilyName());
         Assertions.assertEquals("Copyright [c] 2003 by Bitstream, Inc. All Rights Reserved.", font.getNotice());
+        Assertions.assertEquals(11974, font.getSubrsArray().size());
+        Assertions.assertEquals(0, font.getPaintType());
+        Assertions.assertEquals(1, font.getFontType());
+        Assertions.assertEquals("", font.getFontID());
+        Assertions.assertEquals(0, font.getUniqueID());
+        Assertions.assertEquals(0, font.getStrokeWidth());
+        Assertions.assertEquals(-63, font.getUnderlinePosition());
+        Assertions.assertEquals(44, font.getUnderlineThickness());
+        Assertions.assertEquals("[-15, 0, 729, 744, 512, 533, 785, 800, 760, 777, 829, 847, 920, 935]", font.getBlueValues().toString());
+        Assertions.assertEquals("[-222, -203]", font.getOtherBlues().toString());
+        Assertions.assertEquals("[]", font.getFamilyBlues().toString());
+        Assertions.assertEquals("[]", font.getFamilyOtherBlues().toString());
+        Assertions.assertEquals(0, font.getBlueScale());
+        Assertions.assertEquals(0, font.getBlueShift());
+        Assertions.assertEquals(0, font.getBlueFuzz());
+        Assertions.assertEquals(0, font.getLanguageGroup());
+        Assertions.assertEquals("[53]", font.getStdHW().toString());
+        Assertions.assertEquals("[90]", font.getStdVW().toString());
+        Assertions.assertEquals("[53]", font.getStemSnapH().toString());
+        Assertions.assertEquals("[54, 66, 80, 90, 101, 146]", font.getStemSnapV().toString());
+        Assertions.assertEquals("[0.001, 0, 0, 0.001, 0, 0]", font.getFontMatrix().toString());
+        Assertions.assertEquals("[-692.0,-347.0,1511.0,1109.0]", font.getFontBBox().toString());
         Assertions.assertFalse(font.isFixedPitch());
         Assertions.assertFalse(font.isForceBold());
         Assertions.assertEquals(0, font.getItalicAngle());
