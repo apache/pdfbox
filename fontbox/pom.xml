@@ -214,6 +214,19 @@
                       <sha512>1c31bf41c722681419af734213555203e5a5168364aff2a56b31a717996e9b642a039c7c0df27bb1491b1a0344929e9ba20c5a788cd5fa665f65fd8090ee06e7</sha512>
                   </configuration>
               </execution>
+              <execution>
+                  <id>PDFBOX-3654</id>
+                  <phase>generate-test-resources</phase>
+                  <goals>
+                      <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                      <url>https://issues.apache.org/jira/secure/attachment/12848108/KIX-Barcode-Regular.pfb</url>
+                      <outputDirectory>${project.build.directory}/fonts</outputDirectory>
+                      <outputFileName>KIX-Barcode-Regular.pfb</outputFileName>
+                      <sha512>3702f3e81002c2bc452913e30ba4f734f9709423a304b0bbdb12decb6d696dfdd85e059265fdfb5beb4d24ce723ebbebf496fac65c1da0203e41a74ec63d1c1c</sha512>
+                  </configuration>
+              </execution>
           </executions>
       </plugin>
     </plugins>
