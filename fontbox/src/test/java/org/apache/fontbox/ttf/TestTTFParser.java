@@ -103,4 +103,53 @@ public class TestTTFParser
         gid = cmap.getGlyphId(0x20AC); // EURO SIGN
         Assert.assertEquals("Euro", glyphNames[gid]);
     }
+
+    @Test
+    public void testParseMisc() throws IOException
+    {
+        final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        TTFParser parser = new TTFParser();
+        TrueTypeFont ttf = parser.parse(testFile);
+        KerningSubtable horizontalKerningSubtable = ttf.getKerning().getHorizontalKerningSubtable();
+        Assert.assertNull(ttf.getVerticalHeader());
+        Assert.assertNull(ttf.getVerticalMetrics());
+        Assert.assertNull(ttf.getVerticalOrigin());
+        Assert.assertTrue(horizontalKerningSubtable.isHorizontalKerning());
+        Assert.assertEquals(-113, horizontalKerningSubtable.getKerning(3, 36)); // first
+        Assert.assertEquals(-68, horizontalKerningSubtable.getKerning(2026, 987)); // last
+        Assert.assertEquals(2048, ttf.getUnitsPerEm());
+        Assert.assertEquals(1139, ttf.getAdvanceWidth(19));
+        Assert.assertEquals(250, ttf.getAdvanceHeight(19)); // default
+        Assert.assertEquals("[-543.9453,-303.22266,1301.7578,979.98047]", ttf.getFontBBox().toString());
+        Assert.assertEquals("[4.8828125E-4, 0, 0, 4.8828125E-4, 0, 0]", ttf.getFontMatrix().toString());
+        Assert.assertTrue(ttf.hasGlyph("A"));
+        Assert.assertFalse(ttf.hasGlyph("blubb"));
+        Assert.assertEquals("LiberationSans", ttf.toString());
+    }
+
+    @Test
+    public void testParseVertical() throws IOException
+    {
+        File ipaFont = new File("target/fonts/ipag00303", "ipag.ttf");
+        TrueTypeFont ttf = new TTFParser().parse(ipaFont);
+        VerticalHeaderTable verticalHeader = ttf.getVerticalHeader();
+        Assert.assertEquals(1802, verticalHeader.getAscender());
+        Assert.assertEquals(2048, verticalHeader.getAdvanceHeightMax());
+        Assert.assertEquals(0, verticalHeader.getCaretSlopeRise());
+        Assert.assertEquals(1, verticalHeader.getCaretSlopeRun());
+        Assert.assertEquals(0, verticalHeader.getCaretOffset());
+        Assert.assertEquals(246, verticalHeader.getDescender());
+        Assert.assertEquals(0, verticalHeader.getLineGap());
+        Assert.assertEquals(0, verticalHeader.getMetricDataFormat());
+        Assert.assertEquals(-103, verticalHeader.getMinTopSideBearing());
+        Assert.assertEquals(-325, verticalHeader.getMinBottomSideBearing());
+        Assert.assertEquals(1f, verticalHeader.getVersion(), 0);
+        Assert.assertEquals(2373, verticalHeader.getYMaxExtent());
+        VerticalMetricsTable verticalMetrics = ttf.getVerticalMetrics();
+        Assert.assertEquals(2048, verticalMetrics.getAdvanceHeight(19));
+        Assert.assertEquals(290, verticalMetrics.getTopSideBearing(19));
+        Assert.assertNull(ttf.getVerticalOrigin());
+        Assert.assertEquals(1290, ttf.getAdvanceWidth(19));
+        Assert.assertEquals(2048, ttf.getAdvanceHeight(19));
+    }
 }
