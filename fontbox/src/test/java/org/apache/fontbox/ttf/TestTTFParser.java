@@ -18,6 +18,8 @@ package org.apache.fontbox.ttf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -109,6 +111,55 @@ class TestTTFParser
         // test an additional name
         gid = cmap.getGlyphId(0x20AC); // EURO SIGN
         assertEquals("Euro", glyphNames[gid]);
+    }
+
+    @Test
+    public void testParseVertical() throws IOException
+    {
+        File ipaFont = new File("target/fonts/ipag00303", "ipag.ttf");
+        TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(ipaFont));
+        VerticalHeaderTable verticalHeader = ttf.getVerticalHeader();
+        assertEquals(1802, verticalHeader.getAscender());
+        assertEquals(2048, verticalHeader.getAdvanceHeightMax());
+        assertEquals(0, verticalHeader.getCaretSlopeRise());
+        assertEquals(1, verticalHeader.getCaretSlopeRun());
+        assertEquals(0, verticalHeader.getCaretOffset());
+        assertEquals(246, verticalHeader.getDescender());
+        assertEquals(0, verticalHeader.getLineGap());
+        assertEquals(0, verticalHeader.getMetricDataFormat());
+        assertEquals(-103, verticalHeader.getMinTopSideBearing());
+        assertEquals(-325, verticalHeader.getMinBottomSideBearing());
+        assertEquals(1f, verticalHeader.getVersion());
+        assertEquals(2373, verticalHeader.getYMaxExtent());
+        VerticalMetricsTable verticalMetrics = ttf.getVerticalMetrics();
+        assertEquals(2048, verticalMetrics.getAdvanceHeight(19));
+        assertEquals(290, verticalMetrics.getTopSideBearing(19));
+        assertNull(ttf.getVerticalOrigin());
+        assertEquals(1290, ttf.getAdvanceWidth(19));
+        assertEquals(2048, ttf.getAdvanceHeight(19));        
+    }
+
+    @Test
+    void testParseMisc() throws IOException
+    {
+        final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        TTFParser parser = new TTFParser();
+        TrueTypeFont ttf = parser.parse(new RandomAccessReadBufferedFile(testFile));
+        KerningSubtable horizontalKerningSubtable = ttf.getKerning().getHorizontalKerningSubtable();
+        assertNull(ttf.getVerticalHeader());
+        assertNull(ttf.getVerticalMetrics());
+        assertNull(ttf.getVerticalOrigin());
+        assertTrue(horizontalKerningSubtable.isHorizontalKerning());
+        assertEquals(-113, horizontalKerningSubtable.getKerning(3, 36)); // first
+        assertEquals(-68, horizontalKerningSubtable.getKerning(2026, 987)); // last
+        assertEquals(2048, ttf.getUnitsPerEm());
+        assertEquals(1139, ttf.getAdvanceWidth(19));
+        assertEquals(250, ttf.getAdvanceHeight(19)); // default
+        assertEquals("[-543.9453,-303.22266,1301.7578,979.98047]", ttf.getFontBBox().toString());
+        assertEquals("[4.8828125E-4, 0, 0, 4.8828125E-4, 0, 0]", ttf.getFontMatrix().toString());
+        assertTrue(ttf.hasGlyph("A"));
+        assertFalse(ttf.hasGlyph("blubb"));
+        assertEquals("LiberationSans", ttf.toString());
     }
     
     @Test
