@@ -32,6 +32,8 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.RandomAccessRead;
@@ -327,6 +329,98 @@ class CCITTFactoryTest
         {
             assertEquals(1, document.getNumberOfPages());
         }
+    }
+
+    /**
+     * PDFBOX-XXXX: test support of TIFF-files with GROUP3OPT_BYTEALIGNED (T4Options bit 3).
+     * <p>
+     * Builds a minimal single-strip, single-row-pair Group 3 (T4) 1D TIFF by hand, with each
+     * encoded row padded to a byte boundary. Row 0 is a single white run of length 8, row 1 is a
+     * white run of length 0 followed by a black run of length 8. If the byte-alignment T4Options
+     * bit is not propagated to the PDF's /EncodedByteAlign DecodeParms entry, the 3 padding bits
+     * after row 0 are misread as part of row 1's codes, corrupting the second row.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testGroup3ByteAligned() throws IOException
+    {
+        byte[] tiff = buildByteAlignedGroup3Tiff();
+
+        try (PDDocument document = new PDDocument())
+        {
+            PDImageXObject ximage = CCITTFactory.createFromByteArray(document, tiff);
+            validate(ximage, 1, 8, 2, "tiff", PDDeviceGray.INSTANCE.getName());
+
+            COSDictionary decodeParms = ximage.getCOSObject().getCOSDictionary(COSName.DECODE_PARMS);
+            assertTrue(decodeParms.getBoolean(COSName.ENCODED_BYTE_ALIGN, false),
+                    "T4Options byte-align bit should have been translated to /EncodedByteAlign");
+
+            BufferedImage bim = ximage.getOpaqueImage(null, 1);
+            for (int x = 0; x < 8; x++)
+            {
+                assertEquals(bim.getRGB(0, 0), bim.getRGB(x, 0), "row 0 should be a uniform color");
+                assertEquals(bim.getRGB(0, 1), bim.getRGB(x, 1), "row 1 should be a uniform color");
+            }
+            assertNotEquals(bim.getRGB(0, 0), bim.getRGB(0, 1), "row 0 and row 1 should differ");
+        }
+    }
+
+    /**
+     * Builds a minimal little-endian, single-strip Group 3 1D TIFF, 8 columns x 2 rows, with
+     * T4Options = 8 (GROUP3OPT_BYTEALIGNED only). Row 0 is coded as a white run of length 8
+     * ("10011"), row 1 as a white run of length 0 ("00110101") followed by a black run of length
+     * 8 ("000101"); each row's codeword is padded with zero bits up to the next byte boundary.
+     */
+    private static byte[] buildByteAlignedGroup3Tiff()
+    {
+        byte[] strip = { (byte) 0b10011_000, (byte) 0b00110101, (byte) 0b00010100 };
+
+        int numtags = 6;
+        int ifdOff = 8;
+        int stripOff = ifdOff + 2 + numtags * 12 + 4;
+
+        byte[] b = new byte[stripOff + strip.length];
+        b[0] = 'I';
+        b[1] = 'I';
+        putU16(b, 2, 42);
+        putU32(b, 4, ifdOff);
+        putU16(b, ifdOff, numtags);
+
+        int e = ifdOff + 2;
+        e = putTiffEntry(b, e, 256, 3, 1, 8);            // ImageWidth = 8
+        e = putTiffEntry(b, e, 257, 3, 1, 2);             // ImageLength = 2
+        e = putTiffEntry(b, e, 259, 3, 1, 3);             // Compression = 3 (Group 3 / T4)
+        e = putTiffEntry(b, e, 273, 4, 1, stripOff);      // StripOffsets
+        e = putTiffEntry(b, e, 279, 4, 1, strip.length);  // StripByteCounts
+        e = putTiffEntry(b, e, 292, 4, 1, 8);             // T4Options = GROUP3OPT_BYTEALIGNED
+        putU32(b, e, 0);                                  // next IFD offset
+
+        System.arraycopy(strip, 0, b, stripOff, strip.length);
+        return b;
+    }
+
+    private static int putTiffEntry(byte[] b, int off, int tag, int type, int count, int value)
+    {
+        putU16(b, off, tag);
+        putU16(b, off + 2, type);
+        putU32(b, off + 4, count);
+        putU32(b, off + 8, value);
+        return off + 12;
+    }
+
+    private static void putU16(byte[] b, int off, int v)
+    {
+        b[off] = (byte) (v & 0xFF);
+        b[off + 1] = (byte) ((v >> 8) & 0xFF);
+    }
+
+    private static void putU32(byte[] b, int off, int v)
+    {
+        b[off] = (byte) (v & 0xFF);
+        b[off + 1] = (byte) ((v >> 8) & 0xFF);
+        b[off + 2] = (byte) ((v >> 16) & 0xFF);
+        b[off + 3] = (byte) ((v >> 24) & 0xFF);
     }
 
     /**
