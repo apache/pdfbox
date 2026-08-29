@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.encryption;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -888,7 +887,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
                 {
                     iterationKey[j] = (byte)(iterationKey[j] ^ i);
                 }
-                ByteArrayInputStream input = new ByteArrayInputStream(result.toByteArray());
+                byte[] input = result.toByteArray();
                 result.reset();
                 encryptDataRC4(iterationKey, input, result);
             }
@@ -926,7 +925,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         byte[] paddedUser = truncateOrPad( userPassword );
 
         ByteArrayOutputStream encrypted = new ByteArrayOutputStream();
-        encryptDataRC4(rc4Key, new ByteArrayInputStream(paddedUser), encrypted);
+        encryptDataRC4(rc4Key, paddedUser, encrypted);
 
         if (encRevision == REVISION_3 || encRevision == REVISION_4)
         {
@@ -938,7 +937,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
                 {
                     iterationKey[j] = (byte)(iterationKey[j] ^ (byte)i);
                 }
-                ByteArrayInputStream input = new ByteArrayInputStream( encrypted.toByteArray() );
+                byte[] input = encrypted.toByteArray();
                 encrypted.reset();
                 encryptDataRC4(iterationKey, input, encrypted );
             }
