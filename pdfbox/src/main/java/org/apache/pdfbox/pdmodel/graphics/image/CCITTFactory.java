@@ -409,6 +409,12 @@ public final class CCITTFactory
                     {
                         throw new IOException("CCITT Group 3 'fill bits before EOL' is not supported");
                     }
+                    if ((val & 8) != 0)
+                    {
+                        // rows are byte-aligned; the copied compressed stream keeps that
+                        // alignment, so the PDF decoder must be told about it too
+                        params.setBoolean(COSName.ENCODED_BYTE_ALIGN, true);
+                    }
                     break;
                 }
                 case 324:
