@@ -27,8 +27,10 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -161,7 +163,9 @@ class TestTTFParser
         assertFalse(ttf.hasGlyph("blubb"));
         assertEquals("LiberationSans", ttf.toString());
         assertTrue(ttf.isEnableGsub());
+        assertNotNull(ttf.getGsubData());
         ttf.setEnableGsub(false);
+        assertEquals(GsubData.NO_DATA_FOUND, ttf.getGsubData());
         assertFalse(ttf.isEnableGsub());
     }
     
@@ -181,6 +185,20 @@ class TestTTFParser
         assertEquals(ttf.getOS2Windows().getHeight(),headers.getOS2Windows().getHeight());
         assertEquals(ttf.getOS2Windows().getWeightClass(),headers.getOS2Windows().getWeightClass());
         assertEquals(ttf.getOS2Windows().getWidthClass(),headers.getOS2Windows().getWidthClass());
+        assertEquals(ttf.getOS2Windows().getFamilyClass(),headers.getOS2Windows().getFamilyClass());
+        assertEquals(ttf.getOS2Windows().getFirstCharIndex(),headers.getOS2Windows().getFirstCharIndex());
+        assertEquals(ttf.getOS2Windows().getFsSelection(),headers.getOS2Windows().getFsSelection());
+        assertEquals(ttf.getOS2Windows().getFsType(),headers.getOS2Windows().getFsType());
+        assertEquals(ttf.getOS2Windows().getStrikeoutPosition(),headers.getOS2Windows().getStrikeoutPosition());
+        assertEquals(ttf.getOS2Windows().getStrikeoutSize(),headers.getOS2Windows().getStrikeoutSize());
+        assertEquals(ttf.getOS2Windows().getSubscriptXOffset(),headers.getOS2Windows().getSubscriptXOffset());
+        assertEquals(ttf.getOS2Windows().getSubscriptYOffset(),headers.getOS2Windows().getSubscriptYOffset());
+        assertEquals(ttf.getOS2Windows().getSuperscriptXOffset(),headers.getOS2Windows().getSuperscriptXOffset());
+        assertEquals(ttf.getOS2Windows().getSuperscriptYOffset(),headers.getOS2Windows().getSuperscriptYOffset());
+        assertEquals(ttf.getOS2Windows().getSubscriptXSize(),headers.getOS2Windows().getSubscriptXSize());
+        assertEquals(ttf.getOS2Windows().getSubscriptYSize(),headers.getOS2Windows().getSubscriptYSize());
+        assertEquals(ttf.getOS2Windows().getSuperscriptXSize(),headers.getOS2Windows().getSuperscriptXSize());
+        assertEquals(ttf.getOS2Windows().getSuperscriptYSize(),headers.getOS2Windows().getSuperscriptYSize());
     }
 
 }
