@@ -121,24 +121,13 @@ public class PfbParser
      */
     private void parsePfb(InputStream pfbStream) throws IOException
     {
-        InputStream in;
-
-        if (pfbStream.markSupported())
-        {
-            in = pfbStream;
-        }
-        else
-        {
-            in = new BufferedInputStream(pfbStream);
-        }
-
         // read into segments and keep them
         List<Integer> typeList = new ArrayList<>(3);
         List<byte[]> barrList = new ArrayList<>(3);
         long total = 0;
         do
         {
-            int r = in.read();
+            int r = pfbStream.read();
             if (r == -1 && total > 0)
             {
                 break; // EOF
@@ -147,7 +136,7 @@ public class PfbParser
             {
                 throw new IOException("Start marker missing");
             }
-            int recordType = in.read();
+            int recordType = pfbStream.read();
             if (recordType == EOF_MARKER)
             {
                 break;
@@ -157,10 +146,10 @@ public class PfbParser
                 throw new IOException("Incorrect record type: " + recordType);
             }
 
-            int size = in.read();
-            size += in.read() << 8;
-            size += in.read() << 16;
-            size += in.read() << 24;
+            int size = pfbStream.read();
+            size += pfbStream.read() << 8;
+            size += pfbStream.read() << 16;
+            size += pfbStream.read() << 24;
             LOG.debug("record type: {}, segment size: {}", recordType, size);
             if (size < 0)
             {
@@ -169,7 +158,7 @@ public class PfbParser
             // PDFBOX-6044: avoid potential OOM. readNBytes() grows its buffer
             // incrementally as bytes actually arrive, so a bogus/huge size can
             // never force an allocation larger than what the stream really holds.
-            byte[] ar = in.readNBytes(size);
+            byte[] ar = pfbStream.readNBytes(size);
             if (ar.length != size)
             {
                 throw new EOFException("EOF while reading PFB font");
