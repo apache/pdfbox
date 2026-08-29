@@ -403,11 +403,11 @@ public final class CCITTFactory
                     // http://www.awaresystems.be/imaging/tiff/tifftags/t4options.html
                     if ((val & 4) != 0)
                     {
-                        throw new IOException("CCITT Group 3 'uncompressed mode' is not supported");
+                        throw new IOException("CCITT Group 3 'fill bits before EOL' is not supported");
                     }
                     if ((val & 2) != 0)
                     {
-                        throw new IOException("CCITT Group 3 'fill bits before EOL' is not supported");
+                        throw new IOException("CCITT Group 3 'uncompressed mode' is not supported");
                     }
                     break;
                 }
