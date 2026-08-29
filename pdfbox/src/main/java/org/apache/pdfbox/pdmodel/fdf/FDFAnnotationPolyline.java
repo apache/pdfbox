@@ -153,7 +153,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
         COSArray array = annot.getCOSArray(COSName.LE);
         if (array == null)
         {
-            array = new COSArray();
+            array = new COSArray(2);
             array.add(COSName.getPDFName(actualStyle));
             array.add(COSName.getPDFName(PDAnnotationLine.LE_NONE));
             annot.setItem(COSName.LE, array);
@@ -186,7 +186,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
         COSArray array = annot.getCOSArray(COSName.LE);
         if (array == null)
         {
-            array = new COSArray();
+            array = new COSArray(2);
             array.add(COSName.getPDFName(PDAnnotationLine.LE_NONE));
             array.add(COSName.getPDFName(actualStyle));
             annot.setItem(COSName.LE, array);
