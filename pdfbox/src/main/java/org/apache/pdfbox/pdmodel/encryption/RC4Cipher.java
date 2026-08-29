@@ -114,7 +114,7 @@ class RC4Cipher
      */
     void write(byte[] data, OutputStream output) throws IOException
     {
-        write(data, 0, data.length, output, new byte[data.length]);
+        write(data, data.length, output, new byte[data.length]);
     }
 
     /**
@@ -131,7 +131,7 @@ class RC4Cipher
         int amountRead;
         while( (amountRead = data.read( buffer )) != -1 )
         {
-            write(buffer, 0, amountRead, output, buffer);
+            write(buffer, amountRead, output, buffer);
         }
     }
 
@@ -139,16 +139,15 @@ class RC4Cipher
      * This will encrypt and write the data.
      *
      * @param data The data to encrypt, may be overwritten.
-     * @param offset The offset into the array to start reading data from.
      * @param len The number of bytes to attempt to read.
      * @param output The stream to write to.
      * @param buffer The buffer to use, it can be altered and be identical to the data to encrypt.
      *
      * @throws IOException If there is an error writing to the output stream.
      */
-    private void write(byte[] data, int offset, int len, OutputStream output, byte[] buffer) throws IOException
+    private void write(byte[] data, int len, OutputStream output, byte[] buffer) throws IOException
     {
-        for (int i = 0, j = offset; i < len; ++i, ++j)
+        for (int i = 0, j = 0; i < len; ++i, ++j)
         {
             buffer[i] = encrypt(data[j]);
         }
