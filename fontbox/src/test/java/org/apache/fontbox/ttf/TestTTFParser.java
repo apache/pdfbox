@@ -134,6 +134,9 @@ class TestTTFParser
         assertTrue(ttf.hasGlyph("A"));
         assertFalse(ttf.hasGlyph("blubb"));
         assertEquals("LiberationSans", ttf.toString());
+        assertTrue(ttf.isEnableGsub());
+        ttf.setEnableGsub(false);
+        assertFalse(ttf.isEnableGsub());
     }
 
     @Test
