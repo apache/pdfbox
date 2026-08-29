@@ -114,7 +114,7 @@ class TestTTFParser
     }
 
     @Test
-    public void testParseVertical() throws IOException
+    void testParseVertical() throws IOException
     {
         File ipaFont = new File("target/fonts/ipag00303", "ipag.ttf");
         TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(ipaFont));
