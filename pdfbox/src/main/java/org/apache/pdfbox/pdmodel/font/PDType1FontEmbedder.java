@@ -59,10 +59,9 @@ class PDType1FontEmbedder
         dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
 
         // read the pfb
-        byte[] pfbBytes = pfbStream.readAllBytes();
-        PfbParser pfbParser = new PfbParser(pfbBytes);
-        type1 = Type1Font.createWithPFB(pfbBytes);
-        
+        PfbParser pfbParser = new PfbParser(pfbStream);
+        type1 = Type1Font.createWithSegments(pfbParser.getSegment1(), pfbParser.getSegment2());
+
         if (encoding == null)
         {
             fontEncoding = Type1Encoding.fromFontBox(type1.getEncoding());
