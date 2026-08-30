@@ -867,7 +867,7 @@ public class COSWriter implements ICOSVisitor
         {
             IOUtils.copy(input, incrementalOutput);
             // write the actual incremental update
-            incrementalOutput.write(((ByteArrayOutputStream) output).toByteArray());
+            ((ByteArrayOutputStream) output).writeTo(incrementalOutput);
         }
     }
     
