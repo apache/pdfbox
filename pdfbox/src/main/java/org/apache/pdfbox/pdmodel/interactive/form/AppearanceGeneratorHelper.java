@@ -418,7 +418,7 @@ class AppearanceGeneratorHelper {
 
         contents.close();
         output.close();
-        writeToStream(output.toByteArray(), appearanceStream);
+        writeToStream(output, appearanceStream);
     }
 
     /**
@@ -468,7 +468,7 @@ class AppearanceGeneratorHelper {
         }
 
         output.close();
-        writeToStream(output.toByteArray(), appearanceStream);
+        writeToStream(output, appearanceStream);
     }
 
     /**
@@ -833,10 +833,10 @@ class AppearanceGeneratorHelper {
      *
      * @throws IOException If there is an error writing to the stream
      */
-    private void writeToStream(byte[] data, PDAppearanceStream appearanceStream) throws IOException {
-        OutputStream out = appearanceStream.getCOSObject().createOutputStream();
-        out.write(data);
-        out.close();
+    private void writeToStream(ByteArrayOutputStream baos, PDAppearanceStream appearanceStream) throws IOException {
+        OutputStream os = appearanceStream.getCOSObject().createOutputStream();
+        baos.writeTo(os);
+        os.close();
     }
 
     /**
