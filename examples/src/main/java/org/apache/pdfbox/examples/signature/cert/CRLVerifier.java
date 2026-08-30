@@ -61,9 +61,9 @@ import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
 
 /**
- * Copied from Apache CXF 2.4.9, initial version:
- * https://svn.apache.org/repos/asf/cxf/tags/cxf-2.4.9/distribution/src/main/release/samples/sts_issue_operation/src/main/java/demo/sts/provider/cert/
- * 
+ * Copied from Apache CXF 2.4.9, initial version is
+ * <a href="https://svn.apache.org/repos/asf/cxf/tags/cxf-2.4.9/distribution/src/main/release/samples/sts_issue_operation/src/main/java/demo/sts/provider/cert/">here</a>
+ *
  */
 public final class CRLVerifier
 {
@@ -287,7 +287,7 @@ public final class CRLVerifier
     }
 
     /**
-     * Downloads a CRL from given HTTP/HTTPS URL, e.g. http://crl.infonotary.com/crl/identity-ca.crl
+     * Downloads a CRL from given HTTP/HTTPS URL, e.g. a <a href="http://crl.infonotary.com/crl/identity-ca.crl">link</a>
      * @param crlURL
      * @return 
      * @throws java.io.IOException
