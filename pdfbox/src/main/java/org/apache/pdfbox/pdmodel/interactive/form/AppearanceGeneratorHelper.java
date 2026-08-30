@@ -431,7 +431,7 @@ class AppearanceGeneratorHelper
                 }
             }
             
-            writeToStream(output.toByteArray(), appearanceStream);
+            writeToStream(output, appearanceStream);
 
         }
     }
@@ -480,7 +480,7 @@ class AppearanceGeneratorHelper
                 // append contents after EMC
                 writer.writeTokens(tokens.subList(emcIndex, tokens.size()));
             }
-            writeToStream(output.toByteArray(), appearanceStream);
+            writeToStream(output, appearanceStream);
         }
     }
     
@@ -883,11 +883,11 @@ class AppearanceGeneratorHelper
      *
      * @throws IOException If there is an error writing to the stream
      */
-    private void writeToStream(byte[] data, PDAppearanceStream appearanceStream) throws IOException
+    private void writeToStream(ByteArrayOutputStream baos, PDAppearanceStream appearanceStream) throws IOException
     {
-        try (OutputStream out = appearanceStream.getCOSObject().createOutputStream())
+        try (OutputStream os = appearanceStream.getCOSObject().createOutputStream())
         {
-            out.write(data);
+            baos.writeTo(os);
         }
     }
 
