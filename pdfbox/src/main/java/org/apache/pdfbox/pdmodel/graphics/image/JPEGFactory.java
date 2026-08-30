@@ -23,11 +23,11 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Iterator;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -48,8 +48,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.filter.Filter;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
@@ -81,13 +84,17 @@ public final class JPEGFactory
     public static PDImageXObject createFromStream(PDDocument document, InputStream stream)
             throws IOException
     {
-        if (!stream.markSupported())
+        COSStream cosStream = document.getDocument().createCOSStream();
+        try (OutputStream output = cosStream.createRawOutputStream())
         {
-            stream = new BufferedInputStream(stream);
+            IOUtils.copy(stream, output);
         }
-        stream.mark(Integer.MAX_VALUE);
 
-        Dimensions meta = retrieveDimensions(stream);
+        Dimensions meta;
+        try (InputStream rawInput = cosStream.createRawInputStream())
+        {
+            meta = retrieveDimensions(rawInput);
+        }
 
         PDColorSpace colorSpace;
         switch (meta.numComponents)
@@ -106,9 +113,13 @@ public final class JPEGFactory
                         meta.numComponents);
         }
 
-        // create PDImageXObject from stream
-        PDImageXObject pdImage = new PDImageXObject(document, stream,
-                COSName.DCT_DECODE, meta.width, meta.height, 8, colorSpace);
+        // create PDImageXObject around the already-populated stream, no further copying
+        cosStream.setItem(COSName.FILTER, COSName.DCT_DECODE);
+        PDImageXObject pdImage = new PDImageXObject(new PDStream(cosStream), null);
+        pdImage.setBitsPerComponent(8);
+        pdImage.setWidth(meta.width);
+        pdImage.setHeight(meta.height);
+        pdImage.setColorSpace(colorSpace);
 
         if (colorSpace instanceof PDDeviceCMYK)
         {
@@ -183,7 +194,6 @@ public final class JPEGFactory
         }
         finally
         {
-            stream.reset();
             reader.dispose();
         }
     }
