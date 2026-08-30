@@ -741,7 +741,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         IOUtils.copy(input, incrementalOutput);
         input.close();
         // write the actual incremental update
-        incrementalOutput.write(((ByteArrayOutputStream) output).toByteArray());
+            ((ByteArrayOutputStream) output).writeTo(incrementalOutput);
     }
     
     private void doWriteSignature() throws IOException
