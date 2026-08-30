@@ -501,8 +501,9 @@ public class PDFMergerUtility
     /**
      * append all pages from source to destination.
      *
-     * @param destination the document to receive the pages
-     * @param source the document originating the new pages
+     * @param destination the document to receive the pages.
+     * @param source The document originating the new pages. This should not be a PDDocument that
+     * you created on the fly, it should be saved first, if it contains any fonts that are subset.
      *
      * @throws IOException If there is an error accessing data from either
      * document.
