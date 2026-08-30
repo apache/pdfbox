@@ -401,12 +401,14 @@ public final class CCITTFactory
                         k = 50;
                     }
                     // http://www.awaresystems.be/imaging/tiff/tifftags/t4options.html
-                    if ((val & 4) != 0)
+                    if ((val & 2) != 0)
                     {
                         throw new IOException("CCITT Group 3 'uncompressed mode' is not supported");
                     }
-                    if ((val & 2) != 0)
+                    if ((val & 4) != 0)
                     {
+                        // sample file in PDFBOX-934
+                        // Note that this TIFF option is not the same as the PDF EncodedByteAlign option
                         throw new IOException("CCITT Group 3 'fill bits before EOL' is not supported");
                     }
                     break;
