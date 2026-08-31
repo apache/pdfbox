@@ -636,6 +636,11 @@ final class FontMapperImpl implements FontMapper
                 float dist = Math.abs(fontDescriptor.getFontWeight() - info.getWeightClass());
                 match.score += 1 - (dist / 100) * 0.5;
             }
+            else if (info.getWeightClass() > 0)
+            {
+                // no weight information in the descriptor: prefer a regular weight
+                match.score += 1 - (Math.abs(info.getWeightClass() - 400) / 100) * 0.5;
+            }
             // todo: italic
             // ...
 

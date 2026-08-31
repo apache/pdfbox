@@ -62,6 +62,11 @@ class PDCIDFontType0SubstituteTest
             GeneralPath path = cidFont.getPath(0x48, font);
             assertFalse(path.getPathIterator(null).isDone(), "glyph for 'H' has an empty path");
 
+            // the repro descriptor carries no Panose or FontWeight: a regular weight must
+            // outrank Bold among otherwise-tied candidates
+            assertFalse(mapping.getFont().getName().endsWith("-Bold"),
+                    "regular weight should be preferred over Bold on a weightless descriptor");
+
             CFFFont cff = mapping.getFont().getCFF().getFont();
             if (cff instanceof CFFCIDFont && "Identity".equals(((CFFCIDFont) cff).getOrdering()))
             {
