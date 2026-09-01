@@ -42,18 +42,23 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
  */
 public class GlyphLayoutFontLoaderAwt
 {
+    protected final GlyphLayoutProcessorAwt glyphLayoutProcessor;
 
     /**
      * Mapping from PDFBox font to AWT font
      */
     private final Map<PDType0Font, Font> awtFontMap = new ConcurrentHashMap<>();
 
+    public GlyphLayoutFontLoaderAwt(GlyphLayoutProcessorAwt glyphLayoutProcessor) {
+        this.glyphLayoutProcessor = glyphLayoutProcessor;
+    }
+
     /**
      * Loads the AWT font needed for layout
      *
      * @param pdDocument document
      * @param inputStream of the font
-     * @return pdType0Font PDFBox font
+     * @return PDType0Font PDFBox font
      * @throws IOException if font can not be loaded
      * @throws FontFormatException if the font is bad
      */
@@ -70,7 +75,7 @@ public class GlyphLayoutFontLoaderAwt
      * @param inputStream of the font
      * @param embedSubset True if the font will be subset before embedding. Set this to false when
      * creating a font for AcroForm.
-     * @return pdType0Font PDFBox font
+     * @return PDType0Font PDFBox font
      * @throws IOException if font can not be loaded
      * @throws FontFormatException if the font is bad
      */
@@ -86,7 +91,7 @@ public class GlyphLayoutFontLoaderAwt
      * @param pdDocument document
      * @param inputStream of the font
      * @param fontOptions options for font
-     * @return pdType0Font PDFBox font
+     * @return PDType0Font PDFBox font
      * @throws IOException if font can not be loaded
      * @throws FontFormatException if the font is bad
      */
@@ -104,7 +109,7 @@ public class GlyphLayoutFontLoaderAwt
      * @param embedSubset True if the font will be subset before embedding. Set this to false when
      * creating a font for AcroForm.
      * @param fontOptions Options for font
-     * @return pdType0Font PDFBox font
+     * @return PDType0Font PDFBox font
      * @throws IOException if font can not be loaded
      * @throws FontFormatException if the font is bad
      */
@@ -117,6 +122,7 @@ public class GlyphLayoutFontLoaderAwt
         try (ByteArrayInputStream bais = new ByteArrayInputStream(inputStream.readAllBytes()))
         {
             PDType0Font pdType0Font = PDType0Font.load(pdDocument, bais, embedSubset);
+            pdType0Font.setGlyphLayoutProcessor(glyphLayoutProcessor);
             bais.reset();
             loadAwtFont(pdType0Font, bais, fontOptions);
             return pdType0Font;
@@ -155,7 +161,8 @@ public class GlyphLayoutFontLoaderAwt
      */
     public boolean supportsFont(PDFont font)
     {
-        return awtFontMap.containsKey(font);
+        return (font instanceof PDType0Font)
+                && awtFontMap.containsKey((PDType0Font)font);
     }
 
     /**
@@ -164,7 +171,7 @@ public class GlyphLayoutFontLoaderAwt
      * @param font PDFBox font
      * @return AWT font if available
      */
-    public Font getAwtFont(PDType0Font font)
+    protected Font getAwtFont(PDType0Font font)
     {
         return awtFontMap.get(font);
     }

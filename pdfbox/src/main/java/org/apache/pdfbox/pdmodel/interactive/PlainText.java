@@ -32,21 +32,21 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
  * A block of text can contain multiple paragraphs which will
  * be treated individually within the block placement.
  * </p>
- * 
+ *
  */
 public class PlainText
 {
     private static final float FONTSCALE = 1000f;
-    
+
     private final List<Paragraph> paragraphs;
-    
+
     /**
      * Construct the text block from a single value.
-     * 
+     * <p>
      * Constructs the text block from a single value splitting
-     * into individual {@link Paragraph} when a new line character is 
+     * into individual {@link Paragraph} when a new line character is
      * encountered.
-     * 
+     *
      * @param textValue the text block string.
      */
     public PlainText(String textValue)
@@ -71,13 +71,13 @@ public class PlainText
             }
         }
     }
-    
+
     /**
      * Construct the text block from a list of values.
-     * 
+     * <p>
      * Constructs the text block from a list of values treating each
      * entry as an individual {@link Paragraph}.
-     * 
+     *
      * @param listValue the text block string.
      */
     public PlainText(List<String> listValue)
@@ -85,20 +85,20 @@ public class PlainText
         paragraphs = new ArrayList<>(listValue.size());
         listValue.forEach(part -> paragraphs.add(new Paragraph(part)));
     }
-    
+
     /**
      * Get the list of paragraphs.
-     * 
+     *
      * @return the paragraphs.
      */
     public List<Paragraph> getParagraphs()
     {
         return paragraphs;
     }
-    
+
     /**
      * Attribute keys and attribute values used for text handling.
-     * 
+     * <p>
      * This is similar to {@link java.awt.font.TextAttribute} but
      * handled individually as to avoid a dependency on awt.
      */
@@ -113,12 +113,12 @@ public class PlainText
          * Attribute width of the text.
          */
         public static final Attribute WIDTH = new TextAttribute("width");
-        
+
         protected TextAttribute(String name)
         {
             super(name);
         }
-        
+
 
     }
 
@@ -207,15 +207,15 @@ public class PlainText
                     wordNeedsSplit = true;
 
                     // PDFBOX-5049:  The original approach was to decrement splitOffset
-                    // until the substring fits, but this can be very expensive for long words and 
+                    // until the substring fits, but this can be very expensive for long words and
                     // narrow widths (e.g. a long URL in a narrow column).
-                    // 
+                    //
                     // Optimization: instead of decrementing splitOffset one step at a time and
                     // calling getStringWidth on progressively shorter substrings:
                     //   - compute the scaled width of every individual character once
                     //   - build a prefix-sum array
                     //   - binary-search for the largest prefix that fits
-                    // 
+                    //
                     // TODO: The special case in PDFBOX-5049 should be handled by not generating an appearance
                     // stream at all as the the height of the text box is only 1pt and the text is not visible.
 
@@ -315,7 +315,7 @@ public class PlainText
             return lo;
         }
     }
-    
+
     /**
      * An individual line of text.
      */
@@ -328,12 +328,12 @@ public class PlainText
         {
             return lineWidth;
         }
-        
+
         void setWidth(float width)
         {
             lineWidth = width;
         }
-        
+
         float calculateWidth(PDFont font, float fontSize) throws IOException
         {
             final float scale = fontSize/FONTSCALE;
@@ -341,7 +341,7 @@ public class PlainText
             int indexOfWord = 0;
             for (Word word : words)
             {
-                calculatedWidth = calculatedWidth + 
+                calculatedWidth = calculatedWidth +
                         (Float) word.getAttributes().getIterator().getAttribute(TextAttribute.WIDTH);
                 String text = word.getText();
                 if (indexOfWord == words.size() -1 && Character.isWhitespace(text.charAt(text.length()-1)))
@@ -358,7 +358,7 @@ public class PlainText
         {
             return words;
         }
-        
+
         float getInterWordSpacing(float width)
         {
             return (width - lineWidth)/(words.size()-1);
@@ -369,10 +369,10 @@ public class PlainText
             words.add(word);
         }
     }
-    
+
     /**
      * An individual word.
-     * 
+     * <p>
      * A word is defined as a string which must be kept
      * on the same line.
      */
@@ -380,22 +380,22 @@ public class PlainText
     {
         private AttributedString attributedString;
         private final String textContent;
-        
+
         Word(String text)
         {
             textContent = text;
         }
-        
+
         String getText()
         {
             return textContent;
         }
-        
+
         AttributedString getAttributes()
         {
             return attributedString;
         }
-        
+
         void setAttributes(AttributedString as)
         {
             this.attributedString = as;

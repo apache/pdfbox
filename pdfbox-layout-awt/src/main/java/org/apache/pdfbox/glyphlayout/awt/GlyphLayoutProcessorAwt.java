@@ -47,7 +47,6 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
  */
 public class GlyphLayoutProcessorAwt extends AbstractGlyphLayoutProcessor implements GlyphLayoutProcessorInterface
 {
-
     private final GlyphLayoutFontLoaderAwt glyphLayoutFontLoaderAwt;
 
     /**
@@ -56,7 +55,7 @@ public class GlyphLayoutProcessorAwt extends AbstractGlyphLayoutProcessor implem
      */
     public GlyphLayoutProcessorAwt()
     {
-        this.glyphLayoutFontLoaderAwt = new GlyphLayoutFontLoaderAwt();
+        this.glyphLayoutFontLoaderAwt = new GlyphLayoutFontLoaderAwt(this);
     }
 
     /**
@@ -210,6 +209,7 @@ public class GlyphLayoutProcessorAwt extends AbstractGlyphLayoutProcessor implem
         Rectangle2D rect = glyphVector.getLogicalBounds();
         return (float) rect.getWidth();
     }
+
 
     /**
      * Shows a text using glyph positioning (if needed) This text must have a uniform run direction.

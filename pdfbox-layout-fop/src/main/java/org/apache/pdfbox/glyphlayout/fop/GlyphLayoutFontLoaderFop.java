@@ -34,6 +34,7 @@ import org.apache.fop.fonts.FontLoader;
 import org.apache.fop.fonts.FontUris;
 import org.apache.fop.fonts.MultiByteFont;
 
+import org.apache.pdfbox.pdmodel.GlyphLayoutProcessorInterface;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
@@ -50,6 +51,7 @@ import org.apache.xmlgraphics.io.ResourceResolver;
  */
 public class GlyphLayoutFontLoaderFop
 {
+    private final GlyphLayoutProcessorInterface glyphLayoutProcessor;
 
     /**
      * Mapping from PDFBox font to AWT font
@@ -57,11 +59,20 @@ public class GlyphLayoutFontLoaderFop
     private final Map<PDType0Font, MultiByteFont> fopFontMap = new ConcurrentHashMap<>();
 
     /**
+     * Creates a GlyphLayoutFontLoaderFop
+     * @param glyphLayoutProcessor the corresponding glyph layout processor
+     */
+    public GlyphLayoutFontLoaderFop(GlyphLayoutProcessorInterface glyphLayoutProcessor) {
+        this.glyphLayoutProcessor = glyphLayoutProcessor;
+    }
+
+    /**
      * Loads the AWT font needed for layout
      *
      * @param pdDocument document
      * @param inputStream of the font
-     * @param embedSubset
+     * @param embedSubset True if the font will be subset before embedding. Set this to false when
+     *                    creating a font for AcroForm.
      * @return pdType0Font PDFBox font
      * @throws IOException if font can not be loaded
      */
@@ -75,6 +86,7 @@ public class GlyphLayoutFontLoaderFop
         try (ByteArrayInputStream bais = new ByteArrayInputStream(inputStream.readAllBytes()))
         {
             pdType0Font = PDType0Font.load(pdDocument, bais, embedSubset);
+            pdType0Font.setGlyphLayoutProcessor(glyphLayoutProcessor);
             bais.reset();
             loadFopFont(pdType0Font, bais);
         }
@@ -143,7 +155,7 @@ public class GlyphLayoutFontLoaderFop
      * @param font PDFBox font
      * @return fop font if available
      */
-    public MultiByteFont getFopFont(PDType0Font font)
+    protected MultiByteFont getFopFont(PDType0Font font)
     {
         return fopFontMap.get(font);
     }
@@ -151,7 +163,7 @@ public class GlyphLayoutFontLoaderFop
     /**
      * Resolver needed to construct a FOP MultibyteFont
      */
-    static class FopInputStreamResourceResolver implements ResourceResolver
+    protected static class FopInputStreamResourceResolver implements ResourceResolver
     {
         private final InputStream inputStream;
 

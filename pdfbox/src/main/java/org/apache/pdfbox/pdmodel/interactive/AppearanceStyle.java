@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive;
 
+import org.apache.pdfbox.pdmodel.GlyphLayoutProcessorInterface;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 
 /**
@@ -38,7 +39,12 @@ public class AppearanceStyle
      * Defaulting to 1.2*fontSize to match Acrobats default.
      */
     private float leading = 14.4f;
-    
+
+    /**
+     * Glyph layout processor
+     */
+    private GlyphLayoutProcessorInterface glyphLayoutProcessor;
+
     /**
      * Get the font used for text formatting.
      * 
@@ -99,4 +105,5 @@ public class AppearanceStyle
     {
         this.leading = leading;
     }
+
 }

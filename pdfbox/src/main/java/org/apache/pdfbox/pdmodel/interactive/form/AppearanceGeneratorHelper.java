@@ -39,6 +39,7 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.font.PDVectorFont;
@@ -531,6 +532,9 @@ class AppearanceGeneratorHelper
             
             // get the font
             PDFont font = defaultAppearance.getFont();
+            if (glyphLayoutProcessor != null && glyphLayoutProcessor.supportsFont(font)) {
+                ((PDType0Font)font).setGlyphLayoutProcessor(glyphLayoutProcessor);
+            }
             if (font == null)
             {
                 throw new IllegalArgumentException("font is null, check whether /DA entry is incomplete or incorrect");
@@ -637,7 +641,7 @@ class AppearanceGeneratorHelper
                 AppearanceStyle appearanceStyle = new AppearanceStyle();
                 appearanceStyle.setFont(font);
                 appearanceStyle.setFontSize(fontSize);
-                
+
                 // Adobe Acrobat uses the font's bounding box for the leading between the lines
                 appearanceStyle.setLeading(font.getBoundingBox().getHeight() * fontScaleY);
                 
@@ -938,7 +942,7 @@ class AppearanceGeneratorHelper
                         {
                             return Math.max(fs - 1, MINIMUM_FONT_SIZE);
                         }
-                        fs += 1.0;
+                        fs += 1.0f;
                     }
                     return Math.min(fs, DEFAULT_FONT_SIZE);
                 }

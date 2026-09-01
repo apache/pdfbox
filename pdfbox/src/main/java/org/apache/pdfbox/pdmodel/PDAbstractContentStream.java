@@ -353,10 +353,20 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
         }
         else
         {
-            showTextInternal(text);
-            writeBytes(ASCII_SPACE);
-            writeOperator(OperatorName.SHOW_TEXT);
+            showTextBasic(text);
         }
+    }
+
+    /**
+     * Shows the text
+     *
+     * @param text text to be shown
+     * @throws IOException if an I/O exception occurs
+     */
+    protected void showTextBasic(String text) throws IOException {
+        showTextInternal(text);
+        writeBytes(ASCII_SPACE);
+        writeOperator(OperatorName.SHOW_TEXT);
     }
 
     /**
