@@ -318,7 +318,7 @@ public class PDCIDFontType0 extends PDCIDFont
         }
     }
 
-    private boolean isCharacterCollectionMatch(CFFCIDFont substitute) throws IOException
+    private boolean isCharacterCollectionMatch(CFFCIDFont substitute)
     {
         PDCIDSystemInfo ros = getCIDSystemInfo();
         return ros != null && ros.getRegistry().equals(substitute.getRegistry()) &&
