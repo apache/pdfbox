@@ -693,7 +693,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * encoding is a transparent identity transform for those cases.</p>
      *
      * @param aName the name string; must not be {@code null}
-     * @return a canonicalised {@code COSName} instance
+     * @return a canonized {@code COSName} instance
      */
     public static COSName getPDFName(String aName)
     {
@@ -709,7 +709,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * name even when the bytes are not valid UTF-8.</p>
      *
      * @param bytes the raw decoded byte sequence; must not be {@code null}
-     * @return a canonicalised {@code COSName} instance
+     * @return a canonized {@code COSName} instance
      */
     public static COSName getPDFName(byte[] bytes)
     {
