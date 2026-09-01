@@ -31,6 +31,7 @@ import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFParser;
 import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.cff.Type2CharString;
+import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -53,6 +54,10 @@ public class PDCIDFontType0 extends PDCIDFont
     private final CFFCIDFont cidFont;  // Top DICT that uses CIDFont operators
     private final FontBoxFont t1Font; // Top DICT that does not use CIDFont operators
     
+    // substitute is CID-keyed with a different ROS: this font's CIDs are meaningless in it,
+    // resolve glyphs via Unicode instead (PDFBOX-6249)
+    private final CmapLookup substituteUnicodeCmap;
+
     private final Map<Integer, Float> glyphHeights = new HashMap<Integer, Float>();
     private final boolean isEmbedded;
     private final boolean isDamaged;
@@ -73,6 +78,7 @@ public class PDCIDFontType0 extends PDCIDFont
     {
         super(fontDictionary, parent);
 
+        CmapLookup substituteCmap = null;
         PDFontDescriptor fd = getFontDescriptor();
         byte[] bytes = null;
         if (fd != null)
@@ -160,9 +166,22 @@ public class PDCIDFontType0 extends PDCIDFont
                 LOG.warn("Using fallback " + font.getName() + " for CID-keyed font " +
                          getBaseFont());
             }
+            if (cidFont != null && mapping.isCIDFont() && !isCharacterCollectionMatch(cidFont) &&
+                "Identity".equals(cidFont.getOrdering()))
+            {
+                try
+                {
+                    substituteCmap = mapping.getFont().getUnicodeCmapLookup();
+                }
+                catch (IOException e)
+                {
+                    LOG.warn("Could not read cmap of the substitute for font " + getBaseFont(), e);
+                }
+            }
             isEmbedded = false;
             isDamaged = fontIsDamaged;
         }
+        substituteUnicodeCmap = substituteCmap;
         fontMatrixTransform = getFontMatrix().createAffineTransform();
         fontMatrixTransform.scale(1000, 1000);
     }
@@ -306,6 +325,27 @@ public class PDCIDFontType0 extends PDCIDFont
         }
     }
 
+    private boolean isCharacterCollectionMatch(CFFCIDFont substitute)
+    {
+        PDCIDSystemInfo ros = getCIDSystemInfo();
+        return ros != null && ros.getRegistry().equals(substitute.getRegistry()) &&
+                ros.getOrdering().equals(substitute.getOrdering());
+    }
+
+    /**
+     * GID in the substitute for the given code, via Unicode; -1 if unmapped. The substitute's
+     * Identity charset makes GIDs address its charstrings directly.
+     */
+    private int codeToSubstituteGID(int code, PDType0Font parent) throws IOException
+    {
+        String unicodes = parent.toUnicode(code);
+        if (unicodes == null)
+        {
+            return -1;
+        }
+        return substituteUnicodeCmap.getGlyphId(unicodes.codePointAt(0));
+    }
+
     /**
      * Returns the name of the glyph with the given character code. This is done by looking up the
      * code in the parent font's ToUnicode map and generating a glyph name from that.
@@ -324,6 +364,11 @@ public class PDCIDFontType0 extends PDCIDFont
     public GeneralPath getPath(int code) throws IOException
     {
         int cid = codeToCID(code);
+        if (substituteUnicodeCmap != null)
+        {
+            int gid = codeToSubstituteGID(code, parent);
+            return getType2CharString(Math.max(gid, 0)).getPath();
+        }
         if (cid2gid != null && isEmbedded)
         {
             // PDFBOX-4093: despite being a type 0 font, there is a CIDToGIDMap
@@ -348,6 +393,10 @@ public class PDCIDFontType0 extends PDCIDFont
     public boolean hasGlyph(int code) throws IOException
     {
         int cid = codeToCID(code);
+        if (substituteUnicodeCmap != null)
+        {
+            return codeToSubstituteGID(code, parent) > 0;
+        }
         Type2CharString charstring = getType2CharString(cid);
         if (charstring != null)
         {
@@ -376,9 +425,13 @@ public class PDCIDFontType0 extends PDCIDFont
     }
 
     @Override
-    public int codeToGID(int code)
+    public int codeToGID(int code) throws IOException
     {
         int cid = codeToCID(code);
+        if (substituteUnicodeCmap != null)
+        {
+            return Math.max(codeToSubstituteGID(code, parent), 0);
+        }
         if (cidFont != null)
         {
             // The CIDs shall be used to determine the GID value for the glyph procedure using the
@@ -405,7 +458,11 @@ public class PDCIDFontType0 extends PDCIDFont
     {
         int cid = codeToCID(code);
         float width;
-        if (cidFont != null)
+        if (substituteUnicodeCmap != null)
+        {
+            width = getType2CharString(Math.max(codeToSubstituteGID(code, parent), 0)).getWidth();
+        }
+        else if (cidFont != null)
         {
             width = getType2CharString(cid).getWidth();
         }
