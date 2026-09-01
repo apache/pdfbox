@@ -592,6 +592,15 @@ final class FontMapperImpl implements FontMapper
 
             FontMatch match = new FontMatch(info);
 
+            // PDFBOX-6251: Avoid DroidSansFallback unless requested,
+            // because latin glyphs are not properly supported
+            if ("DroidSansFallback".equals(info.getPostScriptName()) &&
+                    !("DroidSansFallback".equals(fontDescriptor.getFontFamily()) || 
+                      "DroidSansFallback".equals(fontDescriptor.getFontName())))
+            {
+                continue;
+            }
+
             // Panose is the most reliable
             if (fontDescriptor.getPanose() != null && info.getPanose() != null)
             {
