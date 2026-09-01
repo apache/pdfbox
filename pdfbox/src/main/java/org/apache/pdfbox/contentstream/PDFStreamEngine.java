@@ -766,10 +766,9 @@ public abstract class PDFStreamEngine
 
         // read the stream until it is empty
         InputStream in = new ByteArrayInputStream(string);
-        while (in.available() > 0)
+        for (int before = in.available(); before > 0; before = in.available())
         {
             // decode a character
-            int before = in.available();
             int code = font.readCode(in);
             int codeLength = before - in.available();
 
