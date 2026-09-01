@@ -704,11 +704,38 @@ final class FontMapperImpl implements FontMapper
             long KOREAN_WANSUNG = 1 << 19;
             long CHINESE_TRADITIONAL = 1 << 20;
             long KOREAN_JOHAB = 1 << 21;
-            
-            if ("MalgunGothic-Semilight".equals(info.getPostScriptName()))
+
+            String postScriptName = info.getPostScriptName();
+            if (postScriptName != null)
             {
-                // PDFBOX-4793 and PDF.js 10699: This font has only Korean, but has bits 17-21 set.
-                codePageRange &= ~(JIS_JAPAN | CHINESE_SIMPLIFIED | CHINESE_TRADITIONAL);
+                if ("MalgunGothic-Semilight".equals(postScriptName))
+                {
+                    // PDFBOX-4793 and PDF.js 10699: This font has only Korean, but has bits 17-21 set.
+                    codePageRange &= ~(JIS_JAPAN | CHINESE_SIMPLIFIED | CHINESE_TRADITIONAL);
+                }
+                if (postScriptName.startsWith("NotoSans"))
+                {
+                    String suffix = postScriptName.substring(8);
+                    if (suffix.startsWith("HK") ||
+                        suffix.startsWith("TC") ||
+                        suffix.startsWith("CJKsc") ||
+                        suffix.startsWith("CJKtc") ||
+                        suffix.startsWith("CJKhk") ||
+                        suffix.startsWith("KR") ||
+                        suffix.startsWith("CJKkr"))
+                    {
+                        // PDFBOX-6249: These fonts have bit 17 set.
+                        codePageRange &= ~(JIS_JAPAN);
+                    }
+                    if (suffix.startsWith("JP") ||
+                        suffix.startsWith("CJKjp") ||
+                        suffix.startsWith("KR") ||
+                        suffix.startsWith("CJKkr"))
+                    {
+                        // PDFBOX-6249: These fonts have at least one chinese bit set.
+                        codePageRange &= ~(CHINESE_SIMPLIFIED | CHINESE_TRADITIONAL);
+                    }
+                }
             }
             if (ordering.equals("GB1") &&
                     (codePageRange & CHINESE_SIMPLIFIED) == CHINESE_SIMPLIFIED)
