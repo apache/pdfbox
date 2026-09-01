@@ -636,6 +636,11 @@ final class FontMapperImpl implements FontMapper
                 float dist = Math.abs(fontDescriptor.getFontWeight() - info.getWeightClass());
                 match.score += 1 - (dist / 100) * 0.5;
             }
+            else if (info.getWeightClass() > 0)
+            {
+                // no weight information in the descriptor: prefer a regular weight
+                match.score += 1 - (Math.abs(info.getWeightClass() - 400) / 100) * 0.5;
+            }
             // todo: italic
             // ...
 
@@ -664,7 +669,7 @@ final class FontMapperImpl implements FontMapper
      * Returns true if the character set described by CIDSystemInfo is present in the given font.
      * Only applies to Adobe-GB1, Adobe-CNS1, Adobe-Japan1, Adobe-Korea1, as per the PDF spec.
      */
-    private boolean isCharSetMatch(PDCIDSystemInfo cidSystemInfo, FontInfo info)
+    boolean isCharSetMatch(PDCIDSystemInfo cidSystemInfo, FontInfo info)
     {
         String ordering = cidSystemInfo.getOrdering();
         if (ordering == null)
@@ -673,10 +678,18 @@ final class FontMapperImpl implements FontMapper
         }
         if (info.getCIDSystemInfo() != null)
         {
-            return info.getCIDSystemInfo().getRegistry().equals(cidSystemInfo.getRegistry()) &&
-                   info.getCIDSystemInfo().getOrdering().equals(ordering);
+            if (info.getCIDSystemInfo().getRegistry().equals(cidSystemInfo.getRegistry()) &&
+                info.getCIDSystemInfo().getOrdering().equals(ordering))
+            {
+                return true;
+            }
+            if (!"Identity".equals(info.getCIDSystemInfo().getOrdering()))
+            {
+                return false;
+            }
+            // PDFBOX-6249: Adobe-Identity-0 fonts (Noto CJK, Source Han) never match a ROS by
+            // name; fall through to the code page bits
         }
-        else
         {
             long codePageRange = info.getCodePageRange();
             
