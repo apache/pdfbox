@@ -35,6 +35,7 @@ import org.apache.fop.fonts.FontUris;
 import org.apache.fop.fonts.MultiByteFont;
 import org.apache.pdfbox.io.IOUtils;
 
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
@@ -73,12 +74,9 @@ public class GlyphLayoutFontLoaderFop
         PDType0Font pdType0Font;
 
         // Copy font stream into memory to read it twice for creation of PDType0Font and aww.Font
-        try (ByteArrayInputStream bais = new ByteArrayInputStream(IOUtils.toByteArray(inputStream)))
-        {
-            pdType0Font = PDType0Font.load(pdDocument, bais, embedSubset);
-            bais.reset();
-            loadFopFont(pdType0Font, bais);
-        }
+        byte[] bytes = IOUtils.toByteArray(inputStream);
+        pdType0Font = PDType0Font.load(pdDocument, new RandomAccessReadBuffer(bytes), embedSubset, false);
+        loadFopFont(pdType0Font, new ByteArrayInputStream(bytes));
         return pdType0Font;
     }
 

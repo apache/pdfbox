@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.pdfbox.io.IOUtils;
 
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
@@ -115,13 +116,14 @@ public class GlyphLayoutFontLoaderAwt
         Objects.requireNonNull(inputStream, "InputStream must not be null");
 
         // Copy font stream into memory to read it twice for creation of PDType0Font and AWT Font
-        try (ByteArrayInputStream bais = new ByteArrayInputStream(IOUtils.toByteArray(inputStream)))
+        byte[] fontBytes = IOUtils.toByteArray(inputStream);
+        PDType0Font pdType0Font = PDType0Font.load(pdDocument,
+                new RandomAccessReadBuffer(fontBytes), embedSubset, false);
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(fontBytes))
         {
-            PDType0Font pdType0Font = PDType0Font.load(pdDocument, bais, embedSubset);
-            bais.reset();
             loadAwtFont(pdType0Font, bais, fontOptions);
-            return pdType0Font;
         }
+        return pdType0Font;
     }
 
     /**
