@@ -768,13 +768,12 @@ public abstract class PDFStreamEngine
         Matrix textMatrix = state.getTextMatrix();
 
         // read the stream until it is empty
-        InputStream in = new ByteArrayInputStream(string);
-        while (in.available() > 0)
+        InputStream bais = new ByteArrayInputStream(string);
+        for (int before = bais.available(); before > 0; before = bais.available())
         {
             // decode a character
-            int before = in.available();
-            int code = font.readCode(in);
-            int codeLength = before - in.available();
+            int code = font.readCode(bais);
+            int codeLength = before - bais.available();
 
             // Word spacing shall be applied to every occurrence of the single-byte character code
             // 32 in a string when using a simple font or a composite font that defines code 32 as
