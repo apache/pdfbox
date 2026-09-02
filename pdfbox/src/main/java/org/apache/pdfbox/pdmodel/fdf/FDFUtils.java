@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 
 public class FDFUtils {
 
-    private static final Logger LOG = LogManager.getLogger(FDFDocument.class);
+    private static final Logger LOG = LogManager.getLogger(FDFUtils.class);
 
     /**
      * Escapes special characters for use in XML 1.0.
@@ -86,7 +86,7 @@ public class FDFUtils {
 
         if (invalidCount > 0 && LOG.isInfoEnabled())
         {
-            LOG.info("Replaced " + invalidCount + " character(s) invalid in XML 1.0 with U+FFFD");
+            LOG.info("Replaced {} character(s) invalid in XML 1.0 with U+FFFD", invalidCount);
         }
 
 
