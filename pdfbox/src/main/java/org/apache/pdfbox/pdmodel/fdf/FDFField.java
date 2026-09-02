@@ -110,11 +110,17 @@ public class FDFField implements COSObjectable
      * @param output The stream to write the xml to.
      *
      * @throws IOException If there is an error writing the XML.
+     * @throws IllegalStateException If the field name is missing
      */
     public void writeXML(Writer output) throws IOException
     {
+        String partialFieldName = getPartialFieldName();
+        if (partialFieldName == null)
+        {
+            throw new IllegalStateException("Field name is missing");
+        }
         output.write("<field name=\"");
-        output.write(FDFUtils.escapeXML10(getPartialFieldName()));
+        output.write(FDFUtils.escapeXML10(partialFieldName));
         output.write("\">\n");
 
         Object value = getValue();
