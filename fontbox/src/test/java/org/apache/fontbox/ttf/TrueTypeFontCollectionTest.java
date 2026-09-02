@@ -30,6 +30,8 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class TrueTypeFontCollectionTest
 {
@@ -53,59 +55,38 @@ class TrueTypeFontCollectionTest
         assertEquals("Invalid number of fonts 2147483647", ex.getMessage());
     }
 
-    @Test
+    @ParameterizedTest
     @EnabledOnOs(OS.WINDOWS)
-    void testMingLiu() throws IOException
+    @CsvSource(value = {
+        "c:/windows/fonts/mingliu.ttc;[MingLiU, PMingLiU, Ming-Lt-HKSCS-UNI-H]",
+        "c:/windows/fonts/msmincho.ttc;[MS-Mincho, MS-PMincho]",
+        "c:/windows/fonts/simsun.ttc;[SimSun, NSimSun]"},
+            delimiter = ';')
+    void testOnWindows(String filename, String listText) throws IOException
     {
-        File file = new File("c:/windows/fonts/mingliu.ttc");
-        assumeTrue(file.exists());
-        checkTrueTypeCollection(file, "[MingLiU, PMingLiU, Ming-Lt-HKSCS-UNI-H]");
+        checkTrueTypeCollection(filename, listText);
     }
 
-    @Test
-    @EnabledOnOs(OS.WINDOWS)
-    void testMsMincho() throws IOException
-    {
-        File file = new File("c:/windows/fonts/msmincho.ttc");
-        assumeTrue(file.exists());
-        checkTrueTypeCollection(file, "[MS-Mincho, MS-PMincho]");
-    }
-
-    @Test
-    @EnabledOnOs(OS.WINDOWS)
-    void testSimSun() throws IOException
-    {
-        File file = new File("c:/windows/fonts/simsun.ttc");
-        assumeTrue(file.exists());
-        checkTrueTypeCollection(file, "[SimSun, NSimSun]");
-    }
-
-    @Test
+    @ParameterizedTest
     @EnabledOnOs(OS.MAC)
-    void testLucidaGrande() throws IOException
-    {
-        File file = new File("/System/Library/Fonts/LucidaGrande.ttc");
-        assumeTrue(file.exists());
-        checkTrueTypeCollection(file, "[LucidaGrande, LucidaGrande-Bold, .LucidaGrandeUI, .LucidaGrandeUI-Bold]");
-    }
-
-    @Test
-    @EnabledOnOs(OS.MAC)
-    void testAvenir() throws IOException
-    {
-        File file = new File("/System/Library/Fonts/Avenir.ttc");
-        assumeTrue(file.exists());
-        checkTrueTypeCollection(file, 
-                "[Avenir-Book, Avenir-BookOblique, Avenir-Black, Avenir-BlackOblique, "
+    @CsvSource(value = {
+        "/System/Library/Fonts/LucidaGrande.ttc;[LucidaGrande, LucidaGrande-Bold, .LucidaGrandeUI, .LucidaGrandeUI-Bold]",
+        "/System/Library/Fonts/Avenir.ttc;[Avenir-Book, Avenir-BookOblique, Avenir-Black, Avenir-BlackOblique, "
                         + "Avenir-Heavy, Avenir-HeavyOblique, Avenir-Light, Avenir-LightOblique, "
-                        + "Avenir-Medium, Avenir-MediumOblique, Avenir-Oblique, Avenir-Roman]");
+                        + "Avenir-Medium, Avenir-MediumOblique, Avenir-Oblique, Avenir-Roman]"},
+            delimiter = ';')
+    void testOnMac(String filename, String listText) throws IOException
+    {
+        checkTrueTypeCollection(filename, listText);
     }
 
     // test with https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTC/NotoSansCJK-Regular.ttc
     // could be possible, but that one is 19MB
 
-    private void checkTrueTypeCollection(File file, String expected) throws IOException
+    private void checkTrueTypeCollection(String filename, String expected) throws IOException
     {
+        File file = new File(filename);
+        assumeTrue(file.exists());
         try (TrueTypeCollection ttc = new TrueTypeCollection(file))
         {
             List<String> list = new ArrayList();
