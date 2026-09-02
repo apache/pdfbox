@@ -72,48 +72,41 @@ public class TrueTypeFontCollectionTest
     @Test
     public void testMingLiu() throws IOException
     {
-        File file = new File("c:/windows/fonts/mingliu.ttc");
-        assumeTrue(file.exists());
-        checkTrueTypeCollection(file, "[MingLiU, PMingLiU, Ming-Lt-HKSCS-UNI-H]");
+        checkTrueTypeCollection("c:/windows/fonts/mingliu.ttc", "[MingLiU, PMingLiU, Ming-Lt-HKSCS-UNI-H]");
     }
 
     @Test
     public void testMsMincho() throws IOException
     {
-        File file = new File("c:/windows/fonts/msmincho.ttc");
-        assumeTrue(file.exists());
-        checkTrueTypeCollection(file, "[MS-Mincho, MS-PMincho]");
+        checkTrueTypeCollection("c:/windows/fonts/msmincho.ttc", "[MS-Mincho, MS-PMincho]");
     }
 
     @Test
     public void testSimSun() throws IOException
     {
-        File file = new File("c:/windows/fonts/simsun.ttc");
-        assumeTrue(file.exists());
-        checkTrueTypeCollection(file, "[SimSun, NSimSun]");
+        checkTrueTypeCollection("c:/windows/fonts/simsun.ttc", "[SimSun, NSimSun]");
     }
 
     @Test
     public void testLucidaGrande() throws IOException
     {
-        File file = new File("/System/Library/Fonts/LucidaGrande.ttc");
-        assumeTrue(file.exists());
-        checkTrueTypeCollection(file, "[LucidaGrande, LucidaGrande-Bold, .LucidaGrandeUI, .LucidaGrandeUI-Bold]");
+        checkTrueTypeCollection("/System/Library/Fonts/LucidaGrande.ttc",
+                "[LucidaGrande, LucidaGrande-Bold, .LucidaGrandeUI, .LucidaGrandeUI-Bold]");
     }
 
     @Test
     public void testAvenir() throws IOException
     {
-        File file = new File("/System/Library/Fonts/Avenir.ttc");
-        assumeTrue(file.exists());
-        checkTrueTypeCollection(file, 
+        checkTrueTypeCollection("/System/Library/Fonts/Avenir.ttc",
                 "[Avenir-Book, Avenir-BookOblique, Avenir-Black, Avenir-BlackOblique, "
                         + "Avenir-Heavy, Avenir-HeavyOblique, Avenir-Light, Avenir-LightOblique, "
                         + "Avenir-Medium, Avenir-MediumOblique, Avenir-Oblique, Avenir-Roman]");
     }
 
-    private void checkTrueTypeCollection(File file, String expected) throws IOException
+    private void checkTrueTypeCollection(String filename, String expected) throws IOException
     {
+        File file = new File(filename);
+        assumeTrue(file.exists());
         final TrueTypeCollection ttc = new TrueTypeCollection(file);
         final List<String> list = new ArrayList();
         ttc.processAllFonts(new TrueTypeCollection.TrueTypeFontProcessor()
