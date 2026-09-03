@@ -97,6 +97,11 @@ public class PDUserAttributeObject extends PDAttributeObject
     public void addUserProperty(PDUserProperty userProperty)
     {
         COSArray p = getCOSObject().getCOSArray(COSName.P);
+        if (p == null)
+        {
+            p = new COSArray();
+            getCOSObject().setItem(COSName.P, p);
+        }
         p.add(userProperty);
         this.notifyChanged();
     }
