@@ -121,6 +121,10 @@ public class PDUserAttributeObject extends PDAttributeObject
             return;
         }
         COSArray p = this.getCOSObject().getCOSArray(COSName.P);
+        if (p == null)
+        {
+            return;
+        }
         p.remove(userProperty.getCOSObject());
         this.notifyChanged();
     }
