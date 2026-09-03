@@ -39,6 +39,7 @@ class PanoseFlag extends Flag
     private static final Logger LOG = LogManager.getLogger(PanoseFlag.class);
 
     private final byte[] bytes;
+    private static final String INVALID_VALUE = "invalid value";
 
     /**
      * Constructor.
@@ -133,7 +134,7 @@ class PanoseFlag extends Flag
         };
         if (index >= values.length)
         {
-            return "invalid value";
+            return INVALID_VALUE;
         }
         return values[index];
     }
@@ -156,7 +157,7 @@ class PanoseFlag extends Flag
         };
         if (index >= values.length)
         {
-            return "invalid value";
+            return INVALID_VALUE;
         }
         return values[index];
     }
@@ -177,7 +178,7 @@ class PanoseFlag extends Flag
         };
         if (index >= values.length)
         {
-            return "invalid value";
+            return INVALID_VALUE;
         }
         return values[index];
     }
@@ -198,7 +199,7 @@ class PanoseFlag extends Flag
         };
         if (index >= values.length)
         {
-            return "invalid value";
+            return INVALID_VALUE;
         }
         return values[index];
     }
@@ -220,7 +221,7 @@ class PanoseFlag extends Flag
         };
         if (index >= values.length)
         {
-            return "invalid value";
+            return INVALID_VALUE;
         }
         return values[index];
     }
@@ -243,7 +244,7 @@ class PanoseFlag extends Flag
         };
         if (index >= values.length)
         {
-            return "invalid value";
+            return INVALID_VALUE;
         }
         return values[index];
     }
@@ -270,7 +271,7 @@ class PanoseFlag extends Flag
         };
         if (index >= values.length)
         {
-            return "invalid value";
+            return INVALID_VALUE;
         }
         return values[index];
     }
@@ -295,7 +296,7 @@ class PanoseFlag extends Flag
         };
         if (index >= values.length)
         {
-            return "invalid value";
+            return INVALID_VALUE;
         }
         return values[index];
     }
@@ -314,7 +315,7 @@ class PanoseFlag extends Flag
         };
         if (index >= values.length)
         {
-            return "invalid value";
+            return INVALID_VALUE;
         }
         return values[index];
     }
