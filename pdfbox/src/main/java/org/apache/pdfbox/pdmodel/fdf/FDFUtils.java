@@ -23,6 +23,11 @@ public class FDFUtils {
 
     private static final Log LOG = LogFactory.getLog(FDFUtils.class);
 
+    private FDFUtils()
+    {
+        // utility class
+    }
+
     /**
      * Escapes special characters for use in XML 1.0.
      * <p>
