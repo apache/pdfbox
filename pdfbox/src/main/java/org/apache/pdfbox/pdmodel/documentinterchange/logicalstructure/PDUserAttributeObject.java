@@ -118,6 +118,10 @@ public class PDUserAttributeObject extends PDAttributeObject
             return;
         }
         COSArray p = getCOSObject().getCOSArray(COSName.P);
+        if (p == null)
+        {
+            return;
+        }
         if (p.remove(userProperty.getCOSObject()))
         {
             this.notifyChanged();
