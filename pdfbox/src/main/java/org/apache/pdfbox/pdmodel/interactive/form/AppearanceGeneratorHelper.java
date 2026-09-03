@@ -339,9 +339,13 @@ class AppearanceGeneratorHelper
         return appearanceStream;
     }
 
-    private static PDRectangle computeBBox(PDAnnotationWidget widget, int widgetRotation)
+    private static PDRectangle computeBBox(PDAnnotationWidget widget, int widgetRotation) throws IOException
     {
         PDRectangle rect = widget.getRectangle();
+        if (rect == null)
+        {
+            throw new IOException("Missing rectangle");
+        }
         Matrix matrix = Matrix.getRotateInstance(Math.toRadians(widgetRotation), 0, 0);
         Point2D.Float point2D = matrix.transformPoint(rect.getWidth(), rect.getHeight());
         return new PDRectangle(Math.abs((float) point2D.getX()), Math.abs((float) point2D.getY()));
