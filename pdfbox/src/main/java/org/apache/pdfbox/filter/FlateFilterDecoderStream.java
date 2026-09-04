@@ -227,7 +227,7 @@ public final class FlateFilterDecoderStream extends FilterInputStream
      * @param readlimit ignored.
      */
     @Override
-    public synchronized void mark(int readlimit)
+    public void mark(int readlimit)
     {
     }
 
@@ -237,7 +237,7 @@ public final class FlateFilterDecoderStream extends FilterInputStream
      * @throws IOException always throw as reset is an unsupported feature.
      */
     @Override
-    public synchronized void reset() throws IOException
+    public void reset() throws IOException
     {
         throw new IOException("reset is not supported");
     }
