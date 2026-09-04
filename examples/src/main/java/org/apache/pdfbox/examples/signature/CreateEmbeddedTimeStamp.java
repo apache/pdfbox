@@ -156,7 +156,7 @@ public class CreateEmbeddedTimeStamp
         CMSSignedData signedData = new CMSSignedData(new ByteArrayInputStream(contents));
 
         int[] byteRange = signature.getByteRange();
-        LOG.info("/ByteRange: " + Arrays.toString(byteRange));
+        LOG.info("/ByteRange: {}", Arrays.toString(byteRange));
         if (byteRange.length != 4)
         {
             throw new IOException("/ByteRange should have length 4, but is " + Arrays.toString(byteRange));
@@ -170,7 +170,7 @@ public class CreateEmbeddedTimeStamp
 
         byte[] newEncoded = Hex.getBytes(signedData.getEncoded());
         int maxSize = byteRange[2] - byteRange[1];
-        LOG.info("New Signature has Size: " + newEncoded.length + " maxSize: " + maxSize);
+        LOG.info("New Signature has size: {} maxSize: {}", newEncoded.length, maxSize);
 
         if (newEncoded.length > maxSize - 2)
         {
@@ -227,12 +227,12 @@ public class CreateEmbeddedTimeStamp
         }
 
         File inFile = new File(args[0]);
-        LOG.info("Input File: " + args[0]);
+        LOG.info("Input File: {}", args[0]);
         String name = inFile.getName();
         String substring = name.substring(0, name.lastIndexOf('.'));
 
         File outFile = new File(inFile.getParent(), substring + "_eTs.pdf");
-        LOG.info("Output File: " + outFile.getAbsolutePath());
+        LOG.info("Output File: {}", outFile.getAbsolutePath());
 
         // Embed TimeStamp
         CreateEmbeddedTimeStamp signing = new CreateEmbeddedTimeStamp(tsaUrl);
