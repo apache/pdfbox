@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -48,6 +50,8 @@ import org.bouncycastle.cms.CMSSignedData;
  */
 public class CreateEmbeddedTimeStamp
 {
+    private static final Log LOG = LogFactory.getLog(CreateEmbeddedTimeStamp.class);
+
     private final String tsaUrl;
     private PDDocument document;
     private PDSignature signature;
@@ -148,7 +152,12 @@ public class CreateEmbeddedTimeStamp
         byte[] contents = signature.getContents(documentBytes);
         CMSSignedData signedData = new CMSSignedData(new ByteArrayInputStream(contents));
 
-        System.out.println("INFO: Byte Range: " + Arrays.toString(signature.getByteRange()));
+        int[] byteRange = signature.getByteRange();
+        LOG.info("/ByteRange: " + Arrays.toString(byteRange));
+        if (byteRange.length != 4)
+        {
+            throw new IOException("/ByteRange should have length 4, but is " + Arrays.toString(byteRange));
+        }
 
         if (tsaUrl != null && tsaUrl.length() > 0)
         {
@@ -157,9 +166,8 @@ public class CreateEmbeddedTimeStamp
         }
 
         byte[] newEncoded = Hex.getBytes(signedData.getEncoded());
-        int maxSize = signature.getByteRange()[2] - signature.getByteRange()[1];
-        System.out.println(
-                "INFO: New Signature has Size: " + newEncoded.length + " maxSize: " + maxSize);
+        int maxSize = byteRange[2] - byteRange[1];
+        LOG.info("New Signature has Size: " + newEncoded.length + " maxSize: " + maxSize);
 
         if (newEncoded.length > maxSize - 2)
         {
@@ -216,12 +224,12 @@ public class CreateEmbeddedTimeStamp
         }
 
         File inFile = new File(args[0]);
-        System.out.println("Input File: " + args[0]);
+        LOG.info("Input File: " + args[0]);
         String name = inFile.getName();
         String substring = name.substring(0, name.lastIndexOf('.'));
 
         File outFile = new File(inFile.getParent(), substring + "_eTs.pdf");
-        System.out.println("Output File: " + outFile.getAbsolutePath());
+        LOG.info("Output File: " + outFile.getAbsolutePath());
 
         // Embed TimeStamp
         CreateEmbeddedTimeStamp signing = new CreateEmbeddedTimeStamp(tsaUrl);
