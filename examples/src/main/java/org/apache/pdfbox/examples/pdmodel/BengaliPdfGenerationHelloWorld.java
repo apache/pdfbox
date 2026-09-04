@@ -110,7 +110,8 @@ public class BengaliPdfGenerationHelloWorld
     private static List<List<String>> getReAlignedTextBasedOnPageHeight(List<String> originalLines,
             PDFont font, float workablePageHeight)
     {
-        final float newLineHeight = font.getFontDescriptor().getFontBoundingBox().getHeight() / 1000
+        PDRectangle fontBoundingBox = font.getFontDescriptor().getFontBoundingBox();
+        final float newLineHeight = (fontBoundingBox == null ? 1500f : fontBoundingBox.getHeight()) / 1000
                 * FONT_SIZE + LINE_GAP;
         List<List<String>> realignedTexts = new ArrayList<>();
         float consumedHeight = 0;
