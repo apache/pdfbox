@@ -504,4 +504,41 @@ class TestCMapParser
         assertEquals(201, cMap.toCID(0x43, 1), "a code only the second maps still resolves");
         assertEquals(0, cMap.toCID(0x44, 1), "a code none of them maps");
     }
+
+    /**
+     * CID 0 is the .notdef glyph, and a CMap may map a code to it deliberately. That is a mapping,
+     * not the absence of one, so it has to outrank whatever the CMap it uses says about the code.
+     */
+    @Test
+    void testUseCmapOwnMappingToCidZeroIsNotAFallthrough()
+    {
+        CMap used = new CMap();
+        used.addCIDRange(new byte[] { 0x00 }, new byte[] { (byte) 0xFF }, 500);
+
+        CMap cMap = new CMap();
+        cMap.useCmap(used);
+        cMap.addCIDRange(new byte[] { 0x41 }, new byte[] { 0x41 }, 0);
+
+        assertEquals(0, cMap.toCID(0x41, 1), "the CMap's own .notdef has to win");
+        assertEquals(0, cMap.toCID(new byte[] { 0x41 }), "the byte[] overload as well");
+        assertEquals(566, cMap.toCID(0x42, 1), "a code it doesn't redefine still comes from the parent");
+        assertEquals(565, used.toCID(0x41, 1), "the used CMap answers for itself unchanged");
+    }
+
+    /**
+     * The length guessing overload probes the code lengths shortest first. A code mapped to CID 0 at
+     * the shortest length is mapped, so the probing stops there rather than running on to a longer
+     * length that happens to map the same value to something else.
+     */
+    @Test
+    void testToCidZeroAtShortestLengthStopsTheLengthProbing()
+    {
+        CMap cMap = new CMap();
+        cMap.addCIDMapping(new byte[] { 0x41 }, 0);
+        cMap.addCIDMapping(new byte[] { 0x00, 0x41 }, 700);
+
+        assertEquals(0, cMap.toCID(0x41, 1), "the one byte code maps to .notdef");
+        assertEquals(700, cMap.toCID(0x41, 2), "the two byte code maps to 700");
+        assertEquals(0, cMap.toCID(0x41), "the shortest length maps the code, so that is the answer");
+    }
 }

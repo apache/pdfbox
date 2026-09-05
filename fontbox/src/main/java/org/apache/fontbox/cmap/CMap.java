@@ -258,13 +258,15 @@ public class CMap
      */
     public int toCID(int code)
     {
-        int cid = 0;
-        int length = minCidLength;
-        while (cid == 0 && (length <= maxCidLength))
+        for (int length = minCidLength; length <= maxCidLength; length++)
         {
-            cid = toCID(code, length++);
+            int cid = findCID(code, length);
+            if (cid != -1)
+            {
+                return cid;
+            }
         }
-        return cid;
+        return 0;
     }
 
     /**
@@ -276,9 +278,25 @@ public class CMap
      */
     public int toCID(int code, int length)
     {
+        int cid = findCID(code, length);
+        return cid != -1 ? cid : 0;
+    }
+
+    /**
+     * Returns the CID this CMap, or one of the CMaps it inherits from, maps the given character code
+     * to, or -1 if none of them maps it. CID 0 is the .notdef glyph and a CMap may map a code to it
+     * deliberately, so "mapped to 0" has to be told apart from "not mapped" while the usecmap chain
+     * is walked. The public toCID methods report both as 0.
+     *
+     * @param code   character code
+     * @param length the origin byte length of the code
+     * @return CID, or -1 if neither this CMap nor any it inherits from maps the code
+     */
+    private int findCID(int code, int length)
+    {
         if (length < minCidLength || length > maxCidLength)
         {
-            return 0;
+            return -1;
         }
         Map<Integer, Integer> codeToCidMap = codeToCid.get(length);
         Integer cid = codeToCidMap != null ? codeToCidMap.get(code) : null;
@@ -287,20 +305,20 @@ public class CMap
             return cid;
         }
         int cidFromRange = toCIDFromRanges(code, length);
-        if (cidFromRange != 0)
+        if (cidFromRange != -1)
         {
             return cidFromRange;
         }
         // this CMap doesn't map the code itself, so ask the ones it inherits from
         for (CMap parentCMap : parentCMaps)
         {
-            int parentCid = parentCMap.toCID(code, length);
-            if (parentCid != 0)
+            int parentCid = parentCMap.findCID(code, length);
+            if (parentCid != -1)
             {
                 return parentCid;
             }
         }
-        return 0;
+        return -1;
     }
 
     /**
@@ -308,7 +326,7 @@ public class CMap
      *
      * @param code   character code
      * @param length the origin byte length of the code
-     * @return CID, or 0 if no range covers the code
+     * @return CID, or -1 if no range covers the code
      */
     private int toCIDFromRanges(int code, int length)
     {
@@ -320,7 +338,7 @@ public class CMap
                 return ch;
             }
         }
-        return 0;
+        return -1;
     }
 
     /**
