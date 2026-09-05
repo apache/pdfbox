@@ -65,6 +65,9 @@ public class CMap
     private final Map<Integer, Map<Integer, Integer>> codeToCid = new HashMap<>();
     private final List<CIDRange> codeToCidRanges = new ArrayList<>();
 
+    // the CMaps this one inherits from through the usecmap operator, see useCmap
+    private final List<CMap> parentCMaps = new ArrayList<>();
+
     // inverted map
     private final Map <String, byte[]> unicodeToByteCodes = new HashMap<>();
 
@@ -85,7 +88,8 @@ public class CMap
      */
     public boolean hasCIDMappings()
     {
-        return !codeToCid.isEmpty() || !codeToCidRanges.isEmpty();
+        return !codeToCid.isEmpty() || !codeToCidRanges.isEmpty()
+                || parentCMaps.stream().anyMatch(CMap::hasCIDMappings);
     }
 
     /**
@@ -237,17 +241,7 @@ public class CMap
      */
     public int toCID(byte[] code)
     {
-        if (!hasCIDMappings() || code.length < minCidLength || code.length > maxCidLength)
-        {
-            return 0;
-        }
-        Integer cid = null;
-        Map<Integer, Integer> codeToCidMap = codeToCid.get(code.length);
-        if (codeToCidMap != null)
-        {
-            cid = codeToCidMap.get(toInt(code));
-        }
-        return cid != null ? cid : toCIDFromRanges(code);
+        return toCID(toInt(code), code.length);
     }
 
     /**
@@ -264,10 +258,6 @@ public class CMap
      */
     public int toCID(int code)
     {
-        if (!hasCIDMappings())
-        {
-            return 0;
-        }
         int cid = 0;
         int length = minCidLength;
         while (cid == 0 && (length <= maxCidLength))
@@ -286,51 +276,45 @@ public class CMap
      */
     public int toCID(int code, int length)
     {
-        if (!hasCIDMappings() || length < minCidLength || length > maxCidLength)
+        if (length < minCidLength || length > maxCidLength)
         {
             return 0;
         }
-        Integer cid = null;
         Map<Integer, Integer> codeToCidMap = codeToCid.get(length);
-        if (codeToCidMap != null)
+        Integer cid = codeToCidMap != null ? codeToCidMap.get(code) : null;
+        if (cid != null)
         {
-            cid = codeToCidMap.get(code);
+            return cid;
         }
-        return cid != null ? cid : toCIDFromRanges(code, length);
-    }
-
-    /**
-     * Returns the CID for the given character code.
-     *
-     * @param code character code
-     * @return CID
-     */
-
-    private int toCIDFromRanges(int code, int length)
-    {
-        for (CIDRange range : codeToCidRanges)
+        int cidFromRange = toCIDFromRanges(code, length);
+        if (cidFromRange != 0)
         {
-            int ch = range.map(code, length);
-            if (ch != -1)
+            return cidFromRange;
+        }
+        // this CMap doesn't map the code itself, so ask the ones it inherits from
+        for (CMap parentCMap : parentCMaps)
+        {
+            int parentCid = parentCMap.toCID(code, length);
+            if (parentCid != 0)
             {
-                return ch;
+                return parentCid;
             }
         }
         return 0;
     }
 
     /**
-     * Returns the CID for the given character code.
+     * Returns the CID the CID ranges of this CMap map the given character code to.
      *
-     * @param code character code
-     * @return CID
+     * @param code   character code
+     * @param length the origin byte length of the code
+     * @return CID, or 0 if no range covers the code
      */
-
-    private int toCIDFromRanges(byte[] code)
+    private int toCIDFromRanges(int code, int length)
     {
         for (CIDRange range : codeToCidRanges)
         {
-            int ch = range.map(code);
+            int ch = range.map(code, length);
             if (ch != -1)
             {
                 return ch;
@@ -476,15 +460,9 @@ public class CMap
                 }
                 unicodeToByteCodes.put(v, bar);
             });
-        cmap.codeToCid.forEach((key, value) ->
-        {
-            Map<Integer, Integer> existingMapping = codeToCid.putIfAbsent(key, value);
-            if (existingMapping!=null)
-            {
-                existingMapping.putAll(value);
-            }
-        });
-        codeToCidRanges.addAll(cmap.codeToCidRanges);
+        // The parent is kept, not merged: it is asked only for codes this CMap doesn't map itself,
+        // so this CMap's own mappings win and a usecmap chain resolves nearest-first. See toCID(int, int).
+        parentCMaps.add(cmap);
         maxCodeLength = Math.max(maxCodeLength, cmap.maxCodeLength);
         minCodeLength = Math.min(minCodeLength, cmap.minCodeLength);
         maxCidLength = Math.max(maxCidLength, cmap.maxCidLength);
