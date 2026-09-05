@@ -621,7 +621,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             }
             else
             {
-                gid = codeToGIDByName(name, gid);
+                gid = codeToGIDByName(name);
             }
         }
         else // symbolic
@@ -694,8 +694,10 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
      * @param name PostScript glyph name
      * @return GID (glyph index), or 0 if none of the tables have a mapping for the name
      */
-    private int codeToGIDByName(String name, int gid) throws IOException
+    private int codeToGIDByName(String name) throws IOException
     {
+        int gid = 0;
+
         // (3, 1) - (Windows, Unicode)
         if (cmapWinUnicode != null)
         {
