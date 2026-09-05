@@ -969,6 +969,19 @@
                             <sha512>0d7160a4af04bf2f785bf4155f69876da4b7ff7a196e7eda1eb904c02c35aa03c31041d9339fda90322cb58bde16b87bae8460c617bfe5b8dc0670ddab102f62</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-5960</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13074906/PDFJS-19527-reduced1.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5960-reduced1.pdf</outputFileName>
+                            <sha512>cd6d92c643108cdcf2b4c6a4ae4cc5a15d848e3335f6c8a135a5438d691eb982d11cfd8f26d11839321e06a364126d9b0c9732b4a19785821b844fe0ec94d525</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
