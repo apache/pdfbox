@@ -53,6 +53,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Assumptions;
@@ -546,6 +547,22 @@ class PDFontTest
                     () -> PDType0Font.load(document, otf, false),
                     "should have thrown IllegalStateException");
             assertEquals("CID and GID not identical: CID 628 != GID 372, use a ttf font instead", t.getMessage());
+        }
+    }
+    
+    @Test
+    void testPDFBox5960() throws IOException
+    {
+        try (PDDocument doc = Loader.loadPDF(new File("target/pdfs", "PDFBOX-5960-reduced1.pdf")))
+        {
+            PDPage page = doc.getPage(0);
+            PDFont font = page.getResources().getFont(COSName.getPDFName("F1"));
+            assertInstanceOf(PDTrueTypeFont.class, font);
+            PDTrueTypeFont ttf = (PDTrueTypeFont) font;
+            // code 71 ('G' in the content stream) is mapped by /Differences to "Ccedilla",
+            // which must be resolved by name (GID 90, the diameter symbol in this font),
+            // not through the symbolic code-based cmap (which wrongly yields GID 34, "G").
+            assertEquals(90, ttf.codeToGID(71));
         }
     }
 }
