@@ -621,32 +621,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             }
             else
             {
-                // (3, 1) - (Windows, Unicode)
-                if (cmapWinUnicode != null)
-                {
-                    String unicode = GlyphList.getAdobeGlyphList().toUnicode(name);
-                    if (unicode != null)
-                    {
-                        int uni = unicode.codePointAt(0);
-                        gid = cmapWinUnicode.getGlyphId(uni);
-                    }
-                }
-
-                // (1, 0) - (Macintosh, Roman)
-                if (gid == 0 && cmapMacRoman != null)
-                {
-                    Integer macCode = INVERTED_MACOS_ROMAN.get(name);
-                    if (macCode != null)
-                    {
-                        gid = cmapMacRoman.getGlyphId(macCode);
-                    }
-                }
-
-                // 'post' table
-                if (gid == 0)
-                {
-                    gid = ttf.nameToGID(name);
-                }
+                gid = codeToGIDByName(name, gid);
             }
         }
         else // symbolic
@@ -709,6 +684,42 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             }
         }
 
+        return gid;
+    }
+
+    /**
+     * Resolves a glyph name to a GID, the way a non-symbolic font would: via the (3, 1)
+     * Windows/Unicode cmap, the (1, 0) Macintosh/Roman cmap, or the 'post' table, in that order.
+     *
+     * @param name PostScript glyph name
+     * @return GID (glyph index), or 0 if none of the tables have a mapping for the name
+     */
+    private int codeToGIDByName(String name, int gid) throws IOException
+    {
+        // (3, 1) - (Windows, Unicode)
+        if (cmapWinUnicode != null)
+        {
+            String unicode = GlyphList.getAdobeGlyphList().toUnicode(name);
+            if (unicode != null)
+            {
+                int uni = unicode.codePointAt(0);
+                gid = cmapWinUnicode.getGlyphId(uni);
+            }
+        }
+        // (1, 0) - (Macintosh, Roman)
+        if (gid == 0 && cmapMacRoman != null)
+        {
+            Integer macCode = INVERTED_MACOS_ROMAN.get(name);
+            if (macCode != null)
+            {
+                gid = cmapMacRoman.getGlyphId(macCode);
+            }
+        }
+        // 'post' table
+        if (gid == 0)
+        {
+            gid = ttf.nameToGID(name);
+        }
         return gid;
     }
 
