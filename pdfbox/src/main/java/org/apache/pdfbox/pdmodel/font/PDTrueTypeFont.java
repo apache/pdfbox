@@ -40,6 +40,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.encoding.BuiltInEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.font.encoding.MacOSRomanEncoding;
@@ -572,6 +573,20 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
         }
         else // symbolic
         {
+            // PDFBOX-5960: some fonts have both the Symbolic and NonSymbolic flags set in their
+            // FontDescriptor, which is self-contradictory. When such a font also has an Encoding
+            // dictionary with a recognised /BaseEncoding, resolve the glyph by name first (as if
+            // the font were non-symbolic), and fall back to the code-based cmap lookup below only
+            // if that fails.
+            if (hasContradictorySymbolicFlags() && encoding instanceof DictionaryEncoding
+                    && isRecognizedBaseEncoding(((DictionaryEncoding) encoding).getBaseEncoding()))
+            {
+                String name = encoding.getName(code);
+                if (name != null && !".notdef".equals(name))
+                {
+                    gid = codeToGIDByName(name);
+                }
+            }
             // PDFBOX-4755 / PDF.js #5501
             // PDFBOX-3965: fallback for font has that the symbol flag but isn't
             if (gid == 0 && cmapWinUnicode != null)
@@ -597,7 +612,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             }
 
             // (3, 0) - (Windows, Symbol)
-            if (cmapWinSymbol != null)
+            if (gid == 0 && cmapWinSymbol != null)
             {
                 gid = cmapWinSymbol.getGlyphId(code);
                 if (code >= 0 && code <= 0xFF)
@@ -668,6 +683,29 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             gid = ttf.nameToGID(name);
         }
         return gid;
+    }
+
+    /**
+     * PDFBOX-5960: some malformed fonts have both the Symbolic and NonSymbolic flags set in
+     * their FontDescriptor, which is self-contradictory and means the Symbolic flag can't be
+     * trusted on its own.
+     *
+     * @return true if the font descriptor has both the Symbolic and NonSymbolic flags set
+     */
+    private boolean hasContradictorySymbolicFlags()
+    {
+        PDFontDescriptor fd = getFontDescriptor();
+        return fd != null && fd.isSymbolic() && fd.isNonSymbolic();
+    }
+
+    /**
+     * @return true if the given encoding is one of the standard named encodings, i.e. it came
+     * from a recognized /BaseEncoding entry rather than being synthesized as a fallback.
+     */
+    private static boolean isRecognizedBaseEncoding(Encoding encoding)
+    {
+        return encoding instanceof StandardEncoding || encoding instanceof WinAnsiEncoding
+                || encoding instanceof MacRomanEncoding;
     }
 
     /**
