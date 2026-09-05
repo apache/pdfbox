@@ -556,4 +556,19 @@ public class PDFontTest
         }
         Assert.fail("should have thrown IllegalStateException");
     }
+
+    @Test
+    public void testPDFBox5960() throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File("target/pdfs", "PDFBOX-5960-reduced1.pdf"));
+        PDPage page = doc.getPage(0);
+        PDFont font = page.getResources().getFont(COSName.getPDFName("F1"));
+        Assert.assertTrue(font instanceof PDTrueTypeFont);
+        PDTrueTypeFont ttf = (PDTrueTypeFont) font;
+        // code 71 ('G' in the content stream) is mapped by /Differences to "Ccedilla",
+        // which must be resolved by name (GID 90, the diameter symbol in this font),
+        // not through the symbolic code-based cmap (which wrongly yields GID 34, "G").
+        Assert.assertEquals(90, ttf.codeToGID(71));
+        doc.close();
+    }
 }
