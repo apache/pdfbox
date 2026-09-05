@@ -126,4 +126,33 @@ class TestQuality
                     "expected a dark text pixel but was too light: " + Integer.toHexString(rgb));
         }
     }
+
+    /**
+     * PDFBOX-6232: a luminosity soft mask (driven by a shading-pattern gradient) applied inside a
+     * tiling pattern that is itself used within an isolated transparency group must be positioned
+     * using the enclosing group's coordinate system, not the tiling pattern's own tile raster.
+     * Before the fix, the mask was sampled at the wrong offset, so the pattern's gradient collapsed
+     * towards the backdrop color instead of showing its full-strength color partway down the
+     * gradient.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox6232() throws IOException
+    {
+        File file = new File(TARGET_PDF_DIR, "PDFBOX-6232-softmask-in-tiling-pattern-in-isolated-group.pdf");
+        try (PDDocument doc = Loader.loadPDF(file))
+        {
+            PDFRenderer renderer = new PDFRenderer(doc);
+            BufferedImage renderedImage = renderer.renderImageWithDPI(0, 100);
+            // a pixel partway down the gradient, which must be a saturated blue; before the fix,
+            // the broken mask offset made it collapse towards the dark backdrop colour instead
+            // (blue channel ~80 instead of ~220, as reported in the JIRA issue)
+            int rgb = renderedImage.getRGB(413, 294);
+            int blue = rgb & 0xFF;
+            Assertions.assertTrue(blue > 150,
+                    "expected a saturated blue gradient pixel but was too dark: " +
+                    Integer.toHexString(rgb));
+        }
+    }
 }

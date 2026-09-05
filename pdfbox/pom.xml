@@ -1033,6 +1033,19 @@
                             <sha512>0d7160a4af04bf2f785bf4155f69876da4b7ff7a196e7eda1eb904c02c35aa03c31041d9339fda90322cb58bde16b87bae8460c617bfe5b8dc0670ddab102f62</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-6232</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13083774/pdfbox_softmask_regression_ipfree.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-6232-softmask-in-tiling-pattern-in-isolated-group.pdf</outputFileName>
+                            <sha512>83921c4d53e482afb31bff310850a2d05b689e7d9b6ef03891b700b14d1c6015e728763731f633f79356c4358b9d3717ef4a7428cce6530f5df3bd8e0cb9978c</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
