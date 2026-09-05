@@ -548,4 +548,28 @@ class PDFontTest
             assertEquals("CID and GID not identical: CID 628 != GID 372, use a ttf font instead", t.getMessage());
         }
     }
+
+    /**
+     * PDFBOX-5960: a TrueType font whose FontDescriptor has both the Symbolic and NonSymbolic
+     * flags set (self-contradictory) but which has an Encoding dictionary with a recognized
+     * /BaseEncoding and /Differences must resolve glyphs by name rather than through the
+     * code-based symbolic cmap, which yields the wrong glyph here.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox5960() throws IOException
+    {
+        try (PDDocument doc = Loader.loadPDF(new File("target/pdfs", "PDFBOX-5960-reduced1.pdf")))
+        {
+            PDPage page = doc.getPage(0);
+            PDFont font = page.getResources().getFont(COSName.getPDFName("F1"));
+            assertTrue(font instanceof PDTrueTypeFont);
+            PDTrueTypeFont ttf = (PDTrueTypeFont) font;
+            // code 71 ('G' in the content stream) is mapped by /Differences to "Ccedilla",
+            // which must be resolved by name (GID 90, the diameter symbol in this font),
+            // not through the symbolic code-based cmap (which wrongly yields GID 34, "G").
+            assertEquals(90, ttf.codeToGID(71));
+        }
+    }
 }
