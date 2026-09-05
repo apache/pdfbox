@@ -105,7 +105,7 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <version>1.18.11</version>
+            <version>1.18.13</version>
             <scope>test</scope>
         </dependency>
         <!-- For legal reasons (incompatible license), these three dependencies below
@@ -992,6 +992,45 @@
                             <url>https://issues.apache.org/jira/secure/attachment/13081021/NotoSansSC-Regular.otf</url>
                             <outputDirectory>${project.build.directory}/fonts</outputDirectory>
                             <sha512>2ee83beb6658792c6b963010462515ff1187aafe64930c1a7465dc26e86ab5236dc98cb006986e5fcd60876bedef7f00e4e1cb86bbf590bba000a00187af0ee3</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-6077-1</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13078553/example.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-6077-example.pdf</outputFileName>
+                            <sha512>f4faaa68062073ffdfd48119563f1e1a6eff6d9a063188dc2ec59ccc747277fcaa6139936cebf2f3f7b1b99b80ca13934fb4568658a169e0bf25bf4e748de101</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-6077-2</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13078557/PDFBOX-5842-reduced.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5842-reduced.pdf</outputFileName>
+                            <sha512>c66b13230d343d6b0a2de81680f5d1ae7f8d92713acbc453ff36fe085831fa89127e0428d297e7494b87fc932ca8a721744db1fe79a41cc5c3cf7d631fc209fc</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-5403</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13041734/bad+rendering.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5403-bad-rendering.pdf</outputFileName>
+                            <sha512>0d7160a4af04bf2f785bf4155f69876da4b7ff7a196e7eda1eb904c02c35aa03c31041d9339fda90322cb58bde16b87bae8460c617bfe5b8dc0670ddab102f62</sha512>
                         </configuration>
                     </execution>
                 </executions>

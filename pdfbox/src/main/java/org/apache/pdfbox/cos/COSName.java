@@ -447,6 +447,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName ON = getPDFName("ON");
     public static final COSName OP = getPDFName("OP");
     public static final COSName OP_NS = getPDFName("op");
+    public static final COSName OPEN = getPDFName("Open");
     public static final COSName OPEN_ACTION = getPDFName("OpenAction");
     public static final COSName OPEN_TYPE = getPDFName("OpenType");
     public static final COSName OPM = getPDFName("OPM");

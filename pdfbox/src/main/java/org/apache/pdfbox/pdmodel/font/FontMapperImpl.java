@@ -566,6 +566,15 @@ final class FontMapperImpl implements FontMapper
 
             FontMatch match = new FontMatch(info);
 
+            // PDFBOX-6251: Avoid DroidSansFallback unless requested,
+            // because latin glyphs are not properly supported
+            if ("DroidSansFallback".equals(info.getPostScriptName()) &&
+                    !("DroidSansFallback".equals(fontDescriptor.getFontFamily()) || 
+                      "DroidSansFallback".equals(fontDescriptor.getFontName())))
+            {
+                continue;
+            }
+
             // Panose is the most reliable
             if (fontDescriptor.getPanose() != null && info.getPanose() != null)
             {
@@ -636,6 +645,11 @@ final class FontMapperImpl implements FontMapper
                 float dist = Math.abs(fontDescriptor.getFontWeight() - info.getWeightClass());
                 match.score += 1 - (dist / 100) * 0.5;
             }
+            else if (info.getWeightClass() > 0)
+            {
+                // no weight information in the descriptor: prefer a regular weight
+                match.score += 1 - (Math.abs(info.getWeightClass() - 400) / 100) * 0.5;
+            }
             // todo: italic
             // ...
 
@@ -664,7 +678,7 @@ final class FontMapperImpl implements FontMapper
      * Returns true if the character set described by CIDSystemInfo is present in the given font.
      * Only applies to Adobe-GB1, Adobe-CNS1, Adobe-Japan1, Adobe-Korea1, as per the PDF spec.
      */
-    private boolean isCharSetMatch(PDCIDSystemInfo cidSystemInfo, FontInfo info)
+    boolean isCharSetMatch(PDCIDSystemInfo cidSystemInfo, FontInfo info)
     {
         String ordering = cidSystemInfo.getOrdering();
         if (ordering == null)
@@ -673,10 +687,18 @@ final class FontMapperImpl implements FontMapper
         }
         if (info.getCIDSystemInfo() != null)
         {
-            return info.getCIDSystemInfo().getRegistry().equals(cidSystemInfo.getRegistry()) &&
-                   info.getCIDSystemInfo().getOrdering().equals(ordering);
+            if (info.getCIDSystemInfo().getRegistry().equals(cidSystemInfo.getRegistry()) &&
+                info.getCIDSystemInfo().getOrdering().equals(ordering))
+            {
+                return true;
+            }
+            if (!"Identity".equals(info.getCIDSystemInfo().getOrdering()))
+            {
+                return false;
+            }
+            // PDFBOX-6249: Adobe-Identity-0 fonts (Noto CJK, Source Han) never match a ROS by
+            // name; fall through to the code page bits
         }
-        else
         {
             long codePageRange = info.getCodePageRange();
             
@@ -686,10 +708,37 @@ final class FontMapperImpl implements FontMapper
             long CHINESE_TRADITIONAL = 1 << 20;
             long KOREAN_JOHAB = 1 << 21;
             
-            if ("MalgunGothic-Semilight".equals(info.getPostScriptName()))
+            String postScriptName = info.getPostScriptName();
+            if (postScriptName != null)
             {
-                // PDFBOX-4793 and PDF.js 10699: This font has only Korean, but has bits 17-21 set.
-                codePageRange &= ~(JIS_JAPAN | CHINESE_SIMPLIFIED | CHINESE_TRADITIONAL);
+                if ("MalgunGothic-Semilight".equals(postScriptName))
+                {
+                    // PDFBOX-4793 and PDF.js 10699: This font has only Korean, but has bits 17-21 set.
+                    codePageRange &= ~(JIS_JAPAN | CHINESE_SIMPLIFIED | CHINESE_TRADITIONAL);
+                }
+                if (postScriptName.startsWith("NotoSans"))
+                {
+                    String suffix = postScriptName.substring(8);
+                    if (suffix.startsWith("HK") ||
+                        suffix.startsWith("TC") ||
+                        suffix.startsWith("CJKsc") ||
+                        suffix.startsWith("CJKtc") ||
+                        suffix.startsWith("CJKhk") ||
+                        suffix.startsWith("KR") ||
+                        suffix.startsWith("CJKkr"))
+                    {
+                        // PDFBOX-6249: These fonts have bit 17 set.
+                        codePageRange &= ~(JIS_JAPAN);
+                    }
+                    if (suffix.startsWith("JP") ||
+                        suffix.startsWith("CJKjp") ||
+                        suffix.startsWith("KR") ||
+                        suffix.startsWith("CJKkr"))
+                    {
+                        // PDFBOX-6249: These fonts have at least one chinese bit set.
+                        codePageRange &= ~(CHINESE_SIMPLIFIED | CHINESE_TRADITIONAL);
+                    }
+                }
             }
             if (ordering.equals("GB1") &&
                     (codePageRange & CHINESE_SIMPLIFIED) == CHINESE_SIMPLIFIED)

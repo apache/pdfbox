@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -64,6 +65,10 @@ public class PDUserAttributeObject extends PDAttributeObject
     public List<PDUserProperty> getOwnerUserProperties()
     {
         COSArray p = getCOSObject().getCOSArray(COSName.P);
+        if (p == null)
+        {
+            return Collections.emptyList();
+        }
         List<PDUserProperty> properties = new ArrayList<>(p.size());
         for (int i = 0; i < p.size(); i++)
         {
@@ -92,6 +97,11 @@ public class PDUserAttributeObject extends PDAttributeObject
     public void addUserProperty(PDUserProperty userProperty)
     {
         COSArray p = getCOSObject().getCOSArray(COSName.P);
+        if (p == null)
+        {
+            p = new COSArray();
+            getCOSObject().setItem(COSName.P, p);
+        }
         p.add(userProperty);
         this.notifyChanged();
     }
@@ -108,6 +118,10 @@ public class PDUserAttributeObject extends PDAttributeObject
             return;
         }
         COSArray p = getCOSObject().getCOSArray(COSName.P);
+        if (p == null)
+        {
+            return;
+        }
         if (p.remove(userProperty.getCOSObject()))
         {
             this.notifyChanged();

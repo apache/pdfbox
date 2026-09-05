@@ -18,11 +18,10 @@ package org.apache.fontbox.pfb;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,27 +43,27 @@ public class PfbParser
      * (start-marker (1 byte), ascii-/binary-marker (1 byte), size (4 byte))
      * 3*6 == 18
      */
-    private static final int PFB_HEADER_LENGTH = 18;
+    static final int PFB_HEADER_LENGTH = 18;
 
     /**
      * the start marker.
      */
-    private static final int START_MARKER = 0x80;
+    static final int START_MARKER = 0x80;
 
     /**
      * the ascii marker.
      */
-    private static final int ASCII_MARKER = 0x01;
+    static final int ASCII_MARKER = 0x01;
 
     /**
      * the binary marker.
      */
-    private static final int BINARY_MARKER = 0x02;
+    static final int BINARY_MARKER = 0x02;
 
     /**
      * the EOF marker.
      */
-    private static final int EOF_MARKER = 0x03;
+    static final int EOF_MARKER = 0x03;
 
     /**
      * the parsed pfb-data.
@@ -88,7 +87,10 @@ public class PfbParser
      */
     public PfbParser(final String filename) throws IOException 
     {
-        this(Files.readAllBytes(Paths.get(filename)));
+        try (InputStream is = new FileInputStream(filename))
+        {
+            parsePfb(is);
+        }
     }
 
     /**
@@ -98,8 +100,7 @@ public class PfbParser
      */
     public PfbParser(final InputStream in) throws IOException 
     {
-        byte[] pfb = in.readAllBytes();
-        parsePfb(pfb);
+        parsePfb(in);
     }
 
     /**
@@ -109,28 +110,23 @@ public class PfbParser
      */
     public PfbParser(final byte[] bytes) throws IOException
     {
-        parsePfb(bytes);
+        parsePfb(new ByteArrayInputStream(bytes));
     }
 
     /**
-     * Parse the pfb-array.
-     * @param pfb   The pfb-Array
+     * Parse the pfb-stream.
+     * @param pfbStream The pfb-stream
      * @throws IOException in an IO-error occurs.
      */
-    private void parsePfb(final byte[] pfb) throws IOException 
+    private void parsePfb(InputStream pfbStream) throws IOException
     {
-        if (pfb.length < PFB_HEADER_LENGTH)
-        {
-            throw new IOException("PFB header missing");
-        }
         // read into segments and keep them
         List<Integer> typeList = new ArrayList<>(3);
         List<byte[]> barrList = new ArrayList<>(3);
-        ByteArrayInputStream in = new ByteArrayInputStream(pfb);
         long total = 0;
         do
         {
-            int r = in.read();
+            int r = pfbStream.read();
             if (r == -1 && total > 0)
             {
                 break; // EOF
@@ -139,7 +135,7 @@ public class PfbParser
             {
                 throw new IOException("Start marker missing");
             }
-            int recordType = in.read();
+            int recordType = pfbStream.read();
             if (recordType == EOF_MARKER)
             {
                 break;
@@ -149,23 +145,20 @@ public class PfbParser
                 throw new IOException("Incorrect record type: " + recordType);
             }
 
-            int size = in.read();
-            size += in.read() << 8;
-            size += in.read() << 16;
-            size += in.read() << 24;
+            int size = pfbStream.read();
+            size += pfbStream.read() << 8;
+            size += pfbStream.read() << 16;
+            size += pfbStream.read() << 24;
             LOG.debug("record type: {}, segment size: {}", recordType, size);
             if (size < 0)
             {
                 throw new IOException("record size " + size + " is negative");
             }
-            if (size > pfb.length)
-            {
-                // PDFBOX-6044: avoid potential OOM
-                throw new IOException("record size " + size + " would be larger than the input");
-            }
-            byte[] ar = new byte[size];
-            int got = in.read(ar);
-            if (got != size)
+            // PDFBOX-6044: avoid potential OOM. readNBytes() grows its buffer
+            // incrementally as bytes actually arrive, so a bogus/huge size can
+            // never force an allocation larger than what the stream really holds.
+            byte[] ar = pfbStream.readNBytes(size);
+            if (ar.length != size)
             {
                 throw new EOFException("EOF while reading PFB font");
             }
@@ -174,16 +167,16 @@ public class PfbParser
             barrList.add(ar);
         }
         while (true);
-        
+
+        if (total < PFB_HEADER_LENGTH)
+        {
+            throw new IOException("PFB header missing");
+        }
+
         // We now have ASCII and binary segments. Lets arrange these so that the ASCII segments
         // come first, then the binary segments, then the last ASCII segment if it is
         // 0000... cleartomark
 
-        if (total > pfb.length)
-        {
-            // PDFBOX-6044: avoid potential OOM
-            throw new IOException("total record size " + total + " would be larger than the input");
-        }
         pfbdata = new byte[(int) total];
         byte[] cleartomarkSegment = null;
         int dstPos = 0;

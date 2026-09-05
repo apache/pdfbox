@@ -16,7 +16,10 @@
 package org.apache.fontbox.ttf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,8 +27,10 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -108,6 +113,92 @@ class TestTTFParser
         // test an additional name
         gid = cmap.getGlyphId(0x20AC); // EURO SIGN
         assertEquals("Euro", glyphNames[gid]);
+    }
+    
+    @Test
+    void testParseMisc() throws IOException
+    {
+        final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        TTFParser parser = new TTFParser();
+        TrueTypeFont ttf = parser.parse(new RandomAccessReadBufferedFile(testFile));
+        KerningSubtable horizontalKerningSubtable = ttf.getKerning().getHorizontalKerningSubtable();
+        assertNull(ttf.getVerticalHeader());
+        assertNull(ttf.getVerticalMetrics());
+        assertNull(ttf.getVerticalOrigin());
+        assertTrue(horizontalKerningSubtable.isHorizontalKerning());
+        assertEquals(-113, horizontalKerningSubtable.getKerning(3, 36)); // first
+        assertEquals(-68, horizontalKerningSubtable.getKerning(2026, 987)); // last
+        assertEquals(2048, ttf.getUnitsPerEm());
+        assertEquals(1139, ttf.getAdvanceWidth(19));
+        assertEquals(250, ttf.getAdvanceHeight(19)); // default
+        assertEquals("[-543.9453,-303.22266,1301.7578,979.98047]", ttf.getFontBBox().toString());
+        assertEquals("[4.8828125E-4, 0, 0, 4.8828125E-4, 0, 0]", ttf.getFontMatrix().toString());
+        assertTrue(ttf.hasGlyph("A"));
+        assertFalse(ttf.hasGlyph("blubb"));
+        assertEquals("LiberationSans", ttf.toString());
+        assertTrue(ttf.isEnableGsub());
+        assertNotNull(ttf.getGsubData());
+        ttf.setEnableGsub(false);
+        assertEquals(GsubData.NO_DATA_FOUND, ttf.getGsubData());
+        assertFalse(ttf.isEnableGsub());
+    }
+
+    @Test
+    void testParseVertical() throws IOException
+    {
+        File ipaFont = new File("target/fonts/ipag00303", "ipag.ttf");
+        TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(ipaFont));
+        VerticalHeaderTable verticalHeader = ttf.getVerticalHeader();
+        assertEquals(1802, verticalHeader.getAscender());
+        assertEquals(2048, verticalHeader.getAdvanceHeightMax());
+        assertEquals(0, verticalHeader.getCaretSlopeRise());
+        assertEquals(1, verticalHeader.getCaretSlopeRun());
+        assertEquals(0, verticalHeader.getCaretOffset());
+        assertEquals(246, verticalHeader.getDescender());
+        assertEquals(0, verticalHeader.getLineGap());
+        assertEquals(0, verticalHeader.getMetricDataFormat());
+        assertEquals(-103, verticalHeader.getMinTopSideBearing());
+        assertEquals(-325, verticalHeader.getMinBottomSideBearing());
+        assertEquals(1f, verticalHeader.getVersion());
+        assertEquals(2373, verticalHeader.getYMaxExtent());
+        VerticalMetricsTable verticalMetrics = ttf.getVerticalMetrics();
+        assertEquals(2048, verticalMetrics.getAdvanceHeight(19));
+        assertEquals(290, verticalMetrics.getTopSideBearing(19));
+        assertNull(ttf.getVerticalOrigin());
+        assertEquals(1290, ttf.getAdvanceWidth(19));
+        assertEquals(2048, ttf.getAdvanceHeight(19));
+    }
+    
+    @Test
+    void testParseHeaders() throws IOException
+    {
+        final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        TTFParser parser1 = new TTFParser();
+        TrueTypeFont ttf = parser1.parse(new RandomAccessReadBufferedFile(testFile));
+        TTFParser parser2 = new TTFParser();
+        FontHeaders headers = parser2.parseTableHeaders(new RandomAccessReadBufferedFile(testFile));
+        assertEquals(ttf.getName(), headers.getName());
+        assertFalse(headers.isOpenTypePostScript());
+        assertEquals(ttf.getNaming().getFontFamily(), headers.getFontFamily());
+        assertEquals(ttf.getNaming().getFontSubFamily(), headers.getFontSubFamily());
+        assertEquals(ttf.getOS2Windows().getCapHeight(),headers.getOS2Windows().getCapHeight());
+        assertEquals(ttf.getOS2Windows().getHeight(),headers.getOS2Windows().getHeight());
+        assertEquals(ttf.getOS2Windows().getWeightClass(),headers.getOS2Windows().getWeightClass());
+        assertEquals(ttf.getOS2Windows().getWidthClass(),headers.getOS2Windows().getWidthClass());
+        assertEquals(ttf.getOS2Windows().getFamilyClass(),headers.getOS2Windows().getFamilyClass());
+        assertEquals(ttf.getOS2Windows().getFirstCharIndex(),headers.getOS2Windows().getFirstCharIndex());
+        assertEquals(ttf.getOS2Windows().getFsSelection(),headers.getOS2Windows().getFsSelection());
+        assertEquals(ttf.getOS2Windows().getFsType(),headers.getOS2Windows().getFsType());
+        assertEquals(ttf.getOS2Windows().getStrikeoutPosition(),headers.getOS2Windows().getStrikeoutPosition());
+        assertEquals(ttf.getOS2Windows().getStrikeoutSize(),headers.getOS2Windows().getStrikeoutSize());
+        assertEquals(ttf.getOS2Windows().getSubscriptXOffset(),headers.getOS2Windows().getSubscriptXOffset());
+        assertEquals(ttf.getOS2Windows().getSubscriptYOffset(),headers.getOS2Windows().getSubscriptYOffset());
+        assertEquals(ttf.getOS2Windows().getSuperscriptXOffset(),headers.getOS2Windows().getSuperscriptXOffset());
+        assertEquals(ttf.getOS2Windows().getSuperscriptYOffset(),headers.getOS2Windows().getSuperscriptYOffset());
+        assertEquals(ttf.getOS2Windows().getSubscriptXSize(),headers.getOS2Windows().getSubscriptXSize());
+        assertEquals(ttf.getOS2Windows().getSubscriptYSize(),headers.getOS2Windows().getSubscriptYSize());
+        assertEquals(ttf.getOS2Windows().getSuperscriptXSize(),headers.getOS2Windows().getSuperscriptXSize());
+        assertEquals(ttf.getOS2Windows().getSuperscriptYSize(),headers.getOS2Windows().getSuperscriptYSize());
     }
 
 }

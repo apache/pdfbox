@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -461,8 +460,9 @@ public class OcspHelper
             throws IOException, OCSPException, URISyntaxException
     {
         OCSPReq request = generateOCSPRequest();
-        URL url = new URI(urlString).toURL();
-        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+        URI uri = new URI(urlString);
+        SigUtils.checkAccess(uri);
+        HttpURLConnection httpConnection = (HttpURLConnection) uri.toURL().openConnection();
         try
         {
             httpConnection.setRequestProperty("Content-Type", "application/ocsp-request");

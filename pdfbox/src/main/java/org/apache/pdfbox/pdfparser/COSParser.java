@@ -552,6 +552,10 @@ public class COSParser extends BaseParser implements ICOSParser
             boolean requireExistingNotCompressedObj) throws IOException
     {
         COSObject pdfObject = document.getObjectFromPool(objKey);
+        if (pdfObject == null)
+        {
+            throw new IOException("getObjectFromPool(" + objKey + ") returns null");
+        }
         if (!pdfObject.isObjectNull())
         {
             return pdfObject.getObject();

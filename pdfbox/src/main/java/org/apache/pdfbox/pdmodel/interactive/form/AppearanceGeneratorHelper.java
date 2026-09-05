@@ -339,9 +339,13 @@ class AppearanceGeneratorHelper
         return appearanceStream;
     }
 
-    private static PDRectangle computeBBox(PDAnnotationWidget widget, int widgetRotation)
+    private static PDRectangle computeBBox(PDAnnotationWidget widget, int widgetRotation) throws IOException
     {
         PDRectangle rect = widget.getRectangle();
+        if (rect == null)
+        {
+            throw new IOException("Missing rectangle");
+        }
         Matrix matrix = Matrix.getRotateInstance(Math.toRadians(widgetRotation), 0, 0);
         Point2D.Float point2D = matrix.transformPoint(rect.getWidth(), rect.getHeight());
         return new PDRectangle(Math.abs((float) point2D.getX()), Math.abs((float) point2D.getY()));
@@ -438,7 +442,7 @@ class AppearanceGeneratorHelper
                 }
             }
             
-            writeToStream(output.toByteArray(), appearanceStream);
+            writeToStream(output, appearanceStream);
 
         }
     }
@@ -487,7 +491,7 @@ class AppearanceGeneratorHelper
                 // append contents after EMC
                 writer.writeTokens(tokens.subList(emcIndex, tokens.size()));
             }
-            writeToStream(output.toByteArray(), appearanceStream);
+            writeToStream(output, appearanceStream);
         }
     }
     
@@ -894,11 +898,11 @@ class AppearanceGeneratorHelper
      *
      * @throws IOException If there is an error writing to the stream
      */
-    private void writeToStream(byte[] data, PDAppearanceStream appearanceStream) throws IOException
+    private void writeToStream(ByteArrayOutputStream baos, PDAppearanceStream appearanceStream) throws IOException
     {
-        try (OutputStream out = appearanceStream.getCOSObject().createOutputStream())
+        try (OutputStream os = appearanceStream.getCOSObject().createOutputStream())
         {
-            out.write(data);
+            baos.writeTo(os);
         }
     }
 

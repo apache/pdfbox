@@ -32,7 +32,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 /**
- * This will read a document from the filesystem, decrypt it and and then write
+ * This will read a document from the filesystem, decrypt it and then write
  * the result to the filesystem.
  *
  * @author  Ben Litchfield

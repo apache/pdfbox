@@ -140,6 +140,7 @@ public final class ExtractEmbeddedFiles
             throws IOException
     {
         File file = new File(directoryPath, filename);
+        file = file.getCanonicalFile(); // delete this line to allow symlinks
         File parentDir = file.getParentFile();
         String parentCanonical = parentDir.getCanonicalPath();
         if (!parentCanonical.equals(directoryPath) &&

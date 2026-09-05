@@ -19,8 +19,12 @@ package org.apache.fontbox.pfb;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 
 import org.apache.fontbox.encoding.BuiltInEncoding;
+import org.apache.fontbox.encoding.StandardEncoding;
 import org.apache.fontbox.type1.Type1Font;
 
 import org.junit.jupiter.api.Assertions;
@@ -76,13 +80,36 @@ class PfbParserTest
         Type1Font font;
         try (InputStream is = new FileInputStream("target/fonts/DejaVuSerifCondensed.pfb"))
         {
-            font = Type1Font.createWithPFB(is);
+            font = Type1Font.createWithPFB(is.readAllBytes());
         }
         Assertions.assertEquals("Version 2.33", font.getVersion());
         Assertions.assertEquals("DejaVuSerifCondensed", font.getFontName());
+        Assertions.assertEquals("DejaVuSerifCondensed", font.getName());
         Assertions.assertEquals("DejaVu Serif Condensed", font.getFullName());
         Assertions.assertEquals("DejaVu Serif Condensed", font.getFamilyName());
         Assertions.assertEquals("Copyright [c] 2003 by Bitstream, Inc. All Rights Reserved.", font.getNotice());
+        Assertions.assertEquals(11974, font.getSubrsArray().size());
+        Assertions.assertEquals(0, font.getPaintType());
+        Assertions.assertEquals(1, font.getFontType());
+        Assertions.assertEquals("", font.getFontID());
+        Assertions.assertEquals(0, font.getUniqueID());
+        Assertions.assertEquals(0, font.getStrokeWidth());
+        Assertions.assertEquals(-63, font.getUnderlinePosition());
+        Assertions.assertEquals(44, font.getUnderlineThickness());
+        Assertions.assertEquals("[-15, 0, 729, 744, 512, 533, 785, 800, 760, 777, 829, 847, 920, 935]", font.getBlueValues().toString());
+        Assertions.assertEquals("[-222, -203]", font.getOtherBlues().toString());
+        Assertions.assertEquals("[]", font.getFamilyBlues().toString());
+        Assertions.assertEquals("[]", font.getFamilyOtherBlues().toString());
+        Assertions.assertEquals(0, font.getBlueScale());
+        Assertions.assertEquals(0, font.getBlueShift());
+        Assertions.assertEquals(0, font.getBlueFuzz());
+        Assertions.assertEquals(0, font.getLanguageGroup());
+        Assertions.assertEquals("[53]", font.getStdHW().toString());
+        Assertions.assertEquals("[90]", font.getStdVW().toString());
+        Assertions.assertEquals("[53]", font.getStemSnapH().toString());
+        Assertions.assertEquals("[54, 66, 80, 90, 101, 146]", font.getStemSnapV().toString());
+        Assertions.assertEquals("[0.001, 0, 0, 0.001, 0, 0]", font.getFontMatrix().toString());
+        Assertions.assertEquals("[-692.0,-347.0,1511.0,1109.0]", font.getFontBBox().toString());
         Assertions.assertFalse(font.isFixedPitch());
         Assertions.assertFalse(font.isForceBold());
         Assertions.assertEquals(0, font.getItalicAngle());
@@ -94,12 +121,57 @@ class PfbParserTest
     }
 
     /**
+     * PDFBOX-3654: font with hex encoded binary segment.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testPfbPDFBox3654() throws IOException
+    {
+        byte[] ba = Files.readAllBytes(Paths.get("target/fonts/KIX-Barcode-Regular.pfb"));
+        Type1Font font = Type1Font.createWithSegments(Arrays.copyOfRange(ba, 0, 1039), 
+                                  Arrays.copyOfRange(ba, 1039, 1039 + 26868));
+        Assertions.assertEquals("001.000", font.getVersion());
+        Assertions.assertEquals("KIX-Barcode-Regular", font.getFontName());
+        Assertions.assertEquals("KIX-Barcode-Regular", font.getFullName());
+        Assertions.assertEquals("KIX-Barcode", font.getFamilyName());
+        Assertions.assertEquals("", font.getNotice());
+        Assertions.assertFalse(font.isFixedPitch());
+        Assertions.assertFalse(font.isForceBold());
+        Assertions.assertEquals(0, font.getItalicAngle());
+        Assertions.assertEquals("Regular", font.getWeight());
+        Assertions.assertInstanceOf(StandardEncoding.class, font.getEncoding());
+        Assertions.assertEquals(1039, font.getASCIISegment().length);
+        Assertions.assertEquals(26868, font.getBinarySegment().length);
+        Assertions.assertEquals(257, font.getCharStringsDict().size());
+    }
+
+    /**
      * Test 0 length font.
      */
     @Test
     void testEmpty()
     {
-        Assertions.assertThrows(IOException.class, () -> Type1Font.createWithPFB(new byte[0]));
+        IOException ex1 = Assertions.assertThrows(IOException.class,
+                () -> Type1Font.createWithPFB(new byte[0]));
+        Assertions.assertEquals("Start marker missing", ex1.getMessage());
+    }
+
+    /**
+     * Test some bad fonts.
+     */
+    @Test
+    void testMiscBadFonts()
+    {
+        byte[] ba = new byte[PfbParser.PFB_HEADER_LENGTH + 1];
+        IOException ex1 = Assertions.assertThrows(IOException.class,
+                () -> Type1Font.createWithPFB(ba));
+        Assertions.assertEquals("Start marker missing", ex1.getMessage());
+        ba[0] = (byte) PfbParser.START_MARKER;
+        ba[1] = 33;
+        IOException ex2 = Assertions.assertThrows(IOException.class,
+                () -> Type1Font.createWithPFB(ba));
+        Assertions.assertEquals("Incorrect record type: 33", ex2.getMessage());
     }
 
     /**
@@ -120,6 +192,72 @@ class PfbParserTest
             0x27, 0x05, (byte) 0xF8, (byte) 0xFF,
             (byte) 0xD2, 0x40
         };
-        Assertions.assertThrows(IOException.class, () -> new PfbParser(crashInput));
+        IOException ex = Assertions.assertThrows(IOException.class, () -> new PfbParser(crashInput));
+        Assertions.assertEquals("record size -16777215 is negative", ex.getMessage());
+    }
+
+    /**
+     * Test that a PFB with a high size field throws an exception
+     */
+    @Test
+    void testHighRecordSize()
+    {
+        // 18-byte crafted PFB: start marker 0x80, ASCII type 0x01,
+        // size field 0x7f 0x00 0x00 0x00 = 0x7f
+        byte[] crashInput = {
+            (byte) 0x80, 0x01,                         // header
+            0x7f, 0x00, 0x00, 0x00,                    // size too high
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,     // garbage data
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+            0x27, 0x05, (byte) 0xF8, (byte) 0xFF,
+            (byte) 0xD2, 0x40
+        };
+        IOException ex = Assertions.assertThrows(IOException.class, () -> new PfbParser(crashInput));
+        Assertions.assertEquals("EOF while reading PFB font", ex.getMessage());
+    }
+
+    /**
+     * Test that a PFB with only 1 short segment throws an exception
+     */
+    @Test
+    void test1SegmentOnly()
+    {
+        // 18-byte crafted PFB: start marker 0x80, ASCII type 0x01,
+        // size field 0x04 0x00 0x00 0x00 = 0x04
+        byte[] crashInput = {
+            (byte) 0x80, 0x01,                         // header
+            0x03, 0x00, 0x00, 0x00,                    // size
+            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF      // garbage data
+        };
+        IOException ex = Assertions.assertThrows(IOException.class, () -> new PfbParser(crashInput));
+        Assertions.assertEquals("PFB header missing", ex.getMessage());
+    }
+
+    /**
+     * Misc tests for better coverage.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testPfbParser() throws IOException
+    {
+        PfbParser pfbParser = new PfbParser("target/fonts/OpenSans-Regular.pfb");
+        int[] lengths = pfbParser.getLengths();
+        Assertions.assertArrayEquals(new int[]{4498, 95911, 533}, lengths);
+        byte[] pfbData = pfbParser.getPfbdata();
+        Assertions.assertEquals(pfbParser.size(), pfbData.length);
+        byte[] seg1 = pfbParser.getSegment1();
+        byte[] seg2 = pfbParser.getSegment2();
+        Assertions.assertEquals(pfbData.length, seg1.length + seg2.length + lengths[2]);
+        Assertions.assertEquals(seg1.length, lengths[0]);
+        Assertions.assertEquals(seg2.length, lengths[1]);
+        Assertions.assertArrayEquals(pfbData, pfbParser.getInputStream().readAllBytes());
+        byte [] ba = Files.readAllBytes(Paths.get("target/fonts/OpenSans-Regular.pfb"));
+        Assertions.assertArrayEquals(
+                seg1,
+                Arrays.copyOfRange(ba, 6, 6 + lengths[0]));
+        Assertions.assertArrayEquals(
+                seg2,
+                Arrays.copyOfRange(ba, 6 + lengths[0] + 6, 6 + lengths[0] + 6 + lengths[1]));
     }
 }

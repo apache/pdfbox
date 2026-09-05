@@ -16,6 +16,7 @@
  */
 package org.apache.fontbox.ttf;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -62,17 +63,7 @@ public class TTFParser
      */
     public TrueTypeFont parse(RandomAccessRead randomAccessRead) throws IOException
     {
-        RandomAccessReadDataStream dataStream = new RandomAccessReadDataStream(randomAccessRead);
-        try (randomAccessRead)
-        {
-            return parse(dataStream);
-        }
-        catch (IOException ex)
-        {
-            // close only on error (source is still being accessed later)
-            dataStream.close();
-            throw ex;
-        }
+        return parse(randomAccessRead, new RandomAccessReadDataStream(randomAccessRead));
     }
 
     /**
@@ -85,8 +76,13 @@ public class TTFParser
     public TrueTypeFont parseEmbedded(InputStream inputStream) throws IOException
     {
         this.isEmbedded = true;
-        RandomAccessReadDataStream dataStream = new RandomAccessReadDataStream(inputStream);
-        try (inputStream)
+        return parse(inputStream, new RandomAccessReadDataStream(inputStream));
+    }
+
+    private TrueTypeFont parse(Closeable input, RandomAccessReadDataStream dataStream)
+            throws IOException
+    {
+        try (input)
         {
             return parse(dataStream);
         }

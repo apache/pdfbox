@@ -66,6 +66,9 @@ final class CCITTFaxFilter extends Filter
 
         long arraySizeLong = ((long) cols + 7) / 8 * rows;
 
+        // PDFBOX-6243: CCITTFaxDecoderStream allocates two int arrays: changesReferenceRow and changesCurrentRow 
+        long changesSize = ((long) cols + 2) * 4 * 2;
+
         long maxBytes = 256 * 1024 * 1024L;
         String sysProp = System.getProperty(Filter.SYSPROP_CCITTFAX_MAXBYTES);
 
@@ -86,10 +89,11 @@ final class CCITTFaxFilter extends Filter
             }
         }
 
-        if (arraySizeLong > maxBytes)
+        if (arraySizeLong + changesSize > maxBytes)
         {
             throw new IOException(
-                "CCITT decode buffer too large (" + arraySizeLong + " bytes) for cols=" + cols +
+                "CCITT decode buffer too large (bitmapSize: " + arraySizeLong + ", changesSize: " +
+                changesSize + ") for cols=" + cols +
                 ", rows=" + rows + "; max allowed=" + maxBytes +
                 "; increase " + Filter.SYSPROP_CCITTFAX_MAXBYTES + " to override"
             );

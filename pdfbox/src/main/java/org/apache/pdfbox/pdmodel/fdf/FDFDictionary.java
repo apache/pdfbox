@@ -239,9 +239,9 @@ public class FDFDictionary implements COSObjectable
     public void writeXML(Writer output) throws IOException
     {
         PDFileSpecification fs = this.getFile();
-        if (fs != null)
+        if (fs != null && fs.getFile() != null)
         {
-            output.write("<f href=\"" + fs.getFile() + "\" />\n");
+            output.write("<f href=\"" + FDFUtils.escapeXML10(fs.getFile()) + "\" />\n");
         }
         COSArray ids = this.getID();
         if (ids != null)

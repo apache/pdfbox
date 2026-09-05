@@ -61,7 +61,6 @@ public class HeaderTable extends TTFTable
 
     HeaderTable()
     {
-        super();
     }
 
     /** {@inheritDoc} */

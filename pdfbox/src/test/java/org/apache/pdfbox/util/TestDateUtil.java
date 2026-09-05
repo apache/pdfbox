@@ -318,7 +318,7 @@ class TestDateUtil
         TimeZone tzMaputo = TimeZone.getTimeZone("Africa/Maputo");   // +2 +2
         TimeZone tzAruba = TimeZone.getTimeZone("America/Aruba");    // -4 -4
         TimeZone tzJamaica = TimeZone.getTimeZone("America/Jamaica");// -5 -5
-        TimeZone tzMcMurdo = TimeZone.getTimeZone("Antartica/McMurdo");// +12 +13
+        TimeZone tzMcMurdo = TimeZone.getTimeZone("Antarctica/McMurdo"); // +12 +13
         TimeZone tzAdelaide = TimeZone.getTimeZone("Australia/Adelaide");// +9:30 +10:30
         
         assertNull(DateConverter.toCalendar((COSString) null));
@@ -336,11 +336,13 @@ class TestDateUtil
         checkToString(2020, 2, 29, 0, 0, 0, tzMaputo, +2, 0);
         checkToString(2015, 8, 28, 3, 14, 15, tzAdelaide, +9, 30);
         checkToString(2016, 2, 28, 3, 14, 15, tzAdelaide, +10, 30);
-        // McMurdo has a daylightsavings rule, but it seems never to apply
-        for (int m = 1; m <= 12; ++m)
-        {
-            checkToString(1980 + m, m, 1, 1, 14, 15, tzMcMurdo, +0, 0);
-        }
+        checkToString(1980, 1, 1, 1, 14, 15, tzMcMurdo, +13, 0);
+        checkToString(1983, 3, 1, 1, 14, 15, tzMcMurdo, +13, 0);
+        checkToString(1984, 4, 1, 1, 14, 15, tzMcMurdo, +12, 0);
+        checkToString(1988, 8, 1, 1, 14, 15, tzMcMurdo, +12, 0);
+        checkToString(1989, 9, 4, 1, 14, 15, tzMcMurdo, +12, 0);
+        checkToString(1990, 10, 4, 1, 14, 15, tzMcMurdo, +12, 0);
+        checkToString(1991, 11, 4, 1, 14, 15, tzMcMurdo, +13, 0);
     }
 
     private static void checkParseTZ(int expect, String src)

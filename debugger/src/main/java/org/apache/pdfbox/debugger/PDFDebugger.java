@@ -99,6 +99,7 @@ import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.debugger.certificatepane.CertificatePane;
 import org.apache.pdfbox.debugger.colorpane.CSArrayBased;
 import org.apache.pdfbox.debugger.colorpane.CSDeviceN;
 import org.apache.pdfbox.debugger.colorpane.CSIndexed;
@@ -824,16 +825,33 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                     return;
                 }
                 
-                if (isSpecialColorSpace(selectedNode) || isOtherColorSpace(selectedNode))
+                if (isArrayColorSpace(selectedNode))
                 {
                     showColorPane(selectedNode);
                     return;
                 }
-                if (path.getParentPath() != null
-                        && isFlagNode(selectedNode, path.getParentPath().getLastPathComponent()))
+                Object lastPathComponent = null;
+                if (path.getParentPath() != null)
+                {
+                    lastPathComponent = path.getParentPath().getLastPathComponent();
+                }
+                if (lastPathComponent != null
+                        && isFlagNode(selectedNode, lastPathComponent))
                 {
                     Object parentNode = path.getParentPath().getLastPathComponent();
                     showFlagPane(parentNode, selectedNode);
+                    return;
+                }
+                if (lastPathComponent != null &&
+                    isCertificateStream(selectedNode, lastPathComponent))
+                {
+                    showCertificatePane(selectedNode);
+                    return;
+                }
+                if (lastPathComponent != null &&
+                    isCertificateString(selectedNode, lastPathComponent))
+                {
+                    showCertificatePane(selectedNode);
                     return;
                 }
                 if (isStream(selectedNode))
@@ -846,8 +864,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
                     showFont(selectedNode, path);
                     return;
                 }
-                if (path.getParentPath() != null &&
-                    isSignature(selectedNode, path.getParentPath().getLastPathComponent()))
+                if (lastPathComponent != null && isSignature(selectedNode, lastPathComponent))
                 {
                     showSignaturePane(selectedNode);
                     return;
@@ -885,53 +902,67 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
         if (selectedNode instanceof MapEntry)
         {
             MapEntry entry = (MapEntry) selectedNode;
-            if (entry.getKey().equals(COSName.CONTENTS) &&
-                    parentNode instanceof MapEntry)
+            if (COSName.CONTENTS.equals(entry.getKey()) && parentNode instanceof MapEntry)
+            {
+                return COSName.V.equals(((MapEntry) parentNode).getKey());
+            }
+        }
+        return false;
+    }
+
+    private void showCertificatePane(Object selectedNode)
+    {
+        COSBase base = getUnderneathObject(selectedNode);
+        if (base instanceof COSStream || base instanceof COSString)
+        {
+            replaceRightComponent(new CertificatePane(base).getPane());
+        }
+    }
+
+    private boolean isCertificateStream(Object selectedNode, Object parentNode)
+    {
+        // e.g. in DSS structures
+        if (selectedNode instanceof ArrayEntry)
+        {
+            ArrayEntry entry = (ArrayEntry) selectedNode;
+            if (entry.getValue() instanceof COSStream && parentNode instanceof MapEntry)
+            {
+                COSName key = ((MapEntry) parentNode).getKey();
+                return COSName.CERT.equals(key) || COSName.CERTS.equals(key);
+            }
+        }
+        return false;
+    }
+
+    private boolean isCertificateString(Object selectedNode, Object parentNode)
+    {
+        // adbe.x509.rsa_sha1 signature, e.g. in PDFBOX-2693
+        if (selectedNode instanceof MapEntry)
+        {
+            MapEntry entry = (MapEntry) selectedNode;
+            if (COSName.CERT.equals(entry.getKey()) && parentNode instanceof MapEntry)
             {
                 MapEntry mapEntry = (MapEntry) parentNode;
-                COSDictionary sigDict;
                 if (mapEntry.getValue() instanceof COSDictionary)
                 {
-                    sigDict = (COSDictionary)mapEntry.getValue();
-                    COSName type = sigDict.getCOSName(COSName.TYPE);
-                    if (type != null && type.equals(COSName.SIG))
-                    {
-                        LOG.info("Found signature contents entry");
-                        return true;
-                    }
+                    COSDictionary sigDict = (COSDictionary) mapEntry.getValue();
+                    return COSName.SIG.equals(sigDict.getCOSName(COSName.TYPE));
                 }
             }
         }
         return false;
     }
 
-    private boolean isSpecialColorSpace(Object selectedNode)
+    private boolean isArrayColorSpace(Object selectedNode)
     {
         COSBase underneathObject = getUnderneathObject(selectedNode);
-
         if (underneathObject instanceof COSArray && ((COSArray) underneathObject).size() > 0)
         {
             COSBase arrayEntry = ((COSArray) underneathObject).get(0);
             if (arrayEntry instanceof COSName)
             {
                 COSName name = (COSName) arrayEntry;
-                return SPECIALCOLORSPACES.contains(name);
-            }
-        }
-        return false;
-    }
-
-    private boolean isOtherColorSpace(Object selectedNode)
-    {
-        COSBase underneathObject = getUnderneathObject(selectedNode);
-
-        if (underneathObject instanceof COSArray && ((COSArray) underneathObject).size() > 0)
-        {
-            COSBase arrayEntry = ((COSArray) underneathObject).get(0);
-            if (arrayEntry instanceof COSName)
-            {
-                COSName name = (COSName) arrayEntry;
-                return OTHERCOLORSPACES.contains(name);
+                return SPECIALCOLORSPACES.contains(name) || OTHERCOLORSPACES.contains(name);
             }
         }
         return false;
@@ -939,16 +970,12 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
 
     private boolean isPage(Object selectedNode)
     {
-        COSBase underneathObject = getUnderneathObject(selectedNode);
-
-        if (underneathObject instanceof COSDictionary)
+        COSBase base = getUnderneathObject(selectedNode);
+        if (base instanceof COSDictionary)
         {
-            COSDictionary dict = (COSDictionary) underneathObject;
+            COSDictionary dict = (COSDictionary) base;
             COSBase typeItem = dict.getItem(COSName.TYPE);
-            if (COSName.PAGE.equals(typeItem))
-            {
-                return true;
-            }
+            return COSName.PAGE.equals(typeItem);
         }
         return false;
     }

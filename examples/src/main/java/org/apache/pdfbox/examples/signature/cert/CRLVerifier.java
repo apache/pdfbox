@@ -22,10 +22,9 @@ package org.apache.pdfbox.examples.signature.cert;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
-import java.security.cert.CRLException;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509CRL;
 import java.security.cert.X509CRLEntry;
@@ -77,7 +76,7 @@ public final class CRLVerifier
     /**
      * Extracts the CRL distribution points from the certificate (if available)
      * and checks the certificate revocation status against the CRLs coming from
-     * the distribution points. Supports HTTP, HTTPS, FTP and LDAP based URLs.
+     * the distribution points. Supports HTTP, HTTPS and LDAP based URLs.
      *
      * @param cert the certificate to be checked for revocation
      * @param signDate the date when the signing took place
@@ -233,14 +232,12 @@ public final class CRLVerifier
     }
 
     /**
-     * Downloads CRL from given URL. Supports http, https, ftp and ldap based URLs.
+     * Downloads CRL from given URL. Supports http, https and ldap based URLs.
      */
-    private static X509CRL downloadCRL(String crlURL) throws IOException,
-            CertificateException, CRLException,
-            CertificateVerificationException, NamingException, URISyntaxException
+    static X509CRL downloadCRL(String crlURL) throws IOException,
+            CertificateVerificationException, NamingException, URISyntaxException, GeneralSecurityException
     {
-        if (crlURL.startsWith("http://") || crlURL.startsWith("https://")
-                || crlURL.startsWith("ftp://"))
+        if (crlURL.startsWith("http://") || crlURL.startsWith("https://"))
         {
             return downloadCRLFromWeb(crlURL);
         }
@@ -260,12 +257,12 @@ public final class CRLVerifier
      * Downloads a CRL from given LDAP url, e.g.
      * ldap://ldap.infonotary.com/dc=identity-ca,dc=infonotary,dc=com
      */
-    private static X509CRL downloadCRLFromLDAP(String ldapURL) throws CertificateException,
-            NamingException, CRLException,
-            CertificateVerificationException
+    private static X509CRL downloadCRLFromLDAP(String ldapURL) throws GeneralSecurityException,
+            NamingException, CertificateVerificationException, URISyntaxException, IOException
     {
         @SuppressWarnings({"squid:S1149"})
         Hashtable<String, String> env = new Hashtable<>();
+        SigUtils.checkAccess(new URI(ldapURL));
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, ldapURL);
 
@@ -290,11 +287,15 @@ public final class CRLVerifier
     }
 
     /**
-     * Downloads a CRL from given HTTP/HTTPS/FTP URL, e.g.
-     * http://crl.infonotary.com/crl/identity-ca.crl
+     * Downloads a CRL from given HTTP/HTTPS URL, e.g. http://crl.infonotary.com/crl/identity-ca.crl
+     * @param crlURL
+     * @return 
+     * @throws java.io.IOException
+     * @throws java.security.GeneralSecurityException
+     * @throws java.net.URISyntaxException
      */
     public static X509CRL downloadCRLFromWeb(String crlURL)
-            throws IOException, CertificateException, CRLException, URISyntaxException
+            throws IOException, GeneralSecurityException, URISyntaxException
     {
         try (InputStream crlStream = SigUtils.openURL(crlURL))
         {
