@@ -65,6 +65,9 @@ public class CMap
     private final Map<Integer, Map<Integer, Integer>> codeToCid = new HashMap<>();
     private final List<CIDRange> codeToCidRanges = new ArrayList<>();
 
+    // the CMaps this one inherits from through the usecmap operator, see useCmap
+    private final List<CMap> parentCMaps = new ArrayList<>();
+
     // inverted map
     private final Map <String, byte[]> unicodeToByteCodes = new HashMap<>();
 
@@ -80,12 +83,13 @@ public class CMap
 
     /**
      * This will tell if this cmap has any CID mappings.
-     * 
+     *
      * @return true If there are any CID mappings, false otherwise.
      */
     public boolean hasCIDMappings()
     {
-        return !codeToCid.isEmpty() || !codeToCidRanges.isEmpty();
+        return !codeToCid.isEmpty() || !codeToCidRanges.isEmpty()
+                || parentCMaps.stream().anyMatch(CMap::hasCIDMappings);
     }
 
     /**
@@ -237,22 +241,12 @@ public class CMap
      */
     public int toCID(byte[] code)
     {
-        if (!hasCIDMappings() || code.length < minCidLength || code.length > maxCidLength)
-        {
-            return 0;
-        }
-        Integer cid = null;
-        Map<Integer, Integer> codeToCidMap = codeToCid.get(code.length);
-        if (codeToCidMap != null)
-        {
-            cid = codeToCidMap.get(toInt(code));
-        }
-        return cid != null ? cid : toCIDFromRanges(code);
+        return toCID(toInt(code), code.length);
     }
 
     /**
      * Returns the CID for the given character code.
-     * 
+     *
      * This method exists for convenience. It may return false values as the origin byte length of the input value is
      * unknown and the mapping for some input values aren't unique. <br>
      * Example:<br>
@@ -264,17 +258,15 @@ public class CMap
      */
     public int toCID(int code)
     {
-        if (!hasCIDMappings())
+        for (int length = minCidLength; length <= maxCidLength; length++)
         {
-            return 0;
+            int cid = findCID(code, length);
+            if (cid != -1)
+            {
+                return cid;
+            }
         }
-        int cid = 0;
-        int length = minCidLength;
-        while (cid == 0 && (length <= maxCidLength))
-        {
-            cid = toCID(code, length++);
-        }
-        return cid;
+        return 0;
     }
 
     /**
@@ -286,26 +278,56 @@ public class CMap
      */
     public int toCID(int code, int length)
     {
-        if (!hasCIDMappings() || length < minCidLength || length > maxCidLength)
-        {
-            return 0;
-        }
-        Integer cid = null;
-        Map<Integer, Integer> codeToCidMap = codeToCid.get(length);
-        if (codeToCidMap != null)
-        {
-            cid = codeToCidMap.get(code);
-        }
-        return cid != null ? cid : toCIDFromRanges(code, length);
+        int cid = findCID(code, length);
+        return cid != -1 ? cid : 0;
     }
 
     /**
-     * Returns the CID for the given character code.
+     * Returns the CID this CMap, or one of the CMaps it inherits from, maps the given character code
+     * to, or -1 if none of them maps it. CID 0 is the .notdef glyph and a CMap may map a code to it
+     * deliberately, so "mapped to 0" has to be told apart from "not mapped" while the usecmap chain
+     * is walked. The public toCID methods report both as 0.
      *
-     * @param code character code
-     * @return CID
+     * @param code   character code
+     * @param length the origin byte length of the code
+     * @return CID, or -1 if neither this CMap nor any it inherits from maps the code
      */
+    private int findCID(int code, int length)
+    {
+        if (length < minCidLength || length > maxCidLength)
+        {
+            return -1;
+        }
+        Map<Integer, Integer> codeToCidMap = codeToCid.get(length);
+        Integer cid = codeToCidMap != null ? codeToCidMap.get(code) : null;
+        if (cid != null)
+        {
+            return cid;
+        }
+        int cidFromRange = toCIDFromRanges(code, length);
+        if (cidFromRange != -1)
+        {
+            return cidFromRange;
+        }
+        // this CMap doesn't map the code itself, so ask the ones it inherits from
+        for (CMap parentCMap : parentCMaps)
+        {
+            int parentCid = parentCMap.findCID(code, length);
+            if (parentCid != -1)
+            {
+                return parentCid;
+            }
+        }
+        return -1;
+    }
 
+    /**
+     * Returns the CID, the CID ranges of this CMap map the given character code to.
+     *
+     * @param code   character code
+     * @param length the origin byte length of the code
+     * @return CID, or -1 if no range covers the code
+     */
     private int toCIDFromRanges(int code, int length)
     {
         for (CIDRange range : codeToCidRanges)
@@ -316,27 +338,7 @@ public class CMap
                 return ch;
             }
         }
-        return 0;
-    }
-
-    /**
-     * Returns the CID for the given character code.
-     *
-     * @param code character code
-     * @return CID
-     */
-
-    private int toCIDFromRanges(byte[] code)
-    {
-        for (CIDRange range : codeToCidRanges)
-        {
-            int ch = range.map(code);
-            if (ch != -1)
-            {
-                return ch;
-            }
-        }
-        return 0;
+        return -1;
     }
 
     /**
@@ -442,11 +444,11 @@ public class CMap
         maxCodeLength = Math.max(maxCodeLength, range.getCodeLength());
         minCodeLength = Math.min(minCodeLength, range.getCodeLength());
     }
-    
+
     /**
      * Implementation of the usecmap operator.  This will
      * copy all of the mappings from one cmap to another.
-     * 
+     *
      * @param cmap The cmap to load mappings from.
      */
     void useCmap(CMap cmap)
@@ -459,13 +461,13 @@ public class CMap
         cmap.charToUnicodeTwoBytes.forEach((k, v) -> unicodeToByteCodes.put(v,
                 new byte[]{(byte) ((k >>> 8) & 0xFF), (byte) (k & 0xFF)})
         );
-        cmap.charToUnicodeMoreBytes.forEach((k, v) -> 
+        cmap.charToUnicodeMoreBytes.forEach((k, v) ->
             {
                 byte[] bar;
                 if (k <= 0xFFFFFF)
                 {
                     // 3 bytes
-                    bar = new byte[]{(byte) ((k >>> 16) & 0xFF), (byte) ((k >>> 8) & 0xFF), 
+                    bar = new byte[]{(byte) ((k >>> 16) & 0xFF), (byte) ((k >>> 8) & 0xFF),
                         (byte) (k & 0xFF)};
                 }
                 else
@@ -476,15 +478,9 @@ public class CMap
                 }
                 unicodeToByteCodes.put(v, bar);
             });
-        cmap.codeToCid.forEach((key, value) ->
-        {
-            Map<Integer, Integer> existingMapping = codeToCid.putIfAbsent(key, value);
-            if (existingMapping!=null)
-            {
-                existingMapping.putAll(value);
-            }
-        });
-        codeToCidRanges.addAll(cmap.codeToCidRanges);
+        // The parent is kept, not merged: it is asked only for codes this CMap doesn't map itself,
+        // so this CMap's own mappings win and a usecmap chain resolves nearest-first. See toCID(int, int).
+        parentCMaps.add(cmap);
         maxCodeLength = Math.max(maxCodeLength, cmap.maxCodeLength);
         minCodeLength = Math.min(minCodeLength, cmap.minCodeLength);
         maxCidLength = Math.max(maxCidLength, cmap.maxCidLength);
@@ -495,147 +491,147 @@ public class CMap
      * Returns the WMode of a CMap.
      *
      * 0 represents a horizontal and 1 represents a vertical orientation.
-     * 
+     *
      * @return the wmode
      */
-    public int getWMode() 
+    public int getWMode()
     {
         return wmode;
     }
 
     /**
      * Sets the WMode of a CMap.
-     * 
+     *
      * @param newWMode the new WMode.
      */
-    public void setWMode(int newWMode) 
+    public void setWMode(int newWMode)
     {
         wmode = newWMode;
     }
 
     /**
      * Returns the name of the CMap.
-     * 
+     *
      * @return the CMap name.
      */
-    public String getName() 
+    public String getName()
     {
         return cmapName;
     }
 
     /**
      * Sets the name of the CMap.
-     * 
+     *
      * @param name the CMap name.
      */
-    public void setName(String name) 
+    public void setName(String name)
     {
         cmapName = name;
     }
 
     /**
      * Returns the version of the CMap.
-     * 
+     *
      * @return the CMap version.
      */
-    public String getVersion() 
+    public String getVersion()
     {
         return cmapVersion;
     }
 
     /**
      * Sets the version of the CMap.
-     * 
+     *
      * @param version the CMap version.
      */
-    public void setVersion(String version) 
+    public void setVersion(String version)
     {
         cmapVersion = version;
     }
 
     /**
      * Returns the type of the CMap.
-     * 
+     *
      * @return the CMap type.
      */
-    public int getType() 
+    public int getType()
     {
         return cmapType;
     }
 
     /**
      * Sets the type of the CMap.
-     * 
+     *
      * @param type the CMap type.
      */
-    public void setType(int type) 
+    public void setType(int type)
     {
         cmapType = type;
     }
 
     /**
      * Returns the registry of the CIDSystemInfo.
-     * 
+     *
      * @return the registry.
      */
-    public String getRegistry() 
+    public String getRegistry()
     {
         return registry;
     }
 
     /**
      * Sets the registry of the CIDSystemInfo.
-     * 
+     *
      * @param newRegistry the registry.
      */
-    public void setRegistry(String newRegistry) 
+    public void setRegistry(String newRegistry)
     {
         registry = newRegistry;
     }
 
     /**
      * Returns the ordering of the CIDSystemInfo.
-     * 
+     *
      * @return the ordering.
      */
-    public String getOrdering() 
+    public String getOrdering()
     {
         return ordering;
     }
 
     /**
      * Sets the ordering of the CIDSystemInfo.
-     * 
+     *
      * @param newOrdering the ordering.
      */
-    public void setOrdering(String newOrdering) 
+    public void setOrdering(String newOrdering)
     {
         ordering = newOrdering;
     }
 
     /**
      * Returns the supplement of the CIDSystemInfo.
-     * 
+     *
      * @return the supplement.
      */
-    public int getSupplement() 
+    public int getSupplement()
     {
         return supplement;
     }
 
     /**
      * Sets the supplement of the CIDSystemInfo.
-     * 
+     *
      * @param newSupplement the supplement.
      */
-    public void setSupplement(int newSupplement) 
+    public void setSupplement(int newSupplement)
     {
         supplement = newSupplement;
     }
-    
-    /** 
+
+    /**
      * Returns the mapping for the space character.
-     * 
+     *
      * @return the mapped code for the space character
      */
     public int getSpaceMapping()
