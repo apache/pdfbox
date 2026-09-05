@@ -83,7 +83,7 @@ public class CMap
 
     /**
      * This will tell if this cmap has any CID mappings.
-     * 
+     *
      * @return true If there are any CID mappings, false otherwise.
      */
     public boolean hasCIDMappings()
@@ -246,7 +246,7 @@ public class CMap
 
     /**
      * Returns the CID for the given character code.
-     * 
+     *
      * This method exists for convenience. It may return false values as the origin byte length of the input value is
      * unknown and the mapping for some input values aren't unique. <br>
      * Example:<br>
@@ -304,7 +304,7 @@ public class CMap
     }
 
     /**
-     * Returns the CID the CID ranges of this CMap map the given character code to.
+     * Returns the CID, the CID ranges of this CMap map the given character code to.
      *
      * @param code   character code
      * @param length the origin byte length of the code
@@ -426,11 +426,11 @@ public class CMap
         maxCodeLength = Math.max(maxCodeLength, range.getCodeLength());
         minCodeLength = Math.min(minCodeLength, range.getCodeLength());
     }
-    
+
     /**
      * Implementation of the usecmap operator.  This will
      * copy all of the mappings from one cmap to another.
-     * 
+     *
      * @param cmap The cmap to load mappings from.
      */
     void useCmap(CMap cmap)
@@ -443,13 +443,13 @@ public class CMap
         cmap.charToUnicodeTwoBytes.forEach((k, v) -> unicodeToByteCodes.put(v,
                 new byte[]{(byte) ((k >>> 8) & 0xFF), (byte) (k & 0xFF)})
         );
-        cmap.charToUnicodeMoreBytes.forEach((k, v) -> 
+        cmap.charToUnicodeMoreBytes.forEach((k, v) ->
             {
                 byte[] bar;
                 if (k <= 0xFFFFFF)
                 {
                     // 3 bytes
-                    bar = new byte[]{(byte) ((k >>> 16) & 0xFF), (byte) ((k >>> 8) & 0xFF), 
+                    bar = new byte[]{(byte) ((k >>> 16) & 0xFF), (byte) ((k >>> 8) & 0xFF),
                         (byte) (k & 0xFF)};
                 }
                 else
@@ -473,147 +473,147 @@ public class CMap
      * Returns the WMode of a CMap.
      *
      * 0 represents a horizontal and 1 represents a vertical orientation.
-     * 
+     *
      * @return the wmode
      */
-    public int getWMode() 
+    public int getWMode()
     {
         return wmode;
     }
 
     /**
      * Sets the WMode of a CMap.
-     * 
+     *
      * @param newWMode the new WMode.
      */
-    public void setWMode(int newWMode) 
+    public void setWMode(int newWMode)
     {
         wmode = newWMode;
     }
 
     /**
      * Returns the name of the CMap.
-     * 
+     *
      * @return the CMap name.
      */
-    public String getName() 
+    public String getName()
     {
         return cmapName;
     }
 
     /**
      * Sets the name of the CMap.
-     * 
+     *
      * @param name the CMap name.
      */
-    public void setName(String name) 
+    public void setName(String name)
     {
         cmapName = name;
     }
 
     /**
      * Returns the version of the CMap.
-     * 
+     *
      * @return the CMap version.
      */
-    public String getVersion() 
+    public String getVersion()
     {
         return cmapVersion;
     }
 
     /**
      * Sets the version of the CMap.
-     * 
+     *
      * @param version the CMap version.
      */
-    public void setVersion(String version) 
+    public void setVersion(String version)
     {
         cmapVersion = version;
     }
 
     /**
      * Returns the type of the CMap.
-     * 
+     *
      * @return the CMap type.
      */
-    public int getType() 
+    public int getType()
     {
         return cmapType;
     }
 
     /**
      * Sets the type of the CMap.
-     * 
+     *
      * @param type the CMap type.
      */
-    public void setType(int type) 
+    public void setType(int type)
     {
         cmapType = type;
     }
 
     /**
      * Returns the registry of the CIDSystemInfo.
-     * 
+     *
      * @return the registry.
      */
-    public String getRegistry() 
+    public String getRegistry()
     {
         return registry;
     }
 
     /**
      * Sets the registry of the CIDSystemInfo.
-     * 
+     *
      * @param newRegistry the registry.
      */
-    public void setRegistry(String newRegistry) 
+    public void setRegistry(String newRegistry)
     {
         registry = newRegistry;
     }
 
     /**
      * Returns the ordering of the CIDSystemInfo.
-     * 
+     *
      * @return the ordering.
      */
-    public String getOrdering() 
+    public String getOrdering()
     {
         return ordering;
     }
 
     /**
      * Sets the ordering of the CIDSystemInfo.
-     * 
+     *
      * @param newOrdering the ordering.
      */
-    public void setOrdering(String newOrdering) 
+    public void setOrdering(String newOrdering)
     {
         ordering = newOrdering;
     }
 
     /**
      * Returns the supplement of the CIDSystemInfo.
-     * 
+     *
      * @return the supplement.
      */
-    public int getSupplement() 
+    public int getSupplement()
     {
         return supplement;
     }
 
     /**
      * Sets the supplement of the CIDSystemInfo.
-     * 
+     *
      * @param newSupplement the supplement.
      */
-    public void setSupplement(int newSupplement) 
+    public void setSupplement(int newSupplement)
     {
         supplement = newSupplement;
     }
-    
-    /** 
+
+    /**
      * Returns the mapping for the space character.
-     * 
+     *
      * @return the mapped code for the space character
      */
     public int getSpaceMapping()
