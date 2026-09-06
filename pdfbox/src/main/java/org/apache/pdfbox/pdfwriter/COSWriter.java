@@ -1510,6 +1510,9 @@ public class COSWriter implements ICOSVisitor
         number = pdDocument.getDocument().getHighestXRefObjectNumber();
         if (incrementalUpdate)
         {
+            // use the size of the origin document trailer size as starter for the incremented one
+            long trailerSize = trailer.getLong(COSName.SIZE);
+            number = Math.max(trailerSize - 1, number);
             prepareIncrement();
         }
         long idTime = pdDocument.getDocumentId() == null ? System.currentTimeMillis()
