@@ -1496,7 +1496,7 @@ class DomXmpParserTest
         XMPMetadata xmp2 = xmpParser2.parse(s.getBytes(StandardCharsets.UTF_8));
         PhotoshopSchema photoshopSchema = xmp2.getPhotoshopSchema();
         assertNull(photoshopSchema.getHeadline());
-        // non existant properties are treated as text, one might want to change this in the future.
+        // non existent properties are treated as text, one might want to change this in the future.
         assertEquals("[headline=TextType:]", photoshopSchema.getProperty("headline").toString());
     }
 

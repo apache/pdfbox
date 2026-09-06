@@ -183,7 +183,7 @@ class RandomAccessReadMemoryMappedFileTest
     @Test
     void testUnmapping() throws IOException
     {
-        // This is a special test case for some unmapping issues limited to windows enviroments
+        // This is a special test case for some unmapping issues limited to windows environments
         // see https://bugs.openjdk.java.net/browse/JDK-4724038
         Path tempFile = Files.createTempFile("PDFBOX", "txt");
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(tempFile, StandardOpenOption.WRITE))
