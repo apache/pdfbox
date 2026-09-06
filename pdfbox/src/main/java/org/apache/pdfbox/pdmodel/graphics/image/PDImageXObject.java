@@ -84,6 +84,9 @@ public final class PDImageXObject extends PDXObject implements PDImage
     private boolean jpxValuesInitialized = false;
     private BufferedImage jpxSMask = null;
 
+    // PDFBOX-5876: upper bound for the subsampling used by initJPXValues method.
+    private static final int JPX_METADATA_SUBSAMPLING = 8;
+
     /**
      * current resource dictionary (has color spaces)
      */
@@ -739,7 +742,9 @@ public final class PDImageXObject extends PDXObject implements PDImage
         // bits per component
         // the colorspace of the image is used if the dictionary doesn't provide any value
         PDStream stream = getStream();
-        try (COSInputStream is = stream.createInputStream())
+        // PDFBOX-5876: bound the subsampling of this metadata-only read, see field javadoc.
+        DecodeOptions options = new DecodeOptions(JPX_METADATA_SUBSAMPLING);
+        try (COSInputStream is = stream.createInputStream(options))
         {
             DecodeResult decodeResult = is.getDecodeResult();
             stream.getCOSObject().addAll(decodeResult.getParameters());
