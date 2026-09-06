@@ -53,7 +53,7 @@ class TestTTFParser
         TimeZone utc = TimeZone.getTimeZone("UTC");
         //Before PDFBOX-2122, TTFDataStream was using the default TimeZone
         //Set the default to something not UTC and see if a UTC timeZone is returned
-        TimeZone.setDefault(TimeZone.getTimeZone("America/Los Angeles"));
+        TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
         TTFParser parser = new TTFParser();
         TrueTypeFont ttf = parser.parse(new RandomAccessReadBufferedFile(testFile));
         Calendar created = ttf.getHeader().getCreated();
