@@ -1075,4 +1075,14 @@ public final class PDImageXObject extends PDXObject implements PDImage
     {
         getCOSObject().setItem(COSName.OC, oc);
     }
+
+    /**
+     * Use for tests only.
+     *
+     * @return 
+     */
+    BufferedImage getJpxSMask()
+    {
+        return jpxSMask;
+    }    
 }
