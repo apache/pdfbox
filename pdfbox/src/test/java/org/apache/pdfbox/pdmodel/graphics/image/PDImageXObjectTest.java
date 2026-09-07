@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import javax.imageio.ImageIO;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.Assert;
@@ -96,6 +97,26 @@ public class PDImageXObjectTest
         testCompareCreatedByContentWithCreatedByLosslessFactory("lzw.tif");
     }
 
+    /**
+     * PDFBOX-5657: test SMaskInData feature.
+     *
+     * @throws IOException 
+     */
+    @Test
+    public void testJPXSMaskInData() throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File("target/pdfs","PDFBOX-5657-PDFJS-16782-SMaskInData.pdf"));
+        PDImageXObject img = (PDImageXObject) doc.getPage(0).getResources().getXObject(COSName.getPDFName("image"));
+        Assert.assertTrue(img.getCOSObject().getInt(COSName.SMASK_IN_DATA) > 0);
+        Assert.assertNull(img.getMask());
+        Assert.assertNull(img.getSoftMask());
+        Assert.assertEquals(3, img.getOpaqueImage().getColorModel().getNumComponents());
+        Assert.assertEquals(4, img.getImage().getColorModel().getNumComponents());
+        BufferedImage jpxSMask = img.getJpxSMask();
+        Assert.assertEquals(1258, jpxSMask.getWidth());
+        Assert.assertEquals(711, jpxSMask.getHeight());
+        doc.close();
+    }
 
     /**
      * Test of createFromByteArray method, of class PDImageXObject.
