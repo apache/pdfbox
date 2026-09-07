@@ -51,11 +51,9 @@ import org.w3c.dom.NamedNodeMap;
 public final class PdfaExtensionHelper
 {
 
-    public static final String CLOSED_CHOICE = "closed Choice of ";
-    public static final String CLOSED_CHOICE_U = "Closed Choice of ";
+    private static final String CLOSED_CHOICE = "closed choice of ";
 
-    public static final String OPEN_CHOICE = "open Choice of ";
-    public static final String OPEN_CHOICE_U = "Open Choice of ";
+    private static final String OPEN_CHOICE = "open choice of ";
 
     private PdfaExtensionHelper()
     {
@@ -282,11 +280,11 @@ public final class PdfaExtensionHelper
             return TypeMapping.createPropertyType(Types.LangAlt, Cardinality.Simple);
         }
         // else all other cases
-        if (valueType.startsWith(CLOSED_CHOICE) || valueType.startsWith(CLOSED_CHOICE_U))
+        if (valueType.toLowerCase().startsWith(CLOSED_CHOICE))
         {
             valueType = valueType.substring(CLOSED_CHOICE.length());
         }
-        else if (valueType.startsWith(OPEN_CHOICE) || valueType.startsWith(OPEN_CHOICE_U))
+        else if (valueType.toLowerCase().startsWith(OPEN_CHOICE))
         {
             valueType = valueType.substring(OPEN_CHOICE.length());
         }
