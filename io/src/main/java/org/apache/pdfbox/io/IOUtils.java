@@ -427,7 +427,7 @@ public final class IOUtils
         try (Stream<Path> entries = Files.walk(path))
         {
             entries.sorted(Comparator.reverseOrder())
-                // we are using File.delete() on purpose over Files.deleteIfExists() which would be prefered in general, 
+                // we are using File.delete() on purpose over Files.deleteIfExists() which would be preferred in general, 
                 // as it's throwing a checked exception. As we are doing that in a shutdown hook there is not much we can
                 // do about it and a logger might no longer be available.
                 .forEach(p -> p.toFile().delete());
