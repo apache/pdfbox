@@ -24,6 +24,8 @@ import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -34,6 +36,9 @@ import java.net.URISyntaxException;
 import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSName;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -255,6 +260,26 @@ class PDImageXObjectTest
             assertEquals(expectedImage.getSuffix(), image.getSuffix());
             checkIdentARGB(image.getImage(), expectedImage.getImage());
         }
+    }
+
+    /**
+     * PDFBOX-5657: test SMaskInData feature.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testJPXSMaskInData() throws IOException
+    {
+        PDDocument doc = Loader.loadPDF(new File("target/pdfs","PDFBOX-5657-PDFJS-16782-SMaskInData.pdf"));
+        PDImageXObject img = (PDImageXObject) doc.getPage(0).getResources().getXObject(COSName.getPDFName("image"));
+        assertTrue(img.getCOSObject().getInt(COSName.SMASK_IN_DATA) > 0);
+        assertNull(img.getMask());
+        assertNull(img.getSoftMask());
+        assertEquals(3, img.getOpaqueImage().getColorModel().getNumComponents());
+        assertEquals(4, img.getImage().getColorModel().getNumComponents());
+        BufferedImage jpxSMask = img.getJpxSMask();
+        assertEquals(1258, jpxSMask.getWidth());
+        assertEquals(711, jpxSMask.getHeight());
     }
 
     private void testCompareCreateByContentWithCreatedByCCITTFactory(String filename)

@@ -84,6 +84,9 @@ public final class PDImageXObject extends PDXObject implements PDImage
     private boolean jpxValuesInitialized = false;
     private BufferedImage jpxSMask = null;
 
+    // PDFBOX-5876: upper bound for the subsampling used by initJPXValues method.
+    private static final int JPX_METADATA_SUBSAMPLING = 8;
+
     /**
      * current resource dictionary (has color spaces)
      */
@@ -1067,4 +1070,14 @@ public final class PDImageXObject extends PDXObject implements PDImage
     {
         getCOSObject().setItem(COSName.OC, oc);
     }
+
+    /**
+     * Use for tests only.
+     *
+     * @return 
+     */
+    BufferedImage getJpxSMask()
+    {
+        return jpxSMask;
+    }    
 }
