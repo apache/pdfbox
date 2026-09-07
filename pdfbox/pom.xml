@@ -1027,6 +1027,19 @@
                             <sha512>cd6d92c643108cdcf2b4c6a4ae4cc5a15d848e3335f6c8a135a5438d691eb982d11cfd8f26d11839321e06a364126d9b0c9732b4a19785821b844fe0ec94d525</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-5657</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13062286/PDFJS-16782-SMaskInData.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5657-PDFJS-16782-SMaskInData.pdf</outputFileName>
+                            <sha512>746c3b3d15e9865dd5ec902feda15f0b86ecd67bc3424f47261b1d9c38661f3fc56c693c2360e2a0d94bf9ca32dca3794a86889d453672622732430aed16a52c</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
