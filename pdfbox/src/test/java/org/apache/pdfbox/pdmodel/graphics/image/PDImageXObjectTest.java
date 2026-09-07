@@ -149,6 +149,28 @@ class PDImageXObjectTest
         testCompareCreatedFromByteArrayWithCreatedByCustomFactory("lzw.tif");
     }
 
+    /**
+     * PDFBOX-5657: test SMaskInData feature.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testJPXSMaskInData() throws IOException
+    {
+        try (PDDocument doc = Loader.loadPDF(new File("target/pdfs","PDFBOX-5657-PDFJS-16782-SMaskInData.pdf")))
+        {
+            PDImageXObject img = (PDImageXObject) doc.getPage(0).getResources().getXObject(COSName.getPDFName("image"));
+            assertTrue(img.getCOSObject().getInt(COSName.SMASK_IN_DATA) > 0);
+            assertNull(img.getMask());
+            assertNull(img.getSoftMask());
+            assertEquals(3, img.getOpaqueImage().getColorModel().getNumComponents());
+            assertEquals(4, img.getImage().getColorModel().getNumComponents());
+            BufferedImage jpxSMask = img.getJpxSMask();
+            assertEquals(1258, jpxSMask.getWidth());
+            assertEquals(711, jpxSMask.getHeight());
+        }
+    }
+
     private void testCompareCreatedFileByExtensionWithCreatedByLosslessFactory(String filename)
             throws IOException, URISyntaxException
     {
@@ -260,26 +282,6 @@ class PDImageXObjectTest
             assertEquals(expectedImage.getSuffix(), image.getSuffix());
             checkIdentARGB(image.getImage(), expectedImage.getImage());
         }
-    }
-
-    /**
-     * PDFBOX-5657: test SMaskInData feature.
-     *
-     * @throws IOException 
-     */
-    @Test
-    void testJPXSMaskInData() throws IOException
-    {
-        PDDocument doc = Loader.loadPDF(new File("target/pdfs","PDFBOX-5657-PDFJS-16782-SMaskInData.pdf"));
-        PDImageXObject img = (PDImageXObject) doc.getPage(0).getResources().getXObject(COSName.getPDFName("image"));
-        assertTrue(img.getCOSObject().getInt(COSName.SMASK_IN_DATA) > 0);
-        assertNull(img.getMask());
-        assertNull(img.getSoftMask());
-        assertEquals(3, img.getOpaqueImage().getColorModel().getNumComponents());
-        assertEquals(4, img.getImage().getColorModel().getNumComponents());
-        BufferedImage jpxSMask = img.getJpxSMask();
-        assertEquals(1258, jpxSMask.getWidth());
-        assertEquals(711, jpxSMask.getHeight());
     }
 
     private void testCompareCreateByContentWithCreatedByCCITTFactory(String filename)
