@@ -20,7 +20,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
+import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
@@ -151,6 +153,8 @@ class TestQuality
     void testPDFBox5876() throws IOException, InterruptedException
     {
         File file = new File(TARGET_PDF_DIR, "PDFBOX-5876-jpeg2000.pdf");
+        File outputFile = new File("target/test-output", file.getName() + "-p1.png");
+        outputFile.delete(); // in case it exists from older test
         String javaBin = System.getProperty("java.home") + File.separator + "bin" +
                 File.separator + "java";
         ProcessBuilder builder = new ProcessBuilder(javaBin, "-Xmx600m",
@@ -166,5 +170,9 @@ class TestQuality
         }
         Assertions.assertTrue(finished, "subprocess timed out");
         Assertions.assertEquals(0, process.exitValue(), "subprocess failed:\n" + output);
+        BufferedImage bim = ImageIO.read(outputFile);
+        Assertions.assertEquals(298, bim.getWidth());
+        Assertions.assertEquals(421, bim.getHeight());
+        Files.delete(outputFile.toPath());
     }
 }
