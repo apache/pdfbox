@@ -16,7 +16,10 @@
  */
 package org.apache.pdfbox.rendering;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import javax.imageio.ImageIO;
+
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -39,7 +42,13 @@ public final class JPXLowMemoryRenderMain
         {
             PDFRenderer renderer = new PDFRenderer(doc);
             renderer.setSubsamplingAllowed(true);
-            renderer.renderImage(0, 0.5f);
+            BufferedImage bim = renderer.renderImage(0, 0.5f);
+            File outputFile = new File("target/test-output", file.getName() + "-p1.png");
+            boolean ok = ImageIO.write(bim, "png", outputFile);
+            if (!ok)
+            {
+                System.exit(1);
+            }
         }
     }
 }
