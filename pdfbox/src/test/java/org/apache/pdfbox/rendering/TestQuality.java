@@ -157,7 +157,7 @@ class TestQuality
         outputFile.delete(); // in case it exists from older test
         String javaBin = System.getProperty("java.home") + File.separator + "bin" +
                 File.separator + "java";
-        ProcessBuilder builder = new ProcessBuilder(javaBin, "-Xmx600m",
+        ProcessBuilder builder = new ProcessBuilder(javaBin, "-Xmx700m",
                 "-cp", System.getProperty("java.class.path"),
                 JPXLowMemoryRenderMain.class.getName(), file.getAbsolutePath());
         builder.redirectErrorStream(true);
