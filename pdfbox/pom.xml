@@ -995,6 +995,19 @@
                             <sha512>746c3b3d15e9865dd5ec902feda15f0b86ecd67bc3424f47261b1d9c38661f3fc56c693c2360e2a0d94bf9ca32dca3794a86889d453672622732430aed16a52c</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-5876</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13071244/jpeg2000.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5876-jpeg2000.pdf</outputFileName>
+                            <sha512>5eb020282f3998c7673983625303fb7634a3ca2a2fc65efc7bd123241a7facae999610bbd38d8a6be8fc26752c7241d806d46252448ba600e2beb118f4567cf3</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
