@@ -85,6 +85,9 @@ public final class PDImageXObject extends PDXObject implements PDImage
     private boolean jpxValuesInitialized = false;
     private BufferedImage jpxSMask = null;
 
+    // PDFBOX-5876: upper bound for the subsampling used by initJPXValues method.
+    private static final int JPX_METADATA_SUBSAMPLING = 8;
+
     /**
      * current resource dictionary (has color spaces)
      */
@@ -751,7 +754,12 @@ public final class PDImageXObject extends PDXObject implements PDImage
         COSInputStream is = null;
         try
         {
-            is = stream.createInputStream();
+            // PDFBOX-5876: subsample this metadata-only read, see the JPX_METADATA_SUBSAMPLING field.
+            // Not when a soft mask may be extracted from the image data, because that mask is kept
+            // and used later at its own resolution, so it must not be subsampled.
+            is = mayHaveJPXSMask()
+                ? stream.createInputStream()
+                : stream.createInputStream(new DecodeOptions(JPX_METADATA_SUBSAMPLING));
             DecodeResult decodeResult = is.getDecodeResult();
             stream.getCOSObject().addAll(decodeResult.getParameters());
             if (colorSpace == null)
@@ -769,6 +777,19 @@ public final class PDImageXObject extends PDXObject implements PDImage
         {
             IOUtils.closeQuietly(is);
         }
+    }
+
+    /**
+     * Tells whether decoding this image may produce a soft mask taken from the image data
+     * (PDFBOX-5657). {@code JPXFilter} only extracts such a mask when the image dictionary has no
+     * /ColorSpace entry and a positive /SMaskInData entry, so both are checked here to mirror it.
+     *
+     * @return true if a soft mask may be extracted from the image data.
+     */
+    private boolean mayHaveJPXSMask()
+    {
+        COSDictionary dict = getCOSObject();
+        return !dict.containsKey(COSName.COLORSPACE) && dict.getInt(COSName.SMASK_IN_DATA) > 0;
     }
 
     /**
