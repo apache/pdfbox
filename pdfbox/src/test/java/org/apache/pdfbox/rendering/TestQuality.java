@@ -160,11 +160,11 @@ class TestQuality
         Process process = builder.start();
         String output = new String(IOUtils.toByteArray(process.getInputStream()), StandardCharsets.UTF_8);
         boolean finished = process.waitFor(120, TimeUnit.SECONDS);
-        Assertions.assertTrue(finished, "subprocess timed out");
-        Assertions.assertEquals(0, process.exitValue(), "subprocess failed:\n" + output);
         if (!finished)
         {
             process.destroy();
         }
+        Assertions.assertTrue(finished, "subprocess timed out");
+        Assertions.assertEquals(0, process.exitValue(), "subprocess failed:\n" + output);
     }
 }
