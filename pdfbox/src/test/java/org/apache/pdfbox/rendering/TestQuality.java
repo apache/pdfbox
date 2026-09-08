@@ -19,6 +19,7 @@ package org.apache.pdfbox.rendering;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -27,8 +28,8 @@ import static org.junit.Assert.assertTrue;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.Charsets;
-
 import static org.junit.Assume.assumeTrue;
+
 
 import org.junit.Test;
 
@@ -124,6 +125,8 @@ public class TestQuality
         String featureFlag = System.getProperty("TestOOM");
         assumeTrue("true".equals(featureFlag));
         File file = new File(TARGET_PDF_DIR, "PDFBOX-5876-jpeg2000.pdf");
+        File outputFile = new File("target/test-output", file.getName() + "-p1.png");
+        outputFile.delete(); // in case it exists from older test
         String javaBin = System.getProperty("java.home") + File.separator + "bin" +
                 File.separator + "java";
         ProcessBuilder builder = new ProcessBuilder(javaBin, "-Xmx600m",
@@ -157,5 +160,9 @@ public class TestQuality
 
         assertTrue("subprocess timed out", finished);
         assertEquals("subprocess failed:\n" + output, 0, process.exitValue());
+        BufferedImage bim = ImageIO.read(outputFile);
+        assertEquals(298, bim.getWidth());
+        assertEquals(421, bim.getHeight());
+        outputFile.delete();
     }
 }
