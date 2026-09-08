@@ -19,13 +19,19 @@ package org.apache.pdfbox.rendering;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 /**
  *
@@ -125,5 +131,36 @@ class TestQuality
             Assertions.assertTrue(red < 100,
                     "expected a dark text pixel but was too light: " + Integer.toHexString(rgb));
         }
+    }
+
+    /**
+     * PDFBOX-5876: rendering a page containing a very large JPEG 2000 (JPX) image at reduced
+     * scale must not decode the image at full resolution first just to read its width, height
+     * and color space. Before the fix, {@code PDImageXObject.initJPXValues()} did exactly that,
+     * on top of the properly subsampled decode done afterwards for the actual rendering, so
+     * memory usage was driven by the full image size regardless of how small the rendered output
+     * was. This must run in a separate, heap-constrained JVM, since the heap size of the JVM
+     * already running the test suite can't be changed after the fact, and the failure (an
+     * OutOfMemoryError) only reproduces below a certain heap size.
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Test
+    @EnabledIfSystemProperty(named = "TestOOM", matches = "true")
+    void testPDFBox5876() throws IOException, InterruptedException
+    {
+        File file = new File(TARGET_PDF_DIR, "PDFBOX-5876-jpeg2000.pdf");
+        String javaBin = System.getProperty("java.home") + File.separator + "bin" +
+                File.separator + "java";
+        ProcessBuilder builder = new ProcessBuilder(javaBin, "-Xmx600m",
+                "-cp", System.getProperty("java.class.path"),
+                JPXLowMemoryRenderMain.class.getName(), file.getAbsolutePath());
+        builder.redirectErrorStream(true);
+        Process process = builder.start();
+        String output = new String(IOUtils.toByteArray(process.getInputStream()), StandardCharsets.UTF_8);
+        boolean finished = process.waitFor(120, TimeUnit.SECONDS);
+        Assertions.assertTrue(finished, "subprocess timed out");
+        Assertions.assertEquals(0, process.exitValue(), "subprocess failed:\n" + output);
     }
 }
