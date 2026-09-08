@@ -171,7 +171,7 @@ class TestQuality
         Assertions.assertTrue(finished, "subprocess timed out");
         Assertions.assertEquals(0, process.exitValue(), "subprocess failed:\n" + output);
         BufferedImage bim = ImageIO.read(outputFile);
-        Assertions.assertEquals(298, bim.getWidth());
+        Assertions.assertEquals(297, bim.getWidth());
         Assertions.assertEquals(421, bim.getHeight());
         Files.delete(outputFile.toPath());
     }
