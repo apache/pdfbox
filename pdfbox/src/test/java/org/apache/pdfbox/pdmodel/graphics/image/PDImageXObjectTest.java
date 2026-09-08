@@ -115,6 +115,11 @@ public class PDImageXObjectTest
         BufferedImage jpxSMask = img.getJpxSMask();
         Assert.assertEquals(1258, jpxSMask.getWidth());
         Assert.assertEquals(711, jpxSMask.getHeight());
+        Assert.assertEquals(BufferedImage.TYPE_BYTE_GRAY, jpxSMask.getType());
+        BufferedImage bim = img.getImage();
+        Assert.assertEquals(1258, bim.getWidth());
+        Assert.assertEquals(711, bim.getHeight());
+        Assert.assertEquals(BufferedImage.TYPE_INT_ARGB, bim.getType());
         doc.close();
     }
 
