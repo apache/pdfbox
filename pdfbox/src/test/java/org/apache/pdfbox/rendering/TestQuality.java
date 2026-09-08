@@ -162,5 +162,9 @@ class TestQuality
         boolean finished = process.waitFor(120, TimeUnit.SECONDS);
         Assertions.assertTrue(finished, "subprocess timed out");
         Assertions.assertEquals(0, process.exitValue(), "subprocess failed:\n" + output);
+        if (!finished)
+        {
+            process.destroy();
+        }
     }
 }
