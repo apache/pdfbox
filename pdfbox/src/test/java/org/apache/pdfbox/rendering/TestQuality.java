@@ -19,7 +19,6 @@ package org.apache.pdfbox.rendering;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -133,7 +132,29 @@ public class TestQuality
         builder.redirectErrorStream(true);
         Process process = builder.start();
         String output = new String(IOUtils.toByteArray(process.getInputStream()), Charsets.UTF_8);
-        boolean finished = process.waitFor(120, TimeUnit.SECONDS);
+
+        // segment by ChatGPT because wait
+        long timeout = 120000L;
+        long startTime = System.currentTimeMillis();
+        boolean finished = false;
+        while (System.currentTimeMillis() - startTime < timeout)
+        {
+            try
+            {
+                process.exitValue(); // throws IllegalThreadStateException if still running
+                finished = true;
+                break;
+            }
+            catch (IllegalThreadStateException e)
+            {
+                Thread.sleep(1000); // check every second
+            }
+        }
+        if (!finished)
+        {
+            process.destroy();
+        }
+
         assertTrue("subprocess timed out", finished);
         assertEquals("subprocess failed:\n" + output, 0, process.exitValue());
     }
