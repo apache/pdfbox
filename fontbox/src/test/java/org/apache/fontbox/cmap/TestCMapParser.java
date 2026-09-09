@@ -301,10 +301,8 @@ public class TestCMapParser extends TestCase
     /**
      * A CMap holds on to the CMaps it uses rather than copying their mappings, so it must never
      * write into one: adding a mapping to the importing CMap must not reach back into the used one.
-     *
-     * @throws java.io.IOException
      */
-    public void testUseCmapDoesNotShareMappingsWithTheUsedCMap() throws IOException
+    public void testUseCmapDoesNotShareMappingsWithTheUsedCMap()
     {
         CMap used = new CMap();
         used.addCIDMapping(100, 0x41);
