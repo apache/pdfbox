@@ -298,7 +298,7 @@ public class CMap
     /**
      * This will add a CID mapping.
      * <p>
-     * <b>This method had wrong parameter names until 2038</b>
+     * <b>This method had wrong parameter names until 2.0.38</b>
      *
      * @param cid character code
      * @param code CID
