@@ -370,6 +370,50 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     }
 
     /**
+     * Get the "cvt " (Control Value) table for this TTF.
+     *
+     * @return The "cvt " table or null if it doesn't exist.
+     * @throws IOException if there was an error reading the table.
+     */
+    public ControlValueTable getControlValues() throws IOException
+    {
+        return (ControlValueTable) getTable(ControlValueTable.TAG);
+    }
+
+    /**
+     * Get the "fpgm" (Font Program) table for this TTF.
+     *
+     * @return The "fpgm" table or null if it doesn't exist.
+     * @throws IOException if there was an error reading the table.
+     */
+    public FontProgramTable getFontProgram() throws IOException
+    {
+        return (FontProgramTable) getTable(FontProgramTable.TAG);
+    }
+
+    /**
+     * Get the "prep" (Control Value Program) table for this TTF.
+     *
+     * @return The "prep" table or null if it doesn't exist.
+     * @throws IOException if there was an error reading the table.
+     */
+    public ControlValueProgramTable getControlValueProgram() throws IOException
+    {
+        return (ControlValueProgramTable) getTable(ControlValueProgramTable.TAG);
+    }
+
+    /**
+     * Get the "gasp" (Grid-fitting And Scan-conversion Procedure) table for this TTF.
+     *
+     * @return The "gasp" table or null if it doesn't exist.
+     * @throws IOException if there was an error reading the table.
+     */
+    public GaspTable getGasp() throws IOException
+    {
+        return (GaspTable) getTable(GaspTable.TAG);
+    }
+
+    /**
      * Get the data of the TrueType Font
      * program representing the stream used to build this 
      * object (normally from the TTFParser object).
