@@ -71,6 +71,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName ALPHA = new COSName("Alpha");
     public static final COSName ALTERNATE = new COSName("Alternate");
     public static final COSName ANNOT = new COSName("Annot");
+    public static final COSName AN = new COSName("AN");
     public static final COSName ANNOTS = new COSName("Annots");
     public static final COSName ANTI_ALIAS = new COSName("AntiAlias");
     public static final COSName ANY_OFF = new COSName("AnyOff");
