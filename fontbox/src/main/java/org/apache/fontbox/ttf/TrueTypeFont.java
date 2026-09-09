@@ -54,7 +54,64 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     
     private final Object lockReadtable = new Object();
     private final Object lockPSNames = new Object();
+    private final Object lockHinter = new Object();
     private final List<String> enabledGsubFeatures = new ArrayList<>();
+    private GlyphHinter hinter;
+
+    /**
+     * System property controlling whether TrueType bytecode hinting (grid-fitting) is applied to glyph
+     * outlines, e.g. {@code -Dorg.apache.fontbox.ttf.hinting=true}. Hinting is off by default, which
+     * preserves the raw outlines FontBox has always returned. The property is read once, on first use;
+     * call {@link #setHintingEnabled(boolean)} to change the setting after that.
+     */
+    public static final String SYSPROP_HINTING = "org.apache.fontbox.ttf.hinting";
+
+    /** Resolved hinting setting; null until first read of {@link #SYSPROP_HINTING}. */
+    private static volatile Boolean hintingEnabled;
+
+    /**
+     * Returns whether TrueType bytecode hinting is enabled, resolving {@link #SYSPROP_HINTING} on the
+     * first call. This is the single switch for the feature: {@link #getHintedPath(int, int)} returns
+     * {@code null} while it is off, and callers that grid-fit at render time should consult it before
+     * asking for a hinted path.
+     *
+     * @return true if hinting is enabled
+     */
+    public static boolean isHintingEnabled()
+    {
+        Boolean enabled = hintingEnabled;
+        if (enabled == null)
+        {
+            enabled = Boolean.parseBoolean(System.getProperty(SYSPROP_HINTING));
+            hintingEnabled = enabled;
+        }
+        return enabled;
+    }
+
+    /**
+     * Enables or disables TrueType bytecode hinting, overriding {@link #SYSPROP_HINTING}. This is a
+     * global setting; it takes effect for fonts already parsed.
+     * <p>
+     * Intended for start-up and for tests. Renderers consult {@link #isHintingEnabled()} per glyph, so
+     * flipping this while a page is being drawn produces a half-hinted page rather than an error.
+     *
+     * @param enabled true to grid-fit glyph outlines, false to return raw outlines
+     */
+    public static void setHintingEnabled(boolean enabled)
+    {
+        hintingEnabled = enabled;
+    }
+
+    /**
+     * Discards the resolved setting so the next {@link #isHintingEnabled()} reads
+     * {@link #SYSPROP_HINTING} again. Package-private, and here for the tests that cover the
+     * property-to-default resolution: the setting is resolved once per JVM, so without this a test
+     * cannot observe what a fresh JVM would have seen.
+     */
+    static void resetHintingSetting()
+    {
+        hintingEnabled = null;
+    }
 
     /**
      * Constructor.  Clients should use the TTFParser to create a new TrueTypeFont object.
@@ -831,6 +888,31 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     {
         int gid = nameToGID(name);
         return getAdvanceWidth(gid);
+    }
+
+    /**
+     * Returns the grid-fitted (hinted) path of the given glyph at the given ppem, in font units, or
+     * {@code null} if hinting does not apply (hinting disabled - see {@link #isHintingEnabled()} - no
+     * bytecode program, a composite or empty glyph, or a ppem excluded by the gasp table). The caller
+     * should fall back to the raw outline
+     * ({@link GlyphData#getPath()}) when this returns {@code null}.
+     *
+     * @param gid the glyph id
+     * @param ppem the pixels-per-em to grid-fit to
+     * @return the hinted path in font units, or null
+     */
+    public GeneralPath getHintedPath(int gid, int ppem)
+    {
+        GlyphHinter glyphHinter;
+        synchronized (lockHinter)
+        {
+            if (hinter == null)
+            {
+                hinter = new GlyphHinter(this);
+            }
+            glyphHinter = hinter;
+        }
+        return glyphHinter.getPath(gid, ppem);
     }
 
     @Override
