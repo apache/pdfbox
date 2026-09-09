@@ -289,6 +289,13 @@ public class PDCIDFontType2 extends PDCIDFont
                     // see PDFBOX-2599
                     return codeToCID(code);
                 }
+                else if (otf != null && otf.isPostScript())
+                {
+                    // "Identity" is the default for CFF-based OpenTypeFonts
+                    // (copied from segment below where font is embedded)
+                    // PDFBOX-6251 for the file from PDFBOX-122
+                    return codeToCID(code);
+                }
                 else if (unicode.length() > 1)
                 {
                     LOG.warn("Trying to map multi-byte character using 'cmap', result will be poor");
