@@ -364,7 +364,7 @@ class TestCMapParser
      * write into one: adding a mapping to the importing CMap must not reach back into the used one.
      */
     @Test
-    void testUseCmapDoesNotShareMappingsWithTheUsedCMap() throws IOException
+    void testUseCmapDoesNotShareMappingsWithTheUsedCMap()
     {
         CMap used = new CMap();
         used.addCIDMapping(new byte[] { 0x41 }, 100);
@@ -390,7 +390,7 @@ class TestCMapParser
      * two that way round, hence the hand built pair here.
      */
     @Test
-    void testUseCmapOwnRangeBeatsInheritedChar() throws IOException
+    void testUseCmapOwnRangeBeatsInheritedChar()
     {
         CMap used = new CMap();
         used.addCIDMapping(new byte[] { 0x41 }, 100);
