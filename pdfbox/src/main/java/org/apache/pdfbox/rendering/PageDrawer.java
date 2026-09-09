@@ -62,6 +62,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
@@ -134,15 +135,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     // parent document renderer - note: this is needed for not-yet-implemented resource caching
     private final PDFRenderer renderer;
-    
+
     private final boolean subsamplingAllowed;
-    
+
     // the graphics device to draw to, xform is the initial transform of the device (i.e. DPI)
     private Graphics2D graphics;
     private AffineTransform xform;
     private float xformScalingFactorX;
     private float xformScalingFactorY;
-    
+
     // the page box to draw (usually the crop box but may be another)
     private PDRectangle pageSize;
 
@@ -153,13 +154,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     // clipping winding rule used for the clipping path
     private int clipWindingRule = -1;
     private GeneralPath linePath = new GeneralPath();
-    
+
     // last clipping path
     private List<Path2D> lastClips;
 
     // clip when drawPage() is called, can be null, must be intersected when clipping
     private Shape initialClip;
-    
+
     // shapes of glyphs being drawn to be used for clipping
     private List<Shape> textClippings;
 
@@ -167,7 +168,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private final Map<PDFont, GlyphCache> glyphCaches = new HashMap<>();
 
     private final TilingPaintFactory tilingPaintFactory = new TilingPaintFactory(this);
-    
+
     private final Deque<TransparencyGroup> transparencyGroupStack = new ArrayDeque<>();
 
     // if greater zero the content is hidden and will not be rendered
@@ -202,7 +203,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     /**
      * Return the AnnotationFilter.
-     * 
+     *
      * @return the AnnotationFilter
      */
     public AnnotationFilter getAnnotationFilter()
@@ -212,19 +213,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     /**
      * Set the AnnotationFilter.
-     * 
+     *
      * <p>Allows to only render annotation accepted by the filter.
-     * 
+     *
      * @param annotationFilter the AnnotationFilter
      */
     public void setAnnotationFilter(AnnotationFilter annotationFilter)
     {
         this.annotationFilter = annotationFilter;
     }
-    
+
     /**
      * Returns the parent renderer.
-     * 
+     *
      * @return the parent renderer
      */
     public final PDFRenderer getRenderer()
@@ -234,7 +235,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     /**
      * Returns the underlying Graphics2D. May be null if drawPage has not yet been called.
-     * 
+     *
      * @return the underlying Graphics2D
      */
     protected final Graphics2D getGraphics()
@@ -244,7 +245,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     /**
      * Returns the current line path. This is reset to empty after each fill/stroke.
-     * 
+     *
      * @return the current line path
      */
     protected final GeneralPath getLinePath()
@@ -262,7 +263,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     /**
      * Draws the page to the requested context.
-     * 
+     *
      * @param g The graphics context to draw onto.
      * @param pageSize The size of the page to draw.
      * @throws IOException If there is an IO error while drawing the page.
@@ -320,13 +321,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         lastClips = null;
         Shape savedInitialClip = initialClip;
         initialClip = null;
-        
+
         boolean savedFlipTG = flipTG;
         flipTG = true;
 
         setRenderingHints();
         processTilingPattern(pattern, color, colorSpace, patternMatrix);
-        
+
         flipTG = savedFlipTG;
         graphics = savedGraphics;
         linePath = savedLinePath;
@@ -337,15 +338,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private float clampColor(float color)
     {
-        return color < 0 ? 0 : (color > 1 ? 1 : color);        
+        return color < 0 ? 0 : (color > 1 ? 1 : color);
     }
 
     /**
      * Returns an AWT paint for the given PDColor.
-     * 
+     *
      * @param color The color to get a paint for. This can be an actual color or a pattern.
      * @return an AWT paint for the given PDColor
-     * 
+     *
      * @throws IOException if the AWT paint could not be created
      */
     protected Paint getPaint(PDColor color) throws IOException
@@ -384,7 +385,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 else
                 {
                     // uncolored tiling pattern
-                    return tilingPaintFactory.create(tilingPattern, 
+                    return tilingPaintFactory.create(tilingPattern,
                             patternSpace.getUnderlyingColorSpace(), color, xform);
                 }
             }
@@ -460,7 +461,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         endTextClip();
     }
-    
+
     /**
      * Begin buffering the text clipping path, if any.
      */
@@ -477,7 +478,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         PDGraphicsState state = getGraphicsState();
         RenderingMode renderingMode = state.getTextState().getRenderingMode();
-        
+
         // apply the buffered clip as one area
         if (renderingMode.isClip() && !textClippings.isEmpty())
         {
@@ -488,7 +489,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             state.intersectClippingPath(path);
             textClippings = new ArrayList<>();
 
-            // PDFBOX-3681: lastClip needs to be reset, because after intersection it is still the same 
+            // PDFBOX-3681: lastClip needs to be reset, because after intersection it is still the same
             // object, thus setClip() would believe that it is cached.
             lastClips = null;
         }
@@ -510,13 +511,54 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             glyphCaches.put(font, cache);
         }
 
-        GeneralPath path = cache.getPathForCharacterCode(code);
+        // Grid-fitting is off by default; TrueTypeFont.SYSPROP_HINTING
+        // ("-Dorg.apache.fontbox.ttf.hinting=true") or TrueTypeFont.setHintingEnabled(true) turns it
+        // on. While it is off we never derive a ppem and take the plain, code-keyed cache path, so the
+        // feature costs nothing when disabled.
+        int ppem = 0;
+        if (TrueTypeFont.isHintingEnabled())
+        {
+            // hintingPpem expects the glyph-space-to-device transform, but 'at' only maps glyph space
+            // to PDF user space (points) - the device scale lives in 'xform', which the Graphics2D
+            // applies separately. Compose it in so the ppem is the true device pixels-per-em;
+            // otherwise we grid-fit at the font's point size (e.g. 7) instead of its rendered size
+            // (e.g. 29 at 300dpi).
+            AffineTransform deviceAt = at;
+            if (xform != null)
+            {
+                deviceAt = new AffineTransform(xform);
+                deviceAt.concatenate(at);
+            }
+            ppem = hintingPpem(deviceAt);
+        }
+        GeneralPath path = ppem > 0 ? cache.getPathForCharacterCode(code, ppem)
+                : cache.getPathForCharacterCode(code);
         drawGlyph(path, font, code, displacement, at);
     }
 
     /**
+     * Derives the pixels-per-em for grid-fitting from the glyph-space-to-device transform, or returns
+     * 0 when the glyph is too small / degenerate to hint. The ppem is the magnitude of the transform's
+     * vertical basis vector, i.e. the device height of one em, so it is correct under rotation: the
+     * glyph is grid-fit in its own (upright) coordinate space and the full transform — including any
+     * rotation — is then applied to the hinted outline by the caller, exactly as FreeType does for
+     * rotated text (90-degree vertical CJK columns being the common case). The path fed through
+     * {@code at} is normalized to 1000 units/em, so one em is 1000 units in {@code at}'s input space.
+     *
+     * @param at the transform mapping normalized (1000/em) glyph coordinates to device space
+     * @return the ppem to hint at, or 0 to render unhinted
+     */
+    static int hintingPpem(AffineTransform at)
+    {
+        // length of the y basis vector = device pixels per normalized unit, rotation-invariant
+        double scaleY = Math.hypot(at.getShearX(), at.getScaleY());
+        int ppem = (int) Math.round(1000.0 * scaleY);
+        return ppem > 0 ? ppem : 0;
+    }
+
+    /**
      * Renders a glyph.
-     * 
+     *
      * @param path the GeneralPath for the glyph
      * @param font the font
      * @param code character code
@@ -625,7 +667,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 }
             }
         }
-        TransparencyGroup transparencyGroup = new TransparencyGroup(form, true, 
+        TransparencyGroup transparencyGroup = new TransparencyGroup(form, true,
                 softMask.getInitialTransformationMatrix(), backdropColor);
         BufferedImage image = transparencyGroup.getImage();
         if (image == null)
@@ -663,7 +705,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         Rectangle originalBounds = new Rectangle(gray.getWidth(), gray.getHeight());
         Rectangle2D transformedBounds = at.createTransformedShape(originalBounds).getBounds2D();
-        at.preConcatenate(AffineTransform.getTranslateInstance(-transformedBounds.getMinX(), 
+        at.preConcatenate(AffineTransform.getTranslateInstance(-transformedBounds.getMinX(),
                 -transformedBounds.getMinY()));
 
         int width = (int) Math.ceil(transformedBounds.getWidth());
@@ -851,7 +893,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             graphics.setPaint(getNonStrokingPaint());
             graphics.fill(shape);
         }
-        
+
         linePath.reset();
 
         if (noAntiAlias)
@@ -973,7 +1015,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 getGraphicsState().intersectClippingPath(adjustClip(linePath));
             }
 
-            // PDFBOX-3836: lastClip needs to be reset, because after intersection it is still the same 
+            // PDFBOX-3836: lastClip needs to be reset, because after intersection it is still the same
             // object, thus setClip() would believe that it is cached.
             lastClips = null;
 
@@ -1016,7 +1058,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         linePath.reset();
     }
-    
+
     /**
      * PDFBOX-5715 / PR#73: This was added to fix a problem with missing fine lines when printing
      * on MacOS. Lines vanish because CPrinterJob sets graphics scale to 1 for Printable so after
@@ -1028,7 +1070,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * <a href="https://github.com/apache/pdfbox/pull/173">here</a>.
      *
      * @param linePath
-     * @return 
+     * @return
      */
     private GeneralPath adjustClip(GeneralPath linePath)
     {
@@ -1125,10 +1167,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 // The earlier code for stencils (see "else") doesn't work with patterns because the
                 // CTM is not taken into consideration.
-                // this code is based on the fact that it is easily possible to draw the mask and 
+                // this code is based on the fact that it is easily possible to draw the mask and
                 // the paint at the correct place with the existing code, but not in one step.
                 // Thus what we do is to draw both in separate images, then combine the two and draw
-                // the result. 
+                // the result.
                 // Note that the device scale is not used. In theory, some patterns can get better
                 // at higher resolutions but the stencil would become more and more "blocky".
                 // If anybody wants to do this, have a look at the code in showTransparencyGroup().
@@ -1511,7 +1553,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // will trigger the workaround. Because of the slowness we only do it if the user
             // expects quality rendering and interpolation.
             Matrix imageTransformMatrix = new Matrix(imageTransform);
-            Matrix graphicsTransformMatrix = new Matrix(originalTransform);    
+            Matrix graphicsTransformMatrix = new Matrix(originalTransform);
             float scaleX = Math.abs(imageTransformMatrix.getScalingFactorX() * graphicsTransformMatrix.getScalingFactorX());
             float scaleY = Math.abs(imageTransformMatrix.getScalingFactorY() * graphicsTransformMatrix.getScalingFactorY());
 
@@ -1580,7 +1622,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             bim = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
         }
 
-        // prepare transfer functions (either one per color or one for all) 
+        // prepare transfer functions (either one per color or one for all)
         // and maps (actually arrays[256] to be faster) to avoid calculating values several times
         Integer[] rMap;
         Integer[] gMap;
@@ -1840,7 +1882,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     /**
      * For advanced users, to extract the transparency group into a separate graphics device.
-     * 
+     *
      * @param form the transparency group to be extracted
      * @param graphics the target graphics device
      * @throws IOException if the transparency group could not be extracted
@@ -1944,7 +1986,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
          * masks.
          * @throws IOException
          */
-        private TransparencyGroup(PDTransparencyGroup form, boolean isSoftMask, Matrix ctm, 
+        private TransparencyGroup(PDTransparencyGroup form, boolean isSoftMask, Matrix ctm,
                 PDColor backdropColor) throws IOException
         {
             Graphics2D savedGraphics = graphics;
@@ -2049,8 +2091,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
             if (isSoftMask && backdropColor != null)
             {
-                // "If the subtype is Luminosity, the transparency group XObject G shall be 
-                // composited with a fully opaque backdrop whose colour is everywhere defined 
+                // "If the subtype is Luminosity, the transparency group XObject G shall be
+                // composited with a fully opaque backdrop whose colour is everywhere defined
                 // by the soft-mask dictionary's BC entry."
                 g.setBackground(new Color(backdropColor.toRGB()));
                 g.clearRect(0, 0, width, height);
@@ -2103,7 +2145,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     ((GroupGraphics) graphics).removeBackdrop(backdropImage, backdropX, backdropY);
                 }
             }
-            finally 
+            finally
             {
                 flipTG = savedFlipTG;
                 lastClips = savedLastClips;
@@ -2118,7 +2160,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
 
         // http://stackoverflow.com/a/21181943/535646
-        private BufferedImage create2ByteGrayAlphaImage(int width, int height) 
+        private BufferedImage create2ByteGrayAlphaImage(int width, int height)
         {
             // gray + alpha
             int[] bandOffsets = {1, 0};
@@ -2339,7 +2381,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         List<Boolean> visibles = new ArrayList<>(oCGs.size());
         oCGs.forEach(prop -> visibles.add(!isHiddenOCG(prop)));
         COSName visibilityPolicy = ocmd.getVisibilityPolicy();
-        
+
         // visible if any of the entries in OCGs are OFF
         if (COSName.ANY_OFF.equals(visibilityPolicy))
         {
