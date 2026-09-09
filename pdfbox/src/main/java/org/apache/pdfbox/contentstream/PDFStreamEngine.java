@@ -238,11 +238,11 @@ public abstract class PDFStreamEngine
         Matrix parentMatrix = initialMatrix;
         PDGraphicsState graphicsState = getGraphicsState();
 
-        // the stream's initial matrix includes the parent CTM, e.g. this allows a scaled form
-        initialMatrix = graphicsState.getCurrentTransformationMatrix().clone();
-
         // transform the CTM using the stream's matrix
         graphicsState.getCurrentTransformationMatrix().concatenate(group.getMatrix());
+        
+        // the stream's initial matrix includes the parent CTM, e.g. this allows a scaled form
+        initialMatrix = graphicsState.getCurrentTransformationMatrix().clone();
 
         // Before execution of the transparency group XObject’s content stream, 
         // the current blend mode in the graphics state shall be initialized to Normal, 
