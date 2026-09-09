@@ -377,6 +377,18 @@ public class TTFParser
             case GlyphSubstitutionTable.TAG:
                 table = new GlyphSubstitutionTable();
                 break;
+            case ControlValueTable.TAG:
+                table = new ControlValueTable();
+                break;
+            case FontProgramTable.TAG:
+                table = new FontProgramTable();
+                break;
+            case ControlValueProgramTable.TAG:
+                table = new ControlValueProgramTable();
+                break;
+            case GaspTable.TAG:
+                table = new GaspTable();
+                break;
             default:
                 table = readTable(tag);
                 break;
