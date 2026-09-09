@@ -391,7 +391,7 @@ class TestCMapParser
      * two that way round, hence the hand built pair here.
      */
     @Test
-    void testUseCmapOwnRangeBeatsInheritedChar() throws IOException
+    void testUseCmapOwnRangeBeatsInheritedChar()
     {
         CMap used = new CMap();
         used.addCIDMapping(new byte[] { 0x41 }, 100);
