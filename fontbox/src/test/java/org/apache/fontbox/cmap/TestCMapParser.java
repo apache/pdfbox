@@ -327,7 +327,7 @@ public class TestCMapParser extends TestCase
      * beat an inherited cidchar too, not just an inherited cidrange. No predefined CMap pairs the
      * two that way round, hence the hand built pair here.
      */
-    public void testUseCmapOwnRangeBeatsInheritedChar() throws IOException
+    public void testUseCmapOwnRangeBeatsInheritedChar()
     {
         CMap used = new CMap();
         used.addCIDMapping(100, 0x41);
