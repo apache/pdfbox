@@ -68,6 +68,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName ALT = getPDFName("Alt");
     public static final COSName ALPHA = getPDFName("Alpha");
     public static final COSName ALTERNATE = getPDFName("Alternate");
+    public static final COSName AN = getPDFName("AN");
     public static final COSName ANNOT = getPDFName("Annot");
     public static final COSName ANNOTS = getPDFName("Annots");
     public static final COSName ANTI_ALIAS = getPDFName("AntiAlias");
