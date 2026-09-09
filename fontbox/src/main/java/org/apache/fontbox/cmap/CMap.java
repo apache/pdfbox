@@ -57,8 +57,12 @@ public class CMap
     private final Map <String, byte[]> unicodeToByteCodes = new HashMap<String, byte[]>();
 
     // CID mappings
+    // map with all code to cid mappings organized by the origin byte length of the input value
     private final Map<Integer,Integer> codeToCid = new HashMap<Integer,Integer>();
     private final List<CIDRange> codeToCidRanges = new ArrayList<CIDRange>();
+
+    // the CMaps this one inherits from through the usecmap operator, see useCmap
+    private final List<CMap> parentCMaps = new ArrayList<CMap>();
 
     private static final String SPACE = " ";
     private int spaceMapping = -1;
@@ -77,7 +81,19 @@ public class CMap
      */
     public boolean hasCIDMappings()
     {
-        return !codeToCid.isEmpty() || !codeToCidRanges.isEmpty();
+        return !codeToCid.isEmpty() || !codeToCidRanges.isEmpty() || hasCIDMappings(parentCMaps);
+    }
+
+    private boolean hasCIDMappings(List<CMap> parentCMaps)
+    {
+        for (CMap cmap : parentCMaps)
+        {
+            if (cmap.hasCIDMappings())
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -168,16 +184,66 @@ public class CMap
     /**
      * Returns the CID for the given character code.
      *
+     * This method exists for convenience. It may return false values as the origin byte length of the input value is
+     * unknown and the mapping for some input values aren't unique. <br>
+     * Example:<br>
+     * The two byte value 0x00, 0x65 maps to 0x20 <br>
+     * An input value of 0x65 always returns 0x20 even if the value has an origin byte length of 1.
+     *
      * @param code character code
      * @return CID
      */
     public int toCID(int code)
+    {
+        int cid = findCID(code);
+        if (cid != -1)
+        {
+            return cid;
+        }
+        return 0;
+    }
+
+    /**
+     * Returns the CID this CMap, or one of the CMaps it inherits from, maps the given character code
+     * to, or -1 if none of them maps it. CID 0 is the .notdef glyph and a CMap may map a code to it
+     * deliberately, so "mapped to 0" has to be told apart from "not mapped" while the usecmap chain
+     * is walked. The public toCID methods report both as 0.
+     *
+     * @param code   character code
+     * @return CID, or -1 if neither this CMap nor any it inherits from maps the code
+     */
+    private int findCID(int code)
     {
         Integer cid = codeToCid.get(code);
         if (cid != null)
         {
             return cid;
         }
+        int cidFromRange = toCIDFromRanges(code);
+        if (cidFromRange != -1)
+        {
+            return cidFromRange;
+        }
+        // this CMap doesn't map the code itself, so ask the ones it inherits from
+        for (CMap parentCMap : parentCMaps)
+        {
+            int parentCid = parentCMap.findCID(code);
+            if (parentCid != -1)
+            {
+                return parentCid;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Returns the CID, the CID ranges of this CMap map the given character code to.
+     *
+     * @param code   character code
+     * @return CID, or -1 if no range covers the code
+     */
+    private int toCIDFromRanges(int code)
+    {
         for (CIDRange range : codeToCidRanges)
         {
             int ch = range.map((char)code);
@@ -186,7 +252,7 @@ public class CMap
                 return ch;
             }
         }
-        return 0;
+        return -1;
     }
 
     /**
@@ -231,13 +297,15 @@ public class CMap
 
     /**
      * This will add a CID mapping.
+     * <p>
+     * <b>This method had wrong parameter names until 2038</b>
      *
-     * @param code character code
-     * @param cid CID
+     * @param cid character code
+     * @param code CID
      */
-    void addCIDMapping(int code, int cid)
+    void addCIDMapping(int cid, int code)
     {
-        codeToCid.put(cid, code);
+        codeToCid.put(code, cid);
     }
 
     /**
@@ -250,14 +318,19 @@ public class CMap
      */
     void addCIDRange(char from, char to, int cid)
     {
+        addCIDRange(codeToCidRanges, from, to, cid);
+    }
+
+    private void addCIDRange(List<CIDRange> cidRanges, char from, char to, int cid)
+    {
         CIDRange lastRange = null;
-        if (!codeToCidRanges.isEmpty())
+        if (!cidRanges.isEmpty())
         {
-            lastRange = codeToCidRanges.get(codeToCidRanges.size() - 1);
+            lastRange = cidRanges.get(cidRanges.size() - 1);
         }
         if (lastRange == null || !lastRange.extend(from, to, cid))
         {
-            codeToCidRanges.add(new CIDRange(from, to, cid));
+            cidRanges.add(new CIDRange(from, to, cid));
         }
     }
 
@@ -286,11 +359,14 @@ public class CMap
             addCodespaceRange(codespaceRange);
         }
         charToUnicode.putAll(cmap.charToUnicode);
-        codeToCid.putAll(cmap.codeToCid);
-        codeToCidRanges.addAll(cmap.codeToCidRanges);
-
         // unicodeToByteCodes should be filled too, but this isn't possible in 2.0.*
         // because we don't know the code length
+
+        // The parent is kept, not merged: it is asked only for codes this CMap doesn't map itself,
+        // so this CMap's own mappings win and a usecmap chain resolves nearest-first. See toCID(int, int).
+        parentCMaps.add(cmap);
+        maxCodeLength = Math.max(maxCodeLength, cmap.maxCodeLength);
+        minCodeLength = Math.min(minCodeLength, cmap.minCodeLength);
     }
 
     /**
