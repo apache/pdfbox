@@ -24,18 +24,23 @@ import java.awt.GraphicsDevice;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
@@ -578,9 +583,25 @@ public class PDFRenderer
 
     private boolean hasBlendMode(PDPage page)
     {
-        // check the current resources for blend modes
-        PDResources resources = page.getResources();
-        if (resources == null)
+        // check the page resources and the resources of nested form XObjects
+        return hasBlendMode(page.getResources(), new HashSet<COSDictionary>());
+    }
+
+    /**
+     * Checks whether the given resources, or the resources of any form XObject reachable from
+     * them, contain an extended graphics state with a blend mode other than Normal.
+     * Blend modes are often set inside form XObjects (e.g. artwork placed into a layout), so
+     * checking only the page level resources is not enough: a blend mode like ColorBurn or
+     * Multiply applied to an opaque white backdrop would make the content disappear.
+     *
+     * @param resources the resources to check, may be null.
+     * @param visited the resource dictionaries that have already been checked, to avoid endless
+     * recursion for self-referencing forms.
+     * @return true if a blend mode other than Normal was found.
+     */
+    private boolean hasBlendMode(PDResources resources, Set<COSDictionary> visited)
+    {
+        if (resources == null || !visited.add(resources.getCOSObject()))
         {
             return false;
         }
@@ -596,6 +617,30 @@ public class PDFRenderer
                 {
                     return true;
                 }
+            }
+        }
+        for (COSName name : resources.getXObjectNames())
+        {
+            if (resources.isImageXObject(name))
+            {
+                // avoid creating image XObjects, they can't have resources
+                continue;
+            }
+            PDXObject xObject;
+            try
+            {
+                xObject = resources.getXObject(name);
+            }
+            catch (IOException ex)
+            {
+                // broken XObject, will be reported again when the page is drawn
+                LOG.debug("Can't check XObject " + name + " for blend modes", ex);
+                continue;
+            }
+            if (xObject instanceof PDFormXObject
+                    && hasBlendMode(((PDFormXObject) xObject).getResources(), visited))
+            {
+                return true;
             }
         }
         return false;
