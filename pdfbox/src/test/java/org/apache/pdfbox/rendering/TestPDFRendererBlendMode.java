@@ -17,7 +17,7 @@
 
 package org.apache.pdfbox.rendering;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -31,7 +31,8 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
-import org.junit.jupiter.api.Test;
+
+import org.junit.Test;
 
 /**
  * Tests that blend modes are detected wherever they are used on a page, so that the page is
@@ -39,7 +40,7 @@ import org.junit.jupiter.api.Test;
  * mode such as ColorBurn or Multiply applied directly onto an opaque white backdrop would make
  * the blended content disappear.
  */
-class TestPDFRendererBlendMode
+public class TestPDFRendererBlendMode
 {
     private static final int BLUE = 0xFF0000FF;
     private static final int WHITE = 0xFFFFFFFF;
@@ -48,18 +49,16 @@ class TestPDFRendererBlendMode
      * Blend mode set in the resources of the page itself.
      */
     @Test
-    void testBlendModeInPageResources() throws IOException
+    public void testBlendModeInPageResources() throws IOException
     {
-        try (PDDocument doc = new PDDocument())
-        {
-            PDPage page = new PDPage(new PDRectangle(200, 200));
-            doc.addPage(page);
-            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
-            {
-                drawBlueSquareWithColorBurn(cs);
-            }
-            assertBlueSquareVisible(doc);
-        }
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage(new PDRectangle(200, 200));
+        doc.addPage(page);
+        PDPageContentStream cs = new PDPageContentStream(doc, page);
+        drawBlueSquareWithColorBurn(cs);
+        cs.close();
+        assertBlueSquareVisible(doc);
+        doc.close();
     }
 
     /**
@@ -67,24 +66,21 @@ class TestPDFRendererBlendMode
      * resources themselves don't have any blend mode.
      */
     @Test
-    void testBlendModeInFormXObject() throws IOException
+    public void testBlendModeInFormXObject() throws IOException
     {
-        try (PDDocument doc = new PDDocument())
-        {
-            PDPage page = new PDPage(new PDRectangle(200, 200));
-            doc.addPage(page);
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage(new PDRectangle(200, 200));
+        doc.addPage(page);
 
-            PDFormXObject form = createForm(doc);
-            try (PDFormContentStream cs = new PDFormContentStream(form))
-            {
-                drawBlueSquareWithColorBurn(cs);
-            }
-            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
-            {
-                cs.drawForm(form);
-            }
-            assertBlueSquareVisible(doc);
-        }
+        PDFormXObject form = createForm(doc);
+        PDFormContentStream cs1 = new PDFormContentStream(form);
+        drawBlueSquareWithColorBurn(cs1);
+        cs1.close();
+        PDPageContentStream cs2 = new PDPageContentStream(doc, page);
+        cs2.drawForm(form);
+        cs2.close();
+        assertBlueSquareVisible(doc);
+        doc.close();
     }
 
     /**
@@ -92,29 +88,25 @@ class TestPDFRendererBlendMode
      * as done by layout applications placing artwork from illustration applications.
      */
     @Test
-    void testBlendModeInNestedFormXObject() throws IOException
+    public void testBlendModeInNestedFormXObject() throws IOException
     {
-        try (PDDocument doc = new PDDocument())
-        {
-            PDPage page = new PDPage(new PDRectangle(200, 200));
-            doc.addPage(page);
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage(new PDRectangle(200, 200));
+        doc.addPage(page);
 
-            PDFormXObject inner = createForm(doc);
-            try (PDFormContentStream cs = new PDFormContentStream(inner))
-            {
-                drawBlueSquareWithColorBurn(cs);
-            }
-            PDFormXObject outer = createForm(doc);
-            try (PDFormContentStream cs = new PDFormContentStream(outer))
-            {
-                cs.drawForm(inner);
-            }
-            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
-            {
-                cs.drawForm(outer);
-            }
-            assertBlueSquareVisible(doc);
-        }
+        PDFormXObject inner = createForm(doc);
+        PDFormContentStream cs = new PDFormContentStream(inner);
+        drawBlueSquareWithColorBurn(cs);
+        cs.close();
+        PDFormXObject outer = createForm(doc);
+        PDFormContentStream cs2 = new PDFormContentStream(outer);
+        cs2.drawForm(inner);
+        cs2.close();
+        PDPageContentStream cs3 = new PDPageContentStream(doc, page);
+        cs3.drawForm(outer);
+        cs3.close();
+        assertBlueSquareVisible(doc);
+        doc.close();
     }
 
     /**
@@ -122,27 +114,24 @@ class TestPDFRendererBlendMode
      * detection.
      */
     @Test
-    void testSelfReferencingFormXObject() throws IOException
+    public void testSelfReferencingFormXObject() throws IOException
     {
-        try (PDDocument doc = new PDDocument())
-        {
-            PDPage page = new PDPage(new PDRectangle(200, 200));
-            doc.addPage(page);
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage(new PDRectangle(200, 200));
+        doc.addPage(page);
 
-            PDFormXObject form = createForm(doc);
-            form.getResources().add(form);
-            try (PDFormContentStream cs = new PDFormContentStream(form))
-            {
-                cs.setNonStrokingColor(0f, 0f, 1f);
-                cs.addRect(50, 50, 100, 100);
-                cs.fill();
-            }
-            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
-            {
-                cs.drawForm(form);
-            }
-            assertBlueSquareVisible(doc);
-        }
+        PDFormXObject form = createForm(doc);
+        form.getResources().add(form);
+        PDFormContentStream cs1 = new PDFormContentStream(form);
+        cs1.setNonStrokingColor(0f, 0f, 1f);
+        cs1.addRect(50, 50, 100, 100);
+        cs1.fill();
+        cs1.close();
+        PDPageContentStream cs2 = new PDPageContentStream(doc, page);
+        cs2.drawForm(form);
+        cs2.close();
+        assertBlueSquareVisible(doc);
+        doc.close();
     }
 
     private static PDFormXObject createForm(PDDocument doc)
@@ -177,7 +166,7 @@ class TestPDFRendererBlendMode
     {
         BufferedImage image = new PDFRenderer(doc).renderImage(0, 1, ImageType.RGB);
         assertEquals(BufferedImage.TYPE_INT_RGB, image.getType());
-        assertEquals(BLUE, image.getRGB(100, 100), "blended content must be visible on white");
-        assertEquals(WHITE, image.getRGB(25, 25), "background must stay white");
+        assertEquals("blended content must be visible on white", BLUE, image.getRGB(100, 100));
+        assertEquals("background must stay white", WHITE, image.getRGB(25, 25));
     }
 }
