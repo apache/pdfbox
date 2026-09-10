@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.AbstractGlyphLayoutProcessor;
 import org.apache.pdfbox.pdmodel.ContentStreamForGlyphLayoutInterface;
 import org.apache.pdfbox.pdmodel.GlyphLayoutProcessorInterface;
