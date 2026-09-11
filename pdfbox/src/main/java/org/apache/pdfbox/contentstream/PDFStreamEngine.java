@@ -712,6 +712,10 @@ public abstract class PDFStreamEngine
             {
                 LOG.error("Nested arrays are not allowed in an array for TJ operation: {}", obj);
             }
+            else if (obj == null)
+            {
+                LOG.error("(null) element in array for TJ operation");
+            }
             else
             {
                 LOG.error("Unknown type {} in array for TJ operation: {}",
