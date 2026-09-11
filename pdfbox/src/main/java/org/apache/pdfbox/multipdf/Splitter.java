@@ -313,7 +313,7 @@ public class Splitter
             {
                 // create a clone of the array
                 COSArray srcArray = (COSArray) actualSrcObj;
-                COSArray dstArray = new COSArray();
+                COSArray dstArray = new COSArray(srcArray.size());
                 for (int i = 0; i < srcArray.size(); ++i)
                 {
                     COSBase srcElement = srcArray.getObject(i);
