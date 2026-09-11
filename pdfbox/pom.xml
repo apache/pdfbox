@@ -95,12 +95,6 @@
             <version>${jbig2.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.twelvemonkeys.imageio</groupId>
-            <artifactId>imageio-jpeg</artifactId>
-            <version>3.14.0</version>
-            <scope>test</scope>
-        </dependency>
         <!-- can't use 5.*, doesn't support jdk11 -->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -120,7 +114,7 @@
         <dependency>
             <groupId>com.github.jai-imageio</groupId>
             <artifactId>jai-imageio-jpeg2000</artifactId>
-            <version>1.4.1-SNAPSHOT</version>
+            <version>${jai.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -158,10 +152,9 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>@{surefireArgLine} -Xmx32g</argLine>
+                    <argLine>@{surefireArgLine} -Xmx1g</argLine>
                     <excludes>
                         <exclude>org/apache/pdfbox/rendering/TestPDFToImage.java</exclude>
-                        <exclude>org/apache/pdfbox/rendering/TestRendering.java</exclude>
                     </excludes>
                     <systemPropertyVariables>
                         <java.util.logging.config.file>src/test/resources/logging.properties</java.util.logging.config.file>
