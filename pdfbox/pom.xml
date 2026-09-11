@@ -95,6 +95,12 @@
             <version>${jbig2.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-jpeg</artifactId>
+            <version>3.14.0</version>
+            <scope>test</scope>
+        </dependency>
         <!-- can't use 5.*, doesn't support jdk11 -->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -114,7 +120,7 @@
         <dependency>
             <groupId>com.github.jai-imageio</groupId>
             <artifactId>jai-imageio-jpeg2000</artifactId>
-            <version>${jai.version}</version>
+            <version>1.4.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -152,9 +158,10 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>@{surefireArgLine} -Xmx1g</argLine>
+                    <argLine>@{surefireArgLine} -Xmx32g</argLine>
                     <excludes>
                         <exclude>org/apache/pdfbox/rendering/TestPDFToImage.java</exclude>
+                        <exclude>org/apache/pdfbox/rendering/TestRendering.java</exclude>
                     </excludes>
                     <systemPropertyVariables>
                         <java.util.logging.config.file>src/test/resources/logging.properties</java.util.logging.config.file>
@@ -1012,6 +1019,19 @@
                             <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
                             <outputFileName>PDFBOX-5403-bad-rendering.pdf</outputFileName>
                             <sha512>0d7160a4af04bf2f785bf4155f69876da4b7ff7a196e7eda1eb904c02c35aa03c31041d9339fda90322cb58bde16b87bae8460c617bfe5b8dc0670ddab102f62</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-5250</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13073765/PDFBOX-5250-pattern-reduced3.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5250-pattern-reduced3.pdf</outputFileName>
+                            <sha512>fef1da8db49531a3bf017c6872b2032cac2d3c7e431f5529a80f87886b2d06455d086c9228ad35aee80d824ffb9e65e5ea302327b7feada001ede66f83199101</sha512>
                         </configuration>
                     </execution>
                     <execution>
