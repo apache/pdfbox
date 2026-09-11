@@ -107,6 +107,37 @@ public class TestQuality
     }
 
     /**
+     * PDFBOX-5250: a mesh shading pattern used inside a transparency group that has its own
+     * non-trivial /Matrix must be positioned using that group's own initial matrix, not the
+     * parent's. Before the fix, the transparency group's /Matrix was concatenated into the CTM
+     * only after the initial matrix had already been captured, so any pattern painted inside the
+     * group (here, a colored tiling pattern whose cell is itself a transparency group filled
+     * with a type 7 shading) was placed using the wrong reference matrix. That shifted the mesh
+     * shading far out of position, so instead of the intended multicolor gradient, only a
+     * single, mostly-green sliver of it ever landed on the visible glyphs.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox5250() throws IOException
+    {
+        File file = new File(TARGET_PDF_DIR, "PDFBOX-5250-pattern-reduced3.pdf");
+        PDDocument doc = PDDocument.load(file);
+        PDFRenderer renderer = new PDFRenderer(doc);
+        BufferedImage renderedImage = renderer.renderImageWithDPI(0, 100);
+        // a pixel within the shading-pattern-filled text; before the fix, the mesh shading
+        // was shifted out of view here, leaving this pixel blank white instead of the
+        // gradient's red-ish color. Checking red without also ruling out green isn't enough
+        // because white also has a maxed-out red channel.
+        int rgb = renderedImage.getRGB(190, 331);
+        int red = (rgb >> 16) & 0xFF;
+        int green = (rgb >> 8) & 0xFF;
+        assertTrue("expected a red-ish gradient pixel but was: " + Integer.toHexString(rgb), 
+                red > 150 && green < 150);
+        doc.close();
+    }
+
+    /**
      * PDFBOX-5876: rendering a page containing a very large JPEG 2000 (JPX) image at reduced
      * scale must not decode the image at full resolution first just to read its width, height
      * and color space. Before the fix, {@code PDImageXObject.initJPXValues()} did exactly that,

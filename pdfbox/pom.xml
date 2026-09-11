@@ -970,6 +970,19 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>PDFBOX-5250</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13073765/PDFBOX-5250-pattern-reduced3.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5250-pattern-reduced3.pdf</outputFileName>
+                            <sha512>fef1da8db49531a3bf017c6872b2032cac2d3c7e431f5529a80f87886b2d06455d086c9228ad35aee80d824ffb9e65e5ea302327b7feada001ede66f83199101</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>PDFBOX-5960</id>
                         <phase>generate-test-resources</phase>
                         <goals>
