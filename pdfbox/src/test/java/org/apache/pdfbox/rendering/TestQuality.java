@@ -165,7 +165,36 @@ class TestQuality
                     "expected a red-ish gradient pixel but was: " + Integer.toHexString(rgb));
         }
     }
-  
+
+    /**
+     * PDFBOX-5079: a CalRGB image whose whitepoint is neither (1 1 1) nor D65 must still be CIE
+     * calibrated instead of having its raw component values used directly as RGB. Before the
+     * fix, {@code PDCalRGB.toRGB()} only performed the calibration for whitepoint (1 1 1); any
+     * other whitepoint (here, D50 - 0.9643 1.0 0.8251) fell into the D65-only shortcut meant for
+     * a different, uncalibrated whitepoint, so the image's intended red rendered as orange
+     * instead, identical to the uncalibrated DeviceRGB image placed alongside it.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testPDFBox5079() throws IOException
+    {
+        File file = new File(TARGET_PDF_DIR, "PDFBOX-5079-PDF2.0imagewithBPC.pdf");
+        try (PDDocument doc = Loader.loadPDF(file))
+        {
+            PDFRenderer renderer = new PDFRenderer(doc);
+            BufferedImage renderedImage = renderer.renderImageWithDPI(0, 100);
+            // a pixel within the CalRGB image, whose own caption says "should appear red";
+            // before the fix this was orange, same as the uncalibrated DeviceRGB image
+            int rgb = renderedImage.getRGB(170, 200);
+            int red = (rgb >> 16) & 0xFF;
+            int green = (rgb >> 8) & 0xFF;
+            int blue = rgb & 0xFF;
+            Assertions.assertTrue(red > 200 && green < 50 && blue < 50,
+                    "expected a red pixel but was: " + Integer.toHexString(rgb));
+        }
+    }
+
     /**
      * PDFBOX-5876: rendering a page containing a very large JPEG 2000 (JPX) image at reduced
      * scale must not decode the image at full resolution first just to read its width, height
