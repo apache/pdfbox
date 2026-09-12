@@ -1528,6 +1528,12 @@ public class COSWriter implements ICOSVisitor
         {
             // use the size of the origin document trailer size as starter for the incremented one
             long trailerSize = trailer.getLong(COSName.SIZE);
+            if (number > trailerSize)
+            {
+                LOG.warn(
+                        "The highest object number {} of the origin pdf is bigger than the trailer entry {}",
+                        number, trailerSize);
+            }
             number = Math.max(trailerSize - 1, number);
             prepareIncrement();
         }
