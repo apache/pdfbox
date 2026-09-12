@@ -113,18 +113,25 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
         }
     }
 
+    // real-world producers embed slightly different roundings of D65, e.g. (0.9505 1.0 1.089),
+    // (0.95045 1.0 1.08905) or (0.951 1.0 1.089); an exact match rejects those and wrongly
+    // routes them into full calibration instead of the hack they rely on, see PDFBOX-5079
+    private static final float D65_TOLERANCE = 0.01f;
+
     /**
-     * Tests if the whitepoint is exactly D65 (0.9505 1.0 1.089), the only case for which the
-     * CIE calibration skip in {@link #toRGB(float[])} was verified, see PDFBOX-2553 and
-     * PDFBOX-5079.
+     * Tests if the whitepoint is close enough to D65 (0.9505 1.0 1.089) to be considered D65,
+     * the only case for which the CIE calibration skip in {@link #toRGB(float[])} was verified,
+     * see PDFBOX-2553 and PDFBOX-5079. This is a tolerant match rather than an exact one because
+     * real-world files use slightly different roundings of the D65 whitepoint; the tolerance is
+     * still well clear of genuinely different whitepoints such as D50 (0.9643 1.0 0.8251).
      *
-     * @return true if the whitepoint is D65.
+     * @return true if the whitepoint is close to D65.
      */
     private boolean isD65WhitePoint()
     {
-        return Float.compare(wpX, 0.9505f) == 0 &&
-               Float.compare(wpY, 1) == 0 &&
-               Float.compare(wpZ, 1.089f) == 0;
+        return Math.abs(wpX - 0.9505f) < D65_TOLERANCE &&
+               Math.abs(wpY - 1) < D65_TOLERANCE &&
+               Math.abs(wpZ - 1.089f) < D65_TOLERANCE;
     }
 
     /**
