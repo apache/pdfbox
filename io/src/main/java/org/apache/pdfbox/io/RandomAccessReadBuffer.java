@@ -62,6 +62,8 @@ public class RandomAccessReadBuffer implements RandomAccessRead
 
     /**
      * Default constructor.
+     *
+     * @param definedChunkSize
      */
     protected RandomAccessReadBuffer(int definedChunkSize)
     {

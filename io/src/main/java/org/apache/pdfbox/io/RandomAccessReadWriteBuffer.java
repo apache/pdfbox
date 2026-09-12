@@ -25,15 +25,14 @@ import java.io.IOException;
 public class RandomAccessReadWriteBuffer extends RandomAccessReadBuffer implements RandomAccess
 {
     /**
-     * Default constructor.
+     * {@inheritDoc}
      */
     public RandomAccessReadWriteBuffer()
     {
-        super();
     }
 
     /**
-     * Default constructor.
+     * {@inheritDoc}
      */
     public RandomAccessReadWriteBuffer(int definedChunkSize)
     {
