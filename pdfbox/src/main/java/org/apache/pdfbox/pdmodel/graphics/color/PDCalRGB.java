@@ -77,7 +77,14 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
     @Override
     public float[] toRGB(float[] value)
     {
-        if (wpX == 1 && wpY == 1 && wpZ == 1)
+        if (isD65WhitePoint())
+        {
+            // this is a hack, we simply skip CIE calibration of the RGB value
+            // this works only with whitepoint D65 (0.9505 1.0 1.089)
+            // see PDFBOX-2553
+            return new float[] { value[0], value[1], value[2] };
+        }
+        else
         {
             float a = value[0];
             float b = value[1];
@@ -104,13 +111,27 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
             float z = mZA * powAR + mZB * powBG + mZC * powCB;
             return convXYZtoRGB(x, y, z);
         }
-        else
-        {
-            // this is a hack, we simply skip CIE calibration of the RGB value
-            // this works only with whitepoint D65 (0.9505 1.0 1.089)
-            // see PDFBOX-2553
-            return new float[] { value[0], value[1], value[2] };
-        }
+    }
+
+    // real-world producers embed slightly different roundings of D65, e.g. (0.9505 1.0 1.089),
+    // (0.95045 1.0 1.08905) or (0.951 1.0 1.089); an exact match rejects those and wrongly
+    // routes them into full calibration instead of the hack they rely on, see PDFBOX-5079
+    private static final float D65_TOLERANCE = 0.01f;
+
+    /**
+     * Tests if the whitepoint is close enough to D65 (0.9505 1.0 1.089) to be considered D65,
+     * the only case for which the CIE calibration skip in {@link #toRGB(float[])} was verified,
+     * see PDFBOX-2553 and PDFBOX-5079. This is a tolerant match rather than an exact one because
+     * real-world files use slightly different roundings of the D65 whitepoint; the tolerance is
+     * still well clear of genuinely different whitepoints such as D50 (0.9643 1.0 0.8251).
+     *
+     * @return true if the whitepoint is close to D65.
+     */
+    private boolean isD65WhitePoint()
+    {
+        return Math.abs(wpX - 0.9505f) < D65_TOLERANCE &&
+               Math.abs(wpY - 1) < D65_TOLERANCE &&
+               Math.abs(wpZ - 1.089f) < D65_TOLERANCE;
     }
 
     /**
