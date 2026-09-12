@@ -1085,6 +1085,19 @@
                             <sha512>5eb020282f3998c7673983625303fb7634a3ca2a2fc65efc7bd123241a7facae999610bbd38d8a6be8fc26752c7241d806d46252448ba600e2beb118f4567cf3</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-5079</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13018679/PDF2.0imagewithBPC.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5079-PDF2.0imagewithBPC.pdf</outputFileName>
+                            <sha512>f3d0934c9d0babedd76431565bdb1cc1bf6d9f0a5ace7656a9ded53fb1e701dd0d12c784a58ae87098793f57ba5b98cbfb657e047e27d5464b26634511162264</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
