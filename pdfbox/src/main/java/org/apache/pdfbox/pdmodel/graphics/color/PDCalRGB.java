@@ -77,7 +77,14 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
     @Override
     public float[] toRGB(float[] value)
     {
-        if (isWhitePoint())
+        if (isD65WhitePoint())
+        {
+            // this is a hack, we simply skip CIE calibration of the RGB value
+            // this works only with whitepoint D65 (0.9505 1.0 1.089)
+            // see PDFBOX-2553
+            return new float[] { value[0], value[1], value[2] };
+        }
+        else
         {
             float a = value[0];
             float b = value[1];
@@ -104,13 +111,20 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
             float z = mZA * powAR + mZB * powBG + mZC * powCB;
             return convXYZtoRGB(x, y, z);
         }
-        else
-        {
-            // this is a hack, we simply skip CIE calibration of the RGB value
-            // this works only with whitepoint D65 (0.9505 1.0 1.089)
-            // see PDFBOX-2553
-            return new float[] { value[0], value[1], value[2] };
-        }
+    }
+
+    /**
+     * Tests if the whitepoint is exactly D65 (0.9505 1.0 1.089), the only case for which the
+     * CIE calibration skip in {@link #toRGB(float[])} was verified, see PDFBOX-2553 and
+     * PDFBOX-5079.
+     *
+     * @return true if the whitepoint is D65.
+     */
+    private boolean isD65WhitePoint()
+    {
+        return Float.compare(wpX, 0.9505f) == 0 &&
+               Float.compare(wpY, 1) == 0 &&
+               Float.compare(wpZ, 1.089f) == 0;
     }
 
     /**
