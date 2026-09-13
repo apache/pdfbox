@@ -119,8 +119,8 @@ public class PDTableAttributeObject extends PDStandardAttributeObject
      * shall be the element identifier (see the
      * {@link org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement#getElementIdentifier()}) for a TH structure
      * element that shall be used as a header associated with this cell.
-     * 
-     * @return the headers.
+     *
+     * @return the headers or null if there are none.
      */
     public String[] getHeaders()
     {
