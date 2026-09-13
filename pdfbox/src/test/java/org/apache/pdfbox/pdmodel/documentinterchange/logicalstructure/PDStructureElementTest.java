@@ -67,7 +67,7 @@ class PDStructureElementTest
         }
 
         // collect attributes and check their count.
-        assertEquals(117, attributeSet.size());
+        assertEquals(108, attributeSet.size());
         int cnt = attributeSet.stream().map(Revisions::size).reduce(0, Integer::sum);
         assertEquals(111, cnt); // this one was 105 before PDFBOX-4197 was fixed
         assertEquals(0, classSet.size());
@@ -114,10 +114,10 @@ class PDStructureElementTest
         }
 
         // collect attributes and check their count.
-        assertEquals(72, attributeSet.size());
+        assertEquals(50, attributeSet.size());
         int cnt = attributeSet.stream().map(Revisions::size).reduce(0, Integer::sum);
-        assertEquals(45, cnt);
-        assertEquals(10, classSet.size());
+        assertEquals(54, cnt);
+        assertEquals(12, classSet.size());
     }
 
     // Each element can be an array, a dictionary or a number.
@@ -139,23 +139,40 @@ class PDStructureElementTest
         else if (base instanceof COSDictionary)
         {
             COSDictionary kdict = (COSDictionary) base;
-            if (kdict.containsKey(COSName.PG))
+            PDStructureElement structureElement = new PDStructureElement(kdict);
+            Revisions<PDAttributeObject> attributes = structureElement.getAttributes();
+            if (attributes.size() > 0)
             {
-                PDStructureElement structureElement = new PDStructureElement(kdict);
-                Revisions<PDAttributeObject> attributes = structureElement.getAttributes();
                 attributeSet.add(attributes);
-                Revisions<String> classNames = structureElement.getClassNames();
-
-                // "If both the A and C entries are present and a given attribute is specified by both, 
-                // the one specified by the A entry shall take precedence."
-                if (kdict.containsKey(COSName.C) && !kdict.containsKey(COSName.A))
+                PDAttributeObject obj0 = attributes.getObject(0);
+                if (obj0 instanceof PDTableAttributeObject) // Table 349
                 {
-                    for (int i = 0; i < classNames.size(); ++i)
+                    if (obj0 instanceof PDTableAttributeObject)
                     {
-                        String className = classNames.getObject(i);
-                        classSet.add(className);
-                        assertTrue(classMap.containsKey(className), "'" + className + "' not in ClassMap " + classMap);
+                        String[] headers = ((PDTableAttributeObject) obj0).getHeaders();
+                        if (headers != null)
+                        {
+                            for (String header : headers)
+                            {
+                                // not a real test, just so that we have something with table headers
+                                // after doing TIKA-4891 / PDFBOX-6261
+                                assertTrue(header.startsWith("node0"));
+                            }
+                        }
                     }
+                }
+            }
+            Revisions<String> classNames = structureElement.getClassNames();
+
+            // "If both the A and C entries are present and a given attribute is specified by both, 
+            // the one specified by the A entry shall take precedence."
+            if (kdict.containsKey(COSName.C) && !kdict.containsKey(COSName.A))
+            {
+                for (int i = 0; i < classNames.size(); ++i)
+                {
+                    String className = classNames.getObject(i);
+                    classSet.add(className);
+                    assertTrue(classMap.containsKey(className), "'" + className + "' not in ClassMap " + classMap);
                 }
             }
             if (kdict.containsKey(COSName.K))
@@ -163,7 +180,7 @@ class PDStructureElementTest
                 checkElement(kdict.getDictionaryObject(COSName.K), attributeSet, classMap, classSet);
             }
         }
-    }    
+    }
 
     @Test
     void testSimple()
