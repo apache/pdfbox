@@ -37,7 +37,7 @@ import picocli.CommandLine;
  *
  * @author Tilman Hausherr
  */
-@CommandLine.Command(name = "extractxmp", header = "Extracts the xmp stream from a PDF document", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "extract:xmp", header = "Extracts the xmp stream from a PDF document", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public class ExtractXMP implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err

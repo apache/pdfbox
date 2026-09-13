@@ -42,7 +42,7 @@ import picocli.CommandLine.Parameters;
  *
  * @author Michael Traut
  */
-@Command(name = "writedecodeddoc", header = "Writes a PDF document with all streams decoded", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "decode", header = "Writes a PDF document with all streams decoded", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public class WriteDecodedDoc implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
