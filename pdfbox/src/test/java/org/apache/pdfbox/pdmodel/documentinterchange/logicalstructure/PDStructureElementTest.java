@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -64,6 +65,22 @@ class PDStructureElementTest
         {
             PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
             checkElement(structureTreeRoot.getK(), attributeSet, structureTreeRoot.getClassMap(), classSet);
+
+            COSArray k = (COSArray) structureTreeRoot.getK();
+            assertEquals(1, k.size());
+            PDStructureElement documentStructElemen = new PDStructureElement((COSDictionary) k.getObject(0));
+            assertEquals("Document", documentStructElemen.getStructureType());
+            List<Object> kids = documentStructElemen.getKids();
+            assertEquals(14, kids.size());
+            PDStructureElement elem = (PDStructureElement) documentStructElemen.getKids().get(9);
+            assertNotNull(elem.getPage());
+            assertEquals("Standard", elem.getStructureType());
+            assertEquals("P", elem.getStandardStructureType()); // uses rolemap
+            Revisions<PDAttributeObject> attributes = elem.getAttributes();
+            assertEquals(1, attributes.size());
+            PDLayoutAttributeObject layoutObj = (PDLayoutAttributeObject) attributes.getObject(0);
+            assertEquals("Block", layoutObj.getPlacement());
+            assertEquals(24, layoutObj.getSpaceBefore());
         }
 
         // collect attributes and check their count.
