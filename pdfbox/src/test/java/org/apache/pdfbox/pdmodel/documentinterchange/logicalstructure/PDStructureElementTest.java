@@ -147,17 +147,14 @@ class PDStructureElementTest
                 PDAttributeObject obj0 = attributes.getObject(0);
                 if (obj0 instanceof PDTableAttributeObject) // Table 349
                 {
-                    if (obj0 instanceof PDTableAttributeObject)
+                    String[] headers = ((PDTableAttributeObject) obj0).getHeaders();
+                    if (headers != null)
                     {
-                        String[] headers = ((PDTableAttributeObject) obj0).getHeaders();
-                        if (headers != null)
+                        for (String header : headers)
                         {
-                            for (String header : headers)
-                            {
-                                // not a real test, just so that we have something with table headers
-                                // after doing TIKA-4891 / PDFBOX-6261
-                                assertTrue(header.startsWith("node0"));
-                            }
+                            // not a real test, just so that we have something with table headers
+                            // after doing TIKA-4891 / PDFBOX-6261
+                            assertTrue(header.startsWith("node0"));
                         }
                     }
                 }
