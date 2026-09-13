@@ -154,8 +154,8 @@ public class TestQuality
         PDDocument doc = PDDocument.load(file);
         PDFRenderer renderer = new PDFRenderer(doc);
         BufferedImage renderedImage = renderer.renderImageWithDPI(0, 100);
-        // a pixel within the CalRGB image, whose own caption says "should appear red";
-        // before the fix this was orange, same as the uncalibrated DeviceRGB image
+        // a pixel within the CalRGB image, whose own caption says "should appear red" was orange
+        // before the fix, same as the uncalibrated DeviceRGB image
         int rgb = renderedImage.getRGB(170, 200);
         int red = (rgb >> 16) & 0xFF;
         int green = (rgb >> 8) & 0xFF;
