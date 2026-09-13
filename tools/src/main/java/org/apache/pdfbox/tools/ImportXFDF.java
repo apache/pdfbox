@@ -38,7 +38,7 @@ import java.util.concurrent.Callable;
  *
  * @author Ben Litchfield
  */
-@Command(name = "importxfdf", header = "Imports AcroForm form data from XFDF", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "import:xfdf", header = "Imports AcroForm form data from XFDF", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public class ImportXFDF implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
