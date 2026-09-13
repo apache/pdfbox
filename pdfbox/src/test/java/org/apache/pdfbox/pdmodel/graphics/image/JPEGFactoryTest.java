@@ -319,6 +319,8 @@ public class JPEGFactoryTest extends TestCase
     // PDFBOX-6235
     public void testCreateFromImageCMYK() throws IOException
     {
+        assumeTrue(!System.getProperty("java.vendor").toLowerCase().contains("amazon")); // fails on 8.504.01.1
+
         Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("JPEG");
         ImageReader reader = null;
         while (readers.hasNext())
