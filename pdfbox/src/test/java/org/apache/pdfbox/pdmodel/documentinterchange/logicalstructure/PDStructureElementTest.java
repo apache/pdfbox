@@ -16,12 +16,19 @@
  */
 package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -32,10 +39,6 @@ import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedConte
 import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDLayoutAttributeObject;
 import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDTableAttributeObject;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.Test;
 
 /**
@@ -59,6 +62,23 @@ public class PDStructureElementTest
         Set<Revisions<PDAttributeObject>> attributeSet = new HashSet<Revisions<PDAttributeObject>>();
         Set<String> classSet = new HashSet<String>();
         checkElement(structureTreeRoot.getK(), attributeSet, structureTreeRoot.getClassMap(), classSet);
+
+        COSArray k = (COSArray) structureTreeRoot.getK();
+        assertEquals(1, k.size());
+        PDStructureElement documentStructElemen = new PDStructureElement((COSDictionary) k.getObject(0));
+        assertEquals("Document", documentStructElemen.getStructureType());
+        List<Object> kids = documentStructElemen.getKids();
+        assertEquals(14, kids.size());
+        PDStructureElement elem = (PDStructureElement) documentStructElemen.getKids().get(9);
+        assertNotNull(elem.getPage());
+        assertEquals("Standard", elem.getStructureType());
+        assertEquals("P", elem.getStandardStructureType()); // uses rolemap
+        Revisions<PDAttributeObject> attrs = elem.getAttributes();
+        assertEquals(1, attrs.size());
+        PDLayoutAttributeObject layoutObj = (PDLayoutAttributeObject) attrs.getObject(0);
+        assertEquals("Block", layoutObj.getPlacement());
+        assertEquals(24, layoutObj.getSpaceBefore(), 0);
+
         doc.close();
 
         // collect attributes and check their count.
