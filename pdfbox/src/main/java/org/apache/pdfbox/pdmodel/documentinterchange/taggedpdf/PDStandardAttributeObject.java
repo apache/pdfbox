@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -33,6 +36,8 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDGamma;
  */
 public abstract class PDStandardAttributeObject extends PDAttributeObject
 {
+    private static final Logger LOG = LogManager.getLogger(PDStandardAttributeObject.class);
+
     /**
      * An "unspecified" default float value.
      */
@@ -109,7 +114,12 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
             String[] strings = new String[array.size()];
             for (int i = 0; i < array.size(); i++)
             {
-                strings[i] = ((COSName) array.getObject(i)).getName();
+                strings[i] = array.getString(i);
+                if (strings[i] == null)
+                {
+                    // We may have to improve this.
+                    LOG.warn("Element {} is {} but should be a string", i, array.getObject(i));
+                }
             }
             return strings;
         }
