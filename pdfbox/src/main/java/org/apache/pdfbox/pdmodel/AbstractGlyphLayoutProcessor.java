@@ -17,6 +17,10 @@
 
 package org.apache.pdfbox.pdmodel;
 
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
 import java.io.IOException;
@@ -33,6 +37,35 @@ import java.util.Objects;
  */
 public abstract class AbstractGlyphLayoutProcessor implements GlyphLayoutProcessorInterface
 {
+    /**
+     *
+     */
+    private final boolean useActualText;
+
+    /**
+     * Options for GlyphLayoutProcessor
+     */
+    public static class GlyphLayoutProcessorOptions {
+        private boolean useActualText;
+
+        /**
+         * Turn usage of ActualText on
+         * @return this
+         */
+        public GlyphLayoutProcessorOptions useActualText() {
+            useActualText = true;
+            return this;
+        }
+
+        /**
+         * Returns the state of useActualText
+         * @return true, if ActualText is used, falls otherwise
+         */
+        public boolean getUseActualText() {
+            return useActualText;
+        }
+    }
+
     /**
      * Class for text and Bidi-Level
      */
@@ -57,6 +90,22 @@ public abstract class AbstractGlyphLayoutProcessor implements GlyphLayoutProcess
             return bidiLevel;
         }
     }
+
+    /**
+     * Creates an AbstractGlyphLayoutProcessor with the given options
+     * @param options Options for creation
+     */
+    public AbstractGlyphLayoutProcessor(GlyphLayoutProcessorOptions options) {
+        useActualText = options.useActualText;
+    }
+
+    /**
+     * Creates an AbstractGlyphLayoutProcessor with standard options
+     */
+    public AbstractGlyphLayoutProcessor() {
+        useActualText = false;
+    }
+
 
     /**
      * Compute the string width for a unidirectional string
@@ -88,6 +137,30 @@ public abstract class AbstractGlyphLayoutProcessor implements GlyphLayoutProcess
         return width;
     }
 
+
+    /**
+     * Begin a marked content sequence for ActualText
+     *
+     * @param contentStream the content stream
+     * @param text the text to be written as ActualText
+     * @throws IOException If the content stream could not be written
+     */
+    protected void beginMarkedContentForActualText(ContentStreamForGlyphLayoutInterface contentStream, String text) throws IOException {
+        COSDictionary dict = new COSDictionary();
+        dict.setItem(COSName.ACTUAL_TEXT, new COSString(text));
+        PDPropertyList propertyList = PDPropertyList.create(dict);
+        contentStream.beginMarkedContent(COSName.SPAN, propertyList);
+    }
+
+    /**
+     * End a marked content sequence.
+     *
+     * @throws IOException If the content stream could not be written
+     */
+    protected  void endMarkedContent(ContentStreamForGlyphLayoutInterface contentStream) throws IOException {
+        contentStream.endMarkedContent();
+    }
+
     /**
      * Shows unidirectional text using glyph positioning (if needed)
      *
@@ -117,10 +190,16 @@ public abstract class AbstractGlyphLayoutProcessor implements GlyphLayoutProcess
     public void showText(ContentStreamForGlyphLayoutInterface contentStream, PDType0Font font, float fontSize, String text)
             throws IOException
     {
+        if (useActualText) {
+            beginMarkedContentForActualText(contentStream, text);
+        }
         List<TextAndBidiLevel> textAndBidiLevels = doBidiSplittingAndReordering(text);
         for (TextAndBidiLevel textAndBidiLevel:  textAndBidiLevels)
         {
             showTextUni(contentStream, font, fontSize, textAndBidiLevel.getText(), textAndBidiLevel.getBidiLevel());
+        }
+        if (useActualText) {
+            endMarkedContent(contentStream);
         }
     }
 
