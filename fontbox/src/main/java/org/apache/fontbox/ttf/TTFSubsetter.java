@@ -68,6 +68,13 @@ public final class TTFSubsetter
     private boolean hasAddedCompoundReferences;
 
     /**
+     * Custom cmap entries added via {@link #addCustomCmapEntry(int, int, int, int)}.
+     * Each entry is {@code [platformId, platformEncodingId, charCode, gid]}.
+     * During {@link #buildCmapTable()} these are translated to new GIDs.
+     */
+    private final List<int[]> customCmapEntries = new java.util.ArrayList<>();
+
+    /**
      * Creates a subsetter for the given font.
      *
      * @param ttf the font to be subset
@@ -746,67 +753,191 @@ public final class TTFSubsetter
 
     private byte[] buildCmapTable() throws IOException
     {
-        if (ttf.getCmap() == null || uniToGID.isEmpty()
-                || keepTables != null && !keepTables.contains(CmapTable.TAG))
+        boolean hasUnicode = ttf.getCmap() != null && !uniToGID.isEmpty();
+        boolean hasCustom  = !customCmapEntries.isEmpty();
+
+        if ((!hasUnicode && !hasCustom)
+                || (keepTables != null && !keepTables.contains(CmapTable.TAG)))
         {
             return null;
         }
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(64);
+        // Group custom entries by (platformId, platformEncodingId).
+        // Each group becomes its own Format 4 subtable.
+        // Use a LinkedHashMap so insertion order is preserved (stable output).
+        Map<Long, SortedMap<Integer, Integer>> customSubtables = new LinkedHashMap<>();
+        for (int[] entry : customCmapEntries)
+        {
+            int platformId         = entry[0];
+            int platformEncodingId = entry[1];
+            int charCode           = entry[2];
+            int gid                = entry[3];
+
+            // Only include entries whose glyph is actually in the subset.
+            if (!glyphIds.contains(gid))
+            {
+                continue;
+            }
+
+            long key = ((long) platformId << 16) | (platformEncodingId & 0xFFFF);
+            customSubtables
+                    .computeIfAbsent(key, k -> new TreeMap<>())
+                    .put(charCode, gid);
+        }
+
+        // Total number of subtables: 1 for the standard Windows Unicode BMP (if present)
+        // plus one per distinct custom (platform, encoding) pair.
+        int numSubtables = (hasUnicode ? 1 : 0) + customSubtables.size();
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(256);
         DataOutputStream out = new DataOutputStream(bos);
 
         // cmap header
         writeUint16(out, 0); // version
-        writeUint16(out, 1); // numberSubtables
+        writeUint16(out, numSubtables);
 
-        // encoding record
-        writeUint16(out, CmapTable.PLATFORM_WINDOWS); // platformID
-        writeUint16(out, CmapTable.ENCODING_WIN_UNICODE_BMP); // platformSpecificID
-        writeUint32(out, 12); // offset 4 * 2 + 4
+        // Each encoding record is 8 bytes: platformID(2) + encodingID(2) + offset(4).
+        // Offsets are relative to the start of the cmap table.
+        // Header = 4 bytes, encoding records = 8 * numSubtables bytes.
+        int headerSize = 4 + 8 * numSubtables;
 
-        // build Format 4 subtable (Unicode BMP)
-        Iterator<Entry<Integer, Integer>> it = uniToGID.entrySet().iterator();
+        // Build each subtable as raw bytes so we can compute offsets up front.
+        List<byte[]> subtableBytes = new java.util.ArrayList<>();
+
+        if (hasUnicode)
+        {
+            subtableBytes.add(buildFormat4Subtable(uniToGID));
+        }
+        for (SortedMap<Integer, Integer> codeToGid : customSubtables.values())
+        {
+            // Translate gid → newGid for each entry.
+            SortedMap<Integer, Integer> codeToNewGid = new TreeMap<>();
+            codeToGid.forEach((code, gid) ->
+            {
+                int newGid = getNewGlyphId(gid);
+                if (newGid > 0)
+                {
+                    codeToNewGid.put(code, newGid);
+                }
+            });
+            subtableBytes.add(buildFormat4SubtableNewGids(codeToNewGid));
+        }
+
+        // Write encoding records (offsets relative to start of cmap table).
+        int subtableOffset = headerSize;
+
+        if (hasUnicode)
+        {
+            writeUint16(out, CmapTable.PLATFORM_WINDOWS);
+            writeUint16(out, CmapTable.ENCODING_WIN_UNICODE_BMP);
+            writeUint32(out, subtableOffset);
+            subtableOffset += subtableBytes.get(0).length;
+        }
+
+        int subtableIndex = hasUnicode ? 1 : 0;
+        for (long key : customSubtables.keySet())
+        {
+            int platformId         = (int) (key >> 16);
+            int platformEncodingId = (int) (key & 0xFFFF);
+            writeUint16(out, platformId);
+            writeUint16(out, platformEncodingId);
+            writeUint32(out, subtableOffset);
+            subtableOffset += subtableBytes.get(subtableIndex++).length;
+        }
+
+        // Write subtable data.
+        for (byte[] subtable : subtableBytes)
+        {
+            out.write(subtable);
+        }
+
+        return bos.toByteArray();
+    }
+
+    /**
+     * Builds a Format 4 cmap subtable from a {@code unicode → gid} map (the existing
+     * path used for the standard Windows Unicode BMP subtable).
+     */
+    private byte[] buildFormat4Subtable(SortedMap<Integer, Integer> uniToGIDMap)
+            throws IOException
+    {
+        // Translate gid → newGid inline.
+        SortedMap<Integer, Integer> codeToNewGid = new TreeMap<>();
+        for (Map.Entry<Integer, Integer> e : uniToGIDMap.entrySet())
+        {
+            codeToNewGid.put(e.getKey(), getNewGlyphId(e.getValue()));
+        }
+        return buildFormat4SubtableNewGids(codeToNewGid);
+    }
+
+    /**
+     * Builds a Format 4 cmap subtable from a {@code charCode → newGid} map.
+     * The map must be sorted by charCode ascending.
+     */
+    private byte[] buildFormat4SubtableNewGids(SortedMap<Integer, Integer> codeToNewGid)
+            throws IOException
+    {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(64);
+        DataOutputStream out = new DataOutputStream(bos);
+
+        if (codeToNewGid.isEmpty())
+        {
+            // Write a minimal valid Format 4 subtable with only the sentinel segment.
+            int segCount = 1;
+            int searchRange = 2;
+            writeUint16(out, 4);                           // format
+            writeUint16(out, 8 * 2 + segCount * 4 * 2);   // length
+            writeUint16(out, 0);                           // language
+            writeUint16(out, segCount * 2);                // segCountX2
+            writeUint16(out, searchRange);
+            writeUint16(out, 0);                           // entrySelector
+            writeUint16(out, 0);                           // rangeShift
+            writeUint16(out, 0xffff);                      // endCode[0]
+            writeUint16(out, 0);                           // reservedPad
+            writeUint16(out, 0xffff);                      // startCode[0]
+            writeUint16(out, 1);                           // idDelta[0]
+            writeUint16(out, 0);                           // idRangeOffset[0]
+            return bos.toByteArray();
+        }
+
+        Iterator<Entry<Integer, Integer>> it = codeToNewGid.entrySet().iterator();
         Entry<Integer, Integer> lastChar = it.next();
         Entry<Integer, Integer> prevChar = lastChar;
-        int lastGid = getNewGlyphId(lastChar.getValue());
+        int lastGid = lastChar.getValue();
 
-        // +1 because .notdef is missing in uniToGID
-        int[] startCode = new int[uniToGID.size()+1];
-        int[] endCode = new int[startCode.length];
-        int[] idDelta = new int[startCode.length];
+        int[] startCode = new int[codeToNewGid.size() + 1];
+        int[] endCode   = new int[startCode.length];
+        int[] idDelta   = new int[startCode.length];
         int segCount = 0;
-        while(it.hasNext())
+
+        while (it.hasNext())
         {
             Entry<Integer, Integer> curChar2Gid = it.next();
-            int curGid = getNewGlyphId(curChar2Gid.getValue());
+            int curGid = curChar2Gid.getValue();
 
-            // todo: need format Format 12 for non-BMP
             if (curChar2Gid.getKey() > 0xFFFF)
             {
-                throw new UnsupportedOperationException("non-BMP Unicode character");
+                throw new UnsupportedOperationException("non-BMP character code in custom cmap");
             }
 
-            if (curChar2Gid.getKey() != prevChar.getKey()+1 ||
-                curGid - lastGid != curChar2Gid.getKey() - lastChar.getKey())
+            if (curChar2Gid.getKey() != prevChar.getKey() + 1
+                    || curGid - lastGid != curChar2Gid.getKey() - lastChar.getKey())
             {
                 if (lastGid != 0)
                 {
-                    // don't emit ranges, which map to GID 0, the
-                    // undef glyph is emitted a the very last segment
                     startCode[segCount] = lastChar.getKey();
-                    endCode[segCount] = prevChar.getKey();
-                    idDelta[segCount] = lastGid - lastChar.getKey();
+                    endCode[segCount]   = prevChar.getKey();
+                    idDelta[segCount]   = lastGid - lastChar.getKey();
                     segCount++;
                 }
                 else if (!lastChar.getKey().equals(prevChar.getKey()))
                 {
-                    // shorten ranges which start with GID 0 by one
                     startCode[segCount] = lastChar.getKey() + 1;
-                    endCode[segCount] = prevChar.getKey();
-                    idDelta[segCount] = lastGid - lastChar.getKey();
+                    endCode[segCount]   = prevChar.getKey();
+                    idDelta[segCount]   = lastGid - lastChar.getKey();
                     segCount++;
                 }
-                lastGid = curGid;
+                lastGid  = curGid;
                 lastChar = curChar2Gid;
             }
             prevChar = curChar2Gid;
@@ -814,51 +945,30 @@ public final class TTFSubsetter
 
         // trailing segment
         startCode[segCount] = lastChar.getKey();
-        endCode[segCount] = prevChar.getKey();
-        idDelta[segCount] = lastGid -lastChar.getKey();
+        endCode[segCount]   = prevChar.getKey();
+        idDelta[segCount]   = lastGid - lastChar.getKey();
         segCount++;
 
-        // GID 0
+        // sentinel segment (GID 0 / 0xFFFF)
         startCode[segCount] = 0xffff;
-        endCode[segCount] = 0xffff;
-        idDelta[segCount] = 1;
+        endCode[segCount]   = 0xffff;
+        idDelta[segCount]   = 1;
         segCount++;
 
-        // write format 4 subtable
-        int searchRange = 2 * (int)Math.pow(2, log2(segCount));
-        writeUint16(out, 4); // format
-        writeUint16(out, 8 * 2 + segCount * 4*2); // length
-        writeUint16(out, 0); // language
-        writeUint16(out, segCount * 2); // segCountX2
-        writeUint16(out, searchRange); // searchRange
-        writeUint16(out, log2(searchRange / 2)); // entrySelector
-        writeUint16(out, 2 * segCount - searchRange); // rangeShift
+        int searchRange = 2 * (int) Math.pow(2, log2(segCount));
+        writeUint16(out, 4);                           // format
+        writeUint16(out, 8 * 2 + segCount * 4 * 2);   // length
+        writeUint16(out, 0);                           // language
+        writeUint16(out, segCount * 2);                // segCountX2
+        writeUint16(out, searchRange);
+        writeUint16(out, log2(searchRange / 2));       // entrySelector
+        writeUint16(out, 2 * segCount - searchRange);  // rangeShift
 
-        // endCode[segCount]
-        for (int i = 0; i < segCount; i++)
-        {
-            writeUint16(out, endCode[i]);
-        }
-
-        // reservedPad
-        writeUint16(out, 0);
-
-        // startCode[segCount]
-        for (int i = 0; i < segCount; i++)
-        {
-            writeUint16(out, startCode[i]);
-        }
-
-        // idDelta[segCount]
-        for (int i = 0; i < segCount; i++)
-        {
-            writeUint16(out, idDelta[i]);
-        }
-
-        for (int i = 0; i < segCount; i++)
-        {
-            writeUint16(out, 0);
-        }
+        for (int i = 0; i < segCount; i++) writeUint16(out, endCode[i]);
+        writeUint16(out, 0); // reservedPad
+        for (int i = 0; i < segCount; i++) writeUint16(out, startCode[i]);
+        for (int i = 0; i < segCount; i++) writeUint16(out, idDelta[i]);
+        for (int i = 0; i < segCount; i++) writeUint16(out, 0); // idRangeOffset
 
         return bos.toByteArray();
     }
@@ -1157,9 +1267,78 @@ public final class TTFSubsetter
         return (int) Math.floor(Math.log(num) / Math.log(2));
     }
 
+    /**
+     * Adds the given glyph IDs directly to the subset, bypassing the Unicode cmap lookup.
+     * Use this for glyphs that have no standard Unicode mapping, such as glyphs in
+     * symbol or PUA-encoded fonts. The GIDs are renumbered during subsetting; use
+     * {@link #getGIDMap()} afterwards to obtain the old-to-new mapping.
+     *
+     * @param allGlyphIds the set of glyph IDs to include in the subset
+     */
     public void addGlyphIds(Set<Integer> allGlyphIds)
     {
         glyphIds.addAll(allGlyphIds);
+    }
+
+    /**
+     * Adds a single entry to a custom cmap subtable that will be written into the subset TTF.
+     * Use this when the font uses a non-Unicode cmap encoding that must be preserved in the
+     * subset — for example a Mac Roman subtable (platform 1, encoding 0) or a Windows Symbol
+     * subtable (platform 3, encoding 0) where character codes do not correspond to standard
+     * Unicode codepoints.
+     *
+     * <p>The {@code gid} is automatically remapped to the renumbered GID that the subsetter
+     * assigns during {@link #writeToStream(OutputStream)}. If the glyph is not included in the
+     * subset (via {@link #addGlyphIds(Set)} or {@link #add(int)}), the entry is silently
+     * ignored.
+     *
+     * <p>Multiple calls with the same {@code platformId} and {@code platformEncodingId} are
+     * accumulated into a single Format 4 subtable. Multiple calls with different platform or
+     * encoding values produce separate subtables.
+     *
+     * <p>Example — preserve a Mac Roman cmap (platform 1, encoding 0):
+     * <pre>
+     * CmapSubtable macCmap = ttf.getCmap()
+     *         .getSubtable(CmapTable.PLATFORM_MACINTOSH, CmapTable.ENCODING_MAC_ROMAN);
+     * for (int code : usedCodes) {
+     *     int gid = macCmap.getGlyphId(code);
+     *     if (gid &gt; 0) {
+     *         subsetter.addGlyphIds(Collections.singleton(gid));
+     *         subsetter.addCustomCmapEntry(CmapTable.PLATFORM_MACINTOSH,
+     *                                      CmapTable.ENCODING_MAC_ROMAN, code, gid);
+     *     }
+     * }
+     * </pre>
+     *
+     * @param platformId         the platform identifier (e.g. {@link CmapTable#PLATFORM_MACINTOSH}
+     *                           or {@link CmapTable#PLATFORM_WINDOWS})
+     * @param platformEncodingId the platform-specific encoding identifier
+     *                           (e.g. {@link CmapTable#ENCODING_MAC_ROMAN} or
+     *                           {@link CmapTable#ENCODING_WIN_SYMBOL})
+     * @param charCode           the character code to map from, as it appears in the font's cmap
+     * @param gid                the glyph ID in the original (pre-subset) font
+     */
+    public void addCustomCmapEntry(int platformId, int platformEncodingId,
+                                   int charCode, int gid)
+    {
+        customCmapEntries.add(new int[] { platformId, platformEncodingId, charCode, gid });
+    }
+
+    /**
+     * Adds all entries from a character-code-to-GID map as custom cmap entries for the given
+     * platform and encoding. This is a convenience wrapper around repeated calls to
+     * {@link #addCustomCmapEntry(int, int, int, int)}; see that method for full details.
+     *
+     * @param platformId         the platform identifier (e.g. {@link CmapTable#PLATFORM_MACINTOSH})
+     * @param platformEncodingId the platform-specific encoding identifier
+     *                           (e.g. {@link CmapTable#ENCODING_MAC_ROMAN})
+     * @param codeToGid          map of character code to glyph ID in the original font
+     */
+    public void addCustomCmap(int platformId, int platformEncodingId,
+                              Map<Integer, Integer> codeToGid)
+    {
+        codeToGid.forEach((code, gid) ->
+                addCustomCmapEntry(platformId, platformEncodingId, code, gid));
     }
 
 }
