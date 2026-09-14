@@ -93,4 +93,32 @@ class PDLabTest
         assertTrue(Arrays.equals(new float[]{0,0,3}, pdLab.getInitialColor().getComponents()));
     }
 
+    @Test
+    void testClamp()
+    {
+        PDLab lab = new PDLab();
+        PDRange aRange = new PDRange();
+        aRange.setMin(-160);
+        aRange.setMax(160);
+        lab.setARange(aRange);
+        PDRange bRange = new PDRange();
+        bRange.setMin(-160);
+        bRange.setMax(160);
+        lab.setBRange(bRange);
+        float[] lab1 = new float[]{-101, -161, -161};
+        float[] lab2 = new float[]{-100, -160, -160};
+        float[] lab3 = new float[]{0, 0, 0};
+        float[] lab4 = new float[]{100, 160, 160};
+        float[] lab5 = new float[]{101, 161, 161};
+        lab.clamp(lab1);
+        lab.clamp(lab2);
+        lab.clamp(lab3);
+        lab.clamp(lab4);
+        lab.clamp(lab5);
+        assertEquals("[0.0, -160.0, -160.0]", Arrays.toString(lab1));
+        assertEquals("[0.0, -160.0, -160.0]", Arrays.toString(lab2));
+        assertEquals("[0.0, 0.0, 0.0]", Arrays.toString(lab3));
+        assertEquals("[100.0, 160.0, 160.0]", Arrays.toString(lab4));
+        assertEquals("[100.0, 160.0, 160.0]", Arrays.toString(lab5));
+    }
 }

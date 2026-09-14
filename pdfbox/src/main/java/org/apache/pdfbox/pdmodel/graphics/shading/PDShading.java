@@ -421,17 +421,7 @@ public abstract class PDShading implements COSObjectable
         // From the PDF spec:
         // "If the value returned by the function for a given colour component 
         // is out of range, it shall be adjusted to the nearest valid value."
-        for (int i = 0; i < returnValues.length; ++i)
-        {
-            if (returnValues[i] < 0)
-            {
-                returnValues[i] = 0;
-            }
-            else if (returnValues[i] > 1)
-            {
-                returnValues[i] = 1;
-            }
-        }
+        colorSpace.clamp(returnValues);
         return returnValues;
     }
 
