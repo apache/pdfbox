@@ -380,6 +380,26 @@ public abstract class PDColorSpace implements COSObjectable
         return dest;
     }
 
+    /**
+     * Clamp color values to allowed ranges, usually 0..1.
+     *
+     * @param values 
+     */
+    public void clamp(float[] values)
+    {
+        for (int i = 0; i < values.length; ++i)
+        {
+            if (values[i] < 0)
+            {
+                values[i] = 0;
+            }
+            else if (values[i] > 1)
+            {
+                values[i] = 1;
+            }
+        }
+    }
+
     @Override
     public COSBase getCOSObject()
     {
