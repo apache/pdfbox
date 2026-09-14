@@ -35,12 +35,18 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
 {
     private PDColor initialColor;
     
+    private float minA = -100;
+    private float maxA = 100;
+    private float minB = -100;
+    private float maxB = 100;
+    
     /**
      * Creates a new Lab color space.
      */
     public PDLab()
     {
         super(COSName.LAB);
+        cacheRanges();
     }
 
     /**
@@ -50,6 +56,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
     public PDLab(COSArray lab)
     {
         super(lab);
+        cacheRanges();
     }
     
     @Override
@@ -70,12 +77,6 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
         BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         WritableRaster rgbRaster = rgbImage.getRaster();
 
-        PDRange aRange = getARange();
-        PDRange bRange = getBRange();
-        float minA = aRange.getMin();
-        float maxA = aRange.getMax();
-        float minB = bRange.getMin();
-        float maxB = bRange.getMax();
         float deltaA = maxA - minA;
         float deltaB = maxB - minB;
 
@@ -158,9 +159,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
     @Override
     public float[] getDefaultDecode(int bitsPerComponent)
     {
-        PDRange a = getARange();
-        PDRange b = getBRange();
-        return new float[] { 0, 100, a.getMin(), a.getMax(), b.getMin(), b.getMax() };
+        return new float[] { 0, 100, minA, maxA, minB, maxB };
     }
 
     @Override
@@ -170,8 +169,8 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
         {
             initialColor = new PDColor(new float[] {
                     0,
-                    Math.max(0, getARange().getMin()),
-                    Math.max(0, getBRange().getMin()) },
+                    Math.max(0, minA),
+                    Math.max(0, minB) },
                     this);
         }
         return initialColor;
@@ -263,6 +262,50 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
         }
         dictionary.setItem(COSName.RANGE, rangeArray);
         initialColor = null;
+        cacheRanges();
     }
 
+    // called at the beginning and when it's changed
+    private void cacheRanges()
+    {
+        PDRange aRange = getARange();
+        PDRange bRange = getBRange();
+        minA = aRange.getMin();
+        maxA = aRange.getMax();
+        minB = bRange.getMin();
+        maxB = bRange.getMax();
+    }
+
+    @Override
+    public void clamp(float[] values)
+    {
+        // assumption: 3 elements: L a b
+        // "The range of the first (L*) component shall be 0 to 100; 
+        //  the ranges of the second and third (a* and b*) components shall be defined by 
+        //  the Range entry in the colour space dictionary"
+        if (values[0] < 0)
+        {
+            values[0] = 0;
+        }
+        else if (values[0] > 100)
+        {
+            values[0] = 100;
+        }
+        if (values[1] < minA)
+        {
+            values[1] = minA;
+        }
+        else if (values[1] > maxA)
+        {
+            values[1] = maxA;
+        }
+        if (values[2] < minB)
+        {
+            values[2] = minB;
+        }
+        else if (values[2] > maxB)
+        {
+            values[2] = maxB;
+        }
+    }
 }
