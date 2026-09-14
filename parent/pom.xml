@@ -260,7 +260,7 @@
               <plugin>
                   <!-- default version 2.20.1 doesn't work with jdk11 -->
                   <artifactId>maven-surefire-plugin</artifactId>
-                  <version>2.22.2</version>
+                  <version>3.5.6</version>
               </plugin>
           </plugins>
       </pluginManagement>
