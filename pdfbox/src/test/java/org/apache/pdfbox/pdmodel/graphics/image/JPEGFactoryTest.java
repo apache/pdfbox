@@ -32,7 +32,12 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
@@ -44,29 +49,30 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.colorCount;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.doWritePDF;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assume.assumeTrue;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Unit tests for JPEGFactory
  *
  * @author Tilman Hausherr
  */
-public class JPEGFactoryTest extends TestCase
+public class JPEGFactoryTest
 {
-    private final File testResultsDir = new File("target/test-output/graphics");
+    private static final File TESTRESULTSDIR = new File("target/test-output/graphics");
 
-    @Override
-    protected void setUp() throws Exception
+    @BeforeClass
+    public static void init() throws Exception
     {
-        super.setUp();
-        testResultsDir.mkdirs();
+        TESTRESULTSDIR.mkdirs();
     }
 
     /**
      * Tests JPEGFactory#createFromStream(PDDocument document, InputStream
      * stream) with color JPEG file
      */
+    @Test
     public void testCreateFromStream() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -76,14 +82,15 @@ public class JPEGFactoryTest extends TestCase
         PDImageXObject ximage = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba));
         validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
 
-        doWritePDF(document, ximage, testResultsDir, "jpegrgbstream.pdf");
-        checkJpegStream(testResultsDir, "jpegrgbstream.pdf", new ByteArrayInputStream(ba));
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpegrgbstream.pdf");
+        checkJpegStream(TESTRESULTSDIR, "jpegrgbstream.pdf", new ByteArrayInputStream(ba));
     }
 
     /*
      * Tests JPEGFactory#createFromStream(PDDocument document, InputStream
      * stream) with CMYK color JPEG file
      */
+    @Test
     public void testCreateFromStreamCMYK() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -93,14 +100,15 @@ public class JPEGFactoryTest extends TestCase
         PDImageXObject ximage = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba));
         validate(ximage, 8, 343, 287, "jpg", PDDeviceCMYK.INSTANCE.getName());
 
-        doWritePDF(document, ximage, testResultsDir, "jpegcmykstream.pdf");
-        checkJpegStream(testResultsDir, "jpegcmykstream.pdf", new ByteArrayInputStream(ba));
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpegcmykstream.pdf");
+        checkJpegStream(TESTRESULTSDIR, "jpegcmykstream.pdf", new ByteArrayInputStream(ba));
     }
 
     /**
      * Tests JPEGFactory#createFromStream(PDDocument document, InputStream
      * stream) with gray JPEG file
      */
+    @Test
     public void testCreateFromStream256() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -110,14 +118,15 @@ public class JPEGFactoryTest extends TestCase
         PDImageXObject ximage = JPEGFactory.createFromStream(document, new ByteArrayInputStream(ba));
         validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
 
-        doWritePDF(document, ximage, testResultsDir, "jpeg256stream.pdf");
-        checkJpegStream(testResultsDir, "jpeg256stream.pdf", new ByteArrayInputStream(ba));
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg256stream.pdf");
+        checkJpegStream(TESTRESULTSDIR, "jpeg256stream.pdf", new ByteArrayInputStream(ba));
     }
 
     /**
      * Tests RGB JPEGFactory#createFromImage(PDDocument document, BufferedImage
      * image) with color JPEG image
      */
+    @Test
     public void testCreateFromImageRGB() throws IOException
     {
         InputStream is = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg");
@@ -132,13 +141,14 @@ public class JPEGFactoryTest extends TestCase
         float meanAbsDiffPerPixel = computeMeanAbsDiffPerPixel(expected, ximage.getImage());
         assertTrue(meanAbsDiffPerPixel < 5);
 
-        doWritePDF(document, ximage, testResultsDir, "jpegrgb.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpegrgb.pdf");
     }
 
     /**
      * Tests RGB JPEGFactory#createFromImage(PDDocument document, BufferedImage
      * image) with gray JPEG image
      */
+    @Test
     public void testCreateFromImage256() throws IOException
     {
         InputStream is = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg");
@@ -153,13 +163,14 @@ public class JPEGFactoryTest extends TestCase
         float meanAbsDiffPerPixel = computeMeanAbsDiffPerPixel(expected, ximage.getImage());
         assertTrue(meanAbsDiffPerPixel < 5);
 
-        doWritePDF(document, ximage, testResultsDir, "jpeg256.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg256.pdf");
     }
 
     /**
      * Tests ARGB JPEGFactory#createFromImage(PDDocument document, BufferedImage
      * image)
      */
+    @Test
     public void testCreateFromImageINT_ARGB() throws IOException
     {
         // workaround Open JDK bug
@@ -197,13 +208,14 @@ public class JPEGFactoryTest extends TestCase
         validate(ximage.getSoftMask(), 8, width, height, "jpg", PDDeviceGray.INSTANCE.getName());
         assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
-        doWritePDF(document, ximage, testResultsDir, "jpeg-intargb.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg-intargb.pdf");
     }
 
     /**
      * Tests ARGB JPEGFactory#createFromImage(PDDocument document, BufferedImage
      * image)
      */
+    @Test
     public void testCreateFromImage4BYTE_ABGR() throws IOException
     {
         // workaround Open JDK bug
@@ -241,7 +253,7 @@ public class JPEGFactoryTest extends TestCase
         validate(ximage.getSoftMask(), 8, width, height, "jpg", PDDeviceGray.INSTANCE.getName());
         assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
-        doWritePDF(document, ximage, testResultsDir, "jpeg-4bargb.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg-4bargb.pdf");
     }
 
     /**
@@ -249,6 +261,7 @@ public class JPEGFactoryTest extends TestCase
      * image), see also PDFBOX-4674.
      * @throws java.io.IOException
      */
+    @Test
     public void testCreateFromImageUSHORT_555_RGB() throws IOException
     {
         // workaround Open JDK bug
@@ -291,7 +304,7 @@ public class JPEGFactoryTest extends TestCase
         float meanAbsDiffPerPixel = computeMeanAbsDiffPerPixel(expected, ximage.getImage());
         assertTrue(meanAbsDiffPerPixel < 5);
 
-        doWritePDF(document, ximage, testResultsDir, "jpeg-ushort555rgb.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "jpeg-ushort555rgb.pdf");
     }
 
     /**
@@ -300,6 +313,7 @@ public class JPEGFactoryTest extends TestCase
      *
      * @throws IOException
      */
+    @Test
     public void testPDFBox5137() throws IOException
     {
         InputStream is = new FileInputStream("target/imgs/PDFBOX-5196-lotus.jpg");
@@ -312,11 +326,12 @@ public class JPEGFactoryTest extends TestCase
 
         validate(ximage, 8, 500, 500, "jpg", PDDeviceRGB.INSTANCE.getName());
 
-        doWritePDF(document, ximage, testResultsDir, "PDFBOX-5196-lotus.pdf");
-        checkJpegStream(testResultsDir, "PDFBOX-5196-lotus.pdf", new ByteArrayInputStream(ba));        
+        doWritePDF(document, ximage, TESTRESULTSDIR, "PDFBOX-5196-lotus.pdf");
+        checkJpegStream(TESTRESULTSDIR, "PDFBOX-5196-lotus.pdf", new ByteArrayInputStream(ba));        
     }
 
     // PDFBOX-6235
+    @Test
     public void testCreateFromImageCMYK() throws IOException
     {
         assumeTrue(!System.getProperty("java.vendor").toLowerCase().contains("amazon")); // fails on 8.504.01.1
@@ -361,7 +376,7 @@ public class JPEGFactoryTest extends TestCase
         float meanAbsDiffPerPixel = computeMeanAbsDiffPerPixel(expected, ximage.getImage());
         assertTrue(meanAbsDiffPerPixel < 1);
 
-        doWritePDF(document, ximage, testResultsDir, "PDFBOX-6235-cmyk.pdf");
+        doWritePDF(document, ximage, TESTRESULTSDIR, "PDFBOX-6235-cmyk.pdf");
     }
 
     // check whether it is possible to extract the jpeg stream exactly 
