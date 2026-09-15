@@ -15,7 +15,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -133,7 +132,7 @@ public class PDLabTest
     }
 
     @Test
-    public void testToRGB() throws IOException
+    public void testToRGB()
     {
         // Author: ChatGPT
         PDLab lab = new PDLab();
