@@ -55,6 +55,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
     public PDLab(COSArray lab)
     {
         super(lab);
+        cacheRanges();
     }
     
     @Override
