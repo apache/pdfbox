@@ -329,6 +329,10 @@ public class StreamPane implements ActionListener
                     encoding = "UTF-8";
                 }
                 InputStream inputStream = stream.getStream(filterKey);
+                if (inputStream == null)
+                {
+                    return new DefaultStyledDocument();
+                }
                 if (nice && Stream.UNFILTERED.equals(filterKey))
                 {
                     if (stream.isXmlMetadata())
