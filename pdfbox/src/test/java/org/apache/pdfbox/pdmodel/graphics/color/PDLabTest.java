@@ -15,8 +15,10 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
+import java.io.IOException;
 import java.util.Arrays;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -99,6 +101,12 @@ public class PDLabTest
     public void testClamp()
     {
         PDLab lab = new PDLab();
+        assertEquals(-100, lab.getARange().getMin(), 0f);
+        assertEquals(100, lab.getARange().getMax(), 0f);
+        assertEquals(-100, lab.getBRange().getMin(), 0f);
+        assertEquals(100, lab.getBRange().getMax(), 0f);
+        assertEquals("[0.0, 100.0, -100.0, 100.0, -100.0, 100.0]", 
+                Arrays.toString(lab.getDefaultDecode(1)));
         PDRange aRange = new PDRange();
         aRange.setMin(-160);
         aRange.setMax(160);
@@ -122,5 +130,31 @@ public class PDLabTest
         assertEquals("[0.0, 0.0, 0.0]", Arrays.toString(lab3));
         assertEquals("[100.0, 160.0, 160.0]", Arrays.toString(lab4));
         assertEquals("[100.0, 160.0, 160.0]", Arrays.toString(lab5));
+    }
+
+    @Test
+    public void testToRGB() throws IOException
+    {
+        // Author: ChatGPT
+        PDLab lab = new PDLab();
+
+        // PDF Lab values: L* is 0..100, a* and b* are -100..100.
+        float[] black = lab.toRGB(new float[] { 0, 0, 0 });
+        float[] white = lab.toRGB(new float[] { 100, 0, 0 });
+        float[] red = lab.toRGB(new float[] { 53, 80, 67 });
+
+        // Black and white should be at the ends of the RGB range.
+        assertArrayEquals(new float[] { 0, 0, 0 }, black, 0.01f);
+        assertArrayEquals(new float[] { 1, 1, 1 }, white, 0.02f);
+
+        // Red should have a higher red component than green and blue.
+        assertTrue(red[0] > red[1]);
+        assertTrue(red[0] > red[2]);
+
+        // All RGB components must be in the valid range.
+        for (float component : red)
+        {
+            assertTrue(component >= 0 && component <= 1);
+        }
     }
 }
