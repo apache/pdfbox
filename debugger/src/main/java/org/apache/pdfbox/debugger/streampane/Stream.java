@@ -127,7 +127,7 @@ public class Stream
      * Returns a InputStream of a partially filtered stream.
      *
      * @param key is an instance of String which tells which version of stream should be returned.
-     * @return an InputStream.
+     * @return an InputStream or null in case of error.
      */
     public InputStream getStream(String key)
     {
