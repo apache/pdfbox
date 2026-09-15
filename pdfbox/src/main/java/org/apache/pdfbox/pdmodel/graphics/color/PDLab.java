@@ -46,7 +46,6 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
     public PDLab()
     {
         super(COSName.LAB);
-        cacheRanges();
     }
 
     /**
