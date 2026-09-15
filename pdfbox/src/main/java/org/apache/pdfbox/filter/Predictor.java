@@ -289,6 +289,16 @@ public final class Predictor
             {
                 throw new IOException("Calculated row length is negative: " + rowLength);
             }
+            // PDFBOX-6265: prevent OOM with extreme values
+            long maxRowLength = 10_000_000L;
+            if (rowLength > maxRowLength)
+            {
+                String msg =
+                        String.format("Calculated row length is too high: %d "
+                                + "(colors: %d, bitsPerComponent: %d, columns: %d)",
+                                rowLength, colors, bitsPerComponent, columns);
+                throw new IOException(msg);
+            }
             this.predictorPerRow = predictor >= 10;
             currentRow = new byte[rowLength];
             lastRow = new byte[rowLength];
