@@ -877,10 +877,23 @@ public abstract class PDFStreamEngine
     protected void showType3Glyph(Matrix textRenderingMatrix, PDType3Font font, int code,
             Vector displacement) throws IOException
     {
-        PDType3CharProc charProc = font.getCharProc(code);
-        if (charProc != null)
+        try
         {
-            processType3Stream(charProc, textRenderingMatrix);
+            increaseLevel();
+            if (getLevel() > 50)
+            {
+                LOG.error("recursion is too deep, skipping Type3 glyph");
+                return;
+            }
+            PDType3CharProc charProc = font.getCharProc(code);
+            if (charProc != null)
+            {
+                processType3Stream(charProc, textRenderingMatrix);
+            }
+        }
+        finally
+        {
+            decreaseLevel();
         }
     }
 
