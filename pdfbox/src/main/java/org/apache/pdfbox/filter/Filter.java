@@ -71,6 +71,14 @@ public abstract class Filter
     public static final String SYSPROP_CCITTFAX_MAXBYTES = "org.apache.pdfbox.filter.ccittmaxbytes";
 
     /**
+     * PredictorOutputStream max rowLength property, obtained by computing
+     * {@code (columns * colors * bitsPerComponent + 7) / 8}. To raise the cap for
+     * high-resolution legitimate documents, use
+     * {@code System.setProperty(Filter.SYSPROP_CCITTFAX_MAXBYTES, String.valueOf(10_000_000));}
+     */
+    public static final String SYSPROP_PREDICTOR_MAX_ROW_LENGTH = "org.apache.pdfbox.filter.predictormaxrowlength";
+
+    /**
      * Constructor.
      */
     protected Filter()
