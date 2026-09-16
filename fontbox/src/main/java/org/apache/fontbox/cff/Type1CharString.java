@@ -179,7 +179,9 @@ public class Type1CharString
                 }
                 else
                 {
-                    rmoveTo(numbers.get(0), numbers.get(1));
+                    // PDFBOX-6267 / https://github.com/mozilla/pdf.js/issues/10175
+                    // use the last two instead of the first two numbers
+                    rmoveTo(numbers.get(numbers.size() - 2), numbers.get(numbers.size() - 1));
                 }
             }
             break;
