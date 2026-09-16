@@ -33,6 +33,7 @@ public class ViewMenu extends MenuBase
     private static final String SHOW_FONT_BBOX = "Show Approximate Text Bounds";
     private static final String SHOW_GLYPH_BOUNDS = "Show Glyph Bounds";
     private static final String ALLOW_SUBSAMPLING = "Allow subsampling";            
+    private static final String ENABLE_HINTING = "Enable Hinting";            
     private static final String EXTRACT_TEXT = "Extract Text";            
     private static final String REPAIR_ACROFORM = "Repair AcroForm";
 
@@ -41,6 +42,7 @@ public class ViewMenu extends MenuBase
     private JCheckBoxMenuItem showFontBBox;
     private JCheckBoxMenuItem showGlyphBounds;
     private JCheckBoxMenuItem allowSubsampling;
+    private JCheckBoxMenuItem enableHinting;
     private JCheckBoxMenuItem repairAcroFormMenuItem;
 
     private final PDFDebugger pdfDebugger;
@@ -147,6 +149,16 @@ public class ViewMenu extends MenuBase
     }
 
     /**
+     * State if font hinting shall be used.
+     * 
+     * @return the selection state
+     */
+    public static boolean isHintingEnabled()
+    {
+        return instance.enableHinting.isSelected();
+    }
+
+    /**
      * Tell whether the "Repair AcroForm" menu entry was hit.
      *
      * @param actionEvent the action event
@@ -221,6 +233,9 @@ public class ViewMenu extends MenuBase
 
         allowSubsampling = new JCheckBoxMenuItem(ALLOW_SUBSAMPLING);
         viewMenu.add(allowSubsampling);
+
+        enableHinting = new JCheckBoxMenuItem(ENABLE_HINTING);
+        viewMenu.add(enableHinting);
 
         viewMenu.addSeparator();
 
