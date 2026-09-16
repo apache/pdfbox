@@ -1992,7 +1992,8 @@ public class COSParser extends BaseParser implements ICOSParser
 
     /**
      * Returns the object key for the given combination of object and generation number. The object key from the cross
-     * reference table/stream will be reused if available. Otherwise a newly created object will be returned.
+     * reference table/stream will be reused if available. Otherwise, and when this parser has no document, a newly
+     * created object key will be returned.
      * 
      * @param num the given object number
      * @param gen the given generation number
@@ -2001,7 +2002,8 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     protected COSObjectKey getObjectKey(long num, int gen)
     {
-        return document == null ? new COSObjectKey(num, gen) : document.getObjectKey(num, gen);
+        COSObjectKey key = document == null ? null : document.getXrefKey(num, gen);
+        return key != null ? key : new COSObjectKey(num, gen);
     }
 
 }
