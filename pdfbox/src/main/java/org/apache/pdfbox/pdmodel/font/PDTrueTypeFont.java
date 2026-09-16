@@ -572,6 +572,32 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
         return path;
     }
 
+    @Override
+    public GeneralPath getHintedNormalizedPath(int code, int ppem) throws IOException
+    {
+        // only embedded glyf-based outlines carry hinting we can execute
+        if (!isEmbedded() || (otf != null && otf.isPostScript()))
+        {
+            return null;
+        }
+        int gid = codeToGID(code);
+        if (gid == 0)
+        {
+            return null;
+        }
+        GeneralPath path = ttf.getHintedPath(gid, ppem);
+        if (path == null)
+        {
+            return null;
+        }
+        if (ttf.getUnitsPerEm() != 1000)
+        {
+            float scale = 1000f / ttf.getUnitsPerEm();
+            path.transform(AffineTransform.getScaleInstance(scale, scale));
+        }
+        return path;
+    }
+
     private GeneralPath getPathFromOutlines(int code) throws IOException
     {
         CFFFont cffFont = otf.getCFF().getFont();
