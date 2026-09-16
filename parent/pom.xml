@@ -55,8 +55,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <bouncycastle.version>1.86</bouncycastle.version>
-    <junit.version>5.13.4</junit.version>
+    <bouncycastle.version>1.86.1</bouncycastle.version>
+    <junit.version>5.14.4</junit.version>
     <jbig2.version>3.0.5</jbig2.version>
     <jai.version>1.4.0</jai.version>
     <commons-io.version>2.22.0</commons-io.version>
