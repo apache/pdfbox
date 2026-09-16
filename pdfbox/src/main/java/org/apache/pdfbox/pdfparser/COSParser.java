@@ -203,8 +203,6 @@ public class COSParser extends BaseParser implements ICOSParser
     private PDEncryption encryption = null;
     private final Map<COSObjectKey, Long> xrefTable = new HashMap<>();
 
-    private final Map<Long, COSObjectKey> keyCache = new HashMap<>();
-
     /**
      * This is the document that will be parsed.
      */
@@ -2003,23 +2001,7 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     protected COSObjectKey getObjectKey(long num, int gen)
     {
-        if (document == null || document.getXrefTable().isEmpty())
-        {
-            return new COSObjectKey(num, gen);
-        }
-        // use a cache to get the COSObjectKey as iterating over the xref-table-map gets slow for big pdfs
-        // in the long run we have to overhaul the object pool or even better remove it
-        Map<COSObjectKey, Long> xrefTable = document.getXrefTable();
-        if (xrefTable.size() > keyCache.size())
-        {
-            for (COSObjectKey key : xrefTable.keySet())
-            {
-                keyCache.putIfAbsent(key.getInternalHash(), key);
-            }
-        }
-        long internalHashCode = COSObjectKey.computeInternalHash(num, gen);
-        COSObjectKey foundKey = keyCache.get(internalHashCode);
-        return foundKey != null ? foundKey : new COSObjectKey(num, gen);
+        return document == null ? new COSObjectKey(num, gen) : document.getObjectKey(num, gen);
     }
 
 }

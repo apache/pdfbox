@@ -18,10 +18,14 @@ package org.apache.pdfbox.cos;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -58,8 +62,7 @@ public class COSDocument extends COSBase implements Closeable
     /**
      * Maps object and generation id to object byte offsets.
      */
-    private final Map<COSObjectKey, Long> xrefTable =
-        new HashMap<>();
+    private final XrefTable xrefTable = new XrefTable();
 
     /**
      * List containing all streams which are created when creating a new pdf.
@@ -538,6 +541,166 @@ public class COSDocument extends COSBase implements Closeable
     public Map<COSObjectKey, Long> getXrefTable()
     {
         return xrefTable;
+    }
+
+    /**
+     * Returns the object key for the given object and generation number. The key from the cross reference table is
+     * returned if present, so that its object stream index is available; otherwise a new key is created.
+     *
+     * @param num the object number
+     * @param gen the generation number
+     * @return the object key
+     */
+    public COSObjectKey getObjectKey(long num, int gen)
+    {
+        COSObjectKey key = xrefTable.keysByHash.get(COSObjectKey.computeInternalHash(num, gen));
+        return key != null ? key : new COSObjectKey(num, gen);
+    }
+
+    /**
+     * Xref table which also indexes its keys by internal hash. Callers need the key instance stored in the table
+     * (it carries the object stream index) and a HashMap can't return that. The index is kept in sync here rather
+     * than rebuilt by each parser, which was quadratic for big documents with many object streams.
+     */
+    private static final class XrefTable extends AbstractMap<COSObjectKey, Long>
+    {
+        private final Map<COSObjectKey, Long> entries = new HashMap<>();
+        private final Map<Long, COSObjectKey> keysByHash = new HashMap<>();
+
+        @Override
+        public Long put(COSObjectKey key, Long value)
+        {
+            Long old = entries.put(key, value);
+            if (key != null)
+            {
+                COSObjectKey previous = keysByHash.put(key.getInternalHash(), key);
+                if (previous != null && previous != key)
+                {
+                    // HashMap kept the previous key instance, swap it so the stored index is the latest one
+                    entries.remove(key);
+                    entries.put(key, value);
+                }
+            }
+            return old;
+        }
+
+        @Override
+        public void putAll(Map<? extends COSObjectKey, ? extends Long> map)
+        {
+            // bulk insert presizes the table, then index the keys
+            entries.putAll(map);
+            map.forEach((key, value) ->
+            {
+                if (key != null)
+                {
+                    COSObjectKey previous = keysByHash.put(key.getInternalHash(), key);
+                    if (previous != null && previous != key)
+                    {
+                        entries.remove(key);
+                        entries.put(key, value);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public Long remove(Object key)
+        {
+            // don't rely on the returned value, it is null for missing keys and for null values alike
+            boolean present = entries.containsKey(key);
+            Long old = entries.remove(key);
+            if (present && key instanceof COSObjectKey)
+            {
+                keysByHash.remove(((COSObjectKey) key).getInternalHash());
+            }
+            return old;
+        }
+
+        @Override
+        public void clear()
+        {
+            entries.clear();
+            keysByHash.clear();
+        }
+
+        @Override
+        public Long get(Object key)
+        {
+            return entries.get(key);
+        }
+
+        @Override
+        public boolean containsKey(Object key)
+        {
+            return entries.containsKey(key);
+        }
+
+        @Override
+        public int size()
+        {
+            return entries.size();
+        }
+
+        @Override
+        public Set<Entry<COSObjectKey, Long>> entrySet()
+        {
+            // live view; removals through the iterator (which key/value views and bulk removals all use)
+            // keep the index in sync
+            return new AbstractSet<Entry<COSObjectKey, Long>>()
+            {
+                @Override
+                public Iterator<Entry<COSObjectKey, Long>> iterator()
+                {
+                    Iterator<Entry<COSObjectKey, Long>> iterator = entries.entrySet().iterator();
+                    return new Iterator<Entry<COSObjectKey, Long>>()
+                    {
+                        private COSObjectKey current;
+
+                        @Override
+                        public boolean hasNext()
+                        {
+                            return iterator.hasNext();
+                        }
+
+                        @Override
+                        public Entry<COSObjectKey, Long> next()
+                        {
+                            Entry<COSObjectKey, Long> entry = iterator.next();
+                            current = entry.getKey();
+                            return entry;
+                        }
+
+                        @Override
+                        public void remove()
+                        {
+                            iterator.remove();
+                            if (current != null)
+                            {
+                                keysByHash.remove(current.getInternalHash());
+                            }
+                        }
+                    };
+                }
+
+                @Override
+                public int size()
+                {
+                    return entries.size();
+                }
+
+                @Override
+                public boolean contains(Object o)
+                {
+                    return entries.entrySet().contains(o);
+                }
+
+                @Override
+                public void clear()
+                {
+                    XrefTable.this.clear();
+                }
+            };
+        }
     }
 
     /**
