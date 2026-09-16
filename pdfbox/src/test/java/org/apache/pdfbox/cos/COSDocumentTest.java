@@ -137,4 +137,22 @@ class COSDocumentTest
         assertEquals(0, xrefTable.size());
         assertNull(document.getXrefKey(5, 0));
     }
+
+    @Test
+    void testXrefTableCloneHasOwnIndex() throws ReflectiveOperationException
+    {
+        COSDocument document = new COSDocument();
+        Map<COSObjectKey, Long> xrefTable = document.getXrefTable();
+        COSObjectKey key = new COSObjectKey(4, 0, 2);
+        xrefTable.put(key, 100L);
+        @SuppressWarnings("unchecked")
+        Map<COSObjectKey, Long> copy = (Map<COSObjectKey, Long>) xrefTable.getClass()
+                .getMethod("clone").invoke(xrefTable);
+        assertEquals(xrefTable, copy);
+        // the clone has its own index: mutating it must not affect the original
+        copy.remove(key);
+        assertSame(key, document.getXrefKey(4, 0));
+        copy.put(new COSObjectKey(4, 0, 7), 101L);
+        assertSame(key, document.getXrefKey(4, 0));
+    }
 }

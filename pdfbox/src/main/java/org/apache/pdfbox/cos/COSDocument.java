@@ -637,7 +637,7 @@ public class COSDocument extends COSBase implements Closeable
     {
         private static final long serialVersionUID = 1L;
 
-        private final Map<Long, COSObjectKey> keysByHash = new HashMap<>();
+        private Map<Long, COSObjectKey> keysByHash = new HashMap<>();
 
         COSObjectKey getKey(long num, int gen)
         {
@@ -735,6 +735,16 @@ public class COSDocument extends COSBase implements Closeable
         {
             keysByHash.clear();
             super.clear();
+        }
+
+        @Override
+        public Object clone()
+        {
+            // HashMap.clone() is shallow, so give the copy its own index
+            XrefTable copy = (XrefTable) super.clone();
+            copy.keysByHash = new HashMap<>();
+            copy.keySet().forEach(copy::indexIfAbsent);
+            return copy;
         }
     }
 }
