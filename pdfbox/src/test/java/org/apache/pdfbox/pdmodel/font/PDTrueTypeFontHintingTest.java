@@ -24,8 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
 import org.apache.fontbox.ttf.TrueTypeFont;
@@ -59,15 +59,19 @@ class PDTrueTypeFontHintingTest
         TrueTypeFont.setHintingEnabled(false);
     }
 
-    private static final File FONT =
-            new File("src/test/resources/org/apache/pdfbox/ttf/LiberationSans-Regular.ttf");
+    // PDTrueTypeFont.load() consumes and closes the stream, so each caller needs a fresh one
+    private static InputStream fontStream()
+    {
+        return TrueTypeFont.class.getResourceAsStream(
+                "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
+    }
 
     @Test
     void testHintedNormalizedPathDiffersFromUnhinted() throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
-            PDTrueTypeFont font = PDTrueTypeFont.load(doc, FONT, WinAnsiEncoding.INSTANCE);
+            PDTrueTypeFont font = PDTrueTypeFont.load(doc, fontStream(), WinAnsiEncoding.INSTANCE);
             int code = 'H';
 
             GeneralPath hinted = font.getHintedNormalizedPath(code, 16);
@@ -90,7 +94,7 @@ class PDTrueTypeFontHintingTest
     {
         try (PDDocument doc = new PDDocument())
         {
-            PDTrueTypeFont font = PDTrueTypeFont.load(doc, FONT, WinAnsiEncoding.INSTANCE);
+            PDTrueTypeFont font = PDTrueTypeFont.load(doc, fontStream(), WinAnsiEncoding.INSTANCE);
             // LiberationSans gasp disables grid-fitting at <= 8 ppem
             assertNull(font.getHintedNormalizedPath('H', 8));
             assertNotNull(font.getHintedNormalizedPath('H', 16));

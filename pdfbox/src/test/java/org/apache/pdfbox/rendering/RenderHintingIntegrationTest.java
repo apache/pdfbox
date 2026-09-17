@@ -20,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -41,8 +41,12 @@ import org.junit.jupiter.api.parallel.Isolated;
 @Isolated // TrueTypeFont hinting is a global switch; other classes must not render while it is on
 class RenderHintingIntegrationTest
 {
-    private static final File FONT =
-            new File("src/test/resources/org/apache/pdfbox/ttf/LiberationSans-Regular.ttf");
+    // PDTrueTypeFont.load() consumes and closes the stream, so each caller needs a fresh one
+    private static InputStream fontStream()
+    {
+        return RenderHintingIntegrationTest.class.getResourceAsStream(
+                "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
+    }
 
     @AfterEach
     void restoreHinting()
@@ -78,7 +82,7 @@ class RenderHintingIntegrationTest
         {
             PDPage page = new PDPage(new PDRectangle(160, 60));
             doc.addPage(page);
-            PDTrueTypeFont font = PDTrueTypeFont.load(doc, FONT, WinAnsiEncoding.INSTANCE);
+            PDTrueTypeFont font = PDTrueTypeFont.load(doc, fontStream(), WinAnsiEncoding.INSTANCE);
             try (PDPageContentStream cs = new PDPageContentStream(doc, page))
             {
                 cs.beginText();
