@@ -23,22 +23,18 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Isolated;
 
 /**
  * Proves that hinting is actually wired into the render path: when hinting is enabled, a page of
  * embedded TrueType text rasterizes to a different image than with it disabled.
  */
-@Isolated // TrueTypeFont hinting is a global switch; other classes must not render while it is on
 class RenderHintingIntegrationTest
 {
     // PDTrueTypeFont.load() consumes and closes the stream, so each caller needs a fresh one
@@ -48,19 +44,12 @@ class RenderHintingIntegrationTest
                 "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
     }
 
-    @AfterEach
-    void restoreHinting()
-    {
-        TrueTypeFont.setHintingEnabled(false);
-    }
-
     @Test
     void testHintingChangesRenderedPixels() throws IOException
     {
         byte[] pdf = buildPdf();
-        BufferedImage off = render(pdf);
-        TrueTypeFont.setHintingEnabled(true);
-        BufferedImage on = render(pdf);
+        BufferedImage off = render(pdf, false);
+        BufferedImage on = render(pdf, true);
 
         assertEquals(off.getWidth(), on.getWidth());
         assertEquals(off.getHeight(), on.getHeight());
@@ -73,7 +62,7 @@ class RenderHintingIntegrationTest
     void testDisabledHintingIsDeterministic() throws IOException
     {
         byte[] pdf = buildPdf();
-        assertEquals(0, countDifferences(render(pdf), render(pdf)));
+        assertEquals(0, countDifferences(render(pdf, false), render(pdf, false)));
     }
 
     private static byte[] buildPdf() throws IOException
@@ -97,11 +86,13 @@ class RenderHintingIntegrationTest
         }
     }
 
-    private static BufferedImage render(byte[] pdf) throws IOException
+    private static BufferedImage render(byte[] pdf, boolean hinting) throws IOException
     {
         try (PDDocument doc = org.apache.pdfbox.Loader.loadPDF(pdf))
         {
-            return new PDFRenderer(doc).renderImageWithDPI(0, 96);
+            PDFRenderer renderer = new PDFRenderer(doc);
+            renderer.setHintingEnabled(hinting);
+            return renderer.renderImageWithDPI(0, 96);
         }
     }
 

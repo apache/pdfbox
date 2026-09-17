@@ -37,8 +37,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -53,18 +51,6 @@ class HintingConcurrencyTest
     private static final int ITERATIONS = 150;
     private static final int[] PPEMS = { 11, 13, 16, 24 };
     private static final String GLYPHS = "HILEToxn";
-
-    @BeforeEach
-    void enableHinting()
-    {
-        TrueTypeFont.setHintingEnabled(true);
-    }
-
-    @AfterEach
-    void restoreHinting()
-    {
-        TrueTypeFont.setHintingEnabled(false);
-    }
 
     private static TrueTypeFont parse() throws IOException
     {

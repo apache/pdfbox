@@ -35,8 +35,7 @@ import org.apache.logging.log4j.Logger;
  * Hinting is best-effort: anything malformed, unsupported, or not applicable (a composite glyph, a
  * glyph with no instructions, a ppem the {@code gasp} table excludes) falls back to {@code null}, and
  * the caller renders the raw outline. One bad glyph never disables hinting for the rest of the font.
- * Hinting as a whole is switched on and off by {@link TrueTypeFont#isHintingEnabled()}; while it is
- * off every glyph falls back to {@code null}.
+ * Whether to hint at all is the caller's decision; this class always grid-fits when asked.
  * <p>
  * The interpreter carries a great deal of mutable state - the storage area, the twilight zone, the
  * post-{@code prep} template, the active ppem - so every entry point here is {@code synchronized} and
@@ -187,7 +186,7 @@ class GlyphHinter
     /** Runs all gating, then grid-fits the glyph, returning the executed zone or null on fallback. */
     private Hinted hint(int gid, int ppem)
     {
-        if (!TrueTypeFont.isHintingEnabled() || ppem <= 0)
+        if (ppem <= 0)
         {
             return null;
         }

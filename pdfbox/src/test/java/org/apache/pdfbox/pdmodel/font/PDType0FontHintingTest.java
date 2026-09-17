@@ -39,31 +39,15 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Isolated;
 
 /**
  * The CID half of the render-path hinting wiring. {@link PDCIDFontType2#getHintedNormalizedPath} is a
  * near-copy of the {@link PDTrueTypeFont} one but had no test of its own, and {@link PDType0Font}
  * forwards to it only when the descendant really is a CIDFontType2.
  */
-@Isolated // TrueTypeFont hinting is a global switch; other classes must not render while it is on
 class PDType0FontHintingTest
 {
-    @BeforeEach
-    void enableHinting()
-    {
-        TrueTypeFont.setHintingEnabled(true);
-    }
-
-    @AfterEach
-    void restoreHinting()
-    {
-        TrueTypeFont.setHintingEnabled(false);
-    }
-
     /**
      * Embeds the font whole (no subsetting) so the encoding is Identity and a character code is its
      * own glyph id, which keeps the test about hinting rather than about CID mapping.

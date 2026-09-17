@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -55,19 +53,6 @@ import org.junit.jupiter.api.Test;
  */
 class GoldenHintingTest
 {
-    // hinting is off by default, so the golden comparison has to turn the feature on first
-    @BeforeEach
-    void enableHinting()
-    {
-        TrueTypeFont.setHintingEnabled(true);
-    }
-
-    @AfterEach
-    void restoreHinting()
-    {
-        TrueTypeFont.setHintingEnabled(false);
-    }
-
     private static final int[] PPEMS = { 11, 13, 16, 24 };
 
     /**
