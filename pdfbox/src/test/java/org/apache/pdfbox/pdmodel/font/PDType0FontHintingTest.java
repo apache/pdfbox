@@ -26,6 +26,8 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,9 +52,6 @@ import org.junit.jupiter.api.parallel.Isolated;
 @Isolated // TrueTypeFont hinting is a global switch; other classes must not render while it is on
 class PDType0FontHintingTest
 {
-    private static final File FONT =
-            new File("src/test/resources/org/apache/pdfbox/ttf/LiberationSans-Regular.ttf");
-
     @BeforeEach
     void enableHinting()
     {
@@ -69,16 +68,20 @@ class PDType0FontHintingTest
      * Embeds the font whole (no subsetting) so the encoding is Identity and a character code is its
      * own glyph id, which keeps the test about hinting rather than about CID mapping.
      */
-    private static PDType0Font load(PDDocument doc, int[] gidOut) throws IOException
+    private static PDType0Font load(PDDocument doc, int[] gidOut) throws IOException, URISyntaxException
     {
-        TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(FONT));
+        URL url = TrueTypeFont.class.getResource(
+                "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
+        File fontFile = new File(url.toURI());
+
+        TrueTypeFont ttf = new TTFParser().parse(new RandomAccessReadBufferedFile(fontFile));
         gidOut[0] = ttf.getUnicodeCmapLookup().getGlyphId('H');
         assertTrue(gidOut[0] > 0, "no glyph for 'H'");
         return PDType0Font.load(doc, ttf, false);
     }
 
     @Test
-    void testHintedNormalizedPathDiffersFromUnhinted() throws IOException
+    void testHintedNormalizedPathDiffersFromUnhinted() throws IOException, URISyntaxException
     {
         try (PDDocument doc = new PDDocument())
         {
@@ -100,7 +103,7 @@ class PDType0FontHintingTest
     }
 
     @Test
-    void testGaspGateReturnsNullAtSmallPpem() throws IOException
+    void testGaspGateReturnsNullAtSmallPpem() throws IOException, URISyntaxException
     {
         try (PDDocument doc = new PDDocument())
         {
