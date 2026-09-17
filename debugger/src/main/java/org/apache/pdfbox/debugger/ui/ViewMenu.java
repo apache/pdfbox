@@ -73,17 +73,19 @@ public class ViewMenu extends MenuBase
     }
     
     /**
-     * Test if the one of the rendering options has been selected
-     * 
+     * Test if the one of the rendering options has been selected. This is called by
+     * {@code PagePane.actionPerformed()} to decide whether to start another rendering.
+     *
      * @param actionCommand the actioCommand of the menu event 
      * @return true if the actionCommand matches one of the rendering options
      */
     public static boolean isRenderingOption(String actionCommand)
-    {
+    { 
         return SHOW_TEXT_STRIPPER.equals(actionCommand) ||
                 SHOW_TEXT_STRIPPER_BEADS.equals(actionCommand) ||
                 SHOW_FONT_BBOX.equals(actionCommand) ||
                 SHOW_GLYPH_BOUNDS.equals(actionCommand) ||
+                ENABLE_HINTING.equals(actionCommand) ||   
                 ALLOW_SUBSAMPLING.equals(actionCommand);         
     }
     
