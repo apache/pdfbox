@@ -28,41 +28,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Isolated;
 
 /**
  * Verifies the render-path hinting wiring at the font level: an embedded TrueType font returns a
  * grid-fitted normalized path that differs from the unhinted one, is in the same 1000/em space, and
  * respects the gasp gate.
  */
-@Isolated // TrueTypeFont hinting is a global switch; other classes must not render while it is on
 class PDTrueTypeFontHintingTest
 {
-    // hinting is off by default, so these tests have to turn the feature on first
-    @BeforeEach
-    void enableHinting()
-    {
-        TrueTypeFont.setHintingEnabled(true);
-    }
-
-    @AfterEach
-    void restoreHinting()
-    {
-        TrueTypeFont.setHintingEnabled(false);
-    }
-
     // PDTrueTypeFont.load() consumes and closes the stream, so each caller needs a fresh one
     private static InputStream fontStream()
     {
-        return TrueTypeFont.class.getResourceAsStream(
+        return PDTrueTypeFontHintingTest.class.getResourceAsStream(
                 "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
     }
 

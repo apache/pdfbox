@@ -62,7 +62,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
@@ -137,6 +136,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private final PDFRenderer renderer;
 
     private final boolean subsamplingAllowed;
+    private final boolean hintingEnabled;
 
     // the graphics device to draw to, xform is the initial transform of the device (i.e. DPI)
     private Graphics2D graphics;
@@ -195,6 +195,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         super(parameters.getPage());
         this.renderer = parameters.getRenderer();
         this.subsamplingAllowed = parameters.isSubsamplingAllowed();
+        this.hintingEnabled = parameters.isHintingEnabled();
         this.destination = parameters.getDestination();
         this.renderingHints = parameters.getRenderingHints();
         this.imageDownscalingOptimizationThreshold =
@@ -511,12 +512,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             glyphCaches.put(font, cache);
         }
 
-        // Grid-fitting is off by default; TrueTypeFont.SYSPROP_HINTING
-        // ("-Dorg.apache.fontbox.ttf.hinting=true") or TrueTypeFont.setHintingEnabled(true) turns it
-        // on. While it is off we never derive a ppem and take the plain, code-keyed cache path, so the
-        // feature costs nothing when disabled.
+        // Grid-fitting is off by default; PDFRenderer.setHintingEnabled(true) turns it on. While it
+        // is off we never derive a ppem and take the plain, code-keyed cache path, so the feature
+        // costs nothing when disabled.
         int ppem = 0;
-        if (TrueTypeFont.isHintingEnabled())
+        if (hintingEnabled)
         {
             // hintingPpem expects the glyph-space-to-device transform, but 'at' only maps glyph space
             // to PDF user space (points) - the device scale lives in 'xform', which the Graphics2D

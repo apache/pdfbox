@@ -33,6 +33,7 @@ public final class PageDrawerParameters
     private final PDFRenderer renderer;
     private final PDPage page;
     private final boolean subsamplingAllowed;
+    private final boolean hintingEnabled;
     private final RenderDestination destination; 
     private final RenderingHints renderingHints;
     private final float imageDownscalingOptimizationThreshold;
@@ -41,12 +42,13 @@ public final class PageDrawerParameters
      * Package-private constructor.
      */
     PageDrawerParameters(PDFRenderer renderer, PDPage page, boolean subsamplingAllowed,
-                         RenderDestination destination, RenderingHints renderingHints,
-                         float imageDownscalingOptimizationThreshold)
+                         boolean hintingEnabled, RenderDestination destination,
+                         RenderingHints renderingHints, float imageDownscalingOptimizationThreshold)
     {
         this.renderer = renderer;
         this.page = page;
         this.subsamplingAllowed = subsamplingAllowed;
+        this.hintingEnabled = hintingEnabled;
         this.destination = destination;
         this.renderingHints = renderingHints;
         this.imageDownscalingOptimizationThreshold = imageDownscalingOptimizationThreshold;
@@ -80,6 +82,16 @@ public final class PageDrawerParameters
     public boolean isSubsamplingAllowed()
     {
         return subsamplingAllowed;
+    }
+
+    /**
+     * Returns whether TrueType glyph outlines are grid-fitted (hinted).
+     *
+     * @return true if TrueType hinting is enabled
+     */
+    public boolean isHintingEnabled()
+    {
+        return hintingEnabled;
     }
 
     /**
