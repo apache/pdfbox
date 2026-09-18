@@ -47,6 +47,23 @@ public interface PDVectorFont
     GeneralPath getNormalizedPath(int code) throws IOException;
 
     /**
+     * Returns the grid-fitted (TrueType-hinted) normalized glyph path for the given character code at
+     * the given ppem, or {@code null} if hinting does not apply (not an embedded TrueType outline font,
+     * a ppem the font's gasp table excludes, or hinting disabled). Like {@link #getNormalizedPath(int)}
+     * the result is normalized to the 1000 unit square. The default implementation returns
+     * {@code null}, i.e. no hinting.
+     *
+     * @param code character code in a PDF. Not to be confused with unicode.
+     * @param ppem the pixels-per-em the glyph will be rendered at
+     * @return the hinted normalized glyph path, or null to use the unhinted path
+     * @throws java.io.IOException if the font could not be read
+     */
+    default GeneralPath getHintedNormalizedPath(int code, int ppem) throws IOException
+    {
+        return null;
+    }
+
+    /**
      * Returns true if this font contains a glyph for the given character code in a PDF.
      *
      * @param code character code in a PDF. Not to be confused with unicode.

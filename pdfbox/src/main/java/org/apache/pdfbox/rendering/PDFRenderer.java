@@ -62,6 +62,7 @@ public class PDFRenderer
     private AnnotationFilter annotationFilter = annotation -> true;
 
     private boolean subsamplingAllowed = false;
+    private boolean hintingEnabled = false;
 
     private RenderDestination defaultDestination;
 
@@ -131,6 +132,29 @@ public class PDFRenderer
     public void setSubsamplingAllowed(boolean subsamplingAllowed)
     {
         this.subsamplingAllowed = subsamplingAllowed;
+    }
+
+    /**
+     * Value indicating whether the renderer grid-fits (hints) TrueType glyph outlines by running the
+     * font's bytecode instructions at the size the glyph is drawn at. Hinting is off by default.
+     *
+     * @return true if TrueType hinting is enabled, false otherwise.
+     */
+    public boolean isHintingEnabled()
+    {
+        return hintingEnabled;
+    }
+
+    /**
+     * Sets a value instructing the renderer whether to grid-fit (hint) TrueType glyph outlines by
+     * running the font's bytecode instructions at the size the glyph is drawn at. Only embedded
+     * TrueType outline fonts are affected; other fonts render as before. Hinting is off by default.
+     *
+     * @param hintingEnabled The new value indicating if TrueType hinting is enabled.
+     */
+    public void setHintingEnabled(boolean hintingEnabled)
+    {
+        this.hintingEnabled = hintingEnabled;
     }
 
     /**
@@ -353,7 +377,7 @@ public class PDFRenderer
             RenderingHints actualRenderingHints
                     = renderingHints == null ? createDefaultRenderingHints(g) : renderingHints;
             PageDrawerParameters parameters
-                    = new PageDrawerParameters(this, page, subsamplingAllowed, destination,
+                    = new PageDrawerParameters(this, page, subsamplingAllowed, hintingEnabled, destination,
                             actualRenderingHints, imageDownscalingOptimizationThreshold);
             PageDrawer drawer = createPageDrawer(parameters);
             drawer.drawPage(g, cropBox);
@@ -469,7 +493,7 @@ public class PDFRenderer
         RenderingHints actualRenderingHints =
                 renderingHints == null ? createDefaultRenderingHints(graphics) : renderingHints;
         PageDrawerParameters parameters =
-                new PageDrawerParameters(this, page, subsamplingAllowed, destination,
+                new PageDrawerParameters(this, page, subsamplingAllowed, hintingEnabled, destination,
                         actualRenderingHints, imageDownscalingOptimizationThreshold);
         PageDrawer drawer = createPageDrawer(parameters);
         drawer.drawPage(graphics, cropBox);
