@@ -83,6 +83,23 @@ class HintingIntegrationTest
         assertNotNull(font.getHintedPath(h, 16), "hinting expected at 16ppem");
     }
 
+    /**
+     * {@code head.lowestRecPPEM} is the vendor's smallest readable outline size. CJK fonts that ship
+     * bitmap strikes for small sizes set it to 20-28 (MS Mincho/Gothic, MingLiU: 25; Ricoh HG*: 28)
+     * and their instructions, run under grayscale at those sizes, make the text heavy; text fonts sit
+     * at 6-9. No test font declares a value above its gasp threshold, so the value is raised on
+     * Liberation Sans (normally 8) before the hinter first reads it.
+     */
+    @Test
+    void testLowestRecPpemGate() throws IOException
+    {
+        TrueTypeFont font = parse("/ttf/LiberationSans-Regular.ttf");
+        font.getHeader().setLowestRecPPEM(20);
+        int h = gid(font, 'H');
+        assertNull(font.getHintedPath(h, 16), "no hinting below lowestRecPPEM");
+        assertNotNull(font.getHintedPath(h, 20), "hinting expected from lowestRecPPEM up");
+    }
+
     @Test
     void testHintedDiffersFromRawOutline() throws IOException
     {

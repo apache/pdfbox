@@ -58,6 +58,7 @@ class GlyphHinter
     private boolean warned;
     private TrueTypeInterpreter interpreter;
     private GaspTable gasp;
+    private int lowestRecPpem;
     private int unitsPerEm;
     private int currentPpem = -1;
 
@@ -88,6 +89,7 @@ class GlyphHinter
 
         unitsPerEm = font.getUnitsPerEm();
         gasp = font.getGasp();
+        lowestRecPpem = font.getHeader().getLowestRecPPEM();
 
         interpreter = new TrueTypeInterpreter(maxp.getMaxStackElements(), maxp.getMaxStorage(),
                 maxp.getMaxTwilightPoints(), unitsPerEm);
@@ -197,7 +199,18 @@ class GlyphHinter
             {
                 return null;
             }
-            // gasp gate: if a gasp table is present and does not request grid-fitting here, skip
+            // head.lowestRecPPEM is the vendor's "smallest readable size in pixels" for the
+            // outlines. Fonts that ship bitmap strikes for small sizes (MS Mincho/Gothic say 25) set
+            // it above the sizes the bitmaps cover; their instructions were never meant to run there,
+            // and doing so under grayscale forces every thin stroke to a full pixel. Text fonts
+            // without strikes sit at 6-9, so this never fires for them.
+            if (ppem < lowestRecPpem)
+            {
+                return null;
+            }
+            // gasp gate: if a gasp table is present and does not request grid-fitting here, skip.
+            // (GRIDFIT without DOGRAY is deliberately NOT treated as "do not hint": Arial and
+            // Liberation flag 9-17ppem that way, so it would switch hinting off for body text.)
             if (gasp != null && !gasp.isGridFit(ppem))
             {
                 return null;
