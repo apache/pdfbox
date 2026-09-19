@@ -54,6 +54,7 @@ class TrueTypeInterpreter
     private static final int EIF = 0x59;
     private static final int FDEF = 0x2C;
     private static final int ENDF = 0x2D;
+    private static final int IDEF = 0x89;
 
     private final OpHandler[] dispatch = new OpHandler[256];
     private final Map<Integer, FunctionDef> functions = new HashMap<>();
@@ -289,6 +290,7 @@ class TrueTypeInterpreter
         try
         {
             BytecodeStream body = new BytecodeStream(def.getProgram());
+            body.setEnd(def.getEnd());
             body.seek(def.getEntryPoint());
             run(ctx, body);
             ctx.setReturnFromFunction(false);
@@ -303,8 +305,9 @@ class TrueTypeInterpreter
     {
         int functionNumber = ctx.pop();
         BytecodeStream s = ctx.getStream();
-        functions.put(functionNumber, new FunctionDef(s.getCode(), s.position()));
-        skipFunctionBody(s);
+        int entry = s.position();
+        int end = skipFunctionBody(s);
+        functions.put(functionNumber, new FunctionDef(s.getCode(), entry, end));
     }
 
     /** IDEF: binds the opcode on top of the stack to the following instructions (until ENDF). */
@@ -312,18 +315,29 @@ class TrueTypeInterpreter
     {
         int opcode = ctx.pop();
         BytecodeStream s = ctx.getStream();
-        instructionDefs.put(opcode & 0xFF, new FunctionDef(s.getCode(), s.position()));
-        skipFunctionBody(s);
+        int entry = s.position();
+        int end = skipFunctionBody(s);
+        instructionDefs.put(opcode & 0xFF, new FunctionDef(s.getCode(), entry, end));
     }
 
-    private void skipFunctionBody(BytecodeStream s)
+    /**
+     * Skips to the {@code ENDF} closing a function/instruction body, leaving the stream after it.
+     * A nested {@code FDEF}/{@code IDEF} is an error, as in FreeType (Nested_DEFS).
+     *
+     * @return the position of the {@code ENDF}
+     */
+    private int skipFunctionBody(BytecodeStream s)
     {
         while (s.hasNext())
         {
             int opcode = s.nextByte();
             if (opcode == ENDF)
             {
-                return;
+                return s.position() - 1;
+            }
+            if (opcode == FDEF || opcode == IDEF)
+            {
+                throw new HintingException("nested function definition");
             }
             skipPushOperands(opcode, s);
         }
@@ -505,20 +519,36 @@ class TrueTypeInterpreter
             ctx.push(b);
         };
         dispatch[0x24] = ctx -> ctx.push(ctx.getStackDepth());        // DEPTH
-        dispatch[0x25] = ctx -> ctx.push(ctx.peek(ctx.pop() - 1));    // CINDEX
+        // CINDEX/MINDEX: k counts from the top, 1-based. An out-of-range k is ignored (the index
+        // operand has been consumed and the stack is otherwise left alone), as FreeType does outside
+        // pedantic mode, rather than aborting the glyph.
+        dispatch[0x25] = ctx ->                                       // CINDEX
+        {
+            int k = ctx.pop();
+            if (k > 0 && k <= ctx.getStackDepth())
+            {
+                ctx.push(ctx.peek(k - 1));
+            }
+        };
         dispatch[0x26] = ctx ->                                       // MINDEX
         {
             int k = ctx.pop();
-            int[] tmp = new int[k];
-            for (int i = 0; i < k; i++)
+            if (k <= 0 || k > ctx.getStackDepth())
             {
-                tmp[i] = ctx.pop();
+                return;
             }
+            // move the k-th element to the top; the k-1 elements above it keep their order
+            int[] above = new int[k - 1];
             for (int i = k - 2; i >= 0; i--)
             {
-                ctx.push(tmp[i]);
+                above[i] = ctx.pop();
             }
-            ctx.push(tmp[k - 1]);
+            int moved = ctx.pop();
+            for (int i = 0; i < above.length; i++)
+            {
+                ctx.push(above[i]);
+            }
+            ctx.push(moved);
         };
         dispatch[0x8A] = ctx ->                                       // ROLL
         {
@@ -593,8 +623,17 @@ class TrueTypeInterpreter
             }
         };
         dispatch[FDEF] = this::defineFunction;
-        dispatch[ENDF] = ctx -> ctx.setReturnFromFunction(true);
-        dispatch[0x89] = this::defineInstruction; // IDEF
+        dispatch[ENDF] = ctx ->
+        {
+            // ENDF outside a function body is an error in FreeType (ENDF_In_Exec_Stream); an FDEF
+            // that was skipped correctly never lets its ENDF execute at the top level
+            if (ctx.getCallDepth() <= 0)
+            {
+                throw new HintingException("ENDF outside a function body");
+            }
+            ctx.setReturnFromFunction(true);
+        };
+        dispatch[IDEF] = this::defineInstruction;
         dispatch[0x2B] = ctx -> callFunction(ctx, ctx.pop());            // CALL
         dispatch[0x2A] = ctx ->                                          // LOOPCALL
         {

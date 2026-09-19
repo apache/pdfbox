@@ -16,6 +16,7 @@
  */
 package org.apache.fontbox.ttf;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
@@ -42,6 +43,11 @@ class TrueTypeInterpreterTest
     private static final byte SWAP = 0x23;
     private static final byte DEPTH = 0x24;
     private static final byte ROLL = (byte) 0x8A;
+    private static final byte CINDEX = 0x25;
+    private static final byte MINDEX = 0x26;
+    private static final byte NPUSHB = 0x40;
+    private static final byte JROF = 0x79;
+    private static final byte POP = 0x21;
     private static final byte GT = 0x52;
     private static final byte ODD = 0x56;
     private static final byte EVEN = 0x57;
@@ -77,6 +83,18 @@ class TrueTypeInterpreterTest
     {
         ExecutionContext ctx = interpreter().executeProgram(program, 16);
         return ctx.peek(0);
+    }
+
+    /** Runs the program and returns the whole stack, bottom to top. */
+    private static int[] runStack(byte[] program)
+    {
+        ExecutionContext ctx = interpreter().executeProgram(program, 16);
+        int[] stack = new int[ctx.getStackDepth()];
+        for (int i = 0; i < stack.length; i++)
+        {
+            stack[i] = ctx.peek(stack.length - 1 - i);
+        }
+        return stack;
     }
 
     @Test
@@ -115,6 +133,21 @@ class TrueTypeInterpreterTest
         assertEquals(3, runTop(new byte[] { PUSHB2, 1, 2, PUSHB1, 9, DEPTH }));
         // ROLL: 1 2 3 -> 2 3 1, top is 1
         assertEquals(1, runTop(new byte[] { PUSHB2, 1, 2, PUSHB1, 3, ROLL }));
+    }
+
+    /**
+     * ROLL moves the third element to the top (FreeType's Ins_ROLL: [a b c] -> [b c a] with c on top
+     * before and a on top after). Checks all three resulting positions, not just the top.
+     */
+    @Test
+    void testRollFullPermutation()
+    {
+        // after ROLL the stack is b c a; pop a (top) with a SUB against 0 pushed... simpler: use
+        // arithmetic that only gives the expected value for the expected order:
+        // [1 2 3] ROLL -> [2 3 1]; SUB -> 3 - 1 = 2; SUB -> 2 - 2 = 0
+        assertEquals(0, runTop(new byte[] { PUSHB2, 1, 2, PUSHB1, 3, ROLL, SUB, SUB }));
+        // [5 7 9] ROLL -> [7 9 5]; SUB -> 9 - 5 = 4; SUB -> 7 - 4 = 3
+        assertEquals(3, runTop(new byte[] { PUSHB2, 5, 7, PUSHB1, 9, ROLL, SUB, SUB }));
     }
 
     /**
@@ -393,5 +426,160 @@ class TrueTypeInterpreterTest
 
         interp.setPpem(24, 24);
         assertEquals(0, interp.executeProgram(new byte[] { PUSHB1, 5, RS }, 24).peek(0));
+    }
+    /**
+     * MINDEX moves the k-th element (1 = top) to the top and closes the gap, leaving everything
+     * else in order (FreeType's Ins_MINDEX). Checked for k = 1 (no-op), 2 (= SWAP), 3 (= ROLL) and a
+     * deeper k, on the whole stack rather than just the top.
+     */
+    @Test
+    void testMindex()
+    {
+        // stack bottom->top: 10 20 30 40 50
+        byte[] five = { NPUSHB, 5, 10, 20, 30, 40, 50 };
+        assertArrayEquals(new int[] { 10, 20, 30, 40, 50 }, runStack(concat(five, PUSHB1, 1, MINDEX)));
+        assertArrayEquals(new int[] { 10, 20, 30, 50, 40 }, runStack(concat(five, PUSHB1, 2, MINDEX)));
+        assertArrayEquals(new int[] { 10, 20, 40, 50, 30 }, runStack(concat(five, PUSHB1, 3, MINDEX)));
+        assertArrayEquals(new int[] { 20, 30, 40, 50, 10 }, runStack(concat(five, PUSHB1, 5, MINDEX)));
+        // k = 2 is SWAP and k = 3 is ROLL
+        assertArrayEquals(runStack(concat(five, SWAP)), runStack(concat(five, PUSHB1, 2, MINDEX)));
+        assertArrayEquals(runStack(concat(five, ROLL)), runStack(concat(five, PUSHB1, 3, MINDEX)));
+        // out of range: k is consumed, the rest of the stack is untouched (FreeType, non-pedantic)
+        assertArrayEquals(new int[] { 10, 20, 30, 40, 50 }, runStack(concat(five, PUSHB1, 6, MINDEX)));
+        assertArrayEquals(new int[] { 10, 20, 30, 40, 50 }, runStack(concat(five, PUSHB1, 0, MINDEX)));
+    }
+
+    @Test
+    void testCindex()
+    {
+        byte[] three = { PUSHB2, 10, 20, PUSHB1, 30 };
+        assertArrayEquals(new int[] { 10, 20, 30, 30 }, runStack(concat(three, PUSHB1, 1, CINDEX)));
+        assertArrayEquals(new int[] { 10, 20, 30, 10 }, runStack(concat(three, PUSHB1, 3, CINDEX)));
+        assertArrayEquals(new int[] { 10, 20, 30 }, runStack(concat(three, PUSHB1, 4, CINDEX)));
+    }
+
+    /**
+     * Jump offsets are relative to the jump opcode itself (offset 1 is the next instruction). A
+     * forward JMPR skips code; a backward JROT builds a countdown loop; JROF jumps only on false.
+     */
+    @Test
+    void testJumpsAreRelativeToTheJumpOpcode()
+    {
+        // JMPR +4 skips the "PUSHB1 99 POP" that follows... layout:
+        //  0: PUSHB1 4   2: JMPR   3: PUSHB1 99   5: POP   6: PUSHB1 7
+        // JMPR at 2, offset 4 -> 6, so 99 is never pushed
+        assertArrayEquals(new int[] { 7 }, runStack(new byte[] { PUSHB1, 4, JMPR, PUSHB1, 99, POP, PUSHB1, 7 }));
+
+        // countdown: push 3; loop: push 1, SUB, DUP, push -6 (offset), SWAP, JROT -> loops while != 0
+        //  0: PUSHB1 3
+        //  2: PUSHB1 1   4: SUB   5: DUP   6: PUSHW1 FF FA (-6)   9: SWAP   10: JROT  (10 - 6 = 4? no: 10-8=2)
+        // JROT at 10 must land on 2: offset -8
+        assertArrayEquals(new int[] { 0 }, runStack(new byte[] { PUSHB1, 3,
+                PUSHB1, 1, SUB, DUP, PUSHW1, (byte) 0xFF, (byte) 0xF8, SWAP, JROT }));
+
+        // JROF: jumps when the condition is false
+        //  0: PUSHB2 4 0   3: JROF   4: PUSHB1 99   6: POP   7: PUSHB1 8
+        assertArrayEquals(new int[] { 8 }, runStack(new byte[] { PUSHB2, 4, 0, JROF, PUSHB1, 99, POP, PUSHB1, 8 }));
+        //  with a true condition JROF falls through
+        assertArrayEquals(new int[] { 99, 8 }, runStack(new byte[] { PUSHB2, 4, 1, JROF, PUSHB1, 99, PUSHB1, 8 }));
+    }
+
+    /**
+     * Skipping a false IF branch must respect nesting and must not mistake push <em>data</em> for
+     * opcodes: the skipped branch here contains PUSHB operands equal to the IF, ELSE and EIF opcode
+     * bytes, and a nested IF/ELSE/EIF.
+     */
+    @Test
+    void testNestedIfElseWithOpcodeBytesAsPushData()
+    {
+        byte[] program = {
+            PUSHB1, 0, IF,                       // false: skip to ELSE
+                PUSHB1, EIF,                     //   data byte 0x59 must not end the skip
+                PUSHB1, 1, IF, PUSHB1, ELSE, ELSE, PUSHB1, IF, EIF, // nested, with data 0x1B / 0x58
+                PUSHB1, 99,
+            ELSE,
+                PUSHB1, 1, IF, PUSHB1, 5, ELSE, PUSHB1, 6, EIF,     // nested true: 5
+                PUSHB1, 0, IF, PUSHB1, 7, ELSE, PUSHB1, 8, EIF,     // nested false: 8
+            EIF,
+            PUSHB1, 9 };
+        assertArrayEquals(new int[] { 5, 8, 9 }, runStack(program));
+
+        // and a true outer branch skips the else-branch, which itself contains nested IFs and data
+        byte[] program2 = {
+            PUSHB1, 1, IF,
+                PUSHB1, 1,
+            ELSE,
+                PUSHB1, EIF, PUSHB1, 0, IF, PUSHB1, IF, ELSE, PUSHB1, ELSE, EIF, PUSHB1, 99,
+            EIF,
+            PUSHB1, 2 };
+        assertArrayEquals(new int[] { 1, 2 }, runStack(program2));
+    }
+
+    /**
+     * Function bodies: an IF/ELSE inside a body, a body containing push data equal to ENDF, a
+     * function calling another function (return flag must not leak to the caller), and a recursive
+     * function terminated by its own IF.
+     */
+    @Test
+    void testFunctionBodiesNestedCallsAndReturns()
+    {
+        // fn 0: doubles the top (DUP ADD), but contains an IF whose skipped branch holds ENDF as data
+        // fn 1: calls fn 0 twice, then pushes 100 - the push after the inner calls proves the inner
+        //       ENDF did not return from fn 1
+        byte[] program = {
+            PUSHB1, 0, FDEF,
+                PUSHB1, 0, IF, PUSHB1, ENDF, PUSHB1, ENDF, ELSE, DUP, ADD, EIF,
+            ENDF,
+            PUSHB1, 1, FDEF,
+                PUSHB1, 0, CALL, PUSHB1, 0, CALL, PUSHB1, 100,
+            ENDF,
+            PUSHB1, 3, PUSHB1, 1, CALL };
+        assertArrayEquals(new int[] { 12, 100 }, runStack(program));
+
+        // fn 2: recursive countdown: if top != 0 { push 1, SUB, call 2 } ; leaves 0
+        byte[] recursive = {
+            PUSHB1, 2, FDEF,
+                DUP, IF, PUSHB1, 1, SUB, PUSHB1, 2, CALL, EIF,
+            ENDF,
+            PUSHB1, 5, PUSHB1, 2, CALL, PUSHB1, 42 };
+        assertArrayEquals(new int[] { 0, 42 }, runStack(recursive));
+    }
+
+    @Test
+    void testEndfOutsideFunctionIsAnError()
+    {
+        assertThrows(HintingException.class, () -> runStack(new byte[] { PUSHB1, 1, ENDF }));
+    }
+
+    private static byte[] concat(byte[] head, int... tail)
+    {
+        byte[] out = new byte[head.length + tail.length];
+        System.arraycopy(head, 0, out, 0, head.length);
+        for (int i = 0; i < tail.length; i++)
+        {
+            out[head.length + i] = (byte) tail[i];
+        }
+        return out;
+    }
+    /**
+     * A jump that leaves a function body is an error (FreeType: {@code IP > Def->end} in JMPR), and
+     * a body never runs past its own ENDF even if control flow tries to.
+     */
+    @Test
+    void testJumpOutOfFunctionBodyIsAnError()
+    {
+        // fn 0 body: PUSHB1 20 JMPR -> would land far past ENDF
+        byte[] program = { PUSHB1, 0, FDEF, PUSHB1, 20, JMPR, ENDF, PUSHB1, 0, CALL, PUSHB1, 1 };
+        assertThrows(HintingException.class, () -> runStack(program));
+        // a jump to the ENDF itself is fine (offset 3 from JMPR at 5 lands on ENDF at 8)
+        byte[] ok = { PUSHB1, 0, FDEF, PUSHB1, 3, JMPR, PUSHB1, 99, ENDF, PUSHB1, 0, CALL, PUSHB1, 1 };
+        assertArrayEquals(new int[] { 1 }, runStack(ok));
+    }
+
+    @Test
+    void testNestedFunctionDefinitionIsAnError()
+    {
+        byte[] program = { PUSHB1, 0, FDEF, PUSHB1, 1, FDEF, ENDF, ENDF };
+        assertThrows(HintingException.class, () -> runStack(program));
     }
 }

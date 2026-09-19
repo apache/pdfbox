@@ -29,6 +29,8 @@ class BytecodeStream
     private final byte[] code;
     private int ip;
     private int instructionStart;
+    // exclusive upper bound for the program counter; a function body ends at its ENDF
+    private int limit;
 
     /**
      * @param code the bytecode program; not copied
@@ -36,6 +38,7 @@ class BytecodeStream
     public BytecodeStream(byte[] code)
     {
         this.code = code != null ? code : new byte[0];
+        this.limit = this.code.length;
     }
 
     /**
@@ -51,7 +54,19 @@ class BytecodeStream
      */
     public boolean hasNext()
     {
-        return ip < code.length;
+        return ip < limit;
+    }
+
+    /**
+     * Restricts execution to {@code [0, end]}: the stream is exhausted after the byte at {@code end}
+     * (the {@code ENDF} of a function body) and a seek past it is an error, as a jump out of a
+     * function body is in FreeType.
+     *
+     * @param end the position of the last byte that may be executed
+     */
+    public void setEnd(int end)
+    {
+        this.limit = Math.min(code.length, end + 1);
     }
 
     /**
@@ -87,10 +102,10 @@ class BytecodeStream
      */
     public void seek(int position)
     {
-        if (position < 0 || position > code.length)
+        if (position < 0 || position > limit)
         {
             throw new HintingException(
-                    "bytecode seek out of range: " + position + " of " + code.length);
+                    "bytecode seek out of range: " + position + " of " + limit);
         }
         ip = position;
     }

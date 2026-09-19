@@ -27,15 +27,18 @@ class FunctionDef
 {
     private final byte[] program;
     private final int entryPoint;
+    private final int end;
 
     /**
      * @param program the bytecode the function body lives in
      * @param entryPoint the offset of the first instruction after {@code FDEF}
+     * @param end the offset of the matching {@code ENDF}
      */
-    public FunctionDef(byte[] program, int entryPoint)
+    public FunctionDef(byte[] program, int entryPoint, int end)
     {
         this.program = program;
         this.entryPoint = entryPoint;
+        this.end = end;
     }
 
     /** @return the bytecode the function body lives in */
@@ -48,5 +51,11 @@ class FunctionDef
     public int getEntryPoint()
     {
         return entryPoint;
+    }
+
+    /** @return the offset of the body's {@code ENDF}; execution never passes it */
+    public int getEnd()
+    {
+        return end;
     }
 }
