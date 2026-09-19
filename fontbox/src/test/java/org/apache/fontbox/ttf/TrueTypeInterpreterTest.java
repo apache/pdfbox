@@ -43,6 +43,14 @@ class TrueTypeInterpreterTest
     private static final byte DEPTH = 0x24;
     private static final byte ROLL = (byte) 0x8A;
     private static final byte GT = 0x52;
+    private static final byte ODD = 0x56;
+    private static final byte EVEN = 0x57;
+    private static final byte AND = 0x5A;
+    private static final byte OR = 0x5B;
+    private static final byte NOT = 0x5C;
+    private static final byte RTHG = 0x19;
+    private static final byte RDTG = 0x7D;
+    private static final byte ROFF = 0x7A;
     private static final byte IF = 0x58;
     private static final byte ELSE = 0x1B;
     private static final byte EIF = 0x59;
@@ -107,6 +115,43 @@ class TrueTypeInterpreterTest
         assertEquals(3, runTop(new byte[] { PUSHB2, 1, 2, PUSHB1, 9, DEPTH }));
         // ROLL: 1 2 3 -> 2 3 1, top is 1
         assertEquals(1, runTop(new byte[] { PUSHB2, 1, 2, PUSHB1, 3, ROLL }));
+    }
+
+    /**
+     * ODD/EVEN round the operand with the <em>current round state</em> before testing the pixel's
+     * parity (spec, and FreeType's Ins_ODD/Ins_EVEN), so the same value can be odd under one round
+     * state and even under another. AND/OR/NOT are C truthiness on F26Dot6 values.
+     */
+    @Test
+    void testOddEvenUseRoundState()
+    {
+        // 1.4 px (90) rounds to 1 px under round-to-grid: odd
+        assertEquals(1, runTop(new byte[] { PUSHB1, 90, ODD }));
+        assertEquals(0, runTop(new byte[] { PUSHB1, 90, EVEN }));
+        // 1.6 px (102) rounds to 2 px: even
+        assertEquals(0, runTop(new byte[] { PUSHB1, 102, ODD }));
+        assertEquals(1, runTop(new byte[] { PUSHB1, 102, EVEN }));
+        // round-down-to-grid: 1.6 px -> 1 px: odd
+        assertEquals(1, runTop(new byte[] { RDTG, PUSHB1, 102, ODD }));
+        // round-to-half-grid: 1.4 px -> 1.5 px, which is neither an odd nor an even pixel
+        assertEquals(0, runTop(new byte[] { RTHG, PUSHB1, 90, ODD }));
+        assertEquals(0, runTop(new byte[] { RTHG, PUSHB1, 90, EVEN }));
+        // round off: the value is tested as-is; 64 is odd, 128 even, 90 neither
+        assertEquals(1, runTop(new byte[] { ROFF, PUSHB1, 64, ODD }));
+        assertEquals(1, runTop(new byte[] { ROFF, PUSHB1, (byte) 128, EVEN }));
+        assertEquals(0, runTop(new byte[] { ROFF, PUSHB1, 90, ODD }));
+        assertEquals(0, runTop(new byte[] { ROFF, PUSHB1, 90, EVEN }));
+    }
+
+    @Test
+    void testAndOrNot()
+    {
+        assertEquals(1, runTop(new byte[] { PUSHB2, 3, 64, AND }));
+        assertEquals(0, runTop(new byte[] { PUSHB2, 3, 0, AND }));
+        assertEquals(1, runTop(new byte[] { PUSHB2, 0, 5, OR }));
+        assertEquals(0, runTop(new byte[] { PUSHB2, 0, 0, OR }));
+        assertEquals(1, runTop(new byte[] { PUSHB1, 0, NOT }));
+        assertEquals(0, runTop(new byte[] { PUSHB1, 9, NOT }));
     }
 
     @Test

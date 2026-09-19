@@ -327,47 +327,52 @@ class GraphicsState
 
     /**
      * Configures super-round parameters for {@code SROUND}/{@code S45ROUND} from the selector byte,
-     * per the TrueType specification.
+     * per the TrueType specification. The period, phase and threshold are derived in F2Dot14 and
+     * then converted to F26Dot6, exactly as FreeType's {@code SetSuperRound} does; deriving them in
+     * F26Dot6 directly is off by one for the S45ROUND "period - 1" threshold (44 instead of 45).
      *
-     * @param gridPeriod the base grid period in F26Dot6 (one pixel for SROUND; the diagonal for
-     * S45ROUND)
+     * @param gridPeriod the base grid period in F2Dot14 ({@code 0x4000} = one pixel for SROUND;
+     * {@code 0x2D41} = sqrt(2)/2, the diagonal, for S45ROUND)
      * @param selector the operand byte controlling period, phase and threshold
      */
     public void setSuperRound(int gridPeriod, int selector)
     {
+        int period;
         switch (selector & 0xC0)
         {
             case 0x00:
-                roundPeriod = gridPeriod / 2;
+                period = gridPeriod / 2;
                 break;
             case 0x80:
-                roundPeriod = gridPeriod * 2;
+                period = gridPeriod * 2;
                 break;
-            default:
-                roundPeriod = gridPeriod;
+            default: // 0x40, and the reserved 0xC0 which FreeType also treats as the grid period
+                period = gridPeriod;
                 break;
         }
-        if (roundPeriod < 1)
-        {
-            roundPeriod = 1;
-        }
+        int phase;
         switch (selector & 0x30)
         {
             case 0x00:
-                roundPhase = 0;
+                phase = 0;
                 break;
             case 0x10:
-                roundPhase = roundPeriod / 4;
+                phase = period / 4;
                 break;
             case 0x20:
-                roundPhase = roundPeriod / 2;
+                phase = period / 2;
                 break;
             default:
-                roundPhase = roundPeriod * 3 / 4;
+                phase = period * 3 / 4;
                 break;
         }
         int n = selector & 0x0F;
-        roundThreshold = n == 0 ? roundPeriod - 1 : (n - 4) * roundPeriod / 8;
+        int threshold = n == 0 ? period - 1 : (n - 4) * period / 8;
+
+        // F2Dot14 -> F26Dot6
+        roundPeriod = Math.max(1, period >> 8);
+        roundPhase = phase >> 8;
+        roundThreshold = threshold >> 8;
         roundState = ROUND_SUPER;
         roundOff = false;
     }

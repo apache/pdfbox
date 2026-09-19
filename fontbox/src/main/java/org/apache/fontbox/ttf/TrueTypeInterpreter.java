@@ -553,8 +553,10 @@ class TrueTypeInterpreter
         dispatch[0x53] = ctx -> binary(ctx, (a, b) -> bool(a >= b));     // GTEQ
         dispatch[0x54] = ctx -> binary(ctx, (a, b) -> bool(a == b));     // EQ
         dispatch[0x55] = ctx -> binary(ctx, (a, b) -> bool(a != b));     // NEQ
-        dispatch[0x56] = ctx -> ctx.push(bool(((Fixed.round(ctx.pop()) >> 6) & 1) != 0)); // ODD
-        dispatch[0x57] = ctx -> ctx.push(bool(((Fixed.round(ctx.pop()) >> 6) & 1) == 0)); // EVEN
+        // ODD/EVEN round with the *current round state* (not plain round-to-grid) and then test the
+        // parity of the resulting pixel, as the spec says and FreeType does (Ins_ODD / Ins_EVEN)
+        dispatch[0x56] = ctx -> ctx.push(bool((ctx.getGraphicsState().round(ctx.pop()) & 127) == 64)); // ODD
+        dispatch[0x57] = ctx -> ctx.push(bool((ctx.getGraphicsState().round(ctx.pop()) & 127) == 0));  // EVEN
         dispatch[0x5A] = ctx -> binary(ctx, (a, b) -> bool(a != 0 && b != 0)); // AND
         dispatch[0x5B] = ctx -> binary(ctx, (a, b) -> bool(a != 0 || b != 0)); // OR
         dispatch[0x5C] = ctx -> ctx.push(bool(ctx.pop() == 0));          // NOT
@@ -650,9 +652,9 @@ class TrueTypeInterpreter
         dispatch[0x7C] = roundState(GraphicsState.ROUND_UP_TO_GRID);     // RUTG
         dispatch[0x7D] = roundState(GraphicsState.ROUND_DOWN_TO_GRID);   // RDTG
         dispatch[0x7A] = roundState(GraphicsState.ROUND_OFF);            // ROFF
-        dispatch[0x76] = ctx -> ctx.getGraphicsState().setSuperRound(Fixed.ONE, ctx.pop()); // SROUND
-        // S45ROUND: grid period is the 45-degree diagonal, sqrt(2)/2 px ~= 45 in F26Dot6
-        dispatch[0x77] = ctx -> ctx.getGraphicsState().setSuperRound(45, ctx.pop());        // S45ROUND
+        // grid period in F2Dot14: one pixel for SROUND, the 45-degree diagonal sqrt(2)/2 for S45ROUND
+        dispatch[0x76] = ctx -> ctx.getGraphicsState().setSuperRound(0x4000, ctx.pop()); // SROUND
+        dispatch[0x77] = ctx -> ctx.getGraphicsState().setSuperRound(0x2D41, ctx.pop()); // S45ROUND
         dispatch[0x13] = ctx -> ctx.getGraphicsState().setZp0(ctx.pop());            // SZP0
         dispatch[0x14] = ctx -> ctx.getGraphicsState().setZp1(ctx.pop());            // SZP1
         dispatch[0x15] = ctx -> ctx.getGraphicsState().setZp2(ctx.pop());            // SZP2
