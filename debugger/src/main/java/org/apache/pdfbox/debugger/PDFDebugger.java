@@ -164,7 +164,7 @@ import picocli.CommandLine.Model.CommandSpec;
  * @author Khyrul Bashar
  */
 @SuppressWarnings({ "serial", "squid:MaximumInheritanceDepth", "squid:S1948" })
-@Command(name = "pdfdebugger", description = "Analyzes and inspects the internal structure of a PDF document")
+@Command(name = "debug", description = "Analyzes and inspects the internal structure of a PDF document")
 public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkListener
 {
     private static Log LOG; // needs late initialization

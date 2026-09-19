@@ -47,7 +47,7 @@ import picocli.CommandLine.Option;
  *
  * @author Ben Litchfield
  */
-@Command(name = "texttopdf", header = "Creates a PDF document from text", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "fromtext", header = "Creates a PDF document from text", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public class TextToPDF implements Callable<Integer>
 {
     /**
