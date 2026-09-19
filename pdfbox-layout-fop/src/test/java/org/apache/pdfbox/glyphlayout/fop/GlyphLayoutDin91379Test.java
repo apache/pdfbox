@@ -25,9 +25,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.apache.pdfbox.pdmodel.AbstractGlyphLayoutProcessor;
 import org.junit.jupiter.api.Test;
 
 import org.apache.pdfbox.Loader;
@@ -90,14 +92,44 @@ class GlyphLayoutDin91379Test extends TestBase
                     + "⁹ ⁿ ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ™ ∞ ≤ ≥\n"
                     + "Additional non-letters (not included in DIN 91379): – — •�";
 
+    /**
+     * Test, no ActualText
+     * @throws IOException
+     * @throws URISyntaxException
+     */
     @Test
-    void testGlyphLayoutDin91379() throws IOException, URISyntaxException
-    {
-        GlyphLayoutProcessorFop glyphLayoutProcessor = new GlyphLayoutProcessorFop();
+    void testGlyphLayoutDin91379NoActualText() throws IOException, URISyntaxException {
+        testGlyphLayoutDin91379(false, "");
+    }
 
-        String outputName = "GlyphLayoutDIN91379.pdf";
+    /**
+     * Test with ActualText
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    @Test
+    void testGlyphLayoutDin91379UseActualText() throws IOException, URISyntaxException {
+        testGlyphLayoutDin91379(true, "_ActualText");
+    }
+
+    /**
+     * Test GlyphLayoutProcessorAwt with letters and sequences from DIN 91379
+     * @param useActualText
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    void testGlyphLayoutDin91379(boolean useActualText, String sActualText) throws IOException, URISyntaxException
+    {
+        AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions options = new AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions();
+        if (useActualText) {
+            options.useActualText();
+        }
+        GlyphLayoutProcessorFop glyphLayoutProcessor = new GlyphLayoutProcessorFop(options);
+
+        String outputName = String.format("GlyphLayoutDIN91379%s.pdf", sActualText);
         String outputPDFFilename = "target/" + outputName;
-        String outputTextFilename = "target/GlyphLayoutDIN91379.txt";
+        String outputTextFilename = String.format("target/GlyphLayoutDIN91379%s.txt", sActualText);
+
         float fontSize = 12.0f;
 
         try (PDDocument doc = new PDDocument())
@@ -132,7 +164,7 @@ class GlyphLayoutDin91379Test extends TestBase
                 os.write (0xBB);
                 os.write (0xBF);
 
-                try (Writer writer = new BufferedWriter(new OutputStreamWriter(os, "utf-8")))
+                try (Writer writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8)))
                 {
                     //TODO compare this output with the input, like in TextStripper test
                     // Not yet correct as of 4.7.2026
@@ -157,7 +189,7 @@ class GlyphLayoutDin91379Test extends TestBase
             if (!line.isEmpty())
             {
                 showCompositesLine(cs, font, fontSize, x, y, line);
-                y -= fontSize * 1.5;
+                y -= fontSize * 1.5f;
             }
         }
     }

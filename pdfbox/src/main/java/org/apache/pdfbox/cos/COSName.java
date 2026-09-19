@@ -560,6 +560,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName SORT = getPDFName("Sort");
     public static final COSName SOUND = getPDFName("Sound");
     public static final COSName SPLIT = getPDFName("Split");
+    public static final COSName SPAN = getPDFName("Span");
     public static final COSName SS = getPDFName("SS");
     public static final COSName ST = getPDFName("St");
     public static final COSName STANDARD_ENCODING = getPDFName("StandardEncoding");
