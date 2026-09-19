@@ -37,7 +37,7 @@ import picocli.CommandLine.Option;
  *
  * @author Ben Litchfield
  */
-@Command(name = "importfdf", header = "Imports AcroForm form data from FDF", versionProvider = Version.class, mixinStandardHelpOptions = true)
+@Command(name = "import:fdf", header = "Imports AcroForm form data from FDF", versionProvider = Version.class, mixinStandardHelpOptions = true)
 public class ImportFDF implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/System.err
