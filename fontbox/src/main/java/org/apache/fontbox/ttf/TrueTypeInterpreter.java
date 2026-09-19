@@ -1048,12 +1048,25 @@ class TrueTypeInterpreter
         }
     }
 
+    /**
+     * SHPIX moves points by a raw pixel amount along the freedom vector. Under backward
+     * compatibility (v40 grayscale) FreeType treats a glyph-zone SHPIX like DELTAP - it only moves
+     * points already touched in y, and never after IUP - because an unconditional SHPIX pushes
+     * untouched points off their interpolated positions; twilight-zone points are always moved.
+     */
     private void doShpix(ExecutionContext ctx)
     {
         GraphicsState gs = ctx.getGraphicsState();
         int amount = ctx.pop();
         Zone zp2 = ctx.getZone(gs.getZp2());
-        forEachLoopPoint(ctx, point -> ctx.movePoint(zp2, point, amount));
+        boolean twilight = zp2 == ctx.getTwilightZone();
+        forEachLoopPoint(ctx, point ->
+        {
+            if (twilight || deltaPointAllowed(ctx, zp2, point))
+            {
+                ctx.movePoint(zp2, point, amount);
+            }
+        });
     }
 
     private void doShp(ExecutionContext ctx, boolean useRp1)
@@ -1490,10 +1503,11 @@ class TrueTypeInterpreter
     }
 
     /**
-     * Backward-compatibility (v40 grayscale) gate for DELTAP: once IUP has run the delta is dropped,
-     * and before IUP it is applied only to points already touched in y (or, for composites, when the
-     * freedom vector has a y component). Outside backward-compatibility mode the delta always applies.
-     * This keeps DELTAP from nudging untouched points off their interpolated grayscale positions.
+     * Backward-compatibility (v40 grayscale) gate shared by DELTAP and SHPIX: once IUP has run the
+     * move is dropped, and before IUP it is applied only to points already touched in y (or, for
+     * composites, when the freedom vector has a y component). Outside backward-compatibility mode
+     * the move always applies. This keeps DELTAP/SHPIX from nudging untouched points off their
+     * interpolated grayscale positions (FreeType Ins_DELTAP / Ins_SHPIX).
      */
     private static boolean deltaPointAllowed(ExecutionContext ctx, Zone zone, int point)
     {
