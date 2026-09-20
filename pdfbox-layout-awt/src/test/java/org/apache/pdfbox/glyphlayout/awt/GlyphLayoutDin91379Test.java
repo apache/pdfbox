@@ -130,9 +130,9 @@ class GlyphLayoutDin91379Test extends TestBase
         }
         GlyphLayoutProcessorAwt glyphLayoutProcessor = new GlyphLayoutProcessorAwt(options);
 
-        String outputName = String.format("GlyphLayoutDIN91379%s.pdf", sActualText);
-        String outputPDFFilename = "target/" + outputName;
-        String outputTextFilename = String.format("target/GlyphLayoutDIN91379%s.txt", sActualText);
+        String outputBaseName = String.format("GlyphLayoutDIN91379%s", sActualText);
+        String outputPDFFilename = "target/" + outputBaseName + ".pdf";
+        String outputTextFilename = "target/" + outputBaseName + ".txt";
 
         float fontSize = 12.0f;
 
@@ -155,8 +155,9 @@ class GlyphLayoutDin91379Test extends TestBase
             }
             doc.save(outputPDFFilename);
         }
-        checkRenderIdent(outputName);
-        
+        checkRenderIdent(outputBaseName + ".pdf");
+
+        // Extract text
         try (PDDocument doc = Loader.loadPDF(new File(outputPDFFilename)))
         {
             assertEquals(1, doc.getNumberOfPages());
