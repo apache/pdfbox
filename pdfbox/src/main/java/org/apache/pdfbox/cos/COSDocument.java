@@ -20,9 +20,12 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
@@ -58,8 +61,7 @@ public class COSDocument extends COSBase implements Closeable
     /**
      * Maps object and generation id to object byte offsets.
      */
-    private final Map<COSObjectKey, Long> xrefTable =
-        new HashMap<>();
+    private final XrefTable xrefTable = new XrefTable();
 
     /**
      * List containing all streams which are created when creating a new pdf.
@@ -262,7 +264,7 @@ public class COSDocument extends COSBase implements Closeable
         if (originKeys.size() < xrefTable.size())
         {
             List<COSObjectKey> additionalKeys = new ArrayList<>(xrefTable.keySet());
-            additionalKeys.removeAll(originKeys);
+            additionalKeys.removeAll(new HashSet<>(originKeys));
             retval.addAll(getObjectsByType(additionalKeys, type1, type2));
         }
         return retval;
@@ -521,9 +523,9 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * Populate XRef HashMap with given values.
-     * Each entry maps ObjectKeys to byte offsets in the file.
-     * @param xrefTableValues  xref table entries to be added
+     * Adds the given entries to the xref table. Each entry maps an ObjectKey to a byte offset in the file.
+     *
+     * @param xrefTableValues xref table entries to be added
      */
     public void addXRefTable( Map<COSObjectKey, Long> xrefTableValues )
     {
@@ -531,13 +533,27 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * Returns the xrefTable which is a mapping of ObjectKeys
-     * to byte offsets in the file.
+     * Returns the xrefTable which is a mapping of ObjectKeys to byte offsets in the file. The map is live and
+     * mutable; like any HashMap it keeps the first key instance when an equal key is put again.
+     *
      * @return mapping of ObjectsKeys to byte offsets
      */
     public Map<COSObjectKey, Long> getXrefTable()
     {
         return xrefTable;
+    }
+
+    /**
+     * Internal PDFBox use only. Returns the key instance held by the xref table for the given object and
+     * generation number, which carries the object stream index. The lookup is live against the current table.
+     *
+     * @param num the object number
+     * @param gen the generation number
+     * @return the key stored in the xref table, or null if the table has no entry for it
+     */
+    public COSObjectKey getXrefKey(long num, int gen)
+    {
+        return xrefTable.getKey(num, gen);
     }
 
     /**
@@ -610,5 +626,125 @@ public class COSDocument extends COSBase implements Closeable
     {
         return documentState;
     }
-    
+
+    /**
+     * Xref table which also indexes its keys by internal hash, so the stored key instance (which carries the object
+     * stream index) can be looked up without scanning; HashMap has no API for that. Every method that can insert a
+     * key is overridden to index the inserted instance. Removals through views are not intercepted, so the index
+     * may hold keys no longer in the table; {@link #getKey(long, int)} checks for that.
+     */
+    private static final class XrefTable extends HashMap<COSObjectKey, Long>
+    {
+        private static final long serialVersionUID = 1L;
+
+        private Map<Long, COSObjectKey> keysByHash = new HashMap<>();
+
+        COSObjectKey getKey(long num, int gen)
+        {
+            long hash = COSObjectKey.computeInternalHash(num, gen);
+            COSObjectKey key = keysByHash.get(hash);
+            if (key != null && !containsKey(key))
+            {
+                keysByHash.remove(hash);
+                return null;
+            }
+            return key;
+        }
+
+        // only new keys are indexed: HashMap keeps the existing instance for an equal key
+        private void indexIfAbsent(COSObjectKey key)
+        {
+            if (key != null && !containsKey(key))
+            {
+                keysByHash.put(key.getInternalHash(), key);
+            }
+        }
+
+        @Override
+        public Long put(COSObjectKey key, Long value)
+        {
+            indexIfAbsent(key);
+            return super.put(key, value);
+        }
+
+        @Override
+        public void putAll(Map<? extends COSObjectKey, ? extends Long> map)
+        {
+            map.keySet().forEach(this::indexIfAbsent);
+            super.putAll(map);
+        }
+
+        @Override
+        public Long putIfAbsent(COSObjectKey key, Long value)
+        {
+            indexIfAbsent(key);
+            return super.putIfAbsent(key, value);
+        }
+
+        @Override
+        public Long computeIfAbsent(COSObjectKey key,
+                Function<? super COSObjectKey, ? extends Long> mappingFunction)
+        {
+            boolean absent = !containsKey(key);
+            Long value = super.computeIfAbsent(key, mappingFunction);
+            indexIfInserted(key, absent);
+            return value;
+        }
+
+        @Override
+        public Long compute(COSObjectKey key,
+                BiFunction<? super COSObjectKey, ? super Long, ? extends Long> remappingFunction)
+        {
+            boolean absent = !containsKey(key);
+            Long value = super.compute(key, remappingFunction);
+            indexIfInserted(key, absent);
+            return value;
+        }
+
+        @Override
+        public Long merge(COSObjectKey key, Long value,
+                BiFunction<? super Long, ? super Long, ? extends Long> remappingFunction)
+        {
+            boolean absent = !containsKey(key);
+            Long result = super.merge(key, value, remappingFunction);
+            indexIfInserted(key, absent);
+            return result;
+        }
+
+        // the compute family stores the key only if the function returned a value
+        private void indexIfInserted(COSObjectKey key, boolean wasAbsent)
+        {
+            if (wasAbsent && key != null && containsKey(key))
+            {
+                keysByHash.put(key.getInternalHash(), key);
+            }
+        }
+
+        @Override
+        public Long remove(Object key)
+        {
+            if (key instanceof COSObjectKey)
+            {
+                keysByHash.remove(((COSObjectKey) key).getInternalHash());
+            }
+            return super.remove(key);
+        }
+
+        @Override
+        public void clear()
+        {
+            keysByHash.clear();
+            super.clear();
+        }
+
+        @Override
+        public Object clone()
+        {
+            // HashMap.clone() is shallow, so give the copy its own index
+            XrefTable copy = (XrefTable) super.clone();
+            copy.keysByHash = new HashMap<>();
+            copy.keySet().forEach(copy::indexIfAbsent);
+            return copy;
+        }
+    }
 }
