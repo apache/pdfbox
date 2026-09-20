@@ -277,7 +277,7 @@ public class StandardStructureTypes
     /**
      * Figure
      */
-    public static final String Figure = "Figure";
+    public static final String FIGURE = "Figure";
 
     /**
      * Formula
