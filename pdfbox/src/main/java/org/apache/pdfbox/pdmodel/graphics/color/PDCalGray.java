@@ -83,25 +83,20 @@ public final class PDCalGray extends PDCIEDictionaryBasedColorSpace
     @Override
     public float[] toRGB(float[] value)
     {
-        // see implementation of toRGB in PDCalRGB, and PDFBOX-2971
-        if (isWhitePoint())
+        float a = value[0];
+        float[] result = map1.get(a);
+        if (result != null)
         {
-            float a = value[0];
-            float[] result = map1.get(a);
-            if (result != null)
-            {
-                return result.clone();
-            }
-            float gamma = getGamma();
-            float powAG = (float) Math.pow(a, gamma);
-            result = convXYZtoRGB(powAG, powAG, powAG);
-            map1.put(a, result.clone());
-            return result;
+            return result.clone();
         }
-        else
-        {
-            return new float[] { value[0], value[0], value[0] };
-        }
+        float gamma = getGamma();
+        float powAG = (float) Math.pow(a, gamma);
+        // X, Y and Z are the whitepoint scaled by the gamma-corrected value. Calibrating only for
+        // whitepoint (1 1 1) and skipping it otherwise (PDFBOX-2971) was a workaround for the
+        // missing chromatic adaptation of the whitepoint (PDFBOX-6260); it ignored the gamma.
+        result = convXYZtoRGB(wpX * powAG, wpY * powAG, wpZ * powAG);
+        map1.put(a, result.clone());
+        return result;
     }
 
     /**
