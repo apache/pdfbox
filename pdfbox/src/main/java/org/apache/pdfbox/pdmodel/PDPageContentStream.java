@@ -34,7 +34,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
  *
  * @author Ben Litchfield
  */
-public final class PDPageContentStream extends PDAbstractContentStream implements Closeable
+public class PDPageContentStream extends PDAbstractContentStream implements Closeable
 {
     /**
      * This is to choose what to do with the stream: overwrite, append or prepend.

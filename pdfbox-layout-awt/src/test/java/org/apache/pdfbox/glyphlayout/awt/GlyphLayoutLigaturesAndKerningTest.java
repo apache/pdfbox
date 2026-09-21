@@ -143,6 +143,7 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
         String lohitBengaliPath = "/ttf/Lohit-Bengali.ttf";
 
         float fontSize = 12.0f;
+        String text = "";
 
         try (PDDocument doc = new PDDocument())
         {
@@ -169,7 +170,7 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
             
             PDPage page = new PDPage();
             doc.addPage(page);
-            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+            try (TestPDPageContentStream cs = new TestPDPageContentStream(doc, page))
             {
                 cs.setGlyphLayoutProcessor(glyphLayoutProcessor);
 
@@ -213,6 +214,7 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
                 cs.moveTo(x, 676);
                 cs.lineTo(x + f4, 676);
                 cs.stroke();
+                text = cs.getText();
             }
             doc.save(outputPDFFilename);
         }
@@ -226,6 +228,12 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
 
             PDFTextStripper stripper = new PDFTextStripper();
             String s = stripper.getText(doc);
+            String sStripped = s.replaceAll(" +"," ")
+                    .replaceAll(" *\\n", "\n")
+                    .strip();
+
+            assertEquals(text, sStripped, "Extracted Text should equal the written text");
+
             try (OutputStream os = new FileOutputStream(outputTextFilename))
             {
                 os.write (0xEF);
