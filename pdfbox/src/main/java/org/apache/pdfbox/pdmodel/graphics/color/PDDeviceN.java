@@ -55,6 +55,9 @@ public class PDDeviceN extends PDSpecialColorSpace
     private static final int TINT_TRANSFORM = 3;
     private static final int DEVICEN_ATTRIBUTES = 4;
 
+    // RGB values (0..1) of a spot colorant with a zero tint must be at least this to count as white
+    private static final float WHITE_THRESHOLD = 0.9f;
+
     // fields
     private PDColorSpace alternateColorSpace = null;
     private PDFunction tintTransform = null;
@@ -62,6 +65,7 @@ public class PDDeviceN extends PDSpecialColorSpace
     private PDColor initialColor;
 
     // color conversion cache
+    private Boolean useAttributes;
     private int numColorants;
     private int[] colorantToComponent;
     private PDColorSpace processColorSpace;
@@ -176,10 +180,51 @@ public class PDDeviceN extends PDSpecialColorSpace
         }
     }
 
+    // Tells whether the conversion should be done with the attributes (process and spot
+    // colorants) instead of the tint transform. The result is calculated on first use.
+    private boolean useAttributes() throws IOException
+    {
+        if (attributes == null)
+        {
+            return false;
+        }
+        if (useAttributes == null)
+        {
+            useAttributes = !hasSpotColorantWithInkAtZeroTint();
+        }
+        return useAttributes;
+    }
+
+    // The attributes conversion multiplies the RGB values of the colorants, so a colorant with a
+    // zero tint has to be white, i.e. it must not change the result. A spot colorant that is not
+    // white at zero tint (e.g. black, see PDFBOX-5074) can't be combined like that and the
+    // result would be too dark. In that case the tint transform is the better choice.
+    private boolean hasSpotColorantWithInkAtZeroTint() throws IOException
+    {
+        for (int c = 0; c < numColorants; c++)
+        {
+            if (colorantToComponent[c] >= 0 || spotColorSpaces[c] == null)
+            {
+                // not a spot colorant that is used for the conversion
+                continue;
+            }
+            // don't use PDSeparation.toRGB(), it caches by tint, so the value for zero would also
+            // be returned for all the following tints that are near zero
+            PDSeparation spot = spotColorSpaces[c];
+            float[] altValue = spot.getTintTransform().eval(new float[] { 0 });
+            float[] rgb = spot.getAlternateColorSpace().toRGB(altValue);
+            if (rgb[0] < WHITE_THRESHOLD || rgb[1] < WHITE_THRESHOLD || rgb[2] < WHITE_THRESHOLD)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public BufferedImage toRGBImage(WritableRaster raster) throws IOException
     {
-        if (attributes != null)
+        if (useAttributes())
         {
             return toRGBWithAttributes(raster);
         }
@@ -350,7 +395,7 @@ public class PDDeviceN extends PDSpecialColorSpace
     @Override
     public float[] toRGB(float[] value) throws IOException
     {
-        if (attributes != null)
+        if (useAttributes())
         {
             return toRGBWithAttributes(value);
         }
@@ -515,6 +560,7 @@ public class PDDeviceN extends PDSpecialColorSpace
     public void setAttributes(PDDeviceNAttributes attributes)
     {
         this.attributes = attributes;
+        useAttributes = null;
         if (attributes == null)
         {
             array.remove(DEVICEN_ATTRIBUTES);
