@@ -27,9 +27,6 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -72,8 +69,6 @@ public abstract class BaseParser
             "Reached maximum recursion depth " + Integer.toString(MAX_RECURSION_DEPTH);
     
     private int recursionDepth = 0;
-
-    private final Map<Long, COSObjectKey> keyCache = new HashMap<>();
 
     static
     {
@@ -178,7 +173,8 @@ public abstract class BaseParser
 
     /**
      * Returns the object key for the given combination of object and generation number. The object key from the cross
-     * reference table/stream will be reused if available. Otherwise a newly created object will be returned.
+     * reference table/stream will be reused if available. Otherwise, and when this parser has no document, a newly
+     * created object key will be returned.
      * 
      * @param num the given object number
      * @param gen the given generation number
@@ -187,23 +183,8 @@ public abstract class BaseParser
      */
     protected COSObjectKey getObjectKey(long num, int gen)
     {
-        if (document == null || document.getXrefTable().isEmpty())
-        {
-            return new COSObjectKey(num, gen);
-        }
-        // use a cache to get the COSObjectKey as iterating over the xref-table-map gets slow for big pdfs
-        // in the long run we have to overhaul the object pool or even better remove it
-        Map<COSObjectKey, Long> xrefTable = document.getXrefTable();
-        if (xrefTable.size() > keyCache.size())
-        {
-            for (COSObjectKey key : xrefTable.keySet())
-            {
-                keyCache.putIfAbsent(key.getInternalHash(), key);
-            }
-        }
-        long internalHashCode = COSObjectKey.computeInternalHash(num, gen);
-        COSObjectKey foundKey = keyCache.get(internalHashCode);
-        return foundKey != null ? foundKey : new COSObjectKey(num, gen);
+        COSObjectKey key = document == null ? null : document.getXrefKey(num, gen);
+        return key != null ? key : new COSObjectKey(num, gen);
     }
 
     /**
