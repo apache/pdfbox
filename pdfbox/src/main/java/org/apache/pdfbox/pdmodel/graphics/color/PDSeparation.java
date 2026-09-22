@@ -258,6 +258,15 @@ public class PDSeparation extends PDSpecialColorSpace
     }
 
     /**
+     * Returns the tint transform function.
+     * @return the tint transform function
+     */
+    PDFunction getTintTransform()
+    {
+        return tintTransform;
+    }
+
+    /**
      * Returns the colorant name.
      * @return the name of the colorant
      */
