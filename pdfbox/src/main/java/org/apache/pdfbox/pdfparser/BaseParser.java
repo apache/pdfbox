@@ -18,13 +18,6 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
-import java.nio.ByteBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CodingErrorAction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,39 +55,11 @@ public abstract class BaseParser
 
     private static final int MAX_LENGTH_LONG = Long.toString(Long.MAX_VALUE).length();
 
-    private static final Charset ALTERNATIVE_CHARSET;
-
     private static final int MAX_RECURSION_DEPTH = 500;
     private static final String MAX_RECUSRION_MSG = //
             "Reached maximum recursion depth " + Integer.toString(MAX_RECURSION_DEPTH);
     
     private int recursionDepth = 0;
-
-    static
-    {
-        Charset cs;
-        String charsetName = "Windows-1252";
-        try
-        {
-            cs = Charset.forName(charsetName);
-        }
-        catch (IllegalArgumentException e)
-        {
-            cs = Charsets.ISO_8859_1;
-            LOG.warn("Charset is not supported: " + charsetName + ", falling back to " + cs.name(), e);
-        }
-        catch (UnsupportedOperationException e)
-        {
-            cs = Charsets.ISO_8859_1;
-            LOG.warn("Charset is not supported: " + charsetName + ", falling back to " + cs.name(), e);
-        }
-        ALTERNATIVE_CHARSET = cs;
-    }
-
-    // CharSetDecoders are not threadsafe so not static
-    private final CharsetDecoder utf8Decoder = Charsets.UTF_8.newDecoder()
-            .onMalformedInput(CodingErrorAction.REPORT)
-            .onUnmappableCharacter(CodingErrorAction.REPORT);
 
     protected static final int E = 'e';
     protected static final int N = 'n';
@@ -888,27 +853,6 @@ public abstract class BaseParser
         }
 
         return COSName.getPDFName(buffer.toByteArray());
-    }
-
-    /**
-     * Tries to decode the buffer cotent to an UTF-8 String.
-     * If that fails, tries the alternative Encoding.
-     * @param buffer the {@link ByteArrayOutputStream} containing the bytes to decode
-     * @return the decoded String
-     */
-    private String decodeBuffer(ByteArrayOutputStream buffer) throws UnsupportedEncodingException
-    {
-        try
-        {
-            return utf8Decoder.decode(ByteBuffer.wrap(buffer.toByteArray())).toString();
-        }
-        catch (CharacterCodingException e)
-        {
-            // some malformed PDFs don't use UTF-8 see PDFBOX-3347
-            LOG.debug("Buffer could not be decoded using StandardCharsets.UTF_8 - "
-                    + "trying " + ALTERNATIVE_CHARSET.name(), e);
-            return buffer.toString(ALTERNATIVE_CHARSET.name());
-        }
     }
 
     /**
