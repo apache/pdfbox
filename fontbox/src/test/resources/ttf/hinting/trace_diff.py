@@ -21,7 +21,7 @@ instruction, against the FontBox interpreter's trace, reporting the first instru
 program counter, opcode, or operand stack diverges. This localizes a hinting bug to the exact
 instruction far faster than comparing final outlines.
 
-FreeType is used here only as an offline debugging oracle - never shipped or a build dependency.
+FreeType is used here only as an offline debugging reference - never shipped or a build dependency.
 
 Prerequisites
 -------------

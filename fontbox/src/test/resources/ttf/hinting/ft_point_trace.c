@@ -22,7 +22,7 @@
  * trace (GlyphTraceTool with -Dtrace.point) localizes a *silent* point-position divergence (one a
  * point-moving opcode produces without it ever reaching the operand stack) to a single instruction.
  *
- * FreeType is used here only as an offline debugging oracle - never shipped or a build dependency.
+ * FreeType is used here only as an offline debugging reference - never shipped or a build dependency.
  *
  * Build (against a static FreeType built with the bytecode interpreter; internal headers required):
  *

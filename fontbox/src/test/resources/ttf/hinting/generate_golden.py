@@ -16,10 +16,9 @@
 """
 Generates TrueType hinting golden reference data from FreeType, for the Java golden tests.
 
-FreeType is used here ONLY as an offline verification oracle - it is never shipped, linked, or made a
-build dependency. The committed JSON files are plain coordinate facts about the fonts (the F26Dot6
-points a correct bytecode interpreter must produce), not a derivative of FreeType. See
-hinting_plan.md "Oracle licensing".
+FreeType is used here ONLY as an offline reference implementation - it is never shipped, linked, or made a
+build dependency. The committed golden files are plain coordinate facts about the fonts (the F26Dot6
+points a correct bytecode interpreter must produce), not a derivative of FreeType.
 
 Run with freetype-py installed (`pip install freetype-py`):
 

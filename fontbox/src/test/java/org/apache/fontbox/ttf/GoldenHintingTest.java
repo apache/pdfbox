@@ -31,7 +31,7 @@ import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.junit.jupiter.api.Test;
 
 /**
- * Golden (Tier 3) test comparing the FontBox interpreter's grid-fitted glyph points against a FreeType
+ * Golden test comparing the FontBox interpreter's grid-fitted glyph points against a FreeType
  * reference dump (same font, glyph and ppem). The reference lives in {@code ttf/hinting/<font>-<ppem>.txt},
  * produced offline by {@code generate_golden.py}; FreeType is never a build or runtime dependency.
  * <p>

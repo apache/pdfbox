@@ -18,15 +18,15 @@
 # TrueType hinting verification tooling
 
 These are developer/debugging tools for the FontBox TrueType bytecode interpreter
-(`org.apache.fontbox.ttf.instruction`). They use **FreeType only as an offline oracle** — FreeType is
-never linked, shipped, or a build dependency. The committed data files are plain coordinate/trace
-facts, not derivatives of FreeType (see `hinting_plan.md` "Oracle licensing").
+(`org.apache.fontbox.ttf.instruction`). They use **FreeType only as an offline reference
+implementation** — FreeType is never linked, shipped, or a build dependency. The committed data files
+are plain coordinate/trace facts, not derivatives of FreeType.
 
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `generate_golden.py` | Dumps FreeType's post-hinting outline points for the Tier-A fonts to `<font>-<ppem>.txt`. These back `GoldenHintingTest`. |
+| `generate_golden.py` | Dumps FreeType's post-hinting outline points for the openly licensed test fonts to `<font>-<ppem>.txt`. These back `GoldenHintingTest`. |
 | `LiberationSans-Regular-*.txt` | The committed golden coordinate data (one file per ppem). |
 | `trace_diff.py` | Aligns FreeType's per-instruction trace against the FontBox interpreter's trace and reports the first divergence (program counter, operand stack, or point coordinate). |
 | `ft_point_trace.c` | FreeType single-stepper: dumps one glyph point's coordinate per instruction, for localizing *silent* point-position divergence. |

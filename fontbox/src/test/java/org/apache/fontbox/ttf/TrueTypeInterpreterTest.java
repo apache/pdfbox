@@ -26,7 +26,7 @@ import java.time.Duration;
 import org.junit.jupiter.api.Test;
 
 /**
- * Program-tier (Tier 2) tests: hand-assembled bytecode fed through the dispatch loop with no font.
+ * Program-level tests: hand-assembled bytecode fed through the dispatch loop with no font.
  * These exercise the engine - dispatch, the push family, branching, function definition and calling,
  * and the {@link BytecodeStream} bounds checks - independently of any glyph.
  */
