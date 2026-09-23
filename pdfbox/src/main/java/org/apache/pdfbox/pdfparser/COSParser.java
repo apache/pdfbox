@@ -19,11 +19,6 @@ package org.apache.pdfbox.pdfparser;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -134,30 +129,6 @@ public class COSParser extends BaseParser implements ICOSParser
     @SuppressWarnings({"squid:S2068"})
     private String password = "";
     private String keyAlias = null;
-
-    private static final Charset ALTERNATIVE_CHARSET;
-
-    static
-    {
-        Charset cs;
-        String charsetName = "Windows-1252";
-        try
-        {
-            cs = Charset.forName(charsetName);
-        }
-        catch (IllegalArgumentException | UnsupportedOperationException e)
-        {
-            cs = StandardCharsets.ISO_8859_1;
-            LOG.warn(() -> "Charset is not supported: " + charsetName + ", falling back to "
-                    + StandardCharsets.ISO_8859_1.name(), e);
-        }
-        ALTERNATIVE_CHARSET = cs;
-    }
-
-    // CharSetDecoders are not threadsafe so not static
-    private final CharsetDecoder utf8Decoder = StandardCharsets.UTF_8.newDecoder()
-            .onMalformedInput(CodingErrorAction.REPORT)
-            .onUnmappableCharacter(CodingErrorAction.REPORT);
 
     /**
      * The range within the %%EOF marker will be searched.
@@ -1967,27 +1938,6 @@ public class COSParser extends BaseParser implements ICOSParser
             }
         }
         return COSString.parseHex(sBuf.toString());
-    }
-
-    /**
-     * Tries to decode the buffer content to an UTF-8 String. If that fails, tries the alternative Encoding.
-     * 
-     * @param buffer the {@link ByteArrayOutputStream} containing the bytes to decode
-     * @return the decoded String
-     */
-    private String decodeBuffer(ByteArrayOutputStream buffer)
-    {
-        try
-        {
-            return utf8Decoder.decode(ByteBuffer.wrap(buffer.toByteArray())).toString();
-        }
-        catch (CharacterCodingException e)
-        {
-            // some malformed PDFs don't use UTF-8 see PDFBOX-3347
-            LOG.debug(() -> "Buffer could not be decoded using StandardCharsets.UTF_8 - trying "
-                    + ALTERNATIVE_CHARSET.name(), e);
-            return buffer.toString(ALTERNATIVE_CHARSET);
-        }
     }
 
     /**
