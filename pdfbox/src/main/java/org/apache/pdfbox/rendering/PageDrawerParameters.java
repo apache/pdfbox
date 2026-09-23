@@ -25,7 +25,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
  * Parameters for a PageDrawer. This class ensures allows PDFRenderer and PageDrawer to share
  * private implementation data in a future-proof manner, while still allowing end-users to create
  * their own subclasses of PageDrawer.
- * 
+ *
  * @author John Hewson
  */
 public final class PageDrawerParameters
@@ -33,7 +33,7 @@ public final class PageDrawerParameters
     private final PDFRenderer renderer;
     private final PDPage page;
     private final boolean subsamplingAllowed;
-    private final RenderDestination destination; 
+    private final RenderDestination destination;
     private final RenderingHints renderingHints;
     private final float imageDownscalingOptimizationThreshold;
 
@@ -59,7 +59,7 @@ public final class PageDrawerParameters
     {
         return page;
     }
-    
+
     /**
      * Returns the renderer.
      */
@@ -93,7 +93,7 @@ public final class PageDrawerParameters
     }
 
     /**
-     * 
+     *
      * @return the imageDownscalingOptimizationThreshold
      */
 

@@ -84,7 +84,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 
 /**
  * Display the page number and a page rendering.
- * 
+ *
  * @author Tilman Hausherr
  * @author John Hewson
  */
@@ -293,7 +293,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         pageLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
         pageLabel.setBackground(Color.GREEN);
         panel.add(pageLabel);
-        
+
         label = new JLabel();
         label.addMouseMotionListener(this);
         label.addMouseListener(this);
@@ -356,7 +356,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     {
         zoomMenu.addMenuListeners(this);
         zoomMenu.setEnableMenu(true);
-        
+
         rotationMenu = RotationMenu.getInstance();
         rotationMenu.addMenuListeners(this);
         rotationMenu.setEnableMenu(true);
@@ -368,7 +368,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         renderDestinationMenu = RenderDestinationMenu.getInstance();
         renderDestinationMenu.addMenuListeners(this);
         renderDestinationMenu.setEnableMenu(true);
-        
+
         PDFDebugger.allowSubsampling.addActionListener(this);
 
         PDFDebugger.repairAcroFormMenuItem.setEnabled(true);
@@ -649,12 +649,12 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             {
                 BufferedImage image = get();
 
-                // We cannot use "label.setIcon(new ImageIcon(get()))" here 
-                // because of blurry upscaling in JDK9. Instead, the label is now created with 
+                // We cannot use "label.setIcon(new ImageIcon(get()))" here
+                // because of blurry upscaling in JDK9. Instead, the label is now created with
                 // a smaller size than the image to compensate that the
                 // image is scaled up with some screen configurations (e.g. 125% on windows).
                 // See PDFBOX-3665 for more sample code and discussion.
-                label.setSize((int) Math.ceil(image.getWidth() / defaultTransform.getScaleX()), 
+                label.setSize((int) Math.ceil(image.getWidth() / defaultTransform.getScaleX()),
                               (int) Math.ceil(image.getHeight() / defaultTransform.getScaleY()));
                 label.setIcon(new HighResolutionImageIcon(image, label.getWidth(), label.getHeight()));
                 label.setText(null);
