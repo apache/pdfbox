@@ -25,9 +25,10 @@ Run with freetype-py installed (`pip install freetype-py`):
     python3 generate_golden.py
 
 It writes <font>-<ppem>.txt next to this script in a compact, dependency-free format (so the Java
-test needs no JSON library). The glyphs are loaded with the monochrome hinting target so FreeType runs
-the native TrueType bytecode interpreter in full-pixel (non-subpixel) mode, which is what the FontBox
-interpreter implements.
+test needs no JSON library). The glyphs are loaded with FT_LOAD_NO_AUTOHINT | FT_LOAD_TARGET_NORMAL:
+FreeType's native TrueType bytecode interpreter (v40) with the grayscale target, i.e. with backward
+compatibility, which is what GlyphHinter implements. The golden files are FreeType 2.13.2 output (the
+version the freetype-py wheel bundles); see README.md.
 
 Format (one file per ppem):
 

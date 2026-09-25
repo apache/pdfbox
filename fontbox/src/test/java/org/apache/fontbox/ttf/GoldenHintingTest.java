@@ -55,6 +55,10 @@ class GoldenHintingTest
         assertTrue(simple.maxDx == 0 && simple.maxDy == 0, simple.summary("simple"));
     }
 
+    /**
+     * Every golden composite carries instructions of its own (checked in {@link #compare}), so this
+     * covers the whole composite path: components hinted and assembled, then the composite program.
+     */
     @Test
     void testCompositeGlyphsMatchFreeTypeExactly() throws IOException
     {
@@ -84,6 +88,17 @@ class GoldenHintingTest
                 {
                     continue;
                 }
+                if (composite)
+                {
+                    // the composite's own program must run, not just its components' programs, so
+                    // an exact match proves the composite path rather than only the component one
+                    GlyfCompositeDescript cd = (GlyfCompositeDescript) font.getGlyph()
+                            .getGlyph(g.gid).getDescription();
+                    int[] instructions = cd.getInstructions();
+                    assertTrue(instructions != null && instructions.length > 0,
+                            "golden composite '" + g.ch + "' has no instructions of its own");
+                }
+                // null would mean the hinter gave up and the raw outline would be rendered
                 int[][] points = hinter.getHintedPointsF26Dot6(g.gid, ppem);
                 assertNotNull(points, "no hinted points for gid " + g.gid + " at " + ppem + "ppem");
                 assertTrue(points[0].length == g.x.length,

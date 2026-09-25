@@ -122,14 +122,16 @@ class BytecodeStream
     }
 
     /**
-     * Reads the next byte as an unsigned 0-255 value (an opcode, or push operand).
+     * Reads the next byte as an unsigned 0-255 value (an opcode, or push operand). Like
+     * {@link #seek(int)}, reads honour a function body's end, so a push reached by a jump into the
+     * middle of another push's operands cannot take bytes past the body's {@code ENDF}.
      *
      * @return the next unsigned byte
      * @throws HintingException if the stream is exhausted
      */
     public int nextByte()
     {
-        if (ip >= code.length)
+        if (ip >= limit)
         {
             throw new HintingException("bytecode read past end at " + ip);
         }
@@ -144,7 +146,7 @@ class BytecodeStream
      */
     public int nextWord()
     {
-        if (ip + 1 >= code.length)
+        if (ip + 1 >= limit)
         {
             throw new HintingException("bytecode word read past end at " + ip);
         }

@@ -87,7 +87,8 @@ def freetype_trace(font, gid, ppem):
     r, w = os.pipe()
     os.dup2(w, 2)
     try:
-        face.load_glyph(gid, freetype.FT_LOAD_NO_AUTOHINT | freetype.FT_LOAD_TARGET_MONO)
+        # the reference target (README.md): grayscale, v40 with backward compatibility
+        face.load_glyph(gid, freetype.FT_LOAD_NO_AUTOHINT | freetype.FT_LOAD_TARGET_NORMAL)
     finally:
         os.dup2(err_fd, 2)
         os.close(w)

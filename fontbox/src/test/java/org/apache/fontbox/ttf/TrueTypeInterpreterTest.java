@@ -630,6 +630,23 @@ class TrueTypeInterpreterTest
         assertArrayEquals(new int[] { 1 }, runStack(ok));
     }
 
+    /**
+     * A push's operands must not run past the ENDF of the function body it executes in. Scanning a
+     * body skips push operands, so this can only happen through a jump into the middle of another
+     * push's operands. Here the body is {@code PUSHB[0] 2, JMPR, PUSHB[0] 0xB1, ENDF}: the jump lands
+     * on the operand byte 0xB1, which executes as PUSHB[1] and would read the ENDF and the caller's
+     * next byte as its two operands.
+     */
+    @Test
+    void testFunctionBodyCannotReadOperandsPastEndf()
+    {
+        byte[] program = {
+            PUSHB1, 0, FDEF,
+            PUSHB1, 2, JMPR, PUSHB1, (byte) 0xB1, ENDF,
+            PUSHB1, 0, CALL };
+        assertThrows(HintingException.class, () -> interpreter().executeProgram(program, 16));
+    }
+
     @Test
     void testNestedFunctionDefinitionIsAnError()
     {

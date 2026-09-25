@@ -22,6 +22,22 @@ These are developer/debugging tools for the FontBox TrueType bytecode interprete
 implementation** — FreeType is never linked, shipped, or a build dependency. The committed data files
 are plain coordinate/trace facts, not derivatives of FreeType.
 
+## Reference contract
+
+Every tool here compares against one FreeType configuration, and the committed data is its output:
+
+- **FreeType 2.13.2** (the version bundled by the `freetype-py` wheel and pinned in the build steps
+  below). Later FreeType versions change some movement arithmetic, so port behaviour from the 2.13.2
+  source.
+- Load flags **`FT_LOAD_NO_AUTOHINT | FT_LOAD_TARGET_NORMAL`**: the native bytecode interpreter (v40,
+  FreeType's default) with the grayscale target, i.e. with v40 backward compatibility (no x
+  grid-fitting, y frozen after IUP). This is how `GlyphHinter` hints, because Java2D always renders
+  antialiased.
+
+`generate_golden.py`, `ft_points_dump.py` and `trace_diff.py` use exactly these flags, and
+`ft_point_trace.c` does by default; the monochrome target (backward compatibility off) is only an
+explicit option of `ft_point_trace`. `GoldenHintingTest` requires an exact match.
+
 ## Files
 
 | File | Purpose |
