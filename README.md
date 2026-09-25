@@ -89,8 +89,8 @@ common issues are:
 
 2. You get an error message like `java.io.IOException: Can't handle font width`
    this MIGHT be due to the fact that you don't have the
-   **org/apache/pdfbox/resources** directory in your classpath. The easiest
-   solution is to include the **apache-pdfbox-x.x.x.jar** in your classpath.
+   `org/apache/pdfbox/resources` directory in your classpath. The easiest
+   solution is to include the `apache-pdfbox-x.x.x.jar` in your classpath.
 
 3. You get text that has the correct characters, but in the wrong
    order.  This mght be because you have not enabled sorting.  The text
