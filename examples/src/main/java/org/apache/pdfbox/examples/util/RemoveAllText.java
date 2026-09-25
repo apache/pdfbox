@@ -126,38 +126,49 @@ public final class RemoveAllText
 
     private static List<Object> createTokensWithoutText(PDContentStream contentStream) throws IOException
     {
-        PDFStreamParser parser = new PDFStreamParser(contentStream);
-        Object token = parser.parseNextToken();
         List<Object> newTokens = new ArrayList<>();
-        while (token != null)
+        PDFStreamParser parser = null;
+        try
         {
-            if (token instanceof Operator)
+            parser = new PDFStreamParser(contentStream);
+            Object token = parser.parseNextToken();
+            while (token != null)
             {
-                Operator op = (Operator) token;
-                String opName = op.getName();
-                if (OperatorName.SHOW_TEXT_ADJUSTED.equals(opName)
-                        || OperatorName.SHOW_TEXT.equals(opName)
-                        || OperatorName.SHOW_TEXT_LINE.equals(opName))
+                if (token instanceof Operator)
                 {
-                    // remove the argument to this operator
-                    newTokens.remove(newTokens.size() - 1);
+                    Operator op = (Operator) token;
+                    String opName = op.getName();
+                    if (OperatorName.SHOW_TEXT_ADJUSTED.equals(opName)
+                            || OperatorName.SHOW_TEXT.equals(opName)
+                            || OperatorName.SHOW_TEXT_LINE.equals(opName))
+                    {
+                        // remove the argument to this operator
+                        newTokens.remove(newTokens.size() - 1);
 
-                    token = parser.parseNextToken();
-                    continue;
-                }
-                else if (OperatorName.SHOW_TEXT_LINE_AND_SPACE.equals(opName))
-                {
-                    // remove the 3 arguments to this operator
-                    newTokens.remove(newTokens.size() - 1);
-                    newTokens.remove(newTokens.size() - 1);
-                    newTokens.remove(newTokens.size() - 1);
+                        token = parser.parseNextToken();
+                        continue;
+                    }
+                    else if (OperatorName.SHOW_TEXT_LINE_AND_SPACE.equals(opName))
+                    {
+                        // remove the 3 arguments to this operator
+                        newTokens.remove(newTokens.size() - 1);
+                        newTokens.remove(newTokens.size() - 1);
+                        newTokens.remove(newTokens.size() - 1);
 
-                    token = parser.parseNextToken();
-                    continue;
+                        token = parser.parseNextToken();
+                        continue;
+                    }
                 }
+                newTokens.add(token);
+                token = parser.parseNextToken();
             }
-            newTokens.add(token);
-            token = parser.parseNextToken();
+        }
+        finally
+        {
+            if (parser != null)
+            {
+                parser.close();
+            }
         }
         return newTokens;
     }

@@ -113,41 +113,52 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
     public PDRectangle getGlyphBBox() throws IOException
     {
         List<COSBase> arguments = new ArrayList<>();
-        PDFStreamParser parser = new PDFStreamParser(this);
-        Object token = parser.parseNextToken();
-        while (token != null)
+        PDFStreamParser parser = null;
+        try
         {
-            if (token instanceof Operator)
+            parser = new PDFStreamParser(this);
+            Object token = parser.parseNextToken();
+            while (token != null)
             {
-                if (((Operator) token).getName().equals("d1") && arguments.size() == 6)
+                if (token instanceof Operator)
                 {
-                    for (int i = 0; i < 6; ++i)
+                    if (((Operator) token).getName().equals("d1") && arguments.size() == 6)
                     {
-                        if (!(arguments.get(i) instanceof COSNumber))
+                        for (int i = 0; i < 6; ++i)
                         {
-                            return null;
+                            if (!(arguments.get(i) instanceof COSNumber))
+                            {
+                                return null;
+                            }
                         }
+                        float x = ((COSNumber) arguments.get(2)).floatValue();
+                        float y = ((COSNumber) arguments.get(3)).floatValue();
+                        return new PDRectangle(
+                                x,
+                                y,
+                                ((COSNumber) arguments.get(4)).floatValue() - x,
+                                ((COSNumber) arguments.get(5)).floatValue() - y);
                     }
-                    float x = ((COSNumber) arguments.get(2)).floatValue();
-                    float y = ((COSNumber) arguments.get(3)).floatValue();
-                    return new PDRectangle(
-                            x,
-                            y,
-                            ((COSNumber) arguments.get(4)).floatValue() - x,
-                            ((COSNumber) arguments.get(5)).floatValue() - y);
+                    else
+                    {
+                        return null;
+                    }
                 }
                 else
                 {
-                    return null;
+                    arguments.add((COSBase) token);
                 }
+                token = parser.parseNextToken();
             }
-            else
-            {
-                arguments.add((COSBase) token);
-            }
-            token = parser.parseNextToken();
+            return null;
         }
-        return null;
+        finally
+        {
+            if (parser != null)
+            {
+                parser.close();
+            }
+        }
     }
 
     @Override
@@ -166,19 +177,30 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
     public float getWidth() throws IOException
     {
         List<COSBase> arguments = new ArrayList<>();
-        PDFStreamParser parser = new PDFStreamParser(this);
-        Object token = parser.parseNextToken();
-        while (token != null)
+        PDFStreamParser parser = null;
+        try
         {
-            if (token instanceof Operator)
+            parser = new PDFStreamParser(this);
+            Object token = parser.parseNextToken();
+            while (token != null)
             {
-                return parseWidth((Operator) token, arguments);
+                if (token instanceof Operator)
+                {
+                    return parseWidth((Operator) token, arguments);
+                }
+                else
+                {
+                    arguments.add((COSBase) token);
+                }
+                token = parser.parseNextToken();
             }
-            else
+        }
+        finally
+        {
+            if (parser != null)
             {
-                arguments.add((COSBase) token);
+                parser.close();
             }
-            token = parser.parseNextToken();
         }
         throw new IOException("Unexpected end of stream");
     }
