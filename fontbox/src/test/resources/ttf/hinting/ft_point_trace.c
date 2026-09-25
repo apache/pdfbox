@@ -34,7 +34,12 @@
  *       $FT/objs/.libs/libfreetype.a -lm -o ft_point_trace
  *
  * Run:
- *   ./ft_point_trace LiberationSans-Regular.ttf <gid> <ppem> <point>   # lines: "<pc> op=0xNN Pn=(x,y)"
+ *   ./ft_point_trace LiberationSans-Regular.ttf <gid> <ppem> <point> [mono]
+ *   # lines: "<pc> op=0xNN Pn=(x,y)"
+ *
+ * By default glyphs load with the grayscale target (FreeType's v40 interpreter with backward
+ * compatibility), which is how GlyphHinter hints and how the golden data is generated. Pass "mono"
+ * for the monochrome target, which turns backward compatibility off.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -85,7 +90,7 @@ main( int argc, char** argv )
 
   if ( argc < 5 )
   {
-    fprintf( stderr, "usage: %s <font.ttf> <gid> <ppem> <point>\n", argv[0] );
+    fprintf( stderr, "usage: %s <font.ttf> <gid> <ppem> <point> [mono]\n", argv[0] );
     return 2;
   }
 
@@ -101,7 +106,9 @@ main( int argc, char** argv )
 
   FT_Set_Pixel_Sizes( face, 0, atoi( argv[3] ) );
   FT_Load_Glyph( face, atoi( argv[2] ),
-                 FT_LOAD_NO_AUTOHINT | FT_LOAD_TARGET_MONO );
+                 FT_LOAD_NO_AUTOHINT |
+                   ( argc > 5 && argv[5][0] == 'm' ? FT_LOAD_TARGET_MONO
+                                                   : FT_LOAD_TARGET_NORMAL ) );
 
   FT_Done_Face( face );
   FT_Done_FreeType( lib );

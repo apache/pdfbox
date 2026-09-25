@@ -30,9 +30,13 @@ import org.junit.jupiter.api.Test;
  */
 class PointOpsTest
 {
+    /**
+     * 16ppem at 1024 units per em is a scale of exactly 1 (16 * 64 / 1024), so the synthetic zones'
+     * unscaled coordinates can equal their device coordinates; MDRP and IP measure the former.
+     */
     private static TrueTypeInterpreter interpreter()
     {
-        return new TrueTypeInterpreter(256, 16, 16, 2048);
+        return new TrueTypeInterpreter(256, 16, 16, 1024);
     }
 
     /** Builds a single-contour glyph zone with the given x coordinates (original == current). */
@@ -96,6 +100,34 @@ class PointOpsTest
         assertEquals(128, zone.getCurrentX()[1]); // distance 100 rounds to 128
     }
 
+    /**
+     * MDRP measures the original distance in font units and scales it, rather than projecting the
+     * individually rounded scaled originals (FreeType's Ins_MDRP, orus). From DejaVu Sans Bold '1' at
+     * 14ppem: points 72 units apart at 2048 upem are 31.5/64 px apart. Scaled on their own they land
+     * at 653 and 622, 31 apart, which rounds to 0; the scaled distance is 32, which rounds to a pixel.
+     */
+    @Test
+    void testMdrpScalesTheUnscaledOriginalDistance()
+    {
+        TrueTypeInterpreter interp = new TrueTypeInterpreter(256, 16, 16, 2048);
+        interp.setPpem(14, 14);
+        Zone zone = new Zone(2, 1);
+        int[] unscaled = { 1493, 1421 };
+        for (int i = 0; i < 2; i++)
+        {
+            int scaled = Fixed.scale(unscaled[i], 14, 2048);
+            setPoint(zone, i, scaled, 0);
+            zone.getUnscaledX()[i] = unscaled[i];
+        }
+        assertEquals(653, zone.getCurrentX()[0]);
+        assertEquals(622, zone.getCurrentX()[1]);
+        ExecutionContext ctx = interp.newContext(new GraphicsState());
+        ctx.setGlyphZone(zone);
+        // PUSHB[0] 1 ; MDRP[round] (0xC4) relative to rp0 = point 0
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB0, 1, (byte) 0xC4 }));
+        assertEquals(653 - 64, zone.getCurrentX()[1]);
+    }
+
     @Test
     void testMdrpRoundAndMinimumDistanceFlagsAreDistinct()
     {
@@ -117,8 +149,8 @@ class PointOpsTest
     void testMirpUsesControlValue()
     {
         TrueTypeInterpreter interp = interpreter();
-        // raw cvt 256 at 16ppem / 2048 upem scales to 128 (2px)
-        interp.setControlValues(new int[] { 256 });
+        // raw cvt 128 at 16ppem / 1024 upem scales to 128 (2px)
+        interp.setControlValues(new int[] { 128 });
         interp.setPpem(16, 16);
         Zone zone = lineZone(0, 100);
         ExecutionContext ctx = interp.newContext(new GraphicsState());
@@ -247,6 +279,26 @@ class PointOpsTest
         assertEquals(0, ctx.peek(1));                 // pv.x
     }
 
+    /**
+     * SPVFS takes the low 16 bits of each operand, sign-extended, and normalizes them (FreeType's
+     * Ins_SPVFS); (0,0) leaves the vector as it was.
+     */
+    @Test
+    void testSpvfsNormalizesSignExtendedOperands()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        ExecutionContext ctx = interp.newContext(new GraphicsState());
+        // PUSHW[1] 0xFFFF 0x0001 (x = -1 after sign extension, y = 1) ; SPVFS ; GPV
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB9, (byte) 0xFF, (byte) 0xFF, 0x00,
+                0x01, 0x0A, 0x0C }));
+        assertEquals(11585, ctx.peek(0));  // pv.y
+        assertEquals(-11585, ctx.peek(1)); // pv.x
+        // PUSHB[1] 0 0 ; SPVFS ; GPV - unchanged
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB1, 0, 0, 0x0A, 0x0C }));
+        assertEquals(11585, ctx.peek(0));
+        assertEquals(-11585, ctx.peek(1));
+    }
+
     @Test
     void testRoundOpcode()
     {
@@ -329,6 +381,150 @@ class PointOpsTest
             assertTrue(zone.getTouchedX()[i], "point " + i + " should be touched");
             assertEquals(0, zone.getCurrentX()[i] % Fixed.ONE, "point " + i + " off the grid");
         }
+    }
+
+    /**
+     * SPVTL takes the top point from zp2 and the one below it from zp1, and the line runs from the
+     * zp2 point to the zp1 point (FreeType's Ins_SxVTL). Here that is (64,0) to (0,0), so the
+     * projection vector is -x and GC of the point at x=64 reads -64.
+     */
+    @Test
+    void testSpvtlLineRunsFromTopPointToLowerPoint()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        Zone zone = new Zone(2, 1);
+        setPoint(zone, 0, 64, 0);
+        setPoint(zone, 1, 0, 0);
+        ExecutionContext ctx = context(interp, zone);
+        // PUSHB[1] 1 0 (zp1 point 1 below, zp2 point 0 on top) ; SPVTL[0] ; PUSHB[0] 0 ; GC[0]
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB1, 1, 0, 0x06, (byte) 0xB0, 0, 0x46 }));
+        assertEquals(-Fixed.ONE_F2DOT14, ctx.getGraphicsState().getProjectionVector().getX());
+        assertEquals(-64, ctx.peek(0));
+    }
+
+    /**
+     * SPVTL sets the dual projection vector equal to the projection vector; only SDPVTL derives it
+     * from the original outline (FreeType's Ins_SPVTL). The current line here is horizontal while the
+     * original line is vertical, so a dual vector taken from the originals would be the y axis.
+     */
+    @Test
+    void testSpvtlSetsDualVectorToProjectionVector()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        Zone zone = new Zone(2, 1);
+        setPoint(zone, 0, 0, 0);
+        setPoint(zone, 1, 0, 64);
+        zone.getCurrentX()[1] = 64;
+        zone.getCurrentY()[1] = 0;
+        ExecutionContext ctx = context(interp, zone);
+        // PUSHB[1] 1 0 ; SPVTL[0] ; PUSHB[0] 1 ; GC[1] (original, along the dual vector)
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB1, 1, 0, 0x06, (byte) 0xB0, 1, 0x47 }));
+        UnitVector dual = ctx.getGraphicsState().getDualProjectionVector();
+        assertEquals(Fixed.ONE_F2DOT14, dual.getX());
+        assertEquals(0, dual.getY());
+        assertEquals(0, ctx.peek(0)); // original (0,64) projected on the x axis
+    }
+
+    /** A zero-length line gives the x axis even for the perpendicular form (FreeType's Ins_SxVTL). */
+    @Test
+    void testSpvtlZeroLengthLineIsXAxisEvenWhenPerpendicular()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        Zone zone = new Zone(1, 1);
+        setPoint(zone, 0, 64, 64);
+        ExecutionContext ctx = context(interp, zone);
+        // PUSHB[1] 0 0 ; SPVTL[1] (perpendicular)
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB1, 0, 0, 0x07 }));
+        UnitVector pv = ctx.getGraphicsState().getProjectionVector();
+        assertEquals(Fixed.ONE_F2DOT14, pv.getX());
+        assertEquals(0, pv.getY());
+    }
+
+    /**
+     * SDPVTL: when the original line has zero length FreeType drops the perpendicular flag, and the
+     * drop carries over to the current line computed after it, so the projection vector runs along
+     * the current line rather than across it.
+     */
+    @Test
+    void testSdpvtlZeroLengthOriginalLineDropsPerpendicularForCurrentLine()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        Zone zone = new Zone(2, 1);
+        setPoint(zone, 0, 0, 0);
+        setPoint(zone, 1, 0, 0);
+        zone.getCurrentX()[1] = 64;
+        ExecutionContext ctx = context(interp, zone);
+        // PUSHB[1] 1 0 ; SDPVTL[1] (perpendicular)
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB1, 1, 0, (byte) 0x87 }));
+        UnitVector pv = ctx.getGraphicsState().getProjectionVector();
+        UnitVector dual = ctx.getGraphicsState().getDualProjectionVector();
+        assertEquals(Fixed.ONE_F2DOT14, pv.getX());
+        assertEquals(0, pv.getY());
+        assertEquals(Fixed.ONE_F2DOT14, dual.getX());
+        assertEquals(0, dual.getY());
+    }
+
+    /** An interpreter whose cvt[0] scales to 128 (2px) at 16ppem, and a context on the given zone. */
+    private static ExecutionContext contextWithCvt128(TrueTypeInterpreter interp, Zone glyph)
+    {
+        interp.setControlValues(new int[] { 128 });
+        interp.setPpem(16, 16);
+        return context(interp, glyph);
+    }
+
+    /**
+     * MIRP to a twilight point first places it the control value away from rp0's original position
+     * along the freedom vector (undocumented MS rasterizer behaviour, FreeType's Ins_MIRP). Without
+     * that the point's stale origin at 0 would flip the control value to -128.
+     */
+    @Test
+    void testMirpPlacesTwilightPointFromRp0()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        ExecutionContext ctx = contextWithCvt128(interp, lineZone(64)); // rp0 = glyph point 0 at 1px
+        // PUSHB[0] 0 ; SZP1 (twilight) ; PUSHB[1] 3 0 ; MIRP[0] (no round, no minimum)
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB0, 0, 0x14,
+                (byte) 0xB1, 3, 0, (byte) 0xE0 }));
+        Zone twilight = ctx.getTwilightZone();
+        assertEquals(192, twilight.getOriginalX()[3]);
+        assertEquals(192, twilight.getCurrentX()[3]);
+    }
+
+    /**
+     * MSIRP to a twilight point first places its original position the distance away from rp0's
+     * original position (undocumented MS rasterizer behaviour, FreeType's Ins_MSIRP).
+     */
+    @Test
+    void testMsirpPlacesTwilightPointFromRp0()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        ExecutionContext ctx = context(interp, lineZone(64)); // rp0 = glyph point 0 at 1px
+        // PUSHB[0] 0 ; SZP1 (twilight) ; PUSHB[1] 3 64 ; MSIRP[0]
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB0, 0, 0x14,
+                (byte) 0xB1, 3, 64, 0x3A }));
+        Zone twilight = ctx.getTwilightZone();
+        assertEquals(128, twilight.getOriginalX()[3]);
+        assertEquals(128, twilight.getCurrentX()[3]);
+    }
+
+    /**
+     * MIAP on a twilight point places its origin at the control value along the freedom vector, not
+     * the projection vector (FreeType's Ins_MIAP). With a diagonal freedom vector and an x-axis
+     * projection the difference shows in the original y.
+     */
+    @Test
+    void testMiapPlacesTwilightPointAlongFreedomVector()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        ExecutionContext ctx = contextWithCvt128(interp, lineZone(0));
+        int diagonal = 0x2D41; // 1/sqrt(2) in F2Dot14
+        // PUSHB[0] 0 ; SZP0 (twilight) ; PUSHW[1] diagonal diagonal ; SFVFS ; PUSHB[1] 3 0 ; MIAP[0]
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB0, 0, 0x13,
+                (byte) 0xB9, 0x2D, 0x41, 0x2D, 0x41, 0x0B, (byte) 0xB1, 3, 0, 0x3E }));
+        Zone twilight = ctx.getTwilightZone();
+        assertEquals(Fixed.mul14(128, diagonal), twilight.getOriginalX()[3]);
+        assertEquals(Fixed.mul14(128, diagonal), twilight.getOriginalY()[3]);
+        assertEquals(128, twilight.getCurrentX()[3]); // then moved along fv until its x projects to 128
     }
 
     private static void setPoint(Zone zone, int i, int x, int y)

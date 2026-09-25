@@ -216,6 +216,12 @@ class GlyphHinter
                 return null;
             }
             setActivePpem(ppem);
+            // INSTCTRL bit 1: prep switched hinting off at this size (fonts do this above a ppem
+            // threshold); render the raw outline, as FreeType does in tt_loader_init
+            if ((interpreter.getSavedState().getInstructControl() & 1) != 0)
+            {
+                return null;
+            }
             return hint(gid, ppem, 0);
         }
         catch (IOException | RuntimeException e)
@@ -266,6 +272,9 @@ class GlyphHinter
     {
         if (ppem != currentPpem)
         {
+            // setPpem rescales the CVT and clears storage before running prep; if prep throws, the
+            // interpreter no longer holds currentPpem's state, so force the next call to re-run it
+            currentPpem = -1;
             interpreter.setPpem(ppem, ppem);
             currentPpem = ppem;
         }
@@ -309,7 +318,17 @@ class GlyphHinter
         }
         int pointCount = gd.getPointCount();
         Zone zone = buildZone(glyph, gd, gid, ppem, pointCount, gd.getContourCount());
-        runProgram(zone, instructions, ppem, false);
+        ExecutionContext ctx = runProgram(zone, instructions, ppem, false);
+        // move the origin to x = 0, as FreeType does after hinting (TT_Load_Glyph translates by
+        // -pp1.x). Under backward compatibility FreeType keeps the unhinted phantom points
+        // (TT_Hint_Glyph), otherwise the hinted ones
+        int originX = ctx.isBackwardCompatibility() ? zone.getOriginalX()[pointCount]
+                : zone.getCurrentX()[pointCount];
+        int[] curX = zone.getCurrentX();
+        for (int i = 0; i < pointCount + 4; i++)
+        {
+            curX[i] -= originX;
+        }
         return new Hinted(gd, zone, pointCount);
     }
 
@@ -335,6 +354,11 @@ class GlyphHinter
             ends[c] = composite.getEndPtOfContours(c);
         }
         appendPhantomPoints(glyph, gid, ppem, pointCount, zone);
+        // FreeType's TT_Hint_Glyph: a composite's instructions "completely refer to the (already)
+        // hinted subglyphs" - the unscaled coordinates (orus) are the assembled positions, i.e. the
+        // originals, and the program runs at a scale of 1 (see ExecutionContext.isComposite)
+        System.arraycopy(zone.getOriginalX(), 0, zone.getUnscaledX(), 0, pointCount + 4);
+        System.arraycopy(zone.getOriginalY(), 0, zone.getUnscaledY(), 0, pointCount + 4);
 
         int[] instructions = composite.getInstructions();
         if (instructions != null && instructions.length > 0)
@@ -346,8 +370,8 @@ class GlyphHinter
 
     /**
      * Hints one component glyph and writes its transformed/offset points into the composite's zone
-     * arrays. The component's grid-fitted outline goes to the current arrays and its scaled-but-unhinted
-     * outline to the original arrays, so the composite's instructions can measure original distances.
+     * arrays. The component's grid-fitted outline goes to both the current and the original arrays,
+     * as FreeType bakes hinted components into the composite before running its instructions.
      */
     private void assembleComponent(GlyfCompositeComp comp, int ppem, int depth, Zone zone)
             throws IOException
@@ -368,17 +392,13 @@ class GlyphHinter
         int count = cgd.getPointCount();
         boolean[] onCurve = zone.getOnCurve();
 
-        // scaled-but-unhinted component points (used as a fallback) and the unscaled font-unit ones
+        // scaled-but-unhinted component points, used when the component is not hinted
         int[] cOrgX = new int[count];
         int[] cOrgY = new int[count];
-        int[] cUnsX = new int[count];
-        int[] cUnsY = new int[count];
         for (int k = 0; k < count; k++)
         {
-            cUnsX[k] = cgd.getXCoordinate(k);
-            cUnsY[k] = cgd.getYCoordinate(k);
-            cOrgX[k] = Fixed.scale(cUnsX[k], ppem, unitsPerEm);
-            cOrgY[k] = Fixed.scale(cUnsY[k], ppem, unitsPerEm);
+            cOrgX[k] = Fixed.scale(cgd.getXCoordinate(k), ppem, unitsPerEm);
+            cOrgY[k] = Fixed.scale(cgd.getYCoordinate(k), ppem, unitsPerEm);
             onCurve[first + k] = (cgd.getFlags(k) & GlyfDescript.ON_CURVE) != 0;
         }
 
@@ -392,19 +412,20 @@ class GlyphHinter
             cCurY = hintedComponent.zone.getCurrentY();
         }
 
-        // device-space offset (FreeType does not grid-round the component offset here, even when
-        // ROUND_XY_TO_GRID is set, so neither do we); the unscaled offset stays in font units
+        // device-space offset. With ROUND_XY_TO_GRID FreeType's v40 interpreter rounds only the y
+        // offset to the grid, leaving x unrounded to approximate ClearType's fine horizontal grid
+        // (TT_Process_Composite_Component)
         int offsetX = Fixed.scale(comp.getXTranslate(), ppem, unitsPerEm);
         int offsetY = Fixed.scale(comp.getYTranslate(), ppem, unitsPerEm);
-        int unsOffsetX = comp.getXTranslate();
-        int unsOffsetY = comp.getYTranslate();
+        if ((comp.getFlags() & GlyfCompositeComp.ROUND_XY_TO_GRID) != 0)
+        {
+            offsetY = Fixed.round(offsetY);
+        }
 
         int[] curX = zone.getCurrentX();
         int[] curY = zone.getCurrentY();
         int[] orgX = zone.getOriginalX();
         int[] orgY = zone.getOriginalY();
-        int[] unsX = zone.getUnscaledX();
-        int[] unsY = zone.getUnscaledY();
         for (int k = 0; k < count; k++)
         {
             curX[first + k] = comp.scaleX(cCurX[k], cCurY[k]) + offsetX;
@@ -414,24 +435,27 @@ class GlyphHinter
             // (a SHC/MDRP in the composite then measures zero movement for an unmoved component point)
             orgX[first + k] = curX[first + k];
             orgY[first + k] = curY[first + k];
-            unsX[first + k] = comp.scaleX(cUnsX[k], cUnsY[k]) + unsOffsetX;
-            unsY[first + k] = comp.scaleY(cUnsX[k], cUnsY[k]) + unsOffsetY;
         }
     }
 
     /** Clones the saved post-prep state, resets it for the glyph, and runs the program over the zone. */
-    private void runProgram(Zone zone, int[] instructions, int ppem, boolean composite)
+    private ExecutionContext runProgram(Zone zone, int[] instructions, int ppem, boolean composite)
     {
-        GraphicsState gs = interpreter.getSavedState().copy();
+        GraphicsState saved = interpreter.getSavedState();
+        // INSTCTRL bit 2: glyph programs start from the default graphics state rather than prep's
+        GraphicsState gs = (saved.getInstructControl() & 2) != 0 ? new GraphicsState() : saved.copy();
         gs.resetForGlyph();
         ExecutionContext ctx = interpreter.newContext(gs);
         ctx.setPpem(ppem);
         ctx.setGlyphZone(zone);
         // v40 grayscale "backward compatibility" applies to the glyph program only, never fpgm/prep,
-        // which build control values via twilight-zone x/y moves that must not be suppressed
-        ctx.setBackwardCompatibility(true);
+        // which build control values via twilight-zone x/y moves that must not be suppressed. A
+        // native-ClearType font waives it from prep with INSTCTRL bit 4; read from gs, so a bit-2
+        // reset to the default state also clears the waiver, as in FreeType's tt_loader_init.
+        ctx.setBackwardCompatibility((gs.getInstructControl() & 4) == 0);
         ctx.setComposite(composite);
         interpreter.run(ctx, new BytecodeStream(toByteArray(instructions)));
+        return ctx;
     }
 
     /** The result of grid-fitting one glyph: its description, the executed zone, and its point count
@@ -462,9 +486,15 @@ class GlyphHinter
         int[] unsX = zone.getUnscaledX();
         int[] unsY = zone.getUnscaledY();
         boolean[] onCurve = zone.getOnCurve();
+        // GlyphData shifts a simple glyph's x coordinates by lsb - xMin so its origin is at 0.
+        // FreeType hints the unshifted outline, with the origin phantom point at xMin - lsb, and
+        // moves the origin afterwards; undo the shift so rounding and phantom-point positions match
+        HorizontalMetricsTable hmtx = font.getHorizontalMetrics();
+        int leftSideBearing = hmtx != null ? hmtx.getLeftSideBearing(gid) : 0;
+        int parseShift = (short) (leftSideBearing - glyph.getXMinimum());
         for (int i = 0; i < pointCount; i++)
         {
-            int fx = gd.getXCoordinate(i);
+            int fx = gd.getXCoordinate(i) - parseShift;
             int fy = gd.getYCoordinate(i);
             unsX[i] = fx;
             unsY[i] = fy;

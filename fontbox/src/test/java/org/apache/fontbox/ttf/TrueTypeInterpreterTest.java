@@ -18,8 +18,10 @@ package org.apache.fontbox.ttf;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Duration;
 
@@ -73,6 +75,7 @@ class TrueTypeInterpreterTest
     private static final byte SZPS = 0x16;
     private static final byte SCFS = 0x48;
     private static final byte GC = 0x46;
+    private static final byte INSTCTRL = (byte) 0x8E;
 
     private static TrueTypeInterpreter interpreter()
     {
@@ -400,6 +403,57 @@ class TrueTypeInterpreterTest
 
         ExecutionContext ctx = interp.executeProgram(new byte[] { PUSHB1, 5, RS }, 16);
         assertEquals(42, ctx.peek(0));
+    }
+
+    /**
+     * INSTCTRL in prep sets or clears one flag bit, leaving the others (FreeType's Ins_INSTCTRL):
+     * selector k names bit 1 << (k - 1), and the value must be 0 or that bit. Out-of-range selectors
+     * and mismatched values are ignored.
+     */
+    @Test
+    void testInstctrlInPrepSetsAndClearsSingleBits()
+    {
+        assertEquals(1, instructControlAfterPrep(1, 1));
+        assertEquals(3, instructControlAfterPrep(1, 1, 2, 2));
+        assertEquals(6, instructControlAfterPrep(1, 1, 2, 2, 4, 3, 0, 1));
+        assertEquals(0, instructControlAfterPrep(1, 4));       // selector out of range
+        assertEquals(0, instructControlAfterPrep(1, 2));       // value is not the selector's bit
+        assertEquals(0, instructControlAfterPrep(1, 0));       // selector out of range
+    }
+
+    /** Outside prep only selector 3 has an effect, and only on the running glyph program. */
+    @Test
+    void testInstctrlOutsidePrepLeavesFlagsAlone()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        interp.setPpem(16, 16);
+        ExecutionContext ctx = interp.executeProgram(new byte[] { PUSHB2, 1, 1, INSTCTRL }, 16);
+        assertEquals(0, ctx.getGraphicsState().getInstructControl());
+
+        ctx = interp.newContext(interp.getSavedState().copy());
+        ctx.setBackwardCompatibility(true);
+        interp.run(ctx, new BytecodeStream(new byte[] { PUSHB2, 4, 3, INSTCTRL }));
+        assertFalse(ctx.isBackwardCompatibility());
+        interp.run(ctx, new BytecodeStream(new byte[] { PUSHB2, 0, 3, INSTCTRL }));
+        assertTrue(ctx.isBackwardCompatibility());
+        assertEquals(0, ctx.getGraphicsState().getInstructControl());
+    }
+
+    /** Runs INSTCTRL once per (value, selector) pair in prep and returns the saved flags. */
+    private static int instructControlAfterPrep(int... valueSelectorPairs)
+    {
+        byte[] prep = new byte[valueSelectorPairs.length / 2 * 4];
+        for (int i = 0, j = 0; i < valueSelectorPairs.length; i += 2)
+        {
+            prep[j++] = PUSHB2;
+            prep[j++] = (byte) valueSelectorPairs[i];
+            prep[j++] = (byte) valueSelectorPairs[i + 1];
+            prep[j++] = INSTCTRL;
+        }
+        TrueTypeInterpreter interp = interpreter();
+        interp.setControlValueProgram(prep);
+        interp.setPpem(16, 16);
+        return interp.getSavedState().getInstructControl();
     }
 
     /** The twilight zone belongs to the size for the same reason: {@code prep} seeds points there. */

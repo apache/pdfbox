@@ -60,9 +60,9 @@ class UnitVector
     }
 
     /**
-     * Builds a unit vector in F2Dot14 from a coordinate delta. A zero-length delta falls back to the
-     * x axis. (The square-root normalization is the one place the interpreter steps outside integer
-     * math; it only affects a direction vector, and is verified by the golden tests.)
+     * Builds a unit vector in F2Dot14 from a coordinate delta, bit-for-bit as FreeType does
+     * (ttinterp.c Normalize: FT_Vector_NormLen to 16.16, then divided by 4 with truncation). A
+     * zero-length delta falls back to the x axis.
      *
      * @param dx the x delta
      * @param dy the y delta
@@ -70,14 +70,67 @@ class UnitVector
      */
     public static UnitVector normalize(int dx, int dy)
     {
-        double length = Math.hypot(dx, dy);
-        if (length == 0)
+        if (dx == 0 && dy == 0)
         {
             return xAxis();
         }
-        int ux = (int) Math.round(dx / length * Fixed.ONE_F2DOT14);
-        int uy = (int) Math.round(dy / length * Fixed.ONE_F2DOT14);
-        return new UnitVector(ux, uy);
+        int[] v = normLen(dx, dy);
+        return new UnitVector(v[0] / 4, v[1] / 4);
+    }
+
+    /**
+     * FreeType's FT_Vector_NormLen: scales a non-zero vector to unit length in 16.16 fixed point
+     * using integer Newton iterations. Java's int arithmetic wraps like the C code's 32-bit
+     * unsigned/signed arithmetic, which the algorithm relies on.
+     */
+    private static int[] normLen(int vx, int vy)
+    {
+        int sx = vx < 0 ? -1 : 1;
+        int sy = vy < 0 ? -1 : 1;
+        int x = Math.abs(vx);
+        int y = Math.abs(vy);
+        if (x == 0)
+        {
+            return new int[] { 0, sy * 0x10000 };
+        }
+        if (y == 0)
+        {
+            return new int[] { sx * 0x10000, 0 };
+        }
+        // estimate the length and prenormalize so it lies between 2/3 and 4/3 in 16.16
+        long l = x > y ? x + (y >>> 1) : y + (x >>> 1);
+        int msb = 63 - Long.numberOfLeadingZeros(l);
+        int shift = 31 - msb;
+        shift -= 15 + (l >= (0xAAAAAAAAL >>> shift) ? 1 : 0);
+        if (shift > 0)
+        {
+            x <<= shift;
+            y <<= shift;
+            l = Integer.toUnsignedLong(x) > Integer.toUnsignedLong(y)
+                    ? Integer.toUnsignedLong(x) + (Integer.toUnsignedLong(y) >>> 1)
+                    : Integer.toUnsignedLong(y) + (Integer.toUnsignedLong(x) >>> 1);
+        }
+        else
+        {
+            x >>>= -shift;
+            y >>>= -shift;
+            l >>>= -shift;
+        }
+        // lower linear approximation for reciprocal length minus one, then Newton's iterations
+        int b = 0x10000 - (int) l;
+        int u;
+        int w;
+        int z;
+        do
+        {
+            u = x + (x * b >> 16);
+            w = y + (y * b >> 16);
+            z = -(u * u + w * w) / 0x200;
+            z = z * ((0x10000 + b) >> 8) / 0x10000;
+            b += z;
+        }
+        while (z > 0);
+        return new int[] { sx * u, sy * w };
     }
 
     /**

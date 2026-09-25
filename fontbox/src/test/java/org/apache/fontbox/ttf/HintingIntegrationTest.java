@@ -16,6 +16,7 @@
  */
 package org.apache.fontbox.ttf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -173,6 +174,106 @@ class HintingIntegrationTest
 
         assertTrue(Arrays.equals(before, after),
                 "hinting at other ppems must not change the result at 16ppem");
+    }
+
+    /**
+     * A ppem change rescales the CVT and clears storage before {@code prep} runs, so a {@code prep}
+     * that fails at one size leaves the interpreter holding that size's state. Returning to the earlier
+     * size must re-run {@code prep} rather than trust the cached ppem. Liberation Sans's own
+     * {@code prep} is prefixed with {@code MPPEM 11 EQ IF <invalid opcode> EIF} so it fails at 11ppem
+     * only.
+     */
+    @Test
+    void testFailedPrepDoesNotLeaveStaleState() throws IOException
+    {
+        TrueTypeFont font = withPrepPrefix(0x4B, 0xB0, 11, 0x54, 0x58, 0x28, 0x59);
+        int h = gid(font, 'H');
+        double[] before = flatten(font.getHintedPath(h, 16));
+        assertNull(font.getHintedPath(h, 11), "prep fails at 11ppem, so no hinting there");
+        double[] after = flatten(font.getHintedPath(h, 16));
+
+        assertTrue(Arrays.equals(before, after),
+                "a prep failure at another size must not change the result at 16ppem");
+    }
+
+    /**
+     * A component with ROUND_XY_TO_GRID has its y offset rounded to the grid, but under the v40
+     * interpreter not its x offset (FreeType's TT_Process_Composite_Component). In Liberation Sans the
+     * '¼' glyph (no instructions of its own) places four.sups at (952, -561) font units with that flag;
+     * at 11ppem that scales to (327.25, -192.84)/64 px, and FreeType offsets the component's points by exactly
+     * (+327, -192).
+     */
+    @Test
+    void testRoundXyToGridRoundsOnlyTheComponentYOffset() throws IOException
+    {
+        TrueTypeFont font = parse("/ttf/LiberationSans-Regular.ttf");
+        assertEquals(2048, font.getUnitsPerEm());
+        GlyphHinter hinter = new GlyphHinter(font);
+        GlyfCompositeDescript quarter =
+                (GlyfCompositeDescript) font.getGlyph().getGlyph(gid(font, 0x00BC)).getDescription();
+        quarter.resolve();
+        GlyfCompositeComp four = quarter.getComponents().get(2);
+        assertEquals(952, four.getXTranslate());
+        assertEquals(-561, four.getYTranslate());
+        assertTrue((four.getFlags() & GlyfCompositeComp.ROUND_XY_TO_GRID) != 0);
+
+        // four.sups has no instructions, so it enters the composite as its plain scaled outline
+        GlyphDescription component = font.getGlyph().getGlyph(four.getGlyphIndex()).getDescription();
+        assertNull(hinter.getHintedPointsF26Dot6(four.getGlyphIndex(), 11));
+
+        int[][] composite = hinter.getHintedPointsF26Dot6(gid(font, 0x00BC), 11);
+        for (int k = 0; k < component.getPointCount(); k++)
+        {
+            int x = Fixed.scale(component.getXCoordinate(k), 11, 2048);
+            int y = Fixed.scale(component.getYCoordinate(k), 11, 2048);
+            assertEquals(327, composite[0][four.getFirstIndex() + k] - x, "x of point " + k);
+            assertEquals(-192, composite[1][four.getFirstIndex() + k] - y, "y of point " + k);
+        }
+    }
+
+    /** INSTCTRL(1,1) in prep switches hinting off at that size: FreeType renders the raw outline. */
+    @Test
+    void testInstctrlInPrepCanDisableHinting() throws IOException
+    {
+        TrueTypeFont font = withPrepPrefix(0xB1, 1, 1, 0x8E);
+        assertNull(font.getHintedPath(gid(font, 'H'), 16));
+    }
+
+    /**
+     * INSTCTRL(4,3) in prep is the native-ClearType waiver: glyph programs run without the v40
+     * backward-compatibility rules, so x-direction moves are no longer suppressed and the result
+     * differs from the default.
+     */
+    @Test
+    void testInstctrlInPrepCanWaiveBackwardCompatibility() throws IOException
+    {
+        TrueTypeFont plain = parse("/ttf/LiberationSans-Regular.ttf");
+        TrueTypeFont waived = withPrepPrefix(0xB1, 4, 3, 0x8E);
+        int h = gid(plain, 'H');
+        assertFalse(Arrays.equals(flatten(plain.getHintedPath(h, 16)),
+                flatten(waived.getHintedPath(h, 16))));
+    }
+
+    /**
+     * Loads Liberation Sans with the given bytecode prepended to its {@code prep}, before the hinter
+     * first reads the table.
+     */
+    private static TrueTypeFont withPrepPrefix(int... prefix) throws IOException
+    {
+        TrueTypeFont font = parse("/ttf/LiberationSans-Regular.ttf");
+        byte[] prep = font.getControlValueProgram().getProgram();
+        byte[] program = new byte[prefix.length + prep.length];
+        for (int i = 0; i < prefix.length; i++)
+        {
+            program[i] = (byte) prefix[i];
+        }
+        System.arraycopy(prep, 0, program, prefix.length, prep.length);
+        ControlValueProgramTable table = new ControlValueProgramTable();
+        table.setTag(ControlValueProgramTable.TAG);
+        table.setLength(program.length);
+        table.read(font, new RandomAccessReadDataStream(new RandomAccessReadBuffer(program)));
+        font.addTable(table);
+        return font;
     }
 
     @Test

@@ -30,6 +30,8 @@ are plain coordinate/trace facts, not derivatives of FreeType.
 | `LiberationSans-Regular-*.txt` | The committed golden coordinate data (one file per ppem). |
 | `trace_diff.py` | Aligns FreeType's per-instruction trace against the FontBox interpreter's trace and reports the first divergence (program counter, operand stack, or point coordinate). |
 | `ft_point_trace.c` | FreeType single-stepper: dumps one glyph point's coordinate per instruction, for localizing *silent* point-position divergence. |
+| `ft_points_dump.py` | Dumps FreeType's grid-fitted points for any fonts over a range of characters and ppems. The FontBox half is the `HintedPointsDumpTool` test class. |
+| `compare_points.py` | Compares those two dumps font by font, optionally against a baseline FontBox dump to show what a change moved. |
 | `README.md` | This file. |
 
 ## Golden coordinate test (CI)
@@ -41,6 +43,40 @@ To regenerate the dumps after intentional changes:
 pip install --user freetype-py
 python3 generate_golden.py
 ```
+
+## Multi-font point comparison (manual)
+
+`GoldenHintingTest` covers one font and allows some tolerance, so it can miss a change that only
+shows in other fonts. For a wider check, dump every printable ASCII character plus a few accented
+(composite) letters at ppems 9-32 from both FreeType and FontBox, for any fonts you have locally, and
+compare point by point. Only the dumps' coordinates are used; nothing is committed.
+
+```sh
+OUT=/tmp/hint-compare
+FONTS="/usr/share/fonts/truetype/msttcorefonts/georgia.ttf /usr/share/fonts/truetype/msttcorefonts/comic.ttf"
+
+# 1. FreeType (from this directory; pip install --user freetype-py):
+python3 ft_points_dump.py --out $OUT $FONTS
+
+# 2. FontBox, from the repository root (writes <font>.fontbox):
+mvn -pl fontbox test -Dtest=HintedPointsDumpTool -Denforcer.skip=true \
+    -Ddump.fonts=$(echo $FONTS | tr ' ' ',') -Ddump.out=$OUT
+
+# 3. optional baseline: the same with the code before your change (e.g. after `git stash`),
+#    written under another suffix:
+mvn -pl fontbox test -Dtest=HintedPointsDumpTool -Denforcer.skip=true \
+    -Ddump.fonts=$(echo $FONTS | tr ' ' ',') -Ddump.out=$OUT -Ddump.suffix=baseline
+
+# 4. compare (no third-party modules needed):
+python3 compare_points.py $OUT --baseline baseline
+```
+
+Per font, the report gives the share of glyphs matching FreeType exactly, the share of y coordinates
+matching exactly, and the largest delta (64 = one pixel), along with the characters with any y delta
+of 9/64 or more. With `--baseline` it shows each figure before and after, and lists every glyph and
+ppem whose points changed, with the worst delta to FreeType before and after. Glyphs the hinter
+declines (gasp, `lowestRecPPEM`, INSTCTRL) are counted and skipped. A glyph that differs from FreeType
+here can then be traced with the trace-diff harness below.
 
 ## Trace-diff harness (manual debugging)
 
@@ -97,6 +133,9 @@ mvn -pl fontbox test -Dtest=GlyphTraceTool -Denforcer.skip=true \
 # diff the point column:
 python3 trace_diff.py --gid 648 --ppem 11 --ours /tmp/our-pt.txt --ft /tmp/ft-pt.txt --point
 ```
+
+`ft_point_trace` loads glyphs with the grayscale target by default, matching `GlyphHinter` (v40
+backward compatibility: no x grid-fitting); add a fifth argument `mono` for the monochrome target.
 
 The output names the exact instruction whose result first differs - e.g. it localized the
 `a-circumflex` residual to a single `MIRP` (the circumflex height), where the point goes in equal

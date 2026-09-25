@@ -142,6 +142,7 @@ class TrueTypeInterpreter
             return;
         }
         ExecutionContext ctx = newContext(new GraphicsState());
+        ctx.setCodeRange(ExecutionContext.CodeRange.FONT);
         run(ctx, new BytecodeStream(fontProgram));
     }
 
@@ -168,6 +169,7 @@ class TrueTypeInterpreter
         if (controlValueProgram != null && controlValueProgram.length > 0)
         {
             ExecutionContext ctx = newContext(gs);
+            ctx.setCodeRange(ExecutionContext.CodeRange.CONTROL_VALUE);
             run(ctx, new BytecodeStream(controlValueProgram));
         }
         savedState = gs;
@@ -801,18 +803,28 @@ class TrueTypeInterpreter
             UnitVector pv = ctx.getGraphicsState().getProjectionVector();
             ctx.getGraphicsState().getFreedomVector().set(pv.getX(), pv.getY());
         };
+        // SPVFS/SFVFS: the low 16 bits, sign-extended, normalized; (0,0) leaves the vector unchanged
+        // (FreeType's Ins_SPVFS/Ins_SFVFS)
         dispatch[0x0A] = ctx ->                                    // SPVFS
         {
-            int y = ctx.pop();
-            int x = ctx.pop();
-            ctx.getGraphicsState().getProjectionVector().set(x, y);
-            ctx.getGraphicsState().getDualProjectionVector().set(x, y);
+            int y = (short) ctx.pop();
+            int x = (short) ctx.pop();
+            if (x != 0 || y != 0)
+            {
+                UnitVector v = UnitVector.normalize(x, y);
+                ctx.getGraphicsState().getProjectionVector().set(v.getX(), v.getY());
+                ctx.getGraphicsState().getDualProjectionVector().set(v.getX(), v.getY());
+            }
         };
         dispatch[0x0B] = ctx ->                                    // SFVFS
         {
-            int y = ctx.pop();
-            int x = ctx.pop();
-            ctx.getGraphicsState().getFreedomVector().set(x, y);
+            int y = (short) ctx.pop();
+            int x = (short) ctx.pop();
+            if (x != 0 || y != 0)
+            {
+                UnitVector v = UnitVector.normalize(x, y);
+                ctx.getGraphicsState().getFreedomVector().set(v.getX(), v.getY());
+            }
         };
         dispatch[0x0C] = ctx ->                                    // GPV
         {
@@ -851,45 +863,67 @@ class TrueTypeInterpreter
 
     private void setProjectionToLine(ExecutionContext ctx, boolean perpendicular)
     {
-        UnitVector[] v = lineVectors(ctx, perpendicular);
-        ctx.getGraphicsState().getProjectionVector().set(v[0].getX(), v[0].getY());
-        ctx.getGraphicsState().getDualProjectionVector().set(v[1].getX(), v[1].getY());
+        // FreeType's Ins_SPVTL: the dual vector follows the projection vector; only SDPVTL derives
+        // it from the original outline
+        UnitVector v = lineVector(ctx, perpendicular, false)[0];
+        ctx.getGraphicsState().getProjectionVector().set(v.getX(), v.getY());
+        ctx.getGraphicsState().getDualProjectionVector().set(v.getX(), v.getY());
     }
 
     private void setFreedomToLine(ExecutionContext ctx, boolean perpendicular)
     {
-        UnitVector[] v = lineVectors(ctx, perpendicular);
-        ctx.getGraphicsState().getFreedomVector().set(v[0].getX(), v[0].getY());
+        UnitVector v = lineVector(ctx, perpendicular, false)[0];
+        ctx.getGraphicsState().getFreedomVector().set(v.getX(), v.getY());
     }
 
     private void setDualProjectionToLine(ExecutionContext ctx, boolean perpendicular)
     {
-        UnitVector[] v = lineVectors(ctx, perpendicular);
+        UnitVector[] v = lineVector(ctx, perpendicular, true);
         ctx.getGraphicsState().getProjectionVector().set(v[0].getX(), v[0].getY());
         ctx.getGraphicsState().getDualProjectionVector().set(v[1].getX(), v[1].getY());
     }
 
     /**
-     * Pops two point numbers and returns {current-based, original-based} unit vectors along (or
-     * perpendicular to) the line between them. The first point is taken from zp2, the second from zp1.
+     * Pops two point numbers and returns the unit vector along (or perpendicular to) the line between
+     * them, as FreeType's Ins_SxVTL/Ins_SDPVTL do: the top of the stack is a point in zp2, the one
+     * below it a point in zp1, and the line runs from the zp2 point to the zp1 point. A zero-length
+     * line gives the x axis, ignoring the perpendicular flag.
+     *
+     * @return {current-based vector, original-based vector (only when {@code withOriginal}, else
+     *         null)}
      */
-    private UnitVector[] lineVectors(ExecutionContext ctx, boolean perpendicular)
+    private UnitVector[] lineVector(ExecutionContext ctx, boolean perpendicular,
+            boolean withOriginal)
     {
         GraphicsState gs = ctx.getGraphicsState();
         int p2 = ctx.pop();
         int p1 = ctx.pop();
-        Zone z1 = ctx.getZone(gs.getZp2());
-        Zone z2 = ctx.getZone(gs.getZp1());
-        UnitVector current = UnitVector.normalize(z2.getCurrentX()[p2] - z1.getCurrentX()[p1],
-                z2.getCurrentY()[p2] - z1.getCurrentY()[p1]);
-        UnitVector original = UnitVector.normalize(z2.getOriginalX()[p2] - z1.getOriginalX()[p1],
-                z2.getOriginalY()[p2] - z1.getOriginalY()[p1]);
-        if (perpendicular)
+        Zone to = ctx.getZone(gs.getZp1());
+        Zone from = ctx.getZone(gs.getZp2());
+        UnitVector original = null;
+        boolean perp = perpendicular;
+        if (withOriginal)
         {
-            current = current.perpendicular();
-            original = original.perpendicular();
+            int dx = to.getOriginalX()[p1] - from.getOriginalX()[p2];
+            int dy = to.getOriginalY()[p1] - from.getOriginalY()[p2];
+            // FreeType clears the perpendicular flag on a zero-length original line and does not
+            // restore it for the current line that follows
+            perp &= dx != 0 || dy != 0;
+            original = lineUnitVector(dx, dy, perp);
         }
+        UnitVector current = lineUnitVector(to.getCurrentX()[p1] - from.getCurrentX()[p2],
+                to.getCurrentY()[p1] - from.getCurrentY()[p2], perp);
         return new UnitVector[] { current, original };
+    }
+
+    private static UnitVector lineUnitVector(int dx, int dy, boolean perpendicular)
+    {
+        if (dx == 0 && dy == 0)
+        {
+            return UnitVector.xAxis();
+        }
+        // rotate before normalizing, as FreeType does, so rounding matches for negative components
+        return perpendicular ? UnitVector.normalize(-dy, dx) : UnitVector.normalize(dx, dy);
     }
 
     // --- rounding opcodes ------------------------------------------------
@@ -1006,10 +1040,11 @@ class TrueTypeInterpreter
 
         if (gs.getZp0() == 0)
         {
-            // twilight point: establish its position from the control value along the projection
-            UnitVector pv = gs.getProjectionVector();
-            zone.getOriginalX()[point] = Fixed.mul14(value, pv.getX());
-            zone.getOriginalY()[point] = Fixed.mul14(value, pv.getY());
+            // twilight point: establish its position from the control value along the freedom
+            // vector (FreeType's Ins_MIAP)
+            UnitVector fv = gs.getFreedomVector();
+            zone.getOriginalX()[point] = Fixed.mul14(value, fv.getX());
+            zone.getOriginalY()[point] = Fixed.mul14(value, fv.getY());
             zone.getCurrentX()[point] = zone.getOriginalX()[point];
             zone.getCurrentY()[point] = zone.getOriginalY()[point];
         }
@@ -1035,6 +1070,16 @@ class TrueTypeInterpreter
         Zone zp1 = ctx.getZone(gs.getZp1());
         Zone zp0 = ctx.getZone(gs.getZp0());
         int rp0 = gs.getRp0();
+        if (gs.getZp1() == 0)
+        {
+            // twilight point: place it at rp0's original position moved by the distance, as the MS
+            // rasterizer does (undocumented; FreeType's Ins_MSIRP)
+            zp1.getOriginalX()[point] = zp0.getOriginalX()[rp0];
+            zp1.getOriginalY()[point] = zp0.getOriginalY()[rp0];
+            ctx.moveOriginal(zp1, point, distance);
+            zp1.getCurrentX()[point] = zp1.getOriginalX()[point];
+            zp1.getCurrentY()[point] = zp1.getOriginalY()[point];
+        }
         int curDist = ctx.projectedDistance(zp1, point, zp0, rp0);
         ctx.movePoint(zp1, point, distance - curDist);
         gs.setRp1(rp0);
@@ -1195,7 +1240,22 @@ class TrueTypeInterpreter
         Zone zp0 = ctx.getZone(gs.getZp0());
         int rp0 = gs.getRp0();
 
-        int orgDist = ctx.dualProjectedDistance(zp1, point, zp0, rp0);
+        int orgDist;
+        if (gs.getZp0() == 0 || gs.getZp1() == 0)
+        {
+            // twilight points have no font-unit source: measure their scaled originals
+            orgDist = ctx.dualProjectedDistance(zp1, point, zp0, rp0);
+        }
+        else
+        {
+            // measure in font units and scale the distance, as FreeType's Ins_MDRP does (orus):
+            // projecting the individually rounded scaled originals can land a half-pixel distance on
+            // the other side of the rounding threshold and move the point by a whole pixel
+            int dist = ctx.dualProject(zp1.getUnscaledX()[point] - zp0.getUnscaledX()[rp0],
+                    zp1.getUnscaledY()[point] - zp0.getUnscaledY()[rp0]);
+            // a composite's unscaled coordinates are already device positions (scale 1)
+            orgDist = ctx.isComposite() ? dist : Fixed.scale(dist, ctx.getPpem(), ctx.getUnitsPerEm());
+        }
         orgDist = applySingleWidth(gs, orgDist);
         int distance = round ? gs.round(orgDist) : orgDist;
         distance = applyMinimumDistance(gs, useMin, orgDist, distance);
@@ -1227,6 +1287,16 @@ class TrueTypeInterpreter
         Zone zp1 = ctx.getZone(gs.getZp1());
         Zone zp0 = ctx.getZone(gs.getZp0());
         int rp0 = gs.getRp0();
+        if (gs.getZp1() == 0)
+        {
+            // twilight point: place it the control value away from rp0's original position along the
+            // freedom vector, as the MS rasterizer does (undocumented; FreeType's Ins_MIRP)
+            UnitVector fv = gs.getFreedomVector();
+            zp1.getOriginalX()[point] = zp0.getOriginalX()[rp0] + Fixed.mul14(cvtValue, fv.getX());
+            zp1.getOriginalY()[point] = zp0.getOriginalY()[rp0] + Fixed.mul14(cvtValue, fv.getY());
+            zp1.getCurrentX()[point] = zp1.getOriginalX()[point];
+            zp1.getCurrentY()[point] = zp1.getOriginalY()[point];
+        }
         int orgDist = ctx.dualProjectedDistance(zp1, point, zp0, rp0);
 
         // auto-flip the control value to match the sign of the original distance
@@ -1297,7 +1367,12 @@ class TrueTypeInterpreter
     private void doIup(ExecutionContext ctx, boolean xAxis)
     {
         // record that IUP ran on this axis; under backward-compatibility, once both axes are done the
-        // glyph is frozen against further y moves (see ExecutionContext.movePoint)
+        // glyph is frozen against further y moves (see ExecutionContext.movePoint) and further IUPs
+        // do nothing (FreeType's Ins_IUP)
+        if (ctx.isBackwardCompatibility() && ctx.isIupDone())
+        {
+            return;
+        }
         if (xAxis)
         {
             ctx.setIupxCalled();
@@ -1310,18 +1385,25 @@ class TrueTypeInterpreter
         Zone zone = ctx.getZone(1);
         int[] cur = xAxis ? zone.getCurrentX() : zone.getCurrentY();
         int[] org = xAxis ? zone.getOriginalX() : zone.getOriginalY();
+        int[] orus = xAxis ? zone.getUnscaledX() : zone.getUnscaledY();
         boolean[] touched = xAxis ? zone.getTouchedX() : zone.getTouchedY();
         int[] ends = zone.getContourEnds();
         int start = 0;
         for (int end : ends)
         {
-            interpolateContour(cur, org, touched, start, end);
+            interpolateContour(cur, org, orus, touched, start, end);
             start = end + 1;
         }
     }
 
-    private static void interpolateContour(int[] cur, int[] org, boolean[] touched, int start,
-            int end)
+    /**
+     * Interpolates the untouched points of one contour, after FreeType's Ins_IUP: a single touched
+     * point shifts the whole contour by its movement; otherwise each run of untouched points between two
+     * touched ones is shifted by the nearer one's movement when it lies outside their original span,
+     * and interpolated between them when inside - by the unscaled (font-unit) coordinates.
+     */
+    private static void interpolateContour(int[] cur, int[] org, int[] orus, boolean[] touched,
+            int start, int end)
     {
         if (end < start)
         {
@@ -1353,7 +1435,7 @@ class TrueTypeInterpreter
                 {
                     if (i != firstTouched)
                     {
-                        cur[i] = org[i] + delta;
+                        cur[i] += delta;
                     }
                 }
             }
@@ -1367,53 +1449,57 @@ class TrueTypeInterpreter
             int i = start + (firstTouched - start + step) % (end - start + 1);
             if (touched[i])
             {
-                int u = t1 + 1 > end ? start : t1 + 1;
-                while (u != i)
-                {
-                    interpolatePoint(cur, org, t1, i, u);
-                    u = u + 1 > end ? start : u + 1;
-                }
+                interpolateRun(cur, org, orus, t1, i, start, end);
                 t1 = i;
                 seen++;
             }
         }
     }
 
-    private static void interpolatePoint(int[] cur, int[] org, int t1, int t2, int u)
+    /**
+     * Interpolates the untouched points strictly between touched points {@code ref1} and {@code ref2}
+     * (walking forward, wrapping within {@code start..end}), as FreeType's iup_worker_interpolate_.
+     */
+    private static void interpolateRun(int[] cur, int[] org, int[] orus, int ref1, int ref2,
+            int start, int end)
     {
-        int orgLo;
-        int orgHi;
-        int curLo;
-        int curHi;
-        if (org[t1] <= org[t2])
+        int lo = ref1;
+        int hi = ref2;
+        if (orus[lo] > orus[hi])
         {
-            orgLo = org[t1];
-            curLo = cur[t1];
-            orgHi = org[t2];
-            curHi = cur[t2];
+            lo = ref2;
+            hi = ref1;
         }
-        else
+        int orus1 = orus[lo];
+        int orus2 = orus[hi];
+        int org1 = org[lo];
+        int org2 = org[hi];
+        int cur1 = cur[lo];
+        int cur2 = cur[hi];
+        int delta1 = cur1 - org1;
+        int delta2 = cur2 - org2;
+        boolean snap = cur1 == cur2 || orus1 == orus2;
+        int scale = snap ? 0 : Fixed.divFix(cur2 - cur1, orus2 - orus1);
+        for (int u = ref1 + 1 > end ? start : ref1 + 1; u != ref2; u = u + 1 > end ? start : u + 1)
         {
-            orgLo = org[t2];
-            curLo = cur[t2];
-            orgHi = org[t1];
-            curHi = cur[t1];
-        }
-        if (org[u] <= orgLo)
-        {
-            cur[u] = org[u] + (curLo - orgLo);
-        }
-        else if (org[u] >= orgHi)
-        {
-            cur[u] = org[u] + (curHi - orgHi);
-        }
-        else if (orgHi == orgLo)
-        {
-            cur[u] = org[u] + (curLo - orgLo);
-        }
-        else
-        {
-            cur[u] = curLo + Fixed.mulDiv(org[u] - orgLo, curHi - curLo, orgHi - orgLo);
+            int x = org[u];
+            if (x <= org1)
+            {
+                x += delta1;
+            }
+            else if (x >= org2)
+            {
+                x += delta2;
+            }
+            else if (snap)
+            {
+                x = cur1;
+            }
+            else
+            {
+                x = cur1 + Fixed.mulFix(orus[u] - orus1, scale);
+            }
+            cur[u] = x;
         }
     }
 
@@ -1608,21 +1694,39 @@ class TrueTypeInterpreter
         dispatch[0x82] = ctx -> flipRange(ctx, false);                     // FLIPRGOFF
         dispatch[0x85] = ctx -> ctx.getGraphicsState().setScanControl(ctx.pop()); // SCANCTRL
         dispatch[0x8D] = ctx -> ctx.getGraphicsState().setScanType(ctx.pop());    // SCANTYPE
-        dispatch[0x8E] = ctx ->                                            // INSTCTRL
+        dispatch[0x8E] = TrueTypeInterpreter::doInstctrl;                  // INSTCTRL
+    }
+
+    /**
+     * INSTCTRL, after FreeType's Ins_INSTCTRL. The selector is an index 1..3 naming one flag bit, and
+     * the value must be 0 or that bit. In {@code prep} it sets or clears the bit in the graphics
+     * state, which {@code GlyphHinter} reads before each glyph: bit 1 turns hinting off, bit 2 makes
+     * glyph programs start from the default graphics state, bit 4 waives v40 backward compatibility.
+     * A glyph program may only use selector 3, to waive (or restore) backward compatibility for itself
+     * - native-ClearType fonts do that per glyph. Anything else is ignored.
+     */
+    private static void doInstctrl(ExecutionContext ctx)
+    {
+        int selector = ctx.pop();
+        int value = ctx.pop();
+        if (selector < 1 || selector > 3)
         {
-            int selector = ctx.pop();
-            int value = ctx.pop();
-            if (selector == 3)
-            {
-                // native-ClearType fonts use INSTCTRL(L,3) to waive backward compatibility and program
-                // points to the grid directly; L==4 turns the v40 movement restrictions off
-                ctx.setBackwardCompatibility(value != 4);
-            }
-            else
-            {
-                ctx.getGraphicsState().setInstructControl(value & selector);
-            }
-        };
+            return;
+        }
+        int flag = 1 << (selector - 1);
+        if (value != 0 && value != flag)
+        {
+            return;
+        }
+        if (ctx.getCodeRange() == ExecutionContext.CodeRange.CONTROL_VALUE)
+        {
+            GraphicsState gs = ctx.getGraphicsState();
+            gs.setInstructControl(gs.getInstructControl() & ~flag | value);
+        }
+        else if (ctx.getCodeRange() == ExecutionContext.CodeRange.GLYPH && selector == 3)
+        {
+            ctx.setBackwardCompatibility(value == 0);
+        }
     }
 
     private static void flipRange(ExecutionContext ctx, boolean onCurve)

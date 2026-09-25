@@ -65,6 +65,7 @@ class ExecutionContext
     // direction are suppressed so stems are not grid-fit and darkened under antialiasing, and y moves
     // are frozen once IUP has run on both axes. Only enabled for the glyph program, never fpgm/prep.
     private boolean backwardCompatibility;
+    private CodeRange codeRange = CodeRange.GLYPH;
     private boolean iupxCalled;
     private boolean iupyCalled;
     private boolean composite;
@@ -379,8 +380,9 @@ class ExecutionContext
 
     /**
      * Moves a point by the given projected distance along the freedom vector, touching the axes the
-     * freedom vector acts on. The displacement is {@code distance * freedom / (freedom . projection)},
-     * which reduces to {@code distance} when both vectors are the same axis.
+     * freedom vector acts on. The displacement is {@code distance * freedom / (freedom . projection)}
+     * (see {@link #freedomDotProjection()}), which reduces to {@code distance} when both vectors are
+     * the same axis. After FreeType 2.13's Direct_Move, the version the golden data comes from.
      *
      * @param zone the zone holding the point
      * @param point the point index
@@ -389,12 +391,7 @@ class ExecutionContext
     public void movePoint(Zone zone, int point, int distance)
     {
         UnitVector fv = graphicsState.getFreedomVector();
-        UnitVector pv = graphicsState.getProjectionVector();
-        int fDotP = dot14(fv.getX(), fv.getY(), pv.getX(), pv.getY());
-        if (fDotP == 0)
-        {
-            fDotP = Fixed.ONE_F2DOT14;
-        }
+        int fDotP = freedomDotProjection();
         if (fv.getX() != 0)
         {
             // backward-compatibility (v40 grayscale): never grid-fit in the x direction, so horizontal
@@ -416,6 +413,56 @@ class ExecutionContext
         }
     }
 
+    /**
+     * Moves a point's <em>original</em> position by the given projected distance along the freedom
+     * vector, as {@link #movePoint} does for the current position. Nothing is touched and the
+     * backward-compatibility rules do not apply. Used to place twilight points (FreeType's
+     * func_move_orig).
+     *
+     * @param zone the zone holding the point
+     * @param point the point index
+     * @param distance the projected distance to move, in F26Dot6
+     */
+    public void moveOriginal(Zone zone, int point, int distance)
+    {
+        UnitVector fv = graphicsState.getFreedomVector();
+        int fDotP = freedomDotProjection();
+        if (fv.getX() != 0)
+        {
+            zone.getOriginalX()[point] += Fixed.mulDiv(distance, fv.getX(), fDotP);
+        }
+        if (fv.getY() != 0)
+        {
+            zone.getOriginalY()[point] += Fixed.mulDiv(distance, fv.getY(), fDotP);
+        }
+    }
+
+    /**
+     * The dot product of the freedom and projection vectors in F2Dot14, as FreeType 2.13's
+     * Compute_Funcs derives it: exactly the projection component when the freedom vector is an axis,
+     * otherwise truncated; below 0x400 in magnitude (nearly perpendicular) it is replaced by 1.0 to
+     * avoid huge moves.
+     */
+    private int freedomDotProjection()
+    {
+        UnitVector fv = graphicsState.getFreedomVector();
+        UnitVector pv = graphicsState.getProjectionVector();
+        int fDotP;
+        if (fv.getX() == Fixed.ONE_F2DOT14)
+        {
+            fDotP = pv.getX();
+        }
+        else if (fv.getY() == Fixed.ONE_F2DOT14)
+        {
+            fDotP = pv.getY();
+        }
+        else
+        {
+            fDotP = (int) (((long) pv.getX() * fv.getX() + (long) pv.getY() * fv.getY()) >> 14);
+        }
+        return Math.abs(fDotP) < 0x400 ? Fixed.ONE_F2DOT14 : fDotP;
+    }
+
     /** @return whether v40 backward-compatibility (grayscale subpixel) movement rules are active */
     public boolean isBackwardCompatibility()
     {
@@ -426,6 +473,18 @@ class ExecutionContext
     public void setBackwardCompatibility(boolean value)
     {
         this.backwardCompatibility = value;
+    }
+
+    /** @return which top-level program this context runs */
+    public CodeRange getCodeRange()
+    {
+        return codeRange;
+    }
+
+    /** @param value which top-level program this context runs */
+    public void setCodeRange(CodeRange value)
+    {
+        this.codeRange = value;
     }
 
     /** Marks IUP[x] as having run; resets each program run. */
@@ -500,5 +559,19 @@ class ExecutionContext
     public void setReturnFromFunction(boolean value)
     {
         this.returnFromFunction = value;
+    }
+
+    /**
+     * The top-level program a context runs, after FreeType's code ranges. Some instructions behave
+     * differently depending on it: INSTCTRL, for one, only takes effect in {@code prep}.
+     */
+    enum CodeRange
+    {
+        /** the font program, {@code fpgm} */
+        FONT,
+        /** the control value program, {@code prep} */
+        CONTROL_VALUE,
+        /** a glyph program */
+        GLYPH
     }
 }

@@ -187,6 +187,37 @@ final class Fixed
     }
 
     /**
+     * Multiplies by a 16.16 fixed-point factor, rounding half away from zero: FreeType's
+     * {@code FT_MulFix}.
+     *
+     * @param a the value to scale
+     * @param b a 16.16 fixed-point factor
+     * @return {@code round(a * b / 65536)}
+     */
+    public static int mulFix(int a, int b)
+    {
+        long product = Math.abs((long) a) * Math.abs((long) b);
+        long c = (product + 0x8000L) >> 16;
+        return (int) ((a < 0) != (b < 0) ? -c : c);
+    }
+
+    /**
+     * Divides to a 16.16 fixed-point quotient, rounding half away from zero: FreeType's
+     * {@code FT_DivFix}. Division by zero yields {@code 0x7FFFFFFF}, as in FreeType.
+     *
+     * @param a the dividend
+     * @param b the divisor
+     * @return {@code round(a * 65536 / b)}
+     */
+    public static int divFix(int a, int b)
+    {
+        long la = Math.abs((long) a);
+        long lb = Math.abs((long) b);
+        long q = lb > 0 ? ((la << 16) + (lb >> 1)) / lb : 0x7FFFFFFFL;
+        return (int) ((a < 0) != (b < 0) ? -q : q);
+    }
+
+    /**
      * Scales a coordinate from font units to F26Dot6 device pixels at the given ppem:
      * {@code round(funits * ppem * 64 / unitsPerEm)}. Note this is <em>not</em> a flat {@code * 64} -
      * that would only be correct when {@code unitsPerEm == ppem}. Both control values and glyph point
