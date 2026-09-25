@@ -93,6 +93,7 @@ public class PDFMergerUtility
     private static final Logger LOG = LogManager.getLogger(PDFMergerUtility.class);
 
     private final List<Object> sources;
+
     private String destinationFileName;
     private OutputStream destinationStream;
     private boolean ignoreAcroFormErrors = false;
@@ -102,6 +103,26 @@ public class PDFMergerUtility
     private DocumentMergeMode documentMergeMode = DocumentMergeMode.PDFBOX_LEGACY_MODE;
     private AcroFormMergeMode acroFormMergeMode = AcroFormMergeMode.PDFBOX_LEGACY_MODE;
     
+    private boolean skipCorruptFiles = false;
+    private int lastMergeSkippedCount = 0;
+    private final List<String> skippedFiles = new ArrayList<>();
+
+    /**
+     * Set to true to skip corrupt PDF files instead of failing the whole merge.
+     *
+     * @param skip true to skip corrupt files
+     */
+    public void setSkipCorruptFiles(boolean skip) {
+        this.skipCorruptFiles = skip;
+    }
+
+    /**
+     *@return true if corrupt files should be skipped
+     */
+    public boolean isSkipCorruptFiles() {
+        return skipCorruptFiles;
+    }
+
     /**
      * The mode to use when merging documents:
      * 
@@ -370,67 +391,102 @@ public class PDFMergerUtility
         {
             optimizedMergeDocuments(streamCacheCreateFunction, compressParameters);
         }
+        LOG.info("Merge completed. Total sources: {}, Skipped: {}", sources.size(), lastMergeSkippedCount);
+
     }
-    
+
+
+    /**
+     * @return an unmodifiable list of file paths or stream indices that were skipped
+     */
+    public List<String> getSkippedFiles() {
+        return Collections.unmodifiableList(skippedFiles);
+    }
+
+    /**
+     * Add a PDF source via InputStream.
+     * The InputStream is wrapped into a RandomAccessReadBuffer for PDFBox loading.
+     *
+     * @param inputStream Input stream containing a valid PDF file
+     */
+    public void addSource(InputStream inputStream) {
+        if (inputStream == null) {
+            throw new IllegalArgumentException("InputStream cannot be null");
+        }
+        sources.add(new RandomAccessReadBuffer(inputStream));
+    }
+
     private void optimizedMergeDocuments(StreamCacheCreateFunction streamCacheCreateFunction,
-            CompressParameters compressParameters) throws IOException
+                                         CompressParameters compressParameters) throws IOException
     {
-        StreamCacheCreateFunction strmCacheFunc = streamCacheCreateFunction != null ? streamCacheCreateFunction
+        if (sources.isEmpty()) {
+            throw new IllegalStateException("No source PDFs provided. Use addSource() before merging.");
+        }
+
+        StreamCacheCreateFunction strmCacheFunc = streamCacheCreateFunction != null
+                ? streamCacheCreateFunction
                 : IOUtils.createMemoryOnlyStreamCache();
-        try (PDDocument destination = new PDDocument(strmCacheFunc))
-        {
+
+        try (PDDocument destination = new PDDocument(strmCacheFunc)) {
             PDFCloneUtility cloner = new PDFCloneUtility(destination);
-            PDPageTree destinationPageTree = destination.getPages(); // cache PageTree
-            for (Object sourceObject : sources)
-            {
+            PDPageTree destinationPageTree = destination.getPages();
+
+            lastMergeSkippedCount = 0;
+
+
+            for (Object sourceObject : sources) {
                 PDDocument sourceDoc = null;
-                try
-                {
-                    if (sourceObject instanceof File)
-                    {
-                        sourceDoc = Loader.loadPDF((File) sourceObject);
+                try {
+                    try {
+                        if (sourceObject instanceof File) {
+                            File file = (File) sourceObject;
+                            sourceDoc = Loader.loadPDF(file);
+                        } else {
+                            sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject);
+                        }
+                    } catch (IOException e) {
+                        String sourceDesc = (sourceObject instanceof File)
+                                ? ((File) sourceObject).getAbsolutePath()
+                                : "RandomAccessRead source (index: " + sources.indexOf(sourceObject) + ")";
+                        if (skipCorruptFiles) {
+                            LOG.warn("Skipping corrupt file: {}", sourceDesc, e);
+                            skippedFiles.add(sourceDesc);
+                            lastMergeSkippedCount++;
+                            continue;
+                        } else {
+                            throw new IOException("Failed to load PDF from source: " + sourceDesc, e);
+                        }
                     }
-                    else
-                    {
-                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject);
-                    }
-                    for (PDPage page : sourceDoc.getPages())
-                    {
+
+                    for (PDPage page : sourceDoc.getPages()) {
                         PDPage newPage = new PDPage(cloner.cloneForNewDocument(page.getCOSObject()));
                         newPage.setCropBox(page.getCropBox());
                         newPage.setMediaBox(page.getMediaBox());
                         newPage.setRotation(page.getRotation());
+
                         PDResources resources = page.getResources();
-                        if (resources != null)
-                        {
-                            // this is smart enough to just create references for resources that are used on multiple
-                            // pages
+                        if (resources != null) {
                             newPage.setResources(new PDResources(
                                     cloner.cloneForNewDocument(resources.getCOSObject())));
-                        }
-                        else
-                        {
+                        } else {
                             newPage.setResources(new PDResources());
                         }
                         destinationPageTree.add(newPage);
                     }
-                }
-                finally
-                {
+                } finally {
                     IOUtils.closeQuietly(sourceDoc);
                 }
             }
-            
-            if (destinationStream == null)
-            {
+
+            if (destinationStream == null) {
                 destination.save(destinationFileName, compressParameters);
-            }
-            else
-            {
+            } else {
                 destination.save(destinationStream, compressParameters);
             }
+
         }
     }
+
     
     
     /**
@@ -441,62 +497,71 @@ public class PDFMergerUtility
      * 
      * @throws IOException If there is an error saving the document.
      */
-    private void legacyMergeDocuments(StreamCacheCreateFunction streamCacheCreateFunction,
-            CompressParameters compressParameters) throws IOException
+        private void legacyMergeDocuments(StreamCacheCreateFunction streamCacheCreateFunction,
+                                      CompressParameters compressParameters) throws IOException
     {
-        if (!sources.isEmpty())
-        {
-            // Make sure that:
-            // - first Exception is kept
-            // - all PDDocuments are closed
-            // - all FileInputStreams are closed
-            // - there's a way to see which errors occurred
-            StreamCacheCreateFunction strmCacheFunc = streamCacheCreateFunction != null ? streamCacheCreateFunction
-                    : IOUtils.createMemoryOnlyStreamCache();
-            try (PDDocument destination = new PDDocument(strmCacheFunc))
-            {
-                for (Object sourceObject : sources)
-                {
-                    PDDocument sourceDoc;
-                    if (sourceObject instanceof File)
-                    {
-                        sourceDoc = Loader.loadPDF((File) sourceObject);
+        if (sources.isEmpty()) {
+            throw new IllegalStateException("No source PDFs provided. Use addSource() before merging.");
+        }
+
+        StreamCacheCreateFunction strmCacheFunc = streamCacheCreateFunction != null
+                ? streamCacheCreateFunction
+                : IOUtils.createMemoryOnlyStreamCache();
+
+        try (PDDocument destination = new PDDocument(strmCacheFunc)) {
+            lastMergeSkippedCount = 0;
+
+            for (Object sourceObject : sources) {
+                PDDocument sourceDoc;
+                try {
+                    try {
+                        if (sourceObject instanceof File) {
+                            File file = (File) sourceObject;
+                            sourceDoc = Loader.loadPDF(file);
+                        } else {
+                            sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject);
+                        }
+                    } catch (IOException e) {
+                        String sourceDesc = (sourceObject instanceof File)
+                                ? ((File) sourceObject).getAbsolutePath()
+                                : "RandomAccessRead source (index: " + sources.indexOf(sourceObject) + ")";
+                        if (skipCorruptFiles) {
+                            LOG.warn("Skipping corrupt file: {}", sourceDesc, e);
+                            skippedFiles.add(sourceDesc);
+                            lastMergeSkippedCount++;
+                            continue;
+                        } else {
+                            throw new IOException("Failed to load PDF from source: " + sourceDesc, e);
+                        }
                     }
-                    else
-                    {
-                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject);
-                    }
-                    try
-                    {
+
+                    try {
                         appendDocument(destination, sourceDoc);
-                    }
-                    finally
-                    {
+                    } finally {
                         IOUtils.closeAndLogException(sourceDoc, LOG, "PDDocument", null);
                     }
-                }
-                
-                // optionally set meta data
-                if (destinationDocumentInformation != null)
-                {
-                    destination.setDocumentInformation(destinationDocumentInformation);
-                }
-                if (destinationMetadata != null)
-                {
-                    destination.getDocumentCatalog().setMetadata(destinationMetadata);
-                }
-                
-                if (destinationStream == null)
-                {
-                    destination.save(destinationFileName, compressParameters);
-                }
-                else
-                {
-                    destination.save(destinationStream, compressParameters);
+                } catch (Exception e) {
+                    LOG.error("Unexpected failure during legacy merge: ", e);
+                    throw e;
                 }
             }
+
+            if (destinationDocumentInformation != null) {
+                destination.setDocumentInformation(destinationDocumentInformation);
+            }
+            if (destinationMetadata != null) {
+                destination.getDocumentCatalog().setMetadata(destinationMetadata);
+            }
+
+            if (destinationStream == null) {
+                destination.save(destinationFileName, compressParameters);
+            } else {
+                destination.save(destinationStream, compressParameters);
+            }
+
         }
     }
+
 
     /**
      * append all pages from source to destination.
