@@ -134,9 +134,9 @@ public final class Standard14Fonts
         {
             throw new IOException("resource '" + resourceName + "' not found");
         }
-        try (InputStream afmStream = new BufferedInputStream(resourceAsStream))
+        try (resourceAsStream)
         {
-            AFMParser parser = new AFMParser(afmStream);
+            AFMParser parser = new AFMParser(resourceAsStream);
             FontMetrics metric = parser.parse(true);
             FONTS.put(fontName, metric);
         }
