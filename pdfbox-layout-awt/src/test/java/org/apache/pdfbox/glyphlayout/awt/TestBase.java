@@ -22,6 +22,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Objects;
+
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -46,7 +49,10 @@ class TestBase
             PDFRenderer r = new PDFRenderer(doc);
             expectedImage = r.renderImage(0);
         }
-        try (PDDocument doc = Loader.loadPDF(new File(TestBase.class.getResource("/pdf/" + outputName).toURI())))
+        URL url = TestBase.class.getResource("/pdf/" + outputName);
+        Objects.requireNonNull(url, "Resource not found: " + outputName);
+
+        try (PDDocument doc = Loader.loadPDF(new File(url.toURI())))
         {
             PDFRenderer r = new PDFRenderer(doc);
             actualImage = r.renderImage(0);
