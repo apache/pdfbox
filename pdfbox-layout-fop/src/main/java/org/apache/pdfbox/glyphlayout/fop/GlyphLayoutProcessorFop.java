@@ -141,6 +141,7 @@ public class GlyphLayoutProcessorFop extends AbstractGlyphLayoutProcessor implem
      * @param text text
      * @param bidiLevel Bidi Level
      * @return string width
+     * @throws java.io.IOException
      */
     @Override
     protected float getStringWidthUni(PDType0Font font, float fontSize, String text, int bidiLevel) throws IOException
