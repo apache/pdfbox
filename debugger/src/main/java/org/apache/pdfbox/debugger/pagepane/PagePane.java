@@ -705,7 +705,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
             PDFRenderer renderer = new PDFRenderer(document);
             renderer.setSubsamplingAllowed(ViewMenu.isAllowSubsampling());
-            //renderer.setHintingEnabled(ViewMenu.isHintingEnabled())
+            renderer.setHintingEnabled(ViewMenu.isHintingEnabled());
 
             long t0 = System.nanoTime();
             BufferedImage image = renderer.renderImage(pageIndex, scale, ImageTypeMenu.getImageType(), RenderDestinationMenu.getRenderDestination());

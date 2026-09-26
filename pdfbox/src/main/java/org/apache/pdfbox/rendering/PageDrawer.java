@@ -136,6 +136,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private final PDFRenderer renderer;
 
     private final boolean subsamplingAllowed;
+    private final boolean hintingEnabled;
 
     // the graphics device to draw to, xform is the initial transform of the device (i.e. DPI)
     private Graphics2D graphics;
@@ -194,6 +195,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         super(parameters.getPage());
         this.renderer = parameters.getRenderer();
         this.subsamplingAllowed = parameters.isSubsamplingAllowed();
+        this.hintingEnabled = parameters.isHintingEnabled();
         this.destination = parameters.getDestination();
         this.renderingHints = parameters.getRenderingHints();
         this.imageDownscalingOptimizationThreshold =
@@ -510,8 +512,48 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             glyphCaches.put(font, cache);
         }
 
-        GeneralPath path = cache.getPathForCharacterCode(code);
+        // Grid-fitting is off by default; PDFRenderer.setHintingEnabled(true) turns it on. While it
+        // is off we never derive a ppem and take the plain, code-keyed cache path, so the feature
+        // costs nothing when disabled.
+        int ppem = 0;
+        if (hintingEnabled)
+        {
+            // hintingPpem expects the glyph-space-to-device transform, but 'at' only maps glyph space
+            // to PDF user space (points) - the device scale lives in 'xform', which the Graphics2D
+            // applies separately. Compose it in so the ppem is the true device pixels-per-em;
+            // otherwise we grid-fit at the font's point size (e.g. 7) instead of its rendered size
+            // (e.g. 29 at 300dpi).
+            AffineTransform deviceAt = at;
+            if (xform != null)
+            {
+                deviceAt = new AffineTransform(xform);
+                deviceAt.concatenate(at);
+            }
+            ppem = hintingPpem(deviceAt);
+        }
+        GeneralPath path = ppem > 0 ? cache.getPathForCharacterCode(code, ppem)
+                : cache.getPathForCharacterCode(code);
         drawGlyph(path, font, code, displacement, at);
+    }
+
+    /**
+     * Derives the pixels-per-em for grid-fitting from the glyph-space-to-device transform, or returns
+     * 0 when the glyph is too small / degenerate to hint. The ppem is the magnitude of the transform's
+     * vertical basis vector, i.e. the device height of one em, so it is correct under rotation: the
+     * glyph is grid-fit in its own (upright) coordinate space and the full transform — including any
+     * rotation — is then applied to the hinted outline by the caller, exactly as FreeType does for
+     * rotated text (90-degree vertical CJK columns being the common case). The path fed through
+     * {@code at} is normalized to 1000 units/em, so one em is 1000 units in {@code at}'s input space.
+     *
+     * @param at the transform mapping normalized (1000/em) glyph coordinates to device space
+     * @return the ppem to hint at, or 0 to render unhinted
+     */
+    static int hintingPpem(AffineTransform at)
+    {
+        // length of the y basis vector = device pixels per normalized unit, rotation-invariant
+        double scaleY = Math.hypot(at.getShearX(), at.getScaleY());
+        int ppem = (int) Math.round(1000.0 * scaleY);
+        return ppem > 0 ? ppem : 0;
     }
 
     /**

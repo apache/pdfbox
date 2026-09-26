@@ -38,10 +38,44 @@ final class GlyphCache
     
     private final PDVectorFont font;
     private final Map<Integer, GeneralPath> cache = new HashMap<>();
+    private final Map<Long, GeneralPath> hintedCache = new HashMap<>();
 
     GlyphCache(PDVectorFont font)
     {
         this.font = font;
+    }
+
+    /**
+     * Returns the grid-fitted (hinted) glyph path for the given character code at the given ppem,
+     * falling back to the unhinted path when the font does not hint that glyph/ppem. Results are
+     * cached per {@code (code, ppem)}.
+     *
+     * @param code character code in a PDF
+     * @param ppem the pixels-per-em the glyph will be rendered at
+     * @return the hinted path if available, otherwise the unhinted path
+     */
+    public GeneralPath getPathForCharacterCode(int code, int ppem)
+    {
+        long key = ((long) ppem << 32) | (code & 0xFFFFFFFFL);
+        GeneralPath cached = hintedCache.get(key);
+        if (cached != null)
+        {
+            return cached;
+        }
+        GeneralPath path = null;
+        try
+        {
+            path = font.getHintedNormalizedPath(code, ppem);
+        }
+        catch (IOException e)
+        {
+            String fontName = ((PDFontLike) font).getName();
+            LOG.warn(() -> "Hinting failed for code " + code + " in font " + fontName, e);
+        }
+        // fall back to the unhinted path (itself cached by code); cache the decision per (code, ppem)
+        GeneralPath result = path != null ? path : getPathForCharacterCode(code);
+        hintedCache.put(key, result);
+        return result;
     }
     
     public GeneralPath getPathForCharacterCode(int code)

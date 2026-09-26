@@ -41,10 +41,28 @@ class GlyphRenderer
     private static final Logger LOG = LogManager.getLogger(GlyphRenderer.class);
 
     private final GlyphDescription glyphDescription;
+    private final int[] hintedX;
+    private final int[] hintedY;
 
     GlyphRenderer(GlyphDescription glyphDescription)
     {
+        this(glyphDescription, null, null);
+    }
+
+    /**
+     * Creates a renderer that builds the path from grid-fitted (hinted) coordinates instead of the
+     * glyph's raw coordinates. The arrays are in font units (the hinting having been applied and
+     * scaled back), and must be parallel to the glyph's points.
+     *
+     * @param glyphDescription the glyph description
+     * @param hintedX the hinted x coordinates in font units, or null for unhinted
+     * @param hintedY the hinted y coordinates in font units, or null for unhinted
+     */
+    GlyphRenderer(GlyphDescription glyphDescription, int[] hintedX, int[] hintedY)
+    {
         this.glyphDescription = glyphDescription;
+        this.hintedX = hintedX;
+        this.hintedY = hintedY;
     }
 
     /**
@@ -77,8 +95,9 @@ class GlyphRenderer
                 endPtIndex++;
                 endPtOfContourIndex = -1;
             }
-            points[i] = new Point(gd.getXCoordinate(i), gd.getYCoordinate(i),
-                    (gd.getFlags(i) & GlyfDescript.ON_CURVE) != 0, endPt);
+            int x = hintedX != null ? hintedX[i] : gd.getXCoordinate(i);
+            int y = hintedY != null ? hintedY[i] : gd.getYCoordinate(i);
+            points[i] = new Point(x, y, (gd.getFlags(i) & GlyfDescript.ON_CURVE) != 0, endPt);
         }
         return points;
     }
