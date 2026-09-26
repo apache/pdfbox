@@ -35,7 +35,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
@@ -80,7 +79,6 @@ public class BruteForceParser
 
     private final COSParser parser;
     private final COSDocument document;
-    private final RandomAccessRead source;
 
     /**
      * Constructor. Triggers a brute force search for all objects of the document.
@@ -94,7 +92,6 @@ public class BruteForceParser
     {
         document = cosDocument;
         parser = cosParser;
-        source = parser.source;
     }
 
     /**
@@ -133,7 +130,7 @@ public class BruteForceParser
     private void bfSearchForObjects() throws IOException
     {
         long lastEOFMarker = bfSearchForLastEOFMarker();
-        long originOffset = source.getPosition();
+        long originOffset = parser.getPosition();
         long currentOffset = MINIMUM_SEARCH_OFFSET;
         long lastObjectId = Long.MIN_VALUE;
         int lastGenID = Integer.MIN_VALUE;
@@ -143,35 +140,35 @@ public class BruteForceParser
         boolean endOfObjFound = false;
         do
         {
-            source.seek(currentOffset);
-            int nextChar = source.read();
+            parser.seek(currentOffset);
+            int nextChar = parser.read();
             currentOffset++;
             if (BaseParser.isWhitespace(nextChar) && parser.isString(OBJ_MARKER))
             {
                 long tempOffset = currentOffset - 2;
-                source.seek(tempOffset);
-                int genID = source.peek();
+                parser.seek(tempOffset);
+                int genID = parser.peek();
                 // is the next char a digit?
                 if (BaseParser.isDigit(genID))
                 {
                     genID -= 48;
                     tempOffset--;
-                    source.seek(tempOffset);
+                    parser.seek(tempOffset);
                     if (parser.isWhitespace())
                     {
                         while (tempOffset > MINIMUM_SEARCH_OFFSET && parser.isWhitespace())
                         {
-                            source.seek(--tempOffset);
+                            parser.seek(--tempOffset);
                         }
                         boolean objectIDFound = false;
                         while (tempOffset > MINIMUM_SEARCH_OFFSET && parser.isDigit())
                         {
-                            source.seek(--tempOffset);
+                            parser.seek(--tempOffset);
                             objectIDFound = true;
                         }
                         if (objectIDFound)
                         {
-                            source.read();
+                            parser.read();
                             long objectId = parser.readObjectNumber();
                             if (lastObjOffset > 0)
                             {
@@ -194,7 +191,7 @@ public class BruteForceParser
             else if (nextChar == 'e' && parser.isString(endobjString))
             {
                 currentOffset += endobjString.length;
-                source.seek(currentOffset);
+                parser.seek(currentOffset);
                 if (parser.isEOF())
                 {
                     endOfObjFound = true;
@@ -214,7 +211,7 @@ public class BruteForceParser
                     lastObjOffset);
         }
         // reestablish origin position
-        source.seek(originOffset);
+        parser.seek(originOffset);
     }
 
     /**
@@ -304,7 +301,7 @@ public class BruteForceParser
     protected void bfSearchForObjStreams(Map<COSObjectKey, Long> xrefTable) throws IOException
     {
         // save origin offset
-        long originOffset = source.getPosition();
+        long originOffset = parser.getPosition();
 
         Map<Long, COSObjectKey> bfSearchForObjStreamOffsets = bfSearchForObjStreamOffsets();
         Map<COSObjectKey, Long> bfCOSObjectOffsets = getBFCOSObjectOffsets();
@@ -325,7 +322,7 @@ public class BruteForceParser
         SecurityHandler<? extends ProtectionPolicy> securityHandler = parser.getSecurityHandler();
         for (Long offset : objStreamOffsets)
         {
-            source.seek(offset);
+            parser.seek(offset);
             long stmObjNumber = parser.readObjectNumber();
             int stmGenNumber = parser.readGenerationNumber();
             parser.readExpectedString(OBJ_MARKER, true);
@@ -371,7 +368,7 @@ public class BruteForceParser
             }
         }
         // restore origin offset
-        source.seek(originOffset);
+        parser.seek(originOffset);
     }
 
     /**
@@ -383,8 +380,8 @@ public class BruteForceParser
      */
     private boolean bfSearchForTrailer(COSDictionary trailer) throws IOException
     {
-        long originOffset = source.getPosition();
-        source.seek(MINIMUM_SEARCH_OFFSET);
+        long originOffset = parser.getPosition();
+        parser.seek(MINIMUM_SEARCH_OFFSET);
         // search for trailer marker
         long trailerOffset = findString(TRAILER_MARKER);
         while (trailerOffset != -1)
@@ -441,7 +438,7 @@ public class BruteForceParser
             }
             trailerOffset = findString(TRAILER_MARKER);
         }
-        source.seek(originOffset);
+        parser.seek(originOffset);
         return false;
     }
 
@@ -520,8 +517,8 @@ public class BruteForceParser
     private long bfSearchForLastEOFMarker() throws IOException
     {
         long lastEOFMarker = -1;
-        long originOffset = source.getPosition();
-        source.seek(MINIMUM_SEARCH_OFFSET);
+        long originOffset = parser.getPosition();
+        parser.seek(MINIMUM_SEARCH_OFFSET);
         long tempMarker = findString(EOF_MARKER);
         while (tempMarker != -1)
         {
@@ -546,7 +543,7 @@ public class BruteForceParser
             }
             tempMarker = findString(EOF_MARKER);
         }
-        source.seek(originOffset);
+        parser.seek(originOffset);
         // no EOF marker found
         if (lastEOFMarker == -1)
         {
@@ -564,7 +561,7 @@ public class BruteForceParser
     private Map<Long, COSObjectKey> bfSearchForObjStreamOffsets() throws IOException
     {
         HashMap<Long, COSObjectKey> bfSearchObjStreamsOffsets = new HashMap<>();
-        source.seek(MINIMUM_SEARCH_OFFSET);
+        parser.seek(MINIMUM_SEARCH_OFFSET);
         char[] string = " obj".toCharArray();
         // search for object stream marker
         long positionObjStream = findString(OBJ_STREAM);
@@ -578,31 +575,31 @@ public class BruteForceParser
                 long currentOffset = positionObjStream - (i * 10);
                 if (currentOffset > 0)
                 {
-                    source.seek(currentOffset);
+                    parser.seek(currentOffset);
                     for (int j = 0; j < 10; j++)
                     {
                         if (parser.isString(string))
                         {
                             long tempOffset = currentOffset - 1;
-                            source.seek(tempOffset);
+                            parser.seek(tempOffset);
                             // is the next char a digit?
                             if (parser.isDigit())
                             {
                                 tempOffset--;
-                                source.seek(tempOffset);
+                                parser.seek(tempOffset);
                                 if (parser.isSpace())
                                 {
                                     int length = 0;
-                                    source.seek(--tempOffset);
+                                    parser.seek(--tempOffset);
                                     while (tempOffset > MINIMUM_SEARCH_OFFSET && parser.isDigit())
                                     {
-                                        source.seek(--tempOffset);
+                                        parser.seek(--tempOffset);
                                         length++;
                                     }
                                     if (length > 0)
                                     {
-                                        source.read();
-                                        newOffset = source.getPosition();
+                                        parser.read();
+                                        newOffset = parser.getPosition();
                                         long objNumber = parser.readObjectNumber();
                                         int genNumber = parser.readGenerationNumber();
                                         COSObjectKey streamObjectKey = new COSObjectKey(objNumber,
@@ -618,12 +615,12 @@ public class BruteForceParser
                         else
                         {
                             currentOffset++;
-                            source.read();
+                            parser.read();
                         }
                     }
                 }
             }
-            source.seek(positionObjStream + OBJ_STREAM.length);
+            parser.seek(positionObjStream + OBJ_STREAM.length);
             positionObjStream = findString(OBJ_STREAM);
         }
         return bfSearchObjStreamsOffsets;
@@ -638,18 +635,18 @@ public class BruteForceParser
     {
         List<Long> bfSearchXRefTablesOffsets = new ArrayList<>();
         // a pdf may contain more than one xref entry
-        source.seek(MINIMUM_SEARCH_OFFSET);
+        parser.seek(MINIMUM_SEARCH_OFFSET);
         // search for xref tables
         long newOffset = findString(XREF_TABLE);
         while (newOffset != -1)
         {
-            source.seek(newOffset - 1);
+            parser.seek(newOffset - 1);
             // ensure that we don't read "startxref" instead of "xref"
             if (parser.isWhitespace())
             {
                 bfSearchXRefTablesOffsets.add(newOffset);
             }
-            source.seek(newOffset + 4);
+            parser.seek(newOffset + 4);
             newOffset = findString(XREF_TABLE);
         }
         return bfSearchXRefTablesOffsets;
@@ -664,7 +661,7 @@ public class BruteForceParser
     {
         List<Long> bfSearchXRefStreamsOffsets = new ArrayList<>();
         // a pdf may contain more than one /XRef entry
-        source.seek(MINIMUM_SEARCH_OFFSET);
+        parser.seek(MINIMUM_SEARCH_OFFSET);
         // search for XRef streams
         String objString = " obj";
         char[] string = objString.toCharArray();
@@ -679,31 +676,31 @@ public class BruteForceParser
                 long currentOffset = xrefOffset - (i * 10);
                 if (currentOffset > 0)
                 {
-                    source.seek(currentOffset);
+                    parser.seek(currentOffset);
                     for (int j = 0; j < 10; j++)
                     {
                         if (parser.isString(string))
                         {
                             long tempOffset = currentOffset - 1;
-                            source.seek(tempOffset);
+                            parser.seek(tempOffset);
                             // is the next char a digit?
                             if (parser.isDigit())
                             {
                                 tempOffset--;
-                                source.seek(tempOffset);
+                                parser.seek(tempOffset);
                                 if (parser.isSpace())
                                 {
                                     int length = 0;
-                                    source.seek(--tempOffset);
+                                    parser.seek(--tempOffset);
                                     while (tempOffset > MINIMUM_SEARCH_OFFSET && parser.isDigit())
                                     {
-                                        source.seek(--tempOffset);
+                                        parser.seek(--tempOffset);
                                         length++;
                                     }
                                     if (length > 0)
                                     {
-                                        source.read();
-                                        newOffset = source.getPosition();
+                                        parser.read();
+                                        newOffset = parser.getPosition();
                                     }
                                 }
                             }
@@ -715,7 +712,7 @@ public class BruteForceParser
                         else
                         {
                             currentOffset++;
-                            source.read();
+                            parser.read();
                         }
                     }
                 }
@@ -724,7 +721,7 @@ public class BruteForceParser
             {
                 bfSearchXRefStreamsOffsets.add(newOffset);
             }
-            source.seek(xrefOffset + 5);
+            parser.seek(xrefOffset + 5);
             xrefOffset = findString(XREF_STREAM);
         }
         return bfSearchXRefStreamsOffsets;
@@ -778,14 +775,14 @@ public class BruteForceParser
         long position = -1L;
         int stringLength = string.length;
         int counter = 0;
-        int readChar = source.read();
+        int readChar = parser.read();
         while (readChar != -1)
         {
             if (readChar == string[counter])
             {
                 if (counter == 0)
                 {
-                    position = source.getPosition() - 1;
+                    position = parser.getPosition() - 1;
                 }
                 counter++;
                 if (counter == stringLength)
@@ -799,7 +796,7 @@ public class BruteForceParser
                 position = -1L;
                 continue;
             }
-            readChar = source.read();
+            readChar = parser.read();
         }
         return position;
     }

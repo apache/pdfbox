@@ -32,7 +32,6 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 
 /**
@@ -55,7 +54,6 @@ public class XrefParser
     private final XrefTrailerResolver xrefTrailerResolver = new XrefTrailerResolver();
 
     private final COSParser parser;
-    private final RandomAccessRead source;
 
     /**
      * Default constructor.
@@ -66,7 +64,6 @@ public class XrefParser
     public XrefParser(COSParser cosParser)
     {
         parser = cosParser;
-        source = parser.source;
     }
 
     /**
@@ -91,7 +88,7 @@ public class XrefParser
      */
     public COSDictionary parseXref(COSDocument document, long startXRefOffset) throws IOException
     {
-        source.seek(startXRefOffset);
+        parser.seek(startXRefOffset);
         long startXrefOffset = Math.max(0, parseStartXref());
         // check the startxref offset
         long fixedOffset = checkXRefOffset(startXrefOffset);
@@ -109,20 +106,20 @@ public class XrefParser
             // save expected position for loop detection
             prevSet.add(prev);
             // seek to xref table
-            source.seek(prev);
+            parser.seek(prev);
             // skip white spaces
             parser.skipSpaces();
             // save current position as well due to skipped spaces
-            prevSet.add(source.getPosition());
+            prevSet.add(parser.getPosition());
             // -- parse xref
-            if (source.peek() == X)
+            if (parser.peek() == X)
             {
                 // xref table and trailer
                 // use existing parser to parse xref table
                 if (!parseXrefTable(prev) || !parseTrailer())
                 {
                     throw new IOException("Expected trailer object at offset "
-                            + source.getPosition());
+                            + parser.getPosition());
                 }
                 trailer = xrefTrailerResolver.getCurrentTrailer();
                 // check for a XRef stream, it may contain some object ids of compressed objects 
@@ -140,7 +137,7 @@ public class XrefParser
                     }
                     if (streamOffset > 0)
                     {
-                        source.seek(streamOffset);
+                        parser.seek(streamOffset);
                         parser.skipSpaces();
                         try
                         {
@@ -208,25 +205,25 @@ public class XrefParser
     private boolean parseTrailer() throws IOException
     {
         // parse the last trailer.
-        long trailerOffset = source.getPosition();
+        long trailerOffset = parser.getPosition();
         // PDFBOX-1739 skip extra xref entries in RegisSTAR documents
-        int nextCharacter = source.peek();
+        int nextCharacter = parser.peek();
         while (nextCharacter != 't' && BaseParser.isDigit(nextCharacter))
         {
-            if (source.getPosition() == trailerOffset)
+            if (parser.getPosition() == trailerOffset)
             {
                 // warn only the first time
                 LOG.warn("Expected trailer object at offset {}, keep trying", trailerOffset);
             }
             parser.readLine();
-            nextCharacter = source.peek();
+            nextCharacter = parser.peek();
         }
-        if (source.peek() != 't')
+        if (parser.peek() != 't')
         {
             return false;
         }
         // read "trailer"
-        long currentOffset = source.getPosition();
+        long currentOffset = parser.getPosition();
         String nextLine = parser.readLine();
         if (!nextLine.trim().equals("trailer"))
         {
@@ -239,7 +236,7 @@ public class XrefParser
                 // we can't just unread a portion of the read data as we don't know if the EOL consist of 1 or 2 bytes
                 int len = "trailer".length();
                 // jump back right after "trailer"
-                source.seek(currentOffset + len);
+                parser.seek(currentOffset + len);
             }
             else
             {
@@ -296,7 +293,7 @@ public class XrefParser
      */
     private long checkXRefOffset(long startXRefOffset) throws IOException
     {
-        source.seek(startXRefOffset);
+        parser.seek(startXRefOffset);
         parser.skipSpaces();
         if (parser.isString(XREF_TABLE))
         {
@@ -358,8 +355,8 @@ public class XrefParser
             return true;
         }
         // seek to offset-1 
-        source.seek(startXRefOffset - 1);
-        int nextValue = source.read();
+        parser.seek(startXRefOffset - 1);
+        int nextValue = parser.read();
         // the first character has to be a whitespace, and then a digit
         if (BaseParser.isWhitespace(nextValue))
         {
@@ -374,7 +371,7 @@ public class XrefParser
                     parser.readObjectMarker();
                     // check the dictionary to avoid false positives
                     COSDictionary dict = parser.parseCOSDictionary(false);
-                    source.seek(startXRefOffset);
+                    parser.seek(startXRefOffset);
                     if ("XRef".equals(dict.getNameAsString(COSName.TYPE)))
                     {
                         return true;
@@ -384,7 +381,7 @@ public class XrefParser
                 {
                     // there wasn't an object of a xref stream
                     LOG.debug("No Xref stream at given location {}", startXRefOffset, exception);
-                    source.seek(startXRefOffset);
+                    parser.seek(startXRefOffset);
                 }
             }
         }
@@ -484,25 +481,25 @@ public class XrefParser
         }
         try 
         {
-            source.seek(offset);
+            parser.seek(offset);
             parser.skipWhiteSpaces();
-            if (source.getPosition() == offset)
+            if (parser.getPosition() == offset)
             {
                 // ensure that at least one whitespace is skipped in front of the object number
-                source.seek(offset - 1);
-                if (source.getPosition() < offset)
+                parser.seek(offset - 1);
+                if (parser.getPosition() < offset)
                 {
                     if (!parser.isDigit())
                     {
                         // anything else but a digit may be some garbage of the previous object -> just ignore it
-                        source.read();
+                        parser.read();
                     }
                     else
                     {
-                        long current = source.getPosition();
-                        source.seek(--current);
+                        long current = parser.getPosition();
+                        parser.seek(--current);
                         while (parser.isDigit())
-                            source.seek(--current);
+                            parser.seek(--current);
                         long newObjNr = parser.readObjectNumber();
                         int newGenNr = parser.readGenerationNumber();
                         COSObjectKey newObjKey = new COSObjectKey(newObjNr, newGenNr);
@@ -517,7 +514,7 @@ public class XrefParser
                             return null;
                         }
                         // something seems to be wrong but it's hard to determine what exactly -> simply continue
-                        source.seek(offset);
+                        parser.seek(offset);
                     }
                 }
             }
@@ -578,7 +575,7 @@ public class XrefParser
      */
     private boolean parseXrefTable(long startByteOffset) throws IOException
     {
-        if (source.peek() != 'x')
+        if (parser.peek() != 'x')
         {
             return false;
         }
@@ -591,7 +588,7 @@ public class XrefParser
         // check for trailer after xref
         String str = parser.readString();
         byte[] b = str.getBytes(StandardCharsets.ISO_8859_1);
-        source.seek(source.getPosition() - b.length);
+        parser.seek(parser.getPosition() - b.length);
         
         // signal start of new XRef
         xrefTrailerResolver.nextXrefObj( startByteOffset, XRefType.TABLE );
@@ -643,7 +640,7 @@ public class XrefParser
                 {
                     break;
                 }
-                int nextChar = source.peek();
+                int nextChar = parser.peek();
                 if (nextChar == 't' || BaseParser.isEndOfName(nextChar))
                 {
                     break;

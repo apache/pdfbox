@@ -684,6 +684,18 @@ public abstract class BaseParser
     }
 
     /**
+     * Read a single byte of data.
+     *
+     * @return The byte of data that is being read.
+     *
+     * @throws IOException If there is an error while reading the data.
+     */
+    protected int read() throws IOException
+    {
+        return source.read();
+    }
+
+    /**
      * Read a buffer of data.
      *
      * @param b The buffer to write the data to.
@@ -698,6 +710,18 @@ public abstract class BaseParser
     }
 
     /**
+     * This will peek at the next byte.
+     *
+     * @return The next byte on the stream, leaving it as available to read.
+     *
+     * @throws IOException If there is an error reading the next byte.
+     */
+    protected int peek() throws IOException
+    {
+        return source.peek();
+    }
+
+    /**
      * The total number of bytes that are available.
      * 
      * @return The number of bytes available.
@@ -709,4 +733,16 @@ public abstract class BaseParser
         return source.length();
     }
 
+    /**
+     * Returns offset of next byte to be returned by a read method.
+     * 
+     * @return offset of next byte which will be returned with next {@link #read()} (if no more bytes are left it
+     * returns a value &gt;= length of source)
+     * 
+     * @throws IOException If there was an error while getting the current position
+     */
+    protected long getPosition() throws IOException
+    {
+        return source.getPosition();
+    }
 }
