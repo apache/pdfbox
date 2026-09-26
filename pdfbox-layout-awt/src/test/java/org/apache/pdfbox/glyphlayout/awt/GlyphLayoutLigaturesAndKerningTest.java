@@ -230,8 +230,8 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
 
             PDFTextStripper stripper = new PDFTextStripper();
             String s = stripper.getText(doc);
-            String sStripped = s.replaceAll("\r", "").replaceAll(" +"," ")
-                    .replaceAll(" *\\n", "\n")
+            String sStripped = s.replace("\r", "").replaceAll(" ++"," ")
+                    .replaceAll(" +\\n", "\n")
                     .trim();
 
             String text =
