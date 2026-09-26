@@ -1098,6 +1098,19 @@
                             <sha512>f3d0934c9d0babedd76431565bdb1cc1bf6d9f0a5ace7656a9ded53fb1e701dd0d12c784a58ae87098793f57ba5b98cbfb657e047e27d5464b26634511162264</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-5953</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13074663/test.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-5953-test.pdf</outputFileName>
+                            <sha512>022755d4abeaa60ed99b3252441aaa1b65daa8d5414348f6c4ae5c8e3dfdb7d2be5ea0705117b8bfbb88f13e79d168dcb1f3b2ff9d9c7be21ad987965ccfc562</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
