@@ -104,7 +104,8 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
      * @throws URISyntaxException
      */
     @Test
-    void testLigaturesAndKerningNoActualText() throws IOException, FontFormatException, URISyntaxException {
+    void testLigaturesAndKerningNoActualText() throws IOException, FontFormatException, URISyntaxException
+    {
         testLigaturesAndKerning(false, "");
     }
 
@@ -115,7 +116,8 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
      * @throws URISyntaxException
      */
     @Test
-    void testLigaturesAndKerningUseActualText() throws IOException, FontFormatException, URISyntaxException {
+    void testLigaturesAndKerningUseActualText() throws IOException, FontFormatException, URISyntaxException
+    {
         testLigaturesAndKerning(true, "_ActualText");
     }
 
@@ -129,7 +131,8 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
     void testLigaturesAndKerning(boolean useActualText, String sActualText) throws IOException, FontFormatException, URISyntaxException
     {
         AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions options = new AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions();
-        if (useActualText) {
+        if (useActualText)
+        {
             options.useActualText();
         }
         GlyphLayoutProcessorAwt glyphLayoutProcessor = new GlyphLayoutProcessorAwt(options);

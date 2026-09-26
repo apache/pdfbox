@@ -69,7 +69,6 @@ public class GlyphLayoutProcessorFop extends AbstractGlyphLayoutProcessor implem
      */
     public GlyphLayoutProcessorFop()
     {
-        super();
     }
 
     /**
