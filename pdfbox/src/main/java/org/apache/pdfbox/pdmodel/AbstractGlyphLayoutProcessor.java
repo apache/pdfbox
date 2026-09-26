@@ -102,7 +102,7 @@ public abstract class AbstractGlyphLayoutProcessor implements GlyphLayoutProcess
      *
      * @param options Options for creation
      */
-    public AbstractGlyphLayoutProcessor(GlyphLayoutProcessorOptions options)
+    protected AbstractGlyphLayoutProcessor(GlyphLayoutProcessorOptions options)
     {
         useActualText = options.useActualText;
     }
@@ -110,7 +110,7 @@ public abstract class AbstractGlyphLayoutProcessor implements GlyphLayoutProcess
     /**
      * Creates an AbstractGlyphLayoutProcessor with standard options
      */
-    public AbstractGlyphLayoutProcessor()
+    protected AbstractGlyphLayoutProcessor()
     {
         useActualText = false;
     }
@@ -123,6 +123,7 @@ public abstract class AbstractGlyphLayoutProcessor implements GlyphLayoutProcess
      * @param text text
      * @param bidiLevel Bidi Level
      * @return string width
+     * @throws java.io.IOException
      */
     protected abstract float getStringWidthUni(PDType0Font font, float fontSize, String text, int bidiLevel)
             throws IOException;
@@ -134,7 +135,9 @@ public abstract class AbstractGlyphLayoutProcessor implements GlyphLayoutProcess
      * @param fontSize font size
      * @param text text
      * @return string width
+     * @throws java.io.IOException
      */
+    @Override
     public float getStringWidth(PDType0Font font, float fontSize, String text) throws IOException
     {
         float width = 0f;
@@ -164,6 +167,7 @@ public abstract class AbstractGlyphLayoutProcessor implements GlyphLayoutProcess
     /**
      * End a marked content sequence.
      *
+     * @param contentStream
      * @throws IOException If the content stream could not be written
      */
     protected void endMarkedContent(ContentStreamForGlyphLayoutInterface contentStream) throws IOException
@@ -197,6 +201,7 @@ public abstract class AbstractGlyphLayoutProcessor implements GlyphLayoutProcess
      * @throws IOException if an I/O exception occurs
      * @throws IllegalArgumentException if glyphs are missing
      */
+    @Override
     public void showText(ContentStreamForGlyphLayoutInterface contentStream, PDType0Font font, float fontSize, String text)
             throws IOException
     {

@@ -139,8 +139,7 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
 
         String outputBaseName = String.format("GlyphLayoutLigaturesAndKerning%s", sActualText);
         String outputPDFFilename = "target/" + outputBaseName + ".pdf";
-        String outputTextFilename = String.format("target/" + outputBaseName + ".txt");
-
+        String outputTextFilename = String.format("target/%s.txt", outputBaseName);
 
         String firaPath = "/ttf/FiraCode-Regular.ttf";
         String dejavuPath = "/ttf/DejaVuSans.ttf"; // ligatures not in Liberation nor in Arimo
