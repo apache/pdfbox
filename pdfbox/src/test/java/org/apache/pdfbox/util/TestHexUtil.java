@@ -56,6 +56,12 @@ class TestHexUtil
         assertArrayEquals(new char[]{'5','E','2','E','5','2','A','9'}, Hex.getCharsUTF16BE("帮助"));
     }
 
+    @Test
+    void testDecodeHexWithUnevenInput()
+    {
+        assertArrayEquals(new byte[] { (byte) 0xBA }, Hex.decodeHex("BAB"));
+    }
+
     /**
      * Test getBytes() and getString() and decodeHex()
      */
