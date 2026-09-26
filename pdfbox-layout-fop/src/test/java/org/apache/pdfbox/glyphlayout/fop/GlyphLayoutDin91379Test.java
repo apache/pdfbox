@@ -117,7 +117,7 @@ class GlyphLayoutDin91379Test extends TestBase
     }
 
     /**
-     * Test GlyphLayoutProcessorAwt with letters and sequences from DIN 91379
+     * Test GlyphLayoutProcessorFop with letters and sequences from DIN 91379
      *
      * @param useActualText
      * @throws IOException
