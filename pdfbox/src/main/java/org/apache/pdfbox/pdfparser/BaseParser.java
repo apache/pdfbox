@@ -672,4 +672,41 @@ public abstract class BaseParser
         return buffer;
     }
 
+    /**
+     * Seek to a position in the underlying data source.
+     * 
+     * @param position The position to seek to.
+     * @throws IOException If there is an error while seeking.
+     */
+    protected void seek(long position) throws IOException
+    {
+        source.seek(position);
+    }
+
+    /**
+     * Read a buffer of data.
+     *
+     * @param b The buffer to write the data to.
+     * @param offset Offset into the buffer to start writing.
+     * @param length The amount of data to attempt to read.
+     * @return The number of bytes that were actually read.
+     * @throws IOException If there was an error while reading the data.
+     */
+    protected int read(byte[] b, int offset, int length) throws IOException
+    {
+        return source.read(b, offset, length);
+    }
+
+    /**
+     * The total number of bytes that are available.
+     * 
+     * @return The number of bytes available.
+     *
+     * @throws IOException If there is an IO error while determining the length of the data stream.
+     */
+    protected long length() throws IOException
+    {
+        return source.length();
+    }
+
 }

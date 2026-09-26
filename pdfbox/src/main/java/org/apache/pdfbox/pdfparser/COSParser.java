@@ -100,8 +100,6 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     private static final String STREAM_STRING = "stream";
 
-    private static final char[] STARTXREF = { 's','t','a','r','t','x','r','e','f' };
-
     private static final byte[] ENDSTREAM = { E, N, D, S, T, R, E, A, M };
 
     private static final byte[] ENDOBJ = { E, N, D, O, B, J };
@@ -142,10 +140,6 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     private static final int DEFAULT_TRAIL_BYTECOUNT = 2048;
     /**
-     * EOF-marker.
-     */
-    private static final char[] EOF_MARKER = { '%', '%', 'E', 'O', 'F' };
-    /**
      * obj-marker.
      */
     private static final char[] OBJ_MARKER = { 'o', 'b', 'j' };
@@ -172,7 +166,6 @@ public class COSParser extends BaseParser implements ICOSParser
     
     private BruteForceParser bruteForceParser = null;
     private PDEncryption encryption = null;
-    private final Map<COSObjectKey, Long> xrefTable = new HashMap<>();
 
     /**
      * This is the document that will be parsed.
@@ -287,6 +280,11 @@ public class COSParser extends BaseParser implements ICOSParser
         }
     }
 
+    public int getEOFLookupRange()
+    {
+        return readTrailBytes;
+    }
+
     /**
      * Read the trailer information and provide a COSDictionary containing the trailer information.
      * 
@@ -295,164 +293,22 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     protected COSDictionary retrieveTrailer() throws IOException
     {
-        COSDictionary trailer = null;
-        boolean rebuildTrailer = false;
-        try
-        {
-            // parse startxref
-            // TODO FDF files don't have a startxref value, so that rebuildTrailer is triggered
-            long startXRefOffset = getStartxrefOffset();
-            if (startXRefOffset > -1)
-            {
-                XrefParser xrefParser = new XrefParser(this);
-                trailer = xrefParser.parseXref(document, startXRefOffset);
-                xrefTable.putAll(xrefParser.getXrefTable());
-            }
-            else
-            {
-                rebuildTrailer = isLenient();
-            }
-        }
-        catch (IOException exception)
-        {
-            if (isLenient())
-            {
-                rebuildTrailer = true;
-            }
-            else
-            {
-                throw exception;
-            }
-        }
-        // check if the trailer contains a Root object
-        if (trailer != null && trailer.getItem(COSName.ROOT) == null)
-        {
-            rebuildTrailer = isLenient();
-        }
-        if (rebuildTrailer)
-        {
-            // reset cross reference table
-            xrefTable.clear();
-            trailer = getBruteForceParser().rebuildTrailer(xrefTable);
-            trailerWasRebuild = true;
-        }
-        else
+        TrailerParser trailerParser = new TrailerParser(document, this);
+        COSDictionary trailer = trailerParser.retrieveTrailer();
+        trailerWasRebuild = trailerParser.trailerWasRebuild();
+        if (!trailerWasRebuild)
         {
             // prepare decryption if necessary
             prepareDecryption();
             // don't use the getter as it creates an instance of BruteForceParser
             if (bruteForceParser != null && bruteForceParser.bfSearchTriggered())
             {
-                getBruteForceParser().bfSearchForObjStreams(xrefTable);
+                getBruteForceParser().bfSearchForObjStreams(trailerParser.getXrefTable());
             }
         }
         return trailer;
     }
 
-    /**
-     * Looks for and parses startxref. We first look for last '%%EOF' marker (within last
-     * {@link #DEFAULT_TRAIL_BYTECOUNT} bytes (or range set via {@link #setEOFLookupRange(int)}) and go back to find
-     * <code>startxref</code>.
-     * 
-     * @return the offset of StartXref
-     * @throws IOException If something went wrong.
-     */
-    private long getStartxrefOffset() throws IOException
-    {
-        byte[] buf;
-        long skipBytes;
-        // read trailing bytes into buffer
-        try
-        {
-            final int trailByteCount = (fileLen < readTrailBytes) ? (int) fileLen : readTrailBytes;
-            buf = new byte[trailByteCount];
-            skipBytes = fileLen - trailByteCount;
-            source.seek(skipBytes);
-            int off = 0;
-            int readBytes;
-            while (off < trailByteCount)
-            {
-                readBytes = source.read(buf, off, trailByteCount - off);
-                // in order to not get stuck in a loop we check readBytes (this should never happen)
-                if (readBytes < 1)
-                {
-                    throw new IOException(
-                            "No more bytes to read for trailing buffer, but expected: "
-                                    + (trailByteCount - off));
-                }
-                off += readBytes;
-            }
-        }
-        finally
-        {
-            source.seek(0);
-        }
-        // find last '%%EOF'
-        int bufOff = lastIndexOf(EOF_MARKER, buf, buf.length);
-        if (bufOff < 0)
-        {
-            if (isLenient) 
-            {
-                // in lenient mode the '%%EOF' isn't needed
-                bufOff = buf.length;
-                LOG.debug("Missing end of file marker '{}'", new String(EOF_MARKER));
-            } 
-            else 
-            {
-                throw new IOException("Missing end of file marker '" + new String(EOF_MARKER) + "'");
-            }
-        }
-        // find last startxref preceding EOF marker
-        bufOff = lastIndexOf(STARTXREF, buf, bufOff);
-        if (bufOff < 0)
-        {
-            throw new IOException("Missing 'startxref' marker.");
-        }
-        else
-        {
-            return skipBytes + bufOff;
-        }
-    }
-    
-    /**
-     * Searches last appearance of pattern within buffer. Lookup before _lastOff and goes back until 0.
-     * 
-     * @param pattern pattern to search for
-     * @param buf buffer to search pattern in
-     * @param endOff offset (exclusive) where lookup starts at
-     * 
-     * @return start offset of pattern within buffer or <code>-1</code> if pattern could not be found
-     */
-    private int lastIndexOf(final char[] pattern, final byte[] buf, final int endOff)
-    {
-        final int lastPatternChOff = pattern.length - 1;
-
-        int bufOff = endOff;
-        int patOff = lastPatternChOff;
-        char lookupCh = pattern[patOff];
-
-        while (--bufOff >= 0)
-        {
-            if (buf[bufOff] == lookupCh)
-            {
-                if (--patOff < 0)
-                {
-                    // whole pattern matched
-                    return bufOff;
-                }
-                // matched current char, advance to preceding one
-                lookupCh = pattern[patOff];
-            }
-            else if (patOff < lastPatternChOff)
-            {
-                // no char match but already matched some chars; reset
-                patOff = lastPatternChOff;
-                lookupCh = pattern[patOff];
-            }
-        }
-        return -1;
-    }
-    
     /**
      * Return true if parser is lenient. Meaning auto healing capacity of the parser are used.
      *
