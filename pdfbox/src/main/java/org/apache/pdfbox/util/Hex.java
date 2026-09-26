@@ -134,8 +134,8 @@ public final class Hex
         // Note that the internal representation of string in Java is already UTF-16. Therefore
         // we do not need to use an encoder to convert the string to its byte representation.
         char[] hex = new char[text.length()*4];
-
-        for (int stringIdx = 0, charIdx = 0; stringIdx < text.length(); stringIdx++)
+        int charIdx = 0;
+        for (int stringIdx = 0; stringIdx < text.length(); stringIdx++)
         {
             char c = text.charAt(stringIdx);
             hex[charIdx++] = HEX_CHARS[(c >> 12) & 0x0F];
