@@ -46,6 +46,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -1494,6 +1495,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      * @param propertyList property list to be added to the content stream
      * @throws IOException If the content stream could not be written
      */
+    @Override
     public void beginMarkedContent(COSName tag, PDPropertyList propertyList) throws IOException
     {
         writeOperand(tag);
@@ -1503,6 +1505,19 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
         {
             // PDFBOX-5890: use simplified notation if there's only an MCID
             write("<</MCID " + dict.getInt(COSName.MCID) + ">> ");
+        }
+        else if (dict.containsKey(COSName.ACTUAL_TEXT) && dict.size() == 1)
+        {
+            // PDFBOX-6256: use simplified notation
+            COSBase base = dict.getItem(COSName.ACTUAL_TEXT);
+            if (base instanceof COSString)
+            {
+                write("<</" + COSName.ACTUAL_TEXT.getName() + " <" + ((COSString) base).toHexString() + ">>> ");
+            }
+            else
+            {
+                throw new IllegalArgumentException("ActualText parameter must be a string, but is: " + base);
+            }
         }
         else
         {
