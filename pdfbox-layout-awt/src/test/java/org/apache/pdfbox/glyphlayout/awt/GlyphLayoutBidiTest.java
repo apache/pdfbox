@@ -87,9 +87,9 @@ public class GlyphLayoutBidiTest extends TestBase
      * @throws URISyntaxException
      */
     @Test
-    void testGlyphLayoutDin91379NoActualText() throws IOException, FontFormatException, URISyntaxException
+    void testGlyphLayoutBidiNoActualText() throws IOException, FontFormatException, URISyntaxException
     {
-        testGlyphLayoutDin91379(false, "");
+        testGlyphLayoutBidi(false, "");
     }
 
     /**
@@ -100,19 +100,19 @@ public class GlyphLayoutBidiTest extends TestBase
      * @throws URISyntaxException
      */
     @Test
-    void testGlyphLayoutDin91379UseActualText() throws IOException, FontFormatException, URISyntaxException
+    void testGlyphLayoutBidiActualText() throws IOException, FontFormatException, URISyntaxException
     {
-        testGlyphLayoutDin91379(true, "_ActualText");
+        testGlyphLayoutBidi(true, "_ActualText");
     }
 
     /**
-     * Test GlyphLayoutProcessorAwt with letters and sequences from DIN 91379
+     * Test
      * @param useActualText
      * @throws IOException
      * @throws FontFormatException
      * @throws URISyntaxException
      */
-    void testGlyphLayoutDin91379(boolean useActualText, String sActualText) throws IOException, FontFormatException, URISyntaxException
+    void testGlyphLayoutBidi(boolean useActualText, String sActualText) throws IOException, FontFormatException, URISyntaxException
     {
         AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions options = new AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions();
         if (useActualText)
@@ -166,10 +166,12 @@ public class GlyphLayoutBidiTest extends TestBase
                     TEXT1 + "\n" + TEXT2 + TEXT3 + TEXT4;
 
             if (useActualText) {
+                // Not correct as of 2026-09-27
+                // PDFTextStripper should take the text from ActualText as is and not reorder the text
                 assertEquals(text, sStripped, "Extracted text should equal the written text for " + outputPDFFilename);
             } else {
                 // Extracted text is wrong
-                // assertEquals(text, sStripped, "Extracted text should equal the written text for " + outputPDFFilename);
+                assertEquals(text, sStripped, "Extracted text should equal the written text for " + outputPDFFilename);
             }
 
             try (OutputStream os = new FileOutputStream(outputTextFilename)) {
@@ -178,7 +180,7 @@ public class GlyphLayoutBidiTest extends TestBase
                 os.write(0xBF);
 
                 try (Writer writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8))) {
-                    // The output is not yet correct as of 27.9.2026, unless ActualText is used.
+                    // The output is not yet correct as of 27.9.2026
                     writer.write(s);
                 }
             }
