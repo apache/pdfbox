@@ -18,18 +18,23 @@ package org.apache.pdfbox.glyphlayout.awt;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.AbstractGlyphLayoutProcessor;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.jupiter.api.Test;
-
-import java.awt.FontFormatException;
-import java.io.*;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.junit.jupiter.api.Test;
+
+import java.awt.FontFormatException;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
