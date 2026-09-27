@@ -51,7 +51,8 @@ public abstract class AbstractGlyphLayoutProcessor implements GlyphLayoutProcess
         private boolean useActualText;
 
         /**
-         * Turn usage of ActualText on
+         * Turn usage of ActualText on. This improves text extraction with non-latin fonts but will
+         * make the files slightly larger.
          *
          * @return this
          */
@@ -64,7 +65,7 @@ public abstract class AbstractGlyphLayoutProcessor implements GlyphLayoutProcess
         /**
          * Returns the state of useActualText
          *
-         * @return true, if ActualText is used, falls otherwise
+         * @return true if ActualText is used, false otherwise.
          */
         public boolean getUseActualText()
         {
