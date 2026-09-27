@@ -1490,6 +1490,10 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
 
     /**
      * Begin a marked content sequence with a reference to an entry in the page resources' Properties dictionary.
+     * <p>
+     * Except for conditions visible in the source code, this will create a resource entry, which
+     * may seem inefficient if there's only one element in the property list. If this bothers you,
+     * bring it up in the PDFBox users mailing list.
      *
      * @param tag the tag to be added to the content stream
      * @param propertyList property list to be added to the content stream
