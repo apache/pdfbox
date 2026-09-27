@@ -16,16 +16,22 @@
  */
 package org.apache.pdfbox.glyphlayout.awt;
 
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.AbstractGlyphLayoutProcessor;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 
 import java.awt.FontFormatException;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Examples for bidirectional text with GlyphLayoutProcessorAwt
@@ -73,13 +79,52 @@ public class GlyphLayoutBidiTest extends TestBase
         return y;
     }
 
+    /**
+     * Test, no ActualText
+     *
+     * @throws IOException
+     * @throws FontFormatException
+     * @throws URISyntaxException
+     */
     @Test
-    void testGlyphLayoutBidi() throws IOException, FontFormatException, URISyntaxException
+    void testGlyphLayoutDin91379NoActualText() throws IOException, FontFormatException, URISyntaxException
     {
-        GlyphLayoutProcessorAwt glyphLayoutProcessorAwt = new GlyphLayoutProcessorAwt();
+        testGlyphLayoutDin91379(false, "");
+    }
 
-        String outputName = "GlyphLayoutBidi.pdf";
-        String outputFilename = "target/" + outputName;
+    /**
+     * Test with ActualText
+     *
+     * @throws IOException
+     * @throws FontFormatException
+     * @throws URISyntaxException
+     */
+    @Test
+    void testGlyphLayoutDin91379UseActualText() throws IOException, FontFormatException, URISyntaxException
+    {
+        testGlyphLayoutDin91379(true, "_ActualText");
+    }
+
+    /**
+     * Test GlyphLayoutProcessorAwt with letters and sequences from DIN 91379
+     * @param useActualText
+     * @throws IOException
+     * @throws FontFormatException
+     * @throws URISyntaxException
+     */
+    void testGlyphLayoutDin91379(boolean useActualText, String sActualText) throws IOException, FontFormatException, URISyntaxException
+    {
+        AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions options = new AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions();
+        if (useActualText)
+        {
+            options.useActualText();
+        }
+        GlyphLayoutProcessorAwt glyphLayoutProcessor = new GlyphLayoutProcessorAwt(options);
+
+        String outputBaseName = String.format("GlyphLayoutBidi%s", sActualText);
+        String outputPDFFilename = "target/" + outputBaseName + ".pdf";
+        String outputTextFilename = "target/" + outputBaseName + ".txt";
+
         String arabicPath = "/ttf/NotoSansArabic-Regular.ttf";
         String lgcPath = "/ttf/DejaVuSans.ttf";
 
@@ -87,14 +132,14 @@ public class GlyphLayoutBidiTest extends TestBase
 
         try (PDDocument doc = new PDDocument())
         {
-            PDType0Font arabicFont = createPdType0Font(glyphLayoutProcessorAwt, doc, arabicPath);
-            PDType0Font lgcFont = createPdType0Font(glyphLayoutProcessorAwt, doc, lgcPath);
+            PDType0Font arabicFont = createPdType0Font(glyphLayoutProcessor, doc, arabicPath);
+            PDType0Font lgcFont = createPdType0Font(glyphLayoutProcessor, doc, lgcPath);
 
             PDPage page = new PDPage();
             doc.addPage(page);
             try (PDPageContentStream cs = new PDPageContentStream(doc, page))
             {
-                cs.setGlyphLayoutProcessor(glyphLayoutProcessorAwt);
+                cs.setGlyphLayoutProcessor(glyphLayoutProcessor);
                 
                 float x = page.getBBox().getLowerLeftX() + fontSize;
                 float y = page.getBBox().getUpperRightY() - fontSize;
@@ -102,8 +147,41 @@ public class GlyphLayoutBidiTest extends TestBase
                 y = showLine(cs, arabicFont, fontSize, x, y, TEXT1);
                 showLine(cs, new PDType0Font[]{ lgcFont, arabicFont, lgcFont }, fontSize, x, y, new String[]{ TEXT2, TEXT3, TEXT4 });
             }
-            doc.save(outputFilename);
+            doc.save(outputPDFFilename);
         }
-        checkRenderIdent(outputName);
+
+        checkRenderIdent(outputBaseName + ".pdf");
+
+        // Extract text
+        try (PDDocument doc = Loader.loadPDF(new File(outputPDFFilename))) {
+            assertEquals(1, doc.getNumberOfPages());
+
+            PDFTextStripper stripper = new PDFTextStripper();
+            String s = stripper.getText(doc);
+            String sStripped = s.replace("\r", "").replaceAll(" +", " ")
+                    .replace(" \n", "\n")
+                    .strip();
+
+            String text =
+                    TEXT1 + "\n" + TEXT2 + TEXT3 + TEXT4;
+
+            if (useActualText) {
+                assertEquals(text, sStripped, "Extracted text should equal the written text for " + outputPDFFilename);
+            } else {
+                // Extracted text is wrong
+                // assertEquals(text, sStripped, "Extracted text should equal the written text for " + outputPDFFilename);
+            }
+
+            try (OutputStream os = new FileOutputStream(outputTextFilename)) {
+                os.write(0xEF);
+                os.write(0xBB);
+                os.write(0xBF);
+
+                try (Writer writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8))) {
+                    // The output is not yet correct as of 27.9.2026, unless ActualText is used.
+                    writer.write(s);
+                }
+            }
+        }
     }
 }
