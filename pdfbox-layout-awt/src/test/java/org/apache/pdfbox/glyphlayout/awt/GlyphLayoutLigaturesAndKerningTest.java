@@ -246,7 +246,13 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
                     BENGALI_STRING2 + " " + BENGALI_STRING2;
             if (useActualText)
             {
-                assertEquals(text, sStripped, "Extracted Text should equal the written text for " + outputPDFFilename);
+                assertEquals(text, sStripped, "Extracted text should equal the written text for " + outputPDFFilename);
+            }
+            else
+            {
+                // this checks only the latin segment, minus the FiraCode text
+                assertEquals(text.substring(32, 305), sStripped.substring(0, 273),
+                        "Extracted text segment should equal the written text for " + outputPDFFilename);
             }
 
             try (OutputStream os = new FileOutputStream(outputTextFilename))
@@ -257,8 +263,7 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
 
                 try (Writer writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8)))
                 {
-                    //TODO compare this output with the input, like in TextStripper test
-                    // Not yet correct as of 4.7.2026
+                    // The output is not yet correct as of 27.9.2026, unless ActualText is used.
                     writer.write(s);
                 }
             }
