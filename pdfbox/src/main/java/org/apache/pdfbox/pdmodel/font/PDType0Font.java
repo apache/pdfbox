@@ -354,7 +354,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
                 strName = name.getName();
             }
             
-            // try to find the corresponding Unicode (UC2) CMap
+            // try to find the corresponding Unicode (UCS2) CMap
             if (strName != null)
             {
                 try
@@ -365,7 +365,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
                 }
                 catch (IOException ex)
                 {
-                    LOG.warn("Could not get " + strName + " UC2 map for font " + getName(), ex);
+                    LOG.warn("Could not get " + strName + " UCS2 map for font " + getName(), ex);
                 }
             }
         }
@@ -396,7 +396,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     }
 
     /**
-     * Returns the font's UCS2 CMap, only present this font uses a predefined CMap.
+     * Returns the font's UCS2 CMap, only present if this font uses a predefined CMap.
      */
     public CMap getCMapUCS2()
     {
