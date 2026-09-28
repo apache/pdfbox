@@ -398,6 +398,20 @@ public class PDCIDFontType2 extends PDCIDFont
                 cid = 0;
             }
         }
+        else if (!parent.getCMap().getName().startsWith("Identity-") &&
+                 parent.getCMap().getName().startsWith("Uni") &&
+                 parent.getCMapUCS2() != null)
+        {
+            // PDFBOX-5953: predefined "Uni...-UCS2/UTF16" CMaps use the raw UTF-16BE
+            // Unicode value as their codespace/code by definition (see e.g. the
+            // UniGB-UTF16-H resource, whose begincidchar entries map codes that are
+            // themselves Unicode code points, e.g. <00a4> to a CID). Writing the
+            // substituted font's own glyph index here instead (as done below for the
+            // general case) produces a code that decodes to a wrong, essentially
+            // arbitrary character once the CID/Unicode round trip in
+            // PDCIDFontType2#codeToGID or PDType0Font#toUnicode is applied to it.
+            cid = unicode;
+        }
         else
         {
             // a non-embedded font always has a cmap (otherwise it we wouldn't load it)
