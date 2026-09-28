@@ -85,7 +85,10 @@ public abstract class PDCIEDictionaryBasedColorSpace extends PDCIEBasedColorSpac
      * Tests if the current point is the white point.
      *
      * @return true if the current point is the white point.
+     * 
+     * @deprecated this will be removed in 4.0.
      */
+    @Deprecated
     protected boolean isWhitePoint()
     {
         return  Float.compare(wpX, 1) == 0 &&
