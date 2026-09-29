@@ -837,8 +837,9 @@ public class TrueTypeFont implements FontBoxFont, Closeable
 
     /**
      * Returns the grid-fitted (hinted) path of the given glyph at the given ppem, in font units, or
-     * {@code null} if hinting does not apply (no bytecode program, a composite or empty glyph, or a
-     * ppem excluded by the gasp table). Whether to hint at all is the caller's decision, e.g.
+     * {@code null} if hinting does not apply (no bytecode program, an empty glyph or a simple glyph
+     * without instructions, or a ppem excluded by the gasp table or below {@code head.lowestRecPPEM})
+     * or fails. Composite glyphs are hinted. Whether to hint at all is the caller's decision, e.g.
      * {@code PDFRenderer.setHintingEnabled(boolean)}; the caller should fall back to the raw outline
      * ({@link GlyphData#getPath()}) when this returns {@code null}.
      *

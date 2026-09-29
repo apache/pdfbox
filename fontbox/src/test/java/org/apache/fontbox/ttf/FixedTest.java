@@ -47,6 +47,25 @@ class FixedTest
         assertEquals(64, Fixed.round(32));    // exactly half rounds up
     }
 
+    /**
+     * Floor and ceiling of negative values: {@code & ~63} rounds towards negative infinity in two's
+     * complement, so {@code (v + 63) & ~63} is a true ceiling for every sign, exactly FreeType's
+     * FT_PIX_CEIL_LONG (used by the CEILING opcode).
+     */
+    @Test
+    void testFloorCeilNegative()
+    {
+        assertEquals(0, Fixed.ceil(-1));
+        assertEquals(0, Fixed.ceil(-63));
+        assertEquals(-64, Fixed.ceil(-64));
+        assertEquals(-64, Fixed.ceil(-65));
+        assertEquals(-64, Fixed.ceil(-127));
+        assertEquals(-128, Fixed.ceil(-128));
+        assertEquals(-64, Fixed.floor(-1));
+        assertEquals(-64, Fixed.floor(-64));
+        assertEquals(-128, Fixed.floor(-65));
+    }
+
     @Test
     void testMulDiv()
     {

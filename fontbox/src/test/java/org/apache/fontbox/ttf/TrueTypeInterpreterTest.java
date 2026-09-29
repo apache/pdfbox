@@ -352,6 +352,23 @@ class TrueTypeInterpreterTest
     }
 
     /**
+     * FreeType's TT_RunIns gives a program without glyph points (fpgm/prep) 300 + 22 * cvtSize
+     * {@code LOOPCALL} iterations; the glyph formula would allow only 100 here. Keyboard.ttf's prep
+     * loops 240 times, and failing it disabled hinting for the whole font.
+     */
+    @Test
+    void testPrepLoopCallBudgetIsSizedFromTheControlValues()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        interp.setFontProgram(new byte[] { PUSHB1, 1, FDEF, PUSHB1, 1, ADD, ENDF });
+        interp.prepareFontProgram();
+        interp.setControlValueProgram(new byte[] { PUSHB1, 0, PUSHB1, (byte) 240, PUSHB1, 1, LOOPCALL,
+                PUSHB1, 7, SWAP, WS });
+        interp.setPpem(16, 16);
+        assertEquals(240, interp.executeProgram(new byte[] { PUSHB1, 7, RS }, 16).peek(0));
+    }
+
+    /**
      * {@code LOOPCALL} takes its iteration count off the stack, so a crafted font can ask for billions.
      * The whole loop is charged against the budget up front, so an absurd count fails before a single
      * iteration runs.

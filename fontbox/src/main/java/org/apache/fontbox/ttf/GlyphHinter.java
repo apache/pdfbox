@@ -32,10 +32,13 @@ import org.apache.logging.log4j.Logger;
  * and scales the grid-fitted result back into font units, so the rest of the rendering pipeline - which
  * scales font units to device pixels at exactly this ppem - reproduces the grid-fitting.
  * <p>
- * Hinting is best-effort: anything malformed, unsupported, or not applicable (a composite glyph, a
- * glyph with no instructions, a ppem the {@code gasp} table excludes) falls back to {@code null}, and
- * the caller renders the raw outline. One bad glyph never disables hinting for the rest of the font.
- * Whether to hint at all is the caller's decision; this class always grid-fits when asked.
+ * Hinting is best-effort: anything malformed, unsupported, or not applicable (an empty glyph, a simple
+ * glyph with no instructions, a ppem below {@code head.lowestRecPPEM} or excluded by the {@code gasp}
+ * table, or a {@code prep} that switches hinting off with INSTCTRL) falls back to {@code null}, and the
+ * caller renders the raw outline. Composite glyphs are hinted: each component with its own
+ * instructions, then the composite's. One bad glyph never disables hinting for the rest of the font.
+ * Whether to hint at all is the caller's decision ({@code PDFRenderer.setHintingEnabled(boolean)}, off
+ * by default); this class always grid-fits when asked.
  * <p>
  * The interpreter carries a great deal of mutable state - the storage area, the twilight zone, the
  * post-{@code prep} template, the active ppem - so every entry point here is {@code synchronized} and
@@ -56,6 +59,8 @@ class GlyphHinter
     private boolean initialized;
     private boolean available;
     private boolean warned;
+    private int failureCount;
+    private String firstFailure;
     private TrueTypeInterpreter interpreter;
     private GaspTable gasp;
     private int lowestRecPpem;
@@ -239,6 +244,11 @@ class GlyphHinter
      */
     private void logFailure(int gid, int ppem, Exception e)
     {
+        failureCount++;
+        if (firstFailure == null)
+        {
+            firstFailure = "glyph " + gid + " at " + ppem + "ppem: " + e;
+        }
         if (warned)
         {
             LOG.debug("hinting failed for glyph {} at {}ppem, using raw outline", gid, ppem, e);
@@ -247,6 +257,21 @@ class GlyphHinter
         warned = true;
         LOG.warn("hinting failed for glyph {} at {}ppem in font {}, using raw outline; further "
                 + "failures in this font are logged at debug level", gid, ppem, fontName(), e);
+    }
+
+    /**
+     * @return how many (glyph, ppem) hinting attempts failed and fell back to the raw outline, as
+     * opposed to not applying (no instructions, gasp, lowestRecPPEM); for tests
+     */
+    synchronized int getFailureCount()
+    {
+        return failureCount;
+    }
+
+    /** @return the first failure, "glyph &lt;gid&gt; at &lt;ppem&gt;ppem: &lt;exception&gt;", or null */
+    synchronized String getFirstFailure()
+    {
+        return firstFailure;
     }
 
     /** The font's PostScript name for the warning above, best-effort - we are already handling a fault. */

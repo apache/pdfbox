@@ -167,10 +167,11 @@ class ExecutionContext
 
     /**
      * The maximum number of backward jumps, and separately of {@code LOOPCALL} iterations, this run may
-     * make before it is abandoned. Sized from the glyph's point count and the control value count the
-     * way FreeType sizes its counters, so a legitimately loop-heavy program still completes while a
-     * crafted one cannot run forever. Computed on first use, because the glyph zone is attached after
-     * the context is built.
+     * make before it is abandoned. Sized the way FreeType's TT_RunIns sizes its counters, so a
+     * legitimately loop-heavy program still completes while a crafted one cannot run forever: from the
+     * glyph's point count and the control value count for a glyph program, and from the control value
+     * count alone for fpgm/prep, which typically loop over every CVT entry. Computed on first use,
+     * because the glyph zone is attached after the context is built.
      *
      * @return the per-run budget
      */
@@ -179,7 +180,9 @@ class ExecutionContext
         if (executionBudget < 0)
         {
             int points = glyphZone != null ? glyphZone.getPointCount() : 0;
-            executionBudget = Math.max(50, 10 * points) + Math.max(50, controlValues.length / 10);
+            executionBudget = points > 0
+                    ? Math.max(50, 10 * points) + Math.max(50, controlValues.length / 10)
+                    : 300 + 22 * controlValues.length;
         }
         return executionBudget;
     }
