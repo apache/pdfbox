@@ -210,7 +210,7 @@ class GlyphLayoutSMPTest extends TestBase
                 os.write(0xBF);
 
                 try (Writer writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8))) {
-                    // The output is not yet correct as of 27.9.2026
+                    // The output is correct
                     writer.write(s);
                 }
             }
