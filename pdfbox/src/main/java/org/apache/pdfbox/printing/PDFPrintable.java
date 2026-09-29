@@ -58,6 +58,7 @@ public final class PDFPrintable implements Printable
     private final float dpi;
     private final boolean center;
     private boolean subsamplingAllowed = false;
+    private boolean hintingEnabled = false;
     private RenderingHints renderingHints = null;
 
     /**
@@ -197,6 +198,22 @@ public final class PDFPrintable implements Printable
         this.renderingHints = renderingHints;
     }
 
+    /**
+     * @return whether TrueType hinting is enabled.
+     */
+    public boolean isHintingEnabled()
+    {
+        return hintingEnabled;
+    }
+
+    /**
+     * @param hintingEnabled whether TrueType hinting is enabled.
+     */
+    public void setHintingEnabled(boolean hintingEnabled)
+    {
+        this.hintingEnabled = hintingEnabled;
+    }
+
     @Override
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex)
             throws PrinterException
@@ -291,10 +308,11 @@ public final class PDFPrintable implements Printable
                 scale = dpiScale;
             }
 
-            // draw to graphics using PDFRender
+            // draw to graphics using PDFRenderer
             graphics2D.setBackground(Color.WHITE);
             renderer.setSubsamplingAllowed(subsamplingAllowed);
             renderer.setRenderingHints(renderingHints);
+            //renderer.setHintingEnabled(hintingEnabled)
             renderer.renderPageToGraphics(pageIndex, graphics2D, (float) scale, (float) scale, RenderDestination.PRINT);
 
             // draw rasterized bitmap (optional)

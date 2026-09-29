@@ -1358,6 +1358,7 @@ public class PDFDebugger extends JFrame implements Callable<Integer>, HyperlinkL
             PrinterJob job = PrinterJob.getPrinterJob();
             PDFPageable pageable = new PDFPageable(document, Orientation.AUTO, printBorder.isSelected(), PrintDpiMenu.getDpiSelection());
             pageable.setSubsamplingAllowed(ViewMenu.isAllowSubsampling());
+            pageable.setHintingEnabled(ViewMenu.isHintingEnabled());
             job.setPageable(pageable);
             PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
             PDViewerPreferences vp = document.getDocumentCatalog().getViewerPreferences();

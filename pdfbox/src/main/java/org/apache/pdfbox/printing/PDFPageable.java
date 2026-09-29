@@ -40,6 +40,7 @@ public final class PDFPageable extends Book
     private final boolean center;
     private final Orientation orientation;
     private boolean subsamplingAllowed = false;
+    private boolean hintingEnabled = false;
     private RenderingHints renderingHints = null;
 
     /**
@@ -163,6 +164,22 @@ public final class PDFPageable extends Book
         this.subsamplingAllowed = subsamplingAllowed;
     }
 
+    /**
+     * @return whether TrueType hinting is enabled.
+     */
+    public boolean isHintingEnabled()
+    {
+        return hintingEnabled;
+    }
+
+    /**
+     * @param hintingEnabled whether TrueType hinting is enabled.
+     */
+    public void setHintingEnabled(boolean hintingEnabled)
+    {
+        this.hintingEnabled = hintingEnabled;
+    }
+
     @Override
     public int getNumberOfPages()
     {
@@ -239,6 +256,7 @@ public final class PDFPageable extends Book
         }
         PDFPrintable printable = new PDFPrintable(document, Scaling.ACTUAL_SIZE, showPageBorder, dpi, center);
         printable.setSubsamplingAllowed(subsamplingAllowed);
+        printable.setHintingEnabled(hintingEnabled);
         printable.setRenderingHints(renderingHints);
         return printable;
     }
