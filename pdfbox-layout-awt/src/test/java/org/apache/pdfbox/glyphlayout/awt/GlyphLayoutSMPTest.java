@@ -18,14 +18,27 @@
 package org.apache.pdfbox.glyphlayout.awt;
 
 import java.awt.FontFormatException;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.AbstractGlyphLayoutProcessor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Examples for Supplementary Multilingual Plane with GlyphLayoutProcessorAwt that require a
@@ -97,13 +110,52 @@ class GlyphLayoutSMPTest extends TestBase
         return y;
     }
 
+    /**
+     * Test, no ActualText
+     *
+     * @throws IOException
+     * @throws FontFormatException
+     * @throws URISyntaxException
+     */
     @Test
-    void testGlyphLayoutSMP() throws IOException, FontFormatException, URISyntaxException
+    void testGlyphLayoutSMPNoActualText() throws IOException, FontFormatException, URISyntaxException
     {
-        GlyphLayoutProcessorAwt glyphLayoutProcessor = new GlyphLayoutProcessorAwt();
+        testGlyphLayoutSMP(false, "");
+    }
 
-        String outputName = "GlyphLayoutSMP.pdf";
-        String outputFilename = "target/" + outputName;
+    /**
+     * Test with ActualText
+     *
+     * @throws IOException
+     * @throws FontFormatException
+     * @throws URISyntaxException
+     */
+    @Test
+    void testGlyphLayoutSMPActualText() throws IOException, FontFormatException, URISyntaxException
+    {
+        testGlyphLayoutSMP(true, "_ActualText");
+    }
+
+    /**
+     * Test
+     * @param useActualText
+     * @throws IOException
+     * @throws FontFormatException
+     * @throws URISyntaxException
+     */
+    void testGlyphLayoutSMP(boolean useActualText, String sActualText) throws IOException, FontFormatException, URISyntaxException
+    {
+        AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions options = new AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions();
+        if (useActualText)
+        {
+            options.useActualText();
+        }
+        GlyphLayoutProcessorAwt glyphLayoutProcessor = new GlyphLayoutProcessorAwt(options);
+
+        String outputBaseName = String.format("GlyphLayoutSMP%s", sActualText);
+        String outputPDFFilename = "target/" + outputBaseName + ".pdf";
+        String outputTextFilename = "target/" + outputBaseName + ".txt";
+
         String sansFontPath = "/ttf/Arimo-Regular.ttf";
         String mathFontPath = "/ttf/NotoSansMath-Regular.ttf";
 
@@ -128,8 +180,40 @@ class GlyphLayoutSMPTest extends TestBase
                 y = showLine(cs, sansFont, fontSize, x, y, "Font used: " + mathFont.getName());
                 showLines(cs, mathFont, fontSize, x, y, MATHEMATICAL);
             }
-            doc.save(outputFilename);
+            doc.save(outputPDFFilename);
         }
-        checkRenderIdent(outputName);
+
+        checkRenderIdent(outputBaseName + ".pdf");
+
+        // Extract text
+        try (PDDocument doc = Loader.loadPDF(new File(outputPDFFilename))) {
+            assertEquals(1, doc.getNumberOfPages());
+
+            PDFTextStripper stripper = new PDFTextStripper();
+            String s = stripper.getText(doc);
+            String sStripped = s.strip();
+
+            String[] lines =
+                    Arrays.stream((TEXT_INTRO + "\n" + "Font used: NotoSansMath-Regular" + "\n" + MATHEMATICAL)
+                            .split("\n")).filter(line->line.length()>0).toArray(i ->new String[i]);
+            String text = String.join("\n", lines);
+
+            if (useActualText) {
+                assertEquals(text, sStripped, "Extracted text should equal the written text for " + outputPDFFilename);
+            } else {
+                assertEquals(text, sStripped, "Extracted text should equal the written text for " + outputPDFFilename);
+            }
+
+            try (OutputStream os = new FileOutputStream(outputTextFilename)) {
+                os.write(0xEF);
+                os.write(0xBB);
+                os.write(0xBF);
+
+                try (Writer writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8))) {
+                    // The output is correct
+                    writer.write(s);
+                }
+            }
+        }
     }
 }
