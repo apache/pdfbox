@@ -1322,7 +1322,9 @@ public class PDFDebugger extends JFrame
         try
         {
             PrinterJob job = PrinterJob.getPrinterJob();
-            job.setPageable(new PDFPageable(document, Orientation.AUTO, printBorder.isSelected(), PrintDpiMenu.getDpiSelection()));
+            PDFPageable pageable = new PDFPageable(document, Orientation.AUTO, printBorder.isSelected(), PrintDpiMenu.getDpiSelection());
+            pageable.setSubsamplingAllowed(PDFDebugger.allowSubsampling.isSelected());
+            job.setPageable(pageable);
             PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
             PDViewerPreferences vp = document.getDocumentCatalog().getViewerPreferences();
             if (vp != null && vp.getDuplex() != null)
