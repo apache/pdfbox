@@ -900,6 +900,8 @@ class TrueTypeInterpreter
         int p1 = ctx.pop();
         Zone to = ctx.getZone(gs.getZp1());
         Zone from = ctx.getZone(gs.getZp2());
+        ExecutionContext.checkPoint(to, p1);
+        ExecutionContext.checkPoint(from, p2);
         UnitVector original = null;
         boolean perp = perpendicular;
         if (withOriginal)
@@ -985,6 +987,11 @@ class TrueTypeInterpreter
         Zone za = ctx.getZone(gs.getZp1());
         Zone zb = ctx.getZone(gs.getZp0());
         Zone zp = ctx.getZone(gs.getZp2());
+        ExecutionContext.checkPoint(za, a0);
+        ExecutionContext.checkPoint(za, a1);
+        ExecutionContext.checkPoint(zb, b0);
+        ExecutionContext.checkPoint(zb, b1);
+        ExecutionContext.checkPoint(zp, point);
 
         int a0x = za.getCurrentX()[a0];
         int a0y = za.getCurrentY()[a0];
@@ -1022,6 +1029,7 @@ class TrueTypeInterpreter
         GraphicsState gs = ctx.getGraphicsState();
         int point = ctx.pop();
         Zone zone = ctx.getZone(gs.getZp0());
+        ExecutionContext.checkPoint(zone, point);
         int cur = ctx.project(zone.getCurrentX()[point], zone.getCurrentY()[point]);
         int distance = round ? gs.round(cur) : cur;
         ctx.movePoint(zone, point, distance - cur);
@@ -1035,6 +1043,7 @@ class TrueTypeInterpreter
         int cvtIndex = ctx.pop();
         int point = ctx.pop();
         Zone zone = ctx.getZone(gs.getZp0());
+        ExecutionContext.checkPoint(zone, point);
         int[] cvt = ctx.getControlValues();
         int value = cvtIndex >= 0 && cvtIndex < cvt.length ? cvt[cvtIndex] : 0;
 
@@ -1070,6 +1079,8 @@ class TrueTypeInterpreter
         Zone zp1 = ctx.getZone(gs.getZp1());
         Zone zp0 = ctx.getZone(gs.getZp0());
         int rp0 = gs.getRp0();
+        ExecutionContext.checkPoint(zp1, point);
+        ExecutionContext.checkPoint(zp0, rp0);
         if (gs.getZp1() == 0)
         {
             // twilight point: place it at rp0's original position moved by the distance, as the MS
@@ -1121,7 +1132,7 @@ class TrueTypeInterpreter
         GraphicsState gs = ctx.getGraphicsState();
         Zone zone = ctx.getZone(gs.getZp0());
         UnitVector fv = gs.getFreedomVector();
-        int point = ctx.pop();
+        int point = ExecutionContext.checkPoint(zone, ctx.pop());
         if (fv.getX() != 0)
         {
             zone.getTouchedX()[point] = false;
@@ -1224,6 +1235,7 @@ class TrueTypeInterpreter
     /** The projected distance the reference point (rp1 in zp0, or rp2 in zp1) has been moved. */
     private static int referenceShift(ExecutionContext ctx, Zone refZone, int ref)
     {
+        ExecutionContext.checkPoint(refZone, ref);
         return ctx.project(refZone.getCurrentX()[ref] - refZone.getOriginalX()[ref],
                 refZone.getCurrentY()[ref] - refZone.getOriginalY()[ref]);
     }
@@ -1239,6 +1251,8 @@ class TrueTypeInterpreter
         Zone zp1 = ctx.getZone(gs.getZp1());
         Zone zp0 = ctx.getZone(gs.getZp0());
         int rp0 = gs.getRp0();
+        ExecutionContext.checkPoint(zp1, point);
+        ExecutionContext.checkPoint(zp0, rp0);
 
         int orgDist;
         if (gs.getZp0() == 0 || gs.getZp1() == 0)
@@ -1287,6 +1301,8 @@ class TrueTypeInterpreter
         Zone zp1 = ctx.getZone(gs.getZp1());
         Zone zp0 = ctx.getZone(gs.getZp0());
         int rp0 = gs.getRp0();
+        ExecutionContext.checkPoint(zp1, point);
+        ExecutionContext.checkPoint(zp0, rp0);
         if (gs.getZp1() == 0)
         {
             // twilight point: place it the control value away from rp0's original position along the
@@ -1509,8 +1525,8 @@ class TrueTypeInterpreter
         Zone z0 = ctx.getZone(gs.getZp0());
         Zone z1 = ctx.getZone(gs.getZp1());
         Zone z2 = ctx.getZone(gs.getZp2());
-        int rp1 = gs.getRp1();
-        int rp2 = gs.getRp2();
+        int rp1 = ExecutionContext.checkPoint(z0, gs.getRp1());
+        int rp2 = ExecutionContext.checkPoint(z1, gs.getRp2());
         // Measure the original positions in unscaled font units (FreeType's orus) so the interpolation
         // ratio keeps full precision; the scaled F26Dot6 originals round each coordinate and can shift
         // an interpolated point by a unit, which a later rounding opcode then amplifies to a whole pixel.
@@ -1528,6 +1544,7 @@ class TrueTypeInterpreter
         int curRange = curRp2 - curRp1;
         forEachLoopPoint(ctx, point ->
         {
+            ExecutionContext.checkPoint(z2, point);
             int orgP = twilight ? ctx.dualProject(z2.getOriginalX()[point], z2.getOriginalY()[point])
                     : ctx.dualProject(z2.getUnscaledX()[point], z2.getUnscaledY()[point]);
             int curP = ctx.project(z2.getCurrentX()[point], z2.getCurrentY()[point]);
@@ -1559,7 +1576,7 @@ class TrueTypeInterpreter
     {
         GraphicsState gs = ctx.getGraphicsState();
         Zone zone = ctx.getZone(gs.getZp2());
-        int point = ctx.pop();
+        int point = ExecutionContext.checkPoint(zone, ctx.pop());
         if (original)
         {
             ctx.push(ctx.dualProject(zone.getOriginalX()[point], zone.getOriginalY()[point]));
@@ -1576,6 +1593,7 @@ class TrueTypeInterpreter
         int value = ctx.pop();
         int point = ctx.pop();
         Zone zone = ctx.getZone(gs.getZp2());
+        ExecutionContext.checkPoint(zone, point);
         int cur = ctx.project(zone.getCurrentX()[point], zone.getCurrentY()[point]);
         ctx.movePoint(zone, point, value - cur);
     }
@@ -1687,8 +1705,10 @@ class TrueTypeInterpreter
         dispatch[0x4E] = ctx -> ctx.getGraphicsState().setAutoFlip(false); // FLIPOFF
         dispatch[0x80] = ctx ->                                            // FLIPPT
         {
-            boolean[] onCurve = ctx.getZone(1).getOnCurve();
-            forEachLoopPoint(ctx, point -> onCurve[point] = !onCurve[point]);
+            Zone glyph = ctx.getZone(1);
+            boolean[] onCurve = glyph.getOnCurve();
+            forEachLoopPoint(ctx, point ->
+                    onCurve[ExecutionContext.checkPoint(glyph, point)] = !onCurve[point]);
         };
         dispatch[0x81] = ctx -> flipRange(ctx, true);                      // FLIPRGON
         dispatch[0x82] = ctx -> flipRange(ctx, false);                     // FLIPRGOFF

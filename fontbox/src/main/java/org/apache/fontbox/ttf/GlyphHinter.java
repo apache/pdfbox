@@ -248,7 +248,7 @@ class GlyphHinter
             }
             return hint(gid, ppem, 0);
         }
-        catch (IOException | RuntimeException e)
+        catch (IOException | HintingException e)
         {
             logFailure(gid, ppem, e);
             return null;
@@ -366,7 +366,7 @@ class GlyphHinter
                     return true;
                 }
             }
-            catch (IOException | RuntimeException e)
+            catch (IOException | HintingException e)
             {
                 // a glyph that cannot be hinted says nothing about the font
                 LOG.debug("full-control probe could not hint glyph {}", gid, e);

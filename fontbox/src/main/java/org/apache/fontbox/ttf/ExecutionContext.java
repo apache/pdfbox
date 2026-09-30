@@ -367,6 +367,8 @@ class ExecutionContext
      */
     public int projectedDistance(Zone zone1, int p1, Zone zone0, int p0)
     {
+        checkPoint(zone1, p1);
+        checkPoint(zone0, p0);
         return project(zone1.getCurrentX()[p1] - zone0.getCurrentX()[p0],
                 zone1.getCurrentY()[p1] - zone0.getCurrentY()[p0]);
     }
@@ -377,8 +379,31 @@ class ExecutionContext
      */
     public int dualProjectedDistance(Zone zone1, int p1, Zone zone0, int p0)
     {
+        checkPoint(zone1, p1);
+        checkPoint(zone0, p0);
         return dualProject(zone1.getOriginalX()[p1] - zone0.getOriginalX()[p0],
                 zone1.getOriginalY()[p1] - zone0.getOriginalY()[p0]);
+    }
+
+    /**
+     * Validates a point number taken from the bytecode (an operand, or a reference point a program
+     * set) against the zone it indexes. Out-of-range point numbers are malformed font data, not a
+     * bug here; FreeType checks each one ({@code BOUNDS}) and so do we, so such a glyph falls back to
+     * its raw outline rather than failing with an array index error.
+     *
+     * @param zone the zone the point is in
+     * @param point the point number
+     * @return {@code point}
+     * @throws HintingException if the zone has no such point
+     */
+    public static int checkPoint(Zone zone, int point)
+    {
+        if (point < 0 || point >= zone.getPointCount())
+        {
+            throw new HintingException("point " + point + " out of range, zone has "
+                    + zone.getPointCount() + " points");
+        }
+        return point;
     }
 
     /**
@@ -393,6 +418,7 @@ class ExecutionContext
      */
     public void movePoint(Zone zone, int point, int distance)
     {
+        checkPoint(zone, point);
         UnitVector fv = graphicsState.getFreedomVector();
         int fDotP = freedomDotProjection();
         if (fv.getX() != 0)
@@ -428,6 +454,7 @@ class ExecutionContext
      */
     public void moveOriginal(Zone zone, int point, int distance)
     {
+        checkPoint(zone, point);
         UnitVector fv = graphicsState.getFreedomVector();
         int fDotP = freedomDotProjection();
         if (fv.getX() != 0)

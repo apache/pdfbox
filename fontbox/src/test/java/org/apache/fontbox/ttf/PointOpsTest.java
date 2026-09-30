@@ -18,9 +18,15 @@ package org.apache.fontbox.ttf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Unit tests for the point-moving opcodes: each builds a glyph zone, runs a short program
@@ -525,6 +531,49 @@ class PointOpsTest
         assertEquals(Fixed.mul14(128, diagonal), twilight.getOriginalX()[3]);
         assertEquals(Fixed.mul14(128, diagonal), twilight.getOriginalY()[3]);
         assertEquals(128, twilight.getCurrentX()[3]); // then moved along fv until its x projects to 128
+    }
+
+    /**
+     * An out-of-range point number - an operand, or a reference point set with SRPn - is malformed
+     * font data: it must fail as a {@link HintingException}, which falls back to the raw glyph, not
+     * as an ArrayIndexOutOfBoundsException, which would escape to the renderer. The zone has two
+     * points (and the twilight zone 16), so point 99 exists in neither.
+     */
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("outOfRangePointPrograms")
+    void testOutOfRangePointIsAHintingException(String name, byte[] program)
+    {
+        TrueTypeInterpreter interp = interpreter();
+        ExecutionContext ctx = context(interp, lineZone(0, 64));
+        assertThrows(HintingException.class, () -> interp.run(ctx, new BytecodeStream(program)));
+    }
+
+    private static Stream<Arguments> outOfRangePointPrograms()
+    {
+        byte b1 = (byte) 0xB0; // PUSHB[0], one byte
+        byte b2 = (byte) 0xB1; // PUSHB[1], two bytes
+        byte b5 = (byte) 0xB4; // PUSHB[4], five bytes
+        return Stream.of(
+                Arguments.of("MDAP", new byte[] { b1, 99, 0x2E }),
+                Arguments.of("MIAP", new byte[] { b2, 99, 0, 0x3E }),
+                Arguments.of("MSIRP", new byte[] { b2, 99, 64, 0x3A }),
+                Arguments.of("MDRP", new byte[] { b1, 99, (byte) 0xC0 }),
+                Arguments.of("MIRP", new byte[] { b2, 99, 0, (byte) 0xE0 }),
+                Arguments.of("ALIGNRP", new byte[] { b1, 99, 0x3C }),
+                Arguments.of("ALIGNPTS", new byte[] { b2, 0, 99, 0x27 }),
+                Arguments.of("UTP", new byte[] { b1, 99, 0x29 }),
+                Arguments.of("SHPIX", new byte[] { b2, 99, 64, 0x38 }),
+                Arguments.of("SHP", new byte[] { b1, 99, 0x32 }),
+                Arguments.of("IP", new byte[] { b1, 99, 0x39 }),
+                Arguments.of("GC", new byte[] { b1, 99, 0x46 }),
+                Arguments.of("SCFS", new byte[] { b2, 99, 0, 0x48 }),
+                Arguments.of("MD", new byte[] { b2, 0, 99, 0x49 }),
+                Arguments.of("ISECT", new byte[] { b5, 99, 0, 1, 0, 1, 0x0F }),
+                Arguments.of("SPVTL", new byte[] { b2, 0, 99, 0x06 }),
+                Arguments.of("FLIPPT", new byte[] { b1, 99, (byte) 0x80 }),
+                Arguments.of("SRP0 then MDRP", new byte[] { b1, 99, 0x10, b1, 1, (byte) 0xC0 }),
+                Arguments.of("SRP1 then IP", new byte[] { b1, 99, 0x11, b1, 1, 0x39 }),
+                Arguments.of("SRP2 then SHP", new byte[] { b1, 99, 0x12, b1, 1, 0x32 }));
     }
 
     private static void setPoint(Zone zone, int i, int x, int y)
