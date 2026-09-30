@@ -18,6 +18,7 @@ package org.apache.fontbox.ttf;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,6 +67,21 @@ class GlyphHinter
     private int lowestRecPpem;
     private int unitsPerEm;
     private int currentPpem = -1;
+    // null until probed: whether the font's bytecode builds glyph geometry (see needsFullControl)
+    private Boolean fullControl;
+    // while probing, overrides the backward-compatibility decision for glyph programs
+    private Boolean forcedBackwardCompatibility;
+
+    /** The ppem the full-control probe hints its sample glyphs at. */
+    private static final int PROBE_PPEM = 32;
+    /** At most this many glyphs with instructions are sampled by the probe. */
+    private static final int PROBE_SAMPLE = 32;
+    /** Glyphs examined while looking for the sample, to bound the cost on huge CJK fonts. */
+    private static final int PROBE_CANDIDATES = 512;
+    /** A sampled glyph "moves" if some point is displaced by more than this (5px at PROBE_PPEM). */
+    private static final int PROBE_TOLERANCE = 5 * 64;
+    /** The number of moving glyphs that marks a font as needing full control. */
+    private static final int PROBE_MIN_MOVING = 2;
 
     GlyphHinter(TrueTypeFont font)
     {
@@ -204,19 +220,22 @@ class GlyphHinter
             {
                 return null;
             }
+            // fonts whose bytecode builds the glyphs are hinted at every size: FreeType likewise
+            // exempts its "tricky" fonts from both size gates
+            boolean full = needsFullControl();
             // head.lowestRecPPEM is the vendor's "smallest readable size in pixels" for the
             // outlines. Fonts that ship bitmap strikes for small sizes (MS Mincho/Gothic say 25) set
             // it above the sizes the bitmaps cover; their instructions were never meant to run there,
             // and doing so under grayscale forces every thin stroke to a full pixel. Text fonts
             // without strikes sit at 6-9, so this never fires for them.
-            if (ppem < lowestRecPpem)
+            if (!full && ppem < lowestRecPpem)
             {
                 return null;
             }
             // gasp gate: if a gasp table is present and does not request grid-fitting here, skip.
             // (GRIDFIT without DOGRAY is deliberately NOT treated as "do not hint": Arial and
             // Liberation flag 9-17ppem that way, so it would switch hinting off for body text.)
-            if (gasp != null && !gasp.isGridFit(ppem))
+            if (!full && gasp != null && !gasp.isGridFit(ppem))
             {
                 return null;
             }
@@ -285,6 +304,192 @@ class GlyphHinter
         {
             return "<unknown>";
         }
+    }
+
+    /**
+     * Whether the font's bytecode builds its glyph geometry rather than just fitting outlines to the
+     * pixel grid. A small set of fonts - DynaLab CJK faces such as MingLiU and DFKai-SB, which FreeType
+     * calls "tricky" - position and scale glyph components with their instructions, in x as well as y,
+     * so they only render correctly with full bytecode control: no v40 backward compatibility (which
+     * suppresses x moves) and no size gates.
+     * <p>
+     * Rather than recognise such fonts by name, this measures the behaviour itself, once per font: it
+     * hints a spread of up to {@value #PROBE_SAMPLE} glyphs that carry instructions at
+     * {@value #PROBE_PPEM} ppem with backward compatibility on and with it off (full control), and
+     * compares each point of the two outlines, and of the full-control outline against the raw one.
+     * Ordinary hinting only rounds edges to the grid, so no point moves more than a pixel or two
+     * either way; a program that builds the glyphs moves components by many pixels. A glyph "moves"
+     * if any point is displaced by more than 5px in either comparison, and
+     * {@value #PROBE_MIN_MOVING} moving glyphs mark the font. The first comparison catches programs
+     * that need the x moves backward compatibility suppresses; the second also catches one that
+     * builds its glyphs in y only, which backward compatibility would let through but the size gates
+     * would not.
+     * <p>
+     * Measured at {@value #PROBE_PPEM} ppem on 263 fonts from CJK PDFs and system fonts, against
+     * FreeType's own classification: ordinary fonts displace a point by at most 2.7px (second-largest
+     * glyph per font), fonts FreeType calls tricky by at least 8.9px; no false positives, and the only
+     * misses were two tiny subsets whose hinted glyphs stay within 0.4px of the raw outline, so full
+     * control would change nothing for them.
+     *
+     * @return true if glyph programs must run with full control
+     * @throws IOException if the glyph table cannot be read
+     */
+    private boolean needsFullControl() throws IOException
+    {
+        if (fullControl == null)
+        {
+            fullControl = probeFullControl();
+            // the probe ran prep at its own size
+            currentPpem = -1;
+        }
+        return fullControl;
+    }
+
+    private boolean probeFullControl() throws IOException
+    {
+        int moving = 0;
+        for (int gid : probeSample())
+        {
+            try
+            {
+                int[][] compatible = probeHintedPoints(gid, true);
+                int[][] full = probeHintedPoints(gid, false);
+                if (compatible == null || full == null)
+                {
+                    continue;
+                }
+                int[][] raw = probeRawPoints(gid, full[0].length);
+                boolean moves = pointDelta(compatible, full) > PROBE_TOLERANCE
+                        || raw != null && pointDelta(raw, full) > PROBE_TOLERANCE;
+                if (moves && ++moving >= PROBE_MIN_MOVING)
+                {
+                    return true;
+                }
+            }
+            catch (IOException | RuntimeException e)
+            {
+                // a glyph that cannot be hinted says nothing about the font
+                LOG.debug("full-control probe could not hint glyph {}", gid, e);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Up to PROBE_SAMPLE glyphs with instructions, spread evenly over the font's non-empty glyphs.
+     * Non-empty glyphs are found from the loca offsets without parsing them - an embedded CID subset
+     * keeps its full glyph count with only a handful of glyphs present - and at most
+     * PROBE_CANDIDATES of them, spread evenly, are parsed.
+     */
+    private int[] probeSample() throws IOException
+    {
+        IndexToLocationTable loca = font.getIndexToLocation();
+        long[] offsets = loca != null ? loca.getOffsets() : null;
+        if (offsets == null)
+        {
+            return new int[0];
+        }
+        int[] present = new int[offsets.length - 1];
+        int presentCount = 0;
+        for (int gid = 0; gid + 1 < offsets.length; gid++)
+        {
+            if (offsets[gid + 1] > offsets[gid])
+            {
+                present[presentCount++] = gid;
+            }
+        }
+        int candidates = Math.min(presentCount, PROBE_CANDIDATES);
+        int[] instructed = new int[candidates];
+        int count = 0;
+        for (int i = 0; i < candidates; i++)
+        {
+            int gid = present[(int) ((long) i * presentCount / candidates)];
+            GlyphData glyph = font.getGlyph().getGlyph(gid);
+            if (glyph == null || !(glyph.getDescription() instanceof GlyfDescript))
+            {
+                continue;
+            }
+            GlyfDescript gd = (GlyfDescript) glyph.getDescription();
+            int[] instructions = gd.getInstructions();
+            if (gd.getPointCount() > 0
+                    && (gd.isComposite() || instructions != null && instructions.length > 0))
+            {
+                instructed[count++] = gid;
+            }
+        }
+        // spread the sample over the whole font: the glyphs whose programs build geometry are the
+        // ideographs, not the Latin and punctuation at the low glyph ids
+        int size = Math.min(count, PROBE_SAMPLE);
+        int[] sample = new int[size];
+        for (int i = 0; i < size; i++)
+        {
+            sample[i] = instructed[(int) ((long) i * count / size)];
+        }
+        return sample;
+    }
+
+    /** Hints one glyph at PROBE_PPEM with backward compatibility forced, ignoring the size gates. */
+    private int[][] probeHintedPoints(int gid, boolean backwardCompatibility) throws IOException
+    {
+        setActivePpem(PROBE_PPEM);
+        forcedBackwardCompatibility = backwardCompatibility;
+        try
+        {
+            Hinted hinted = hint(gid, PROBE_PPEM, 0);
+            if (hinted == null)
+            {
+                return null;
+            }
+            int[] x = Arrays.copyOf(hinted.zone.getCurrentX(), hinted.pointCount);
+            int[] y = Arrays.copyOf(hinted.zone.getCurrentY(), hinted.pointCount);
+            return new int[][] { x, y };
+        }
+        finally
+        {
+            forcedBackwardCompatibility = null;
+        }
+    }
+
+    /**
+     * The glyph's scaled, unhinted outline at PROBE_PPEM, in the frame of the hinted points (origin
+     * at x = 0, as the parsed description has it), or null if its point count differs.
+     */
+    private int[][] probeRawPoints(int gid, int pointCount) throws IOException
+    {
+        GlyphDescription gd = font.getGlyph().getGlyph(gid).getDescription();
+        if (gd.isComposite())
+        {
+            gd.resolve();
+        }
+        if (gd.getPointCount() != pointCount)
+        {
+            return null;
+        }
+        int[][] raw = new int[2][pointCount];
+        for (int i = 0; i < pointCount; i++)
+        {
+            raw[0][i] = Fixed.scale(gd.getXCoordinate(i), PROBE_PPEM, unitsPerEm);
+            raw[1][i] = Fixed.scale(gd.getYCoordinate(i), PROBE_PPEM, unitsPerEm);
+        }
+        return raw;
+    }
+
+    /** The largest displacement of any point between two outlines of the same glyph, on either axis. */
+    static int pointDelta(int[][] a, int[][] b)
+    {
+        int delta = 0;
+        for (int i = 0; i < a[0].length; i++)
+        {
+            delta = Math.max(delta, Math.max(Math.abs(a[0][i] - b[0][i]), Math.abs(a[1][i] - b[1][i])));
+        }
+        return delta;
+    }
+
+    /** @return whether the probe found that this font's bytecode builds its glyphs; for tests */
+    synchronized boolean isFullControl() throws IOException
+    {
+        initialize();
+        return available && needsFullControl();
     }
 
     /**
@@ -477,7 +682,17 @@ class GlyphHinter
         // which build control values via twilight-zone x/y moves that must not be suppressed. A
         // native-ClearType font waives it from prep with INSTCTRL bit 4; read from gs, so a bit-2
         // reset to the default state also clears the waiver, as in FreeType's tt_loader_init.
-        ctx.setBackwardCompatibility((gs.getInstructControl() & 4) == 0);
+        // A font whose bytecode builds the glyph geometry gets full control, as FreeType gives its
+        // "tricky" fonts; the probe forces the mode while it measures.
+        if (forcedBackwardCompatibility != null)
+        {
+            ctx.setBackwardCompatibility(forcedBackwardCompatibility);
+        }
+        else
+        {
+            ctx.setBackwardCompatibility(!Boolean.TRUE.equals(fullControl)
+                    && (gs.getInstructControl() & 4) == 0);
+        }
         ctx.setComposite(composite);
         interpreter.run(ctx, new BytecodeStream(toByteArray(instructions)));
         return ctx;

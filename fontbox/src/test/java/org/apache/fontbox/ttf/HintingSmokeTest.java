@@ -17,6 +17,7 @@
 package org.apache.fontbox.ttf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -68,6 +69,8 @@ class HintingSmokeTest
             }
             assertEquals(0, hinter.getFailureCount(),
                     path + ": " + hinter.getFailureCount() + " failures, first " + hinter.getFirstFailure());
+            // none of these fonts builds its glyphs with bytecode, so none may get full control
+            assertFalse(hinter.isFullControl(), path + " probed as needing full bytecode control");
         }
     }
 }

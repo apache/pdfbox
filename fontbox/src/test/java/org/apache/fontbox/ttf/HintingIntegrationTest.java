@@ -276,6 +276,20 @@ class HintingIntegrationTest
         return font;
     }
 
+    /**
+     * The full-control probe compares two outlines of a glyph by the largest displacement of any
+     * point on either axis - so a component moved inside the glyph counts, not just its extents.
+     */
+    @Test
+    void testPointDeltaIsTheLargestPointDisplacement()
+    {
+        int[][] a = { { 0, 640, 320 }, { 0, 0, 640 } };
+        assertEquals(0, GlyphHinter.pointDelta(a, a));
+        // an interior point moves 5px in x (bounding box unchanged), another 1px in y
+        int[][] b = { { 0, 640, 640 }, { 0, 64, 640 } };
+        assertEquals(320, GlyphHinter.pointDelta(a, b));
+    }
+
     @Test
     void testFontWithoutBytecodeFallsBack() throws IOException
     {
