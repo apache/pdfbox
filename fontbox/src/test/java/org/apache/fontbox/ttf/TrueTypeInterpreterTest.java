@@ -648,6 +648,49 @@ class TrueTypeInterpreterTest
     }
 
     /**
+     * GETINFO reports a v40 rasterizer rendering grayscale ClearType, as FreeType 2.13.2 does for the
+     * grayscale target: version 40, subpixel hinting (bit 13), ClearType (17), subpixel positioned
+     * (18) and grayscale ClearType (19), but not plain grayscale (bit 12, cleared in "lean" mode).
+     */
+    @Test
+    void testGetInfoReportsAGrayscaleV40Rasterizer()
+    {
+        // selector: version (1), grayscale (32), subpixel (64), ClearType (1024), positioned (2048),
+        // grayscale ClearType (4096)
+        int selector = 1 | 32 | 64 | 1024 | 2048 | 4096;
+        int info = runTop(new byte[] { PUSHW1, (byte) (selector >> 8), (byte) selector, (byte) 0x88 });
+        assertEquals(40 | 1 << 13 | 1 << 17 | 1 << 18 | 1 << 19, info);
+    }
+
+    /** Unterminated blocks are malformed bytecode: a HintingException, so the glyph falls back. */
+    @Test
+    void testUnterminatedBlocksAreHintingExceptions()
+    {
+        // false IF skipping to an ELSE/EIF that never comes
+        assertThrows(HintingException.class,
+                () -> interpreter().executeProgram(new byte[] { PUSHB1, 0, IF, PUSHB1, 1 }, 16));
+        // true IF reaching an ELSE that skips to an EIF that never comes
+        assertThrows(HintingException.class,
+                () -> interpreter().executeProgram(new byte[] { PUSHB1, 1, IF, ELSE, PUSHB1, 1 }, 16));
+        // FDEF without ENDF
+        assertThrows(HintingException.class,
+                () -> interpreter().executeProgram(new byte[] { PUSHB1, 0, FDEF, PUSHB1, 1 }, 16));
+    }
+
+    /** Storage and CVT indices out of range are HintingExceptions, not array index errors. */
+    @Test
+    void testStorageAndControlValueIndicesAreBounded()
+    {
+        // the interpreter has 16 storage slots and no control values
+        assertThrows(HintingException.class,
+                () -> interpreter().executeProgram(new byte[] { PUSHB1, 99, RS }, 16));
+        assertThrows(HintingException.class,
+                () -> interpreter().executeProgram(new byte[] { PUSHB2, 99, 1, WS }, 16));
+        assertThrows(HintingException.class,
+                () -> interpreter().executeProgram(new byte[] { PUSHB2, 99, 1, 0x44 }, 16)); // WCVTP
+    }
+
+    /**
      * A push's operands must not run past the ENDF of the function body it executes in. Scanning a
      * body skips push operands, so this can only happen through a jump into the middle of another
      * push's operands. Here the body is {@code PUSHB[0] 2, JMPR, PUSHB[0] 0xB1, ENDF}: the jump lands

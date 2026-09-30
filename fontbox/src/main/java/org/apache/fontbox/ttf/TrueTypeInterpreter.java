@@ -1114,6 +1114,10 @@ class TrueTypeInterpreter
         });
     }
 
+    /**
+     * ALIGNPTS, after FreeType's Ins_ALIGNPTS: the point below the top of the stack is in zp1, the top
+     * one in zp0, and each moves by half their projected distance (truncated), towards the other.
+     */
     private void doAlignPts(ExecutionContext ctx)
     {
         GraphicsState gs = ctx.getGraphicsState();
@@ -1121,10 +1125,9 @@ class TrueTypeInterpreter
         int p1 = ctx.pop();
         Zone zp1 = ctx.getZone(gs.getZp1());
         Zone zp0 = ctx.getZone(gs.getZp0());
-        int distance = ctx.projectedDistance(zp0, p1, zp1, p2);
-        // move both points to the midpoint of their projected positions
-        ctx.movePoint(zp1, p2, distance / 2);
-        ctx.movePoint(zp0, p1, -(distance - distance / 2));
+        int distance = ctx.projectedDistance(zp0, p2, zp1, p1) / 2;
+        ctx.movePoint(zp1, p1, distance);
+        ctx.movePoint(zp0, p2, -distance);
     }
 
     private void doUtp(ExecutionContext ctx)
@@ -1189,12 +1192,15 @@ class TrueTypeInterpreter
         int contour = ctx.pop();
         Zone zp2 = ctx.getZone(gs.getZp2());
         int[] ends = zp2.getContourEnds();
-        if (contour < 0 || contour >= ends.length)
+        // the twilight zone counts as a single contour of all its points (FreeType's Ins_SHC)
+        boolean twilight = zp2 == ctx.getTwilightZone();
+        if (contour < 0 || contour >= (twilight ? 1 : ends.length))
         {
             return;
         }
         int start = contour == 0 ? 0 : ends[contour - 1] + 1;
-        for (int i = start; i <= ends[contour]; i++)
+        int end = twilight ? zp2.getPointCount() - 1 : ends[contour];
+        for (int i = start; i <= end; i++)
         {
             // FreeType's SHC does not move the reference point itself (it has already moved)
             if (!(refZone == zp2 && i == ref))

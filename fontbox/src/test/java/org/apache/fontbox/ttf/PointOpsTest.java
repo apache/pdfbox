@@ -534,6 +534,119 @@ class PointOpsTest
     }
 
     /**
+     * ISECT on parallel lines (zero discriminant) cannot intersect them; like FreeType it moves the
+     * point to the average of the four line points.
+     */
+    @Test
+    void testIsectParallelLinesUseTheAverageOfTheFourPoints()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        Zone zone = new Zone(5, 1);
+        setPoint(zone, 0, 0, 0);
+        setPoint(zone, 1, 0, 0);     // line A: y = 0
+        setPoint(zone, 2, 128, 0);
+        setPoint(zone, 3, 0, 64);    // line B: y = 64, parallel to A
+        setPoint(zone, 4, 128, 64);
+        ExecutionContext ctx = context(interp, zone);
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB4, 0, 1, 2, 3, 4, 0x0F })); // ISECT
+        assertEquals(64, zone.getCurrentX()[0]); // (0 + 128 + 0 + 128) / 4
+        assertEquals(32, zone.getCurrentY()[0]); // (0 + 0 + 64 + 64) / 4
+    }
+
+    /**
+     * ALIGNPTS moves each point by half their projected distance, truncated, towards the other
+     * (FreeType's Ins_ALIGNPTS): 127/64 px apart, each moves 63, leaving them 1/64 px apart.
+     */
+    @Test
+    void testAlignPtsMovesEachPointByHalfTheDistance()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        Zone zone = lineZone(0, 127);
+        ExecutionContext ctx = context(interp, zone);
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB1, 0, 1, 0x27 })); // ALIGNPTS
+        assertEquals(63, zone.getCurrentX()[0]);
+        assertEquals(64, zone.getCurrentX()[1]);
+    }
+
+    /** UTP clears the touch flag only on the axes the freedom vector acts on. */
+    @Test
+    void testUtpUntouchesOnlyTheFreedomAxes()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        Zone zone = lineZone(0, 64);
+        zone.getTouchedX()[1] = true;
+        zone.getTouchedY()[1] = true;
+        ExecutionContext ctx = context(interp, zone);
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB0, 1, 0x29 })); // UTP (fv = x)
+        assertFalse(zone.getTouchedX()[1]);
+        assertTrue(zone.getTouchedY()[1]);
+    }
+
+    /** FLIPPT toggles the on-curve flag of each point. */
+    @Test
+    void testFlipPtTogglesOnCurve()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        Zone zone = lineZone(0, 64);
+        zone.getOnCurve()[1] = true;
+        ExecutionContext ctx = context(interp, zone);
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB0, 1, (byte) 0x80 })); // FLIPPT
+        assertFalse(zone.getOnCurve()[1]);
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB0, 1, (byte) 0x80 }));
+        assertTrue(zone.getOnCurve()[1]);
+    }
+
+    /** SHC with a contour the zone does not have is ignored, as in FreeType outside pedantic mode. */
+    @Test
+    void testShcIgnoresAnInvalidContour()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        Zone zone = lineZone(0, 64);
+        zone.getCurrentX()[0] = 32; // rp2 = point 0 moved by 32
+        ExecutionContext ctx = context(interp, zone);
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB0, 5, 0x34 })); // SHC[0] contour 5
+        assertEquals(64, zone.getCurrentX()[1]);
+    }
+
+    /**
+     * In the twilight zone SHC treats all points as one contour (FreeType's Ins_SHC): contour 0
+     * shifts every twilight point by the reference point's movement.
+     */
+    @Test
+    void testShcShiftsTheWholeTwilightZone()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        Zone zone = lineZone(0, 64);
+        zone.getCurrentX()[0] = 64; // rp1 = glyph point 0, moved by 64
+        ExecutionContext ctx = context(interp, zone);
+        // PUSHB[0] 0 ; SZP2 (twilight) ; PUSHB[0] 0 ; SHC[1] (rp1 in zp0 = glyph zone)
+        interp.run(ctx, new BytecodeStream(new byte[] { (byte) 0xB0, 0, 0x15, (byte) 0xB0, 0, 0x35 }));
+        Zone twilight = ctx.getTwilightZone();
+        assertEquals(64, twilight.getCurrentX()[0]);
+        assertEquals(64, twilight.getCurrentX()[15]);
+    }
+
+    /**
+     * Under backward compatibility, once IUP has run on both axes further IUPs do nothing (FreeType's
+     * Ins_IUP), so a late y move is not spread over the untouched points.
+     */
+    @Test
+    void testIupDoesNothingOnceBothAxesAreDoneUnderBackwardCompatibility()
+    {
+        TrueTypeInterpreter interp = interpreter();
+        Zone zone = lineZone(0, 64, 128);
+        zone.getCurrentY()[0] = 64;
+        zone.getTouchedY()[0] = true;
+        ExecutionContext ctx = context(interp, zone);
+        ctx.setBackwardCompatibility(true);
+        interp.run(ctx, new BytecodeStream(new byte[] { 0x30, 0x31 })); // IUP[y], IUP[x]
+        assertEquals(64, zone.getCurrentY()[1]); // shifted with the single touched point
+        zone.getCurrentY()[0] = 128;
+        interp.run(ctx, new BytecodeStream(new byte[] { 0x30 })); // IUP[y] again: ignored
+        assertEquals(64, zone.getCurrentY()[1]);
+    }
+
+    /**
      * An out-of-range point number - an operand, or a reference point set with SRPn - is malformed
      * font data: it must fail as a {@link HintingException}, which falls back to the raw glyph, not
      * as an ArrayIndexOutOfBoundsException, which would escape to the renderer. The zone has two
