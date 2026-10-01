@@ -290,6 +290,29 @@ class HintingIntegrationTest
         assertEquals(320, GlyphHinter.pointDelta(a, b));
     }
 
+    /**
+     * A glyph counts towards full bytecode control only if backward compatibility changes it a lot
+     * <em>and</em> it is far from its raw outline even with backward compatibility on. A glyph whose
+     * full-control result alone is wild - broken x instructions that backward compatibility hides,
+     * as in Giovanni Book - must not count, or the font would be wrecked.
+     */
+    @Test
+    void testBuildsGeometryNeedsBothSignals()
+    {
+        int[][] raw = { { 0, 640 }, { 0, 640 } };
+        int[][] nearRaw = { { 0, 640 }, { 0, 704 } };      // 1px from raw: ordinary hinting
+        int[][] built = { { 640, 640 }, { 0, 640 } };      // 10px from raw: components moved
+        int[][] wild = { { 6400, 640 }, { 0, 640 } };      // 100px: broken x instructions
+        // tricky font: far from raw with backward compatibility on, and different again without
+        assertTrue(GlyphHinter.buildsGeometry(raw, built, wild));
+        // broken x hinting: fine with backward compatibility on, wild without
+        assertFalse(GlyphHinter.buildsGeometry(raw, nearRaw, wild));
+        // ordinary font: neither
+        assertFalse(GlyphHinter.buildsGeometry(raw, nearRaw, nearRaw));
+        // far from raw but backward compatibility makes no difference: full control would not help
+        assertFalse(GlyphHinter.buildsGeometry(raw, built, built));
+    }
+
     @Test
     void testFontWithoutBytecodeFallsBack() throws IOException
     {

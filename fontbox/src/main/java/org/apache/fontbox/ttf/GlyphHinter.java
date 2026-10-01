@@ -316,20 +316,18 @@ class GlyphHinter
      * Rather than recognise such fonts by name, this measures the behaviour itself, once per font: it
      * hints a spread of up to {@value #PROBE_SAMPLE} glyphs that carry instructions at
      * {@value #PROBE_PPEM} ppem with backward compatibility on and with it off (full control), and
-     * compares each point of the two outlines, and of the full-control outline against the raw one.
-     * Ordinary hinting only rounds edges to the grid, so no point moves more than a pixel or two
-     * either way; a program that builds the glyphs moves components by many pixels. A glyph "moves"
-     * if any point is displaced by more than 5px in either comparison, and
-     * {@value #PROBE_MIN_MOVING} moving glyphs mark the font. The first comparison catches programs
-     * that need the x moves backward compatibility suppresses; the second also catches one that
-     * builds its glyphs in y only, which backward compatibility would let through but the size gates
-     * would not.
+     * compares them point by point with each other and with the raw outline. Ordinary hinting only
+     * rounds edges to the grid, so with backward compatibility on no point moves more than a pixel or
+     * two from the raw outline; a program that builds the glyphs moves components by many pixels even
+     * then, and moves them differently again with it off. A glyph counts when both comparisons exceed
+     * 5px (see {@link #buildsGeometry}), and {@value #PROBE_MIN_MOVING} such glyphs mark the font.
      * <p>
-     * Measured at {@value #PROBE_PPEM} ppem on 263 fonts from CJK PDFs and system fonts, against
-     * FreeType's own classification: ordinary fonts displace a point by at most 2.7px (second-largest
-     * glyph per font), fonts FreeType calls tricky by at least 8.9px; no false positives, and the only
-     * misses were two tiny subsets whose hinted glyphs stay within 0.4px of the raw outline, so full
-     * control would change nothing for them.
+     * Measured at {@value #PROBE_PPEM} ppem on 267 fonts from CJK PDFs and system fonts, against
+     * FreeType's own classification (second-largest glyph per font): fonts FreeType calls tricky are
+     * at least 7.0px from raw with backward compatibility on and differ by at least 8.9px with it off;
+     * ordinary fonts stay within 2.0px of raw - including Giovanni Book, whose broken x instructions
+     * move points 90px with it off. No false positives; the only misses were two tiny subsets whose
+     * hinted glyphs stay within 0.4px of the raw outline, so full control changes nothing for them.
      *
      * @return true if glyph programs must run with full control
      * @throws IOException if the glyph table cannot be read
@@ -359,9 +357,7 @@ class GlyphHinter
                     continue;
                 }
                 int[][] raw = probeRawPoints(gid, full[0].length);
-                boolean moves = pointDelta(compatible, full) > PROBE_TOLERANCE
-                        || raw != null && pointDelta(raw, full) > PROBE_TOLERANCE;
-                if (moves && ++moving >= PROBE_MIN_MOVING)
+                if (raw != null && buildsGeometry(raw, compatible, full) && ++moving >= PROBE_MIN_MOVING)
                 {
                     return true;
                 }
@@ -472,6 +468,25 @@ class GlyphHinter
             raw[1][i] = Fixed.scale(gd.getYCoordinate(i), PROBE_PPEM, unitsPerEm);
         }
         return raw;
+    }
+
+    /**
+     * Whether a glyph's program builds its geometry rather than fitting it to the grid: backward
+     * compatibility changes the result by more than PROBE_TOLERANCE, <em>and</em> even with backward
+     * compatibility on the result is that far from the raw outline. The second condition tells a font
+     * that needs full control (MingLiU: at least 7px from raw with it on) from one whose x
+     * instructions are merely broken and are hidden by backward compatibility (Giovanni Book: about
+     * 1px from raw with it on, 90px with it off) - giving the latter full control would wreck it.
+     *
+     * @param raw the scaled, unhinted outline
+     * @param compatible the outline hinted with backward compatibility on
+     * @param full the outline hinted with full control
+     * @return true if the glyph counts towards needing full control
+     */
+    static boolean buildsGeometry(int[][] raw, int[][] compatible, int[][] full)
+    {
+        return pointDelta(compatible, full) > PROBE_TOLERANCE
+                && pointDelta(raw, compatible) > PROBE_TOLERANCE;
     }
 
     /** The largest displacement of any point between two outlines of the same glyph, on either axis. */
