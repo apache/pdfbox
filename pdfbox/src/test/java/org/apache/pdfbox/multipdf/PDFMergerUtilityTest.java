@@ -723,7 +723,9 @@ public class PDFMergerUtilityTest extends TestCase
                                 }
                             }
                         }
-                        assertTrue("page: " + pageNum + ", mcid: " + mcid + " not found", found);
+                        assertTrue("page: " + pageNum + ", mcid: " + mcid +
+                                " not found in /ParentTree entry " + array.get(mcid) +
+                                " for number " + page.getStructParents(), found);
                     }
                 }
                 // actual count may be larger if last element is null, e.g. PDFBOX-4408
