@@ -313,6 +313,28 @@ class HintingIntegrationTest
         assertFalse(GlyphHinter.buildsGeometry(raw, built, built));
     }
 
+    /**
+     * A font whose bytecode builds its glyphs is assembled at its lowestRecPPEM when drawn smaller,
+     * and the result scaled down; at and above that size, and for every other font, glyphs are hinted
+     * at the size they are drawn at.
+     */
+    @Test
+    void testAssemblyPpem()
+    {
+        // MingLiU-like font (lowestRecPPEM 25): below 25 assemble at 25, from 25 up unchanged
+        assertEquals(25, GlyphHinter.assemblyPpem(13, true, 25));
+        assertEquals(25, GlyphHinter.assemblyPpem(24, true, 25));
+        assertEquals(25, GlyphHinter.assemblyPpem(25, true, 25));
+        assertEquals(107, GlyphHinter.assemblyPpem(107, true, 25));
+        // ordinary fonts are never resized, whatever lowestRecPPEM says
+        assertEquals(13, GlyphHinter.assemblyPpem(13, false, 25));
+        // an absurd lowestRecPPEM is capped
+        assertEquals(64, GlyphHinter.assemblyPpem(13, true, 255));
+        // nothing to do for a font that declares a small lowestRecPPEM, or a non-positive size
+        assertEquals(13, GlyphHinter.assemblyPpem(13, true, 9));
+        assertEquals(0, GlyphHinter.assemblyPpem(0, true, 25));
+    }
+
     @Test
     void testFontWithoutBytecodeFallsBack() throws IOException
     {

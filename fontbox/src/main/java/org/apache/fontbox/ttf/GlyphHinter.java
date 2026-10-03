@@ -82,6 +82,8 @@ class GlyphHinter
     private static final int PROBE_TOLERANCE = 5 * 64;
     /** The number of moving glyphs that marks a font as needing full control. */
     private static final int PROBE_MIN_MOVING = 2;
+    /** Upper bound on the size a full-control font is assembled at (see assemblyPpem). */
+    private static final int MAX_ASSEMBLY_PPEM = 64;
 
     GlyphHinter(TrueTypeFont font)
     {
@@ -124,13 +126,36 @@ class GlyphHinter
     /**
      * Returns the grid-fitted path of the glyph at the given ppem, or {@code null} if hinting does not
      * apply and the caller should render the raw outline.
+     * <p>
+     * One deliberate departure from FreeType: a font whose bytecode builds its glyphs (see
+     * {@link #needsFullControl()}) is, below its {@code head.lowestRecPPEM}, hinted at that size and
+     * the result scaled down (see {@link #assemblyPpem}). Such fonts - MingLiU and its relatives all
+     * declare 25 - need the bytecode to put their glyphs together, but at small sizes the same
+     * program also forces every stroke to a whole pixel in both directions. It was written for
+     * black-and-white rendering, and Windows showed embedded bitmaps there instead; antialiased, those
+     * whole-pixel strokes make text roughly 1.7 times as heavy as the design. Assembling at the
+     * smallest size the vendor recommends for the outlines keeps the glyphs correct at their designed
+     * weight. {@link #getHintedPointsF26Dot6} is unaffected and still hints at the requested size.
      *
      * @param gid the glyph id
-     * @param ppem the pixels-per-em to grid-fit to
+     * @param requestedPpem the pixels-per-em the glyph is drawn at
      * @return the hinted path in font units, or null
      */
-    synchronized GeneralPath getPath(int gid, int ppem)
+    synchronized GeneralPath getPath(int gid, int requestedPpem)
     {
+        int ppem = requestedPpem;
+        try
+        {
+            initialize();
+            if (available)
+            {
+                ppem = assemblyPpem(requestedPpem, needsFullControl(), lowestRecPpem);
+            }
+        }
+        catch (IOException e)
+        {
+            // hint() below reports the failure and falls back
+        }
         Hinted hinted = hint(gid, ppem);
         if (hinted == null)
         {
@@ -304,6 +329,25 @@ class GlyphHinter
         {
             return "<unknown>";
         }
+    }
+
+    /**
+     * The ppem to run a glyph program at when the glyph is drawn at {@code ppem}: the same, except that
+     * a full-control font below its {@code lowestRecPPEM} is assembled at {@code lowestRecPPEM}
+     * (capped at {@value #MAX_ASSEMBLY_PPEM}), and the result scaled down (see {@link #getPath}).
+     *
+     * @param ppem the size the glyph is drawn at
+     * @param fullControl whether the font's bytecode builds its glyphs
+     * @param lowestRecPpem the font's {@code head.lowestRecPPEM}
+     * @return the size to hint at
+     */
+    static int assemblyPpem(int ppem, boolean fullControl, int lowestRecPpem)
+    {
+        if (!fullControl || ppem <= 0 || ppem >= lowestRecPpem)
+        {
+            return ppem;
+        }
+        return Math.max(ppem, Math.min(lowestRecPpem, MAX_ASSEMBLY_PPEM));
     }
 
     /**
