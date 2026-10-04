@@ -16,6 +16,7 @@
  */
 package org.apache.fontbox.ttf;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -973,8 +974,11 @@ class TrueTypeInterpreter
     }
 
     /**
-     * ISECT: moves a point to the intersection of line A (a0,a1 in zp1) and line B (b0,b1 in zp0).
-     * Mirrors FreeType's Ins_ISECT, including the parallel-lines fallback to the four-point average.
+     * ISECT: moves a point to where line A (through a0 and a1, in zp1) crosses line B (through b0 and
+     * b1, in zp0). With u = a1 - a0 and v = b1 - b0 the crossing is a0 + t u, where
+     * t = ((b0 - a0) x v) / (u x v), solved exactly in integers. When the lines are within about 3
+     * degrees of parallel (|u x v| at most 1/19 of |u . v|, the cut-off FreeType uses) the crossing
+     * is too unstable to use, and the point goes to the average of the four line points instead.
      */
     private void doIsect(ExecutionContext ctx)
     {
@@ -984,44 +988,57 @@ class TrueTypeInterpreter
         int a1 = ctx.pop();
         int a0 = ctx.pop();
         int point = ctx.pop();
-        Zone za = ctx.getZone(gs.getZp1());
-        Zone zb = ctx.getZone(gs.getZp0());
-        Zone zp = ctx.getZone(gs.getZp2());
-        ExecutionContext.checkPoint(za, a0);
-        ExecutionContext.checkPoint(za, a1);
-        ExecutionContext.checkPoint(zb, b0);
-        ExecutionContext.checkPoint(zb, b1);
-        ExecutionContext.checkPoint(zp, point);
+        Zone lineA = ctx.getZone(gs.getZp1());
+        Zone lineB = ctx.getZone(gs.getZp0());
+        Zone target = ctx.getZone(gs.getZp2());
+        ExecutionContext.checkPoint(lineA, a0);
+        ExecutionContext.checkPoint(lineA, a1);
+        ExecutionContext.checkPoint(lineB, b0);
+        ExecutionContext.checkPoint(lineB, b1);
+        ExecutionContext.checkPoint(target, point);
 
-        int a0x = za.getCurrentX()[a0];
-        int a0y = za.getCurrentY()[a0];
-        int dax = za.getCurrentX()[a1] - a0x;
-        int day = za.getCurrentY()[a1] - a0y;
-        int b0x = zb.getCurrentX()[b0];
-        int b0y = zb.getCurrentY()[b0];
-        int dbx = zb.getCurrentX()[b1] - b0x;
-        int dby = zb.getCurrentY()[b1] - b0y;
-        int dx = b0x - a0x;
-        int dy = b0y - a0y;
+        long startX = lineA.getCurrentX()[a0];
+        long startY = lineA.getCurrentY()[a0];
+        long ux = lineA.getCurrentX()[a1] - startX;
+        long uy = lineA.getCurrentY()[a1] - startY;
+        long otherX = lineB.getCurrentX()[b0];
+        long otherY = lineB.getCurrentY()[b0];
+        long vx = lineB.getCurrentX()[b1] - otherX;
+        long vy = lineB.getCurrentY()[b1] - otherY;
 
-        int discriminant = Fixed.mulDiv(dax, -dby, 0x40) + Fixed.mulDiv(day, dbx, 0x40);
-        int dotproduct = Fixed.mulDiv(dax, dbx, 0x40) + Fixed.mulDiv(day, dby, 0x40);
-
-        // reject grazing intersections of nearly parallel lines, as FreeType does
-        if (Math.abs((long) discriminant * 0x40) > Math.abs((long) dotproduct))
+        long cross = ux * vy - uy * vx;
+        long dot = ux * vx + uy * vy;
+        int x;
+        int y;
+        if (Math.abs(cross) * 19 > Math.abs(dot))
         {
-            int val = Fixed.mulDiv(dx, -dby, 0x40) + Fixed.mulDiv(dy, dbx, 0x40);
-            zp.getCurrentX()[point] = a0x + Fixed.mulDiv(val, dax, discriminant);
-            zp.getCurrentY()[point] = a0y + Fixed.mulDiv(val, day, discriminant);
+            long along = (otherX - startX) * vy - (otherY - startY) * vx;
+            x = (int) (startX + roundedQuotient(along, ux, cross));
+            y = (int) (startY + roundedQuotient(along, uy, cross));
         }
         else
         {
-            // parallel: average of the four line points
-            zp.getCurrentX()[point] = (a0x + za.getCurrentX()[a1] + b0x + zb.getCurrentX()[b1]) / 2 / 2;
-            zp.getCurrentY()[point] = (a0y + za.getCurrentY()[a1] + b0y + zb.getCurrentY()[b1]) / 2 / 2;
+            x = (int) ((startX + lineA.getCurrentX()[a1] + otherX + lineB.getCurrentX()[b1]) / 4);
+            y = (int) ((startY + lineA.getCurrentY()[a1] + otherY + lineB.getCurrentY()[b1]) / 4);
         }
-        zp.getTouchedX()[point] = true;
-        zp.getTouchedY()[point] = true;
+        target.getCurrentX()[point] = x;
+        target.getCurrentY()[point] = y;
+        target.getTouchedX()[point] = true;
+        target.getTouchedY()[point] = true;
+    }
+
+    /** {@code a * b / c} rounded to the nearest integer, halves away from zero, without overflow. */
+    private static long roundedQuotient(long a, long b, long c)
+    {
+        BigInteger product = BigInteger.valueOf(a).multiply(BigInteger.valueOf(b));
+        BigInteger divisor = BigInteger.valueOf(c);
+        BigInteger[] qr = product.abs().divideAndRemainder(divisor.abs());
+        BigInteger q = qr[0];
+        if (qr[1].shiftLeft(1).compareTo(divisor.abs()) >= 0)
+        {
+            q = q.add(BigInteger.ONE);
+        }
+        return product.signum() * divisor.signum() < 0 ? -q.longValue() : q.longValue();
     }
 
     private void doMDAP(ExecutionContext ctx, boolean round)
@@ -1479,50 +1496,48 @@ class TrueTypeInterpreter
     }
 
     /**
-     * Interpolates the untouched points strictly between touched points {@code ref1} and {@code ref2}
-     * (walking forward, wrapping within {@code start..end}), as FreeType's iup_worker_interpolate_.
+     * Places the untouched points that lie between two touched points, walking the contour forwards
+     * from {@code from} to {@code to}, as the TrueType specification describes for IUP: a point whose
+     * original coordinate lies between the two touched points' originals keeps its relative position
+     * between them, measured on the unscaled (font unit) outline for precision; a point outside that
+     * range moves by the same amount as the touched point on its side. The ratio of the hinted to the
+     * font-unit span is held in 16.16 fixed point, the precision FreeType interpolates at, so results
+     * agree with it to the 1/64 px.
      */
-    private static void interpolateRun(int[] cur, int[] org, int[] orus, int ref1, int ref2,
+    private static void interpolateRun(int[] cur, int[] org, int[] orus, int from, int to,
             int start, int end)
     {
-        int lo = ref1;
-        int hi = ref2;
-        if (orus[lo] > orus[hi])
+        // the touched point lower in the outline, and the one higher; on a tie, the first one
+        boolean forward = orus[from] <= orus[to];
+        int lower = forward ? from : to;
+        int upper = forward ? to : from;
+        int fontUnitSpan = orus[upper] - orus[lower];
+        int ratio = fontUnitSpan == 0 ? 0 : Fixed.divFix(cur[upper] - cur[lower], fontUnitSpan);
+        for (int i = following(from, start, end); i != to; i = following(i, start, end))
         {
-            lo = ref2;
-            hi = ref1;
-        }
-        int orus1 = orus[lo];
-        int orus2 = orus[hi];
-        int org1 = org[lo];
-        int org2 = org[hi];
-        int cur1 = cur[lo];
-        int cur2 = cur[hi];
-        int delta1 = cur1 - org1;
-        int delta2 = cur2 - org2;
-        boolean snap = cur1 == cur2 || orus1 == orus2;
-        int scale = snap ? 0 : Fixed.divFix(cur2 - cur1, orus2 - orus1);
-        for (int u = ref1 + 1 > end ? start : ref1 + 1; u != ref2; u = u + 1 > end ? start : u + 1)
-        {
-            int x = org[u];
-            if (x <= org1)
+            if (org[i] <= org[lower])
             {
-                x += delta1;
+                cur[i] = org[i] + cur[lower] - org[lower];
             }
-            else if (x >= org2)
+            else if (org[i] >= org[upper])
             {
-                x += delta2;
+                cur[i] = org[i] + cur[upper] - org[upper];
             }
-            else if (snap)
+            else if (fontUnitSpan == 0)
             {
-                x = cur1;
+                cur[i] = cur[lower];
             }
             else
             {
-                x = cur1 + Fixed.mulFix(orus[u] - orus1, scale);
+                cur[i] = cur[lower] + Fixed.mulFix(orus[i] - orus[lower], ratio);
             }
-            cur[u] = x;
         }
+    }
+
+    /** The point after {@code i} on a closed contour running from {@code start} to {@code end}. */
+    private static int following(int i, int start, int end)
+    {
+        return i == end ? start : i + 1;
     }
 
     private void doIp(ExecutionContext ctx)

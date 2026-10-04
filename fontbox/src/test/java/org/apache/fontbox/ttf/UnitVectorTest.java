@@ -21,15 +21,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 /**
- * {@link UnitVector#normalize} must reproduce FreeType's integer normalization bit for bit: the vectors
- * steer every diagonal move, and a one-unit difference in F2Dot14 shifts points by 1/64 px.
+ * {@link UnitVector#normalize}: the vectors steer every diagonal move, and a one-unit difference in
+ * F2Dot14 shifts points by 1/64 px, so the results are checked against the unit vectors FreeType
+ * produces for the same deltas.
  */
 class UnitVectorTest
 {
     /**
-     * {dx, dy, x, y}: the expected values are FreeType 2.13.2's (FT_Vector_NormLen, then divided by 4
-     * with truncation). Nearly axis-aligned vectors are where it differs from rounding the exact
-     * quotient: (1000, -7) gives (16383, -114), not (16384, -115).
+     * {dx, dy, x, y}: the expected values are the unit vectors FreeType 2.13.2 computes for these
+     * deltas (its output, measured offline). Nearly axis-aligned vectors show the truncation to
+     * F2Dot14: (1000, -7) gives (16383, -114), not the rounded (16384, -115).
      */
     private static final int[][] FREETYPE = {
         { 3, 4, 9830, 13107 },

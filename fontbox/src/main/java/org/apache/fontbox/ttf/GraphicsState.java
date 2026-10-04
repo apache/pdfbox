@@ -325,6 +325,9 @@ class GraphicsState
         }
     }
 
+    /** SROUND/S45ROUND period selector (bits 7-6) to the period in half grid periods. */
+    private static final int[] PERIOD_HALVES = { 1, 2, 4, 2 };
+
     /**
      * Configures super-round parameters for {@code SROUND}/{@code S45ROUND} from the selector byte,
      * per the TrueType specification. The period, phase and threshold are derived in F2Dot14 and
@@ -337,35 +340,10 @@ class GraphicsState
      */
     public void setSuperRound(int gridPeriod, int selector)
     {
-        int period;
-        switch (selector & 0xC0)
-        {
-            case 0x00:
-                period = gridPeriod / 2;
-                break;
-            case 0x80:
-                period = gridPeriod * 2;
-                break;
-            default: // 0x40, and the reserved 0xC0 which FreeType also treats as the grid period
-                period = gridPeriod;
-                break;
-        }
-        int phase;
-        switch (selector & 0x30)
-        {
-            case 0x00:
-                phase = 0;
-                break;
-            case 0x10:
-                phase = period / 4;
-                break;
-            case 0x20:
-                phase = period / 2;
-                break;
-            default:
-                phase = period * 3 / 4;
-                break;
-        }
+        // bits 7-6: the period as a multiple of the grid, in halves - 1/2, 1, 2, and the reserved
+        // value 3 taken as 1 (as FreeType does); bits 5-4: the phase in quarters of the period
+        int period = gridPeriod * PERIOD_HALVES[(selector >> 6) & 3] / 2;
+        int phase = period * ((selector >> 4) & 3) / 4;
         int n = selector & 0x0F;
         int threshold = n == 0 ? period - 1 : (n - 4) * period / 8;
 

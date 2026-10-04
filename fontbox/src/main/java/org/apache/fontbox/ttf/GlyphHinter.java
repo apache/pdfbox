@@ -643,9 +643,9 @@ class GlyphHinter
             ends[c] = composite.getEndPtOfContours(c);
         }
         appendPhantomPoints(glyph, gid, ppem, pointCount, zone);
-        // FreeType's TT_Hint_Glyph: a composite's instructions "completely refer to the (already)
-        // hinted subglyphs" - the unscaled coordinates (orus) are the assembled positions, i.e. the
-        // originals, and the program runs at a scale of 1 (see ExecutionContext.isComposite)
+        // A composite's own program works on its components as already hinted and assembled, so its
+        // unscaled coordinates are those assembled positions (the originals) at a scale of 1, as in
+        // FreeType's TT_Hint_Glyph (see ExecutionContext.isComposite)
         System.arraycopy(zone.getOriginalX(), 0, zone.getUnscaledX(), 0, pointCount + 4);
         System.arraycopy(zone.getOriginalY(), 0, zone.getUnscaledY(), 0, pointCount + 4);
 
