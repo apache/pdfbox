@@ -92,6 +92,28 @@ class TestBaseParser
         assertEquals(output, cosString.getString());
     }
 
+    //@Test
+    public void testPDFBox276() throws IOException
+    {
+        // this is an invalid sequence.
+        byte[] inputBytes = new byte[] { '(', 'c', ':', '\\', ')', '\r', '/', 'P' };
+        RandomAccessReadBuffer buffer = new RandomAccessReadBuffer(inputBytes);
+        COSParser cosParser = new COSParser(buffer);
+        COSString cosString = cosParser.parseCOSString();
+        assertEquals("c:\\", cosString.getString());
+    }
+
+    @Test
+    public void testPDFBox6167() throws IOException
+    {
+        // this is a valid sequence.
+        byte[] inputBytes = new byte[] { '(', '\\', '0', '1', '4', '\\', ')', 0x0A, '>', ')', '5' };
+        RandomAccessReadBuffer buffer = new RandomAccessReadBuffer(inputBytes);
+        COSParser cosParser = new COSParser(buffer);
+        COSString cosString = cosParser.parseCOSString();
+        assertEquals("\014)\n>", cosString.getString());
+    }
+
     @Test
     void testBaseParserStackOverflow()
     {
