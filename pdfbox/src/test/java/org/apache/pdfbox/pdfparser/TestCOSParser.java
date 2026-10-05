@@ -21,6 +21,7 @@ package org.apache.pdfbox.pdfparser;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.util.Charsets;
 import static org.junit.Assert.assertEquals;
@@ -308,5 +309,27 @@ public class TestCOSParser
         
         // Same bytes should return references to identical object
         assertEquals(name1, name2);
+    }
+
+    //@Test
+    public void testPDFBox276() throws IOException
+    {
+        // this is an invalid sequence.
+        byte[] inputBytes = new byte[] { '(', 'c', ':', '\\', ')', '\r', '/', 'P' };
+        RandomAccessBuffer buffer = new RandomAccessBuffer(inputBytes);
+        COSParser cosParser = new COSParser(buffer);
+        COSString cosString = cosParser.parseCOSString();
+        assertEquals("c:\\", cosString.getString());
+    }
+
+    @Test
+    public void testPDFBox6167() throws IOException
+    {
+        // this is a valid sequence.
+        byte[] inputBytes = new byte[] { '(', '\\', '0', '1', '4', '\\', ')', 0x0A, '>', ')', '5' };
+        RandomAccessBuffer buffer = new RandomAccessBuffer(inputBytes);
+        COSParser cosParser = new COSParser(buffer);
+        COSString cosString = cosParser.parseCOSString();
+        assertEquals("\014)\n>", cosString.getString());
     }
 }
