@@ -143,11 +143,11 @@ public abstract class BaseParser
      *
      * However it missed the case where the number of opening and closing parenthesis isn't balanced
      *
-     * The second bug was in this format /Title (c:\) /Producer
+     * The second bug was in this format /Title (c:\) /Producer (inactive as of 10/2026)
      *
      * @param bracesParameter the number of braces currently open.
      *
-     * @return the corrected value of the brace counter
+     * @return the corrected value of the brace counter. Returning the input means no change.
      * @throws IOException
      */
     private int checkForEndOfString(final int bracesParameter) throws IOException
@@ -296,16 +296,8 @@ public abstract class BaseParser
                     out.write('\f');
                     break;
                 case ')':
-                    // PDFBox 276 /Title (c:\)
-                    braces = checkForEndOfString(braces);
-                    if (braces != 0)
-                    {
-                        out.write(next);
-                    }
-                    else
-                    {
-                        out.write('\\');
-                    }
+                    // PDFBOX-6167: The change for PDFBOX-276 /Title (c:\) was removed, see history before 10/2026
+                    out.write(next);
                     break;
                 case '(':
                 case '\\':

@@ -90,6 +90,28 @@ class TestCOSParser
         assertEquals(output, cosString.getString());
     }
 
+    @Test
+    void testPDFBox276() throws IOException
+    {
+        // this is an invalid sequence.
+        byte[] inputBytes = new byte[] { '(', 'c', ':', '\\', ')', '\r', '/', 'P' };
+        RandomAccessReadBuffer buffer = new RandomAccessReadBuffer(inputBytes);
+        COSParser cosParser = new COSParser(buffer);
+        COSString cosString = cosParser.parseCOSLiteralString();
+        assertEquals("c:\\", cosString.getString());
+    }
+
+    @Test
+    void testPDFBox6167() throws IOException
+    {
+        // this is a valid sequence.
+        byte[] inputBytes = new byte[] { '(', '\\', '0', '1', '4', '\\', ')', 0x0A, '>', ')', '5' };
+        RandomAccessReadBuffer buffer = new RandomAccessReadBuffer(inputBytes);
+        COSParser cosParser = new COSParser(buffer);
+        COSString cosString = cosParser.parseCOSLiteralString();
+        assertEquals("\014)\n>", cosString.getString());
+    }
+
     // COSName parsing tests based on examples from PDF 32000-1:2008, Table 4, Section 7.3.5
 
     @Test
