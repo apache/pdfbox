@@ -1550,7 +1550,7 @@ class PDFMergerUtilityTest
                 assertEquals(page, ann1.getPage());
                 assertEquals(ann0, ann0.getPopup().getParent());
                 assertEquals(ann1, ann1.getPopup().getParent());
-            }            
+            }
         }
     }
 
