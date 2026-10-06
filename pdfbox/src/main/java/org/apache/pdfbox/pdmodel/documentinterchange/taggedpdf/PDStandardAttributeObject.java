@@ -135,7 +135,7 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
     protected void setArrayOfString(String name, String[] values)
     {
         COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
-        COSArray array = new COSArray();
+        COSArray array = new COSArray(values.length);
         for (String value : values)
         {
             array.add(new COSString(value));
@@ -222,7 +222,7 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
     protected void setArrayOfName(String name, String[] values)
     {
         COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
-        COSArray array = new COSArray();
+        COSArray array = new COSArray(values.length);
         for (String value : values)
         {
             array.add(COSName.getPDFName(value));
@@ -373,7 +373,7 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
      */
     protected void setArrayOfNumber(String name, float[] values)
     {
-        COSArray array = new COSArray();
+        COSArray array = new COSArray(values.length);
         for (float value : values)
         {
             array.add(new COSFloat(value));
