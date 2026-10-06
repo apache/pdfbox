@@ -51,6 +51,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkedContentReference;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDObjectReference;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDParentTreeValue;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureNode;
@@ -734,10 +735,34 @@ public class PDFMergerUtilityTest extends TestCase
             }
             for (PDAnnotation ann : page.getAnnotations())
             {
-                if (ann.getStructParent() >= 0)
+                int structParent = ann.getStructParent();
+                if (structParent >= 0)
                 {
-                    assertTrue("/StructParent " + ann.getStructParent() + " missing in /ParentTree",
-                               keySet.contains(ann.getStructParent()));
+                    assertTrue("/StructParent " + structParent + " missing in /ParentTree", keySet.contains(structParent));
+
+                    // but is it the SAME? Example of a fail:
+                    // https://github.com/veraPDF/veraPDF-library/issues/1630
+                    PDParentTreeValue obj = (PDParentTreeValue) numberTreeAsMap.get(structParent);
+                    PDStructureElement structureElement = new PDStructureElement((COSDictionary) obj.getCOSObject());
+                    // search kids for OBJR entry
+                    boolean found = false;
+                    for (Object kid : structureElement.getKids())
+                    {
+                        if (kid instanceof PDObjectReference)
+                        {
+                            PDObjectReference objRef = (PDObjectReference) kid;
+                            assertEquals(String.format("/StructureTree entry %d for page %d doesn't have the expected annotation", structParent, pageNum),
+                                    ann, objRef.getReferencedObject());
+                            if (objRef.getPage() != null)
+                            {
+                                assertEquals(String.format("/StructureTree entry %d for page %d doesn't have the expected page", structParent, pageNum),
+                                        page, objRef.getPage());
+                            }
+                            found = true; // don't break, there might be another (wrong) OBJR entry
+                        }
+                    }
+                    assertTrue(String.format("/StructureTree entry %d for page %d doesn't have expected page and annotation", structParent, pageNum),
+                            found);
                 }
             }
         }
