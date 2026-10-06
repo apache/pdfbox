@@ -102,7 +102,7 @@ public abstract class PDStructureNode implements COSObjectable
     /**
      * Returns a list of objects for the kids (K).
      * 
-     * @return a list of objects for the kids, never null.
+     * @return a list of objects for the kids, never null. See {@link #createObject(COSBase)} for possible types.
      */
     public List<Object> getKids()
     {
