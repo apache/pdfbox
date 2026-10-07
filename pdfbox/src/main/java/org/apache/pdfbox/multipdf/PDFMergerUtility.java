@@ -957,6 +957,10 @@ public class PDFMergerUtility
     {
         PDMarkInfo destMark = destCatalog.getMarkInfo();
         PDMarkInfo srcMark = srcCatalog.getMarkInfo();
+        if (srcMark == null && destMark == null)
+        {
+            return;
+        }
         if (destMark == null)
         {
             destMark = new PDMarkInfo();
@@ -965,7 +969,7 @@ public class PDFMergerUtility
         {
             srcMark = new PDMarkInfo();
         }
-        destMark.setMarked(true);
+        destMark.setMarked(srcMark.isMarked() || destMark.isMarked());
         destMark.setSuspect(srcMark.isSuspect() || destMark.isSuspect());
         destMark.setUserProperties(srcMark.usesUserProperties() || destMark.usesUserProperties());
         destCatalog.setMarkInfo(destMark);
