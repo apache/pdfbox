@@ -368,7 +368,7 @@ public class PDNumberTreeNode implements COSObjectable
     }
 
     /**
-     * This will return a map of numbers on ALL levels. The key will be a java.lang.Integer, the
+     * This will return a flattened recursive map of numbers on ALL levels. The key will be a java.lang.Integer, the
      * value will depend on where this class is being used.
      *
      * @return A map of COS objects.
