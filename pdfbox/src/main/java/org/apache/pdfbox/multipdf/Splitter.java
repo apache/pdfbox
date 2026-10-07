@@ -258,7 +258,7 @@ public class Splitter
         {
             return;
         }
-        Map<String, PDStructureElement> srcIDTreeAsMap = PDFMergerUtility.getIDTreeAsMap(srcIDTree);
+        Map<String, PDStructureElement> srcIDTreeAsMap = srcIDTree.getTreeAsMap();
         Map<String, PDStructureElement> destNames = new HashMap<String, PDStructureElement>();
         for (Map.Entry<String, PDStructureElement> entry : srcIDTreeAsMap.entrySet())
         {

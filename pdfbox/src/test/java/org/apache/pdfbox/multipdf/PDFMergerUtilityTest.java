@@ -521,9 +521,9 @@ public class PDFMergerUtilityTest extends TestCase
         PDDocument dst = PDDocument.load(new File(SRCDIR, "PDFBOX-4417-054080.pdf"));
 
         PDNameTreeNode<PDStructureElement> srcIDTree = src.getDocumentCatalog().getStructureTreeRoot().getIDTree();
-        Map<String, PDStructureElement> srcIDTreeMap = PDFMergerUtility.getIDTreeAsMap(srcIDTree);
+        Map<String, PDStructureElement> srcIDTreeMap = srcIDTree.getTreeAsMap();
         PDNameTreeNode<PDStructureElement> dstIDTree = dst.getDocumentCatalog().getStructureTreeRoot().getIDTree();
-        Map<String, PDStructureElement> dstIDTreeMap = PDFMergerUtility.getIDTreeAsMap(dstIDTree);
+        Map<String, PDStructureElement> dstIDTreeMap = dstIDTree.getTreeAsMap();
         int expectedTotal = srcIDTreeMap.size() + dstIDTreeMap.size();
         assertEquals(192, expectedTotal);
 
@@ -544,7 +544,7 @@ public class PDFMergerUtilityTest extends TestCase
         checkForPageOrphans(dst);
 
         dstIDTree = dst.getDocumentCatalog().getStructureTreeRoot().getIDTree();
-        dstIDTreeMap = PDFMergerUtility.getIDTreeAsMap(dstIDTree);
+        dstIDTreeMap = dstIDTree.getTreeAsMap();
         assertEquals(expectedTotal, dstIDTreeMap.size());
 
         dst.close();
@@ -872,11 +872,16 @@ public class PDFMergerUtilityTest extends TestCase
         // StructTreeRoot/IDTree trees.
         PDPageTree pageTree = doc.getPages();
         PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
-        Map<String, PDStructureElement> idTreeMap = PDFMergerUtility.getIDTreeAsMap(structureTreeRoot.getIDTree());
+        PDNameTreeNode<PDStructureElement> idTree = structureTreeRoot.getIDTree();
+        Map<String, PDStructureElement> idTreeMap = Collections.emptyMap();
+        if (idTree != null)
+        {
+            idTreeMap = idTree.getTreeAsMap();
+        }
         checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject(), structureTreeRoot.getCOSObject(), idTreeMap);
         assertNotNull(structureTreeRoot.getK());
         checkElement(pageTree, structureTreeRoot.getK(), structureTreeRoot.getCOSObject(), idTreeMap);
-        checkForIDTreeOrphans(pageTree, PDFMergerUtility.getIDTreeAsMap(structureTreeRoot.getIDTree()));
+        checkForIDTreeOrphans(pageTree, idTreeMap);
         checkParentTreeAgainstK(structureTreeRoot);
     }
 
@@ -1207,7 +1212,7 @@ public class PDFMergerUtilityTest extends TestCase
         // these tests just verify the status quo. Changes should be checked visually with
         // a PDF viewer that can display structural information.
         PDStructureTreeRoot structureTreeRoot = dstDoc.getDocumentCatalog().getStructureTreeRoot();
-        assertEquals(126, PDFMergerUtility.getIDTreeAsMap(structureTreeRoot.getIDTree()).size());
+        assertEquals(126, structureTreeRoot.getIDTree().getTreeAsMap().size());
         assertEquals(2, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot.getParentTree()).size());
         assertEquals(6, structureTreeRoot.getRoleMap().size());
         dstDoc.close();

@@ -1100,8 +1100,8 @@ public class PDFMergerUtility
         {
             destIDTree = new PDStructureElementNameTreeNode();
         }
-        Map<String, PDStructureElement> srcNames = getIDTreeAsMap(srcIDTree);
-        Map<String, PDStructureElement> destNames = getIDTreeAsMap(destIDTree);
+        Map<String, PDStructureElement> srcNames = srcIDTree.getTreeAsMap();
+        Map<String, PDStructureElement> destNames = destIDTree.getTreeAsMap();
         for (Map.Entry<String, PDStructureElement> entry : srcNames.entrySet())
         {
             if (destNames.containsKey(entry.getKey()))
@@ -1125,36 +1125,6 @@ public class PDFMergerUtility
         // when these are opened in a viewer that uses the tagging information.
         // If this happens, then PDNameTreeNode should be improved with a convenience method that
         // stores the map into a B+Tree, see https://en.wikipedia.org/wiki/B+_tree
-    }
-
-    // PDNameTreeNode.getNames() only brings one level, this is why we need this
-    // might be made public at a later time, or integrated into PDNameTreeNode with template.
-    static Map<String, PDStructureElement> getIDTreeAsMap(PDNameTreeNode<PDStructureElement> idTree)
-            throws IOException
-    {
-        if (idTree == null)
-        {
-            return new LinkedHashMap<String, PDStructureElement>();
-        }
-        Map<String, PDStructureElement> names = idTree.getNames();
-        if (names == null)
-        {
-            names = new LinkedHashMap<String, PDStructureElement>();
-        }
-        else
-        {
-            // must copy because the map is read only
-            names = new LinkedHashMap<String, PDStructureElement>(names);
-        }
-        List<PDNameTreeNode<PDStructureElement>> kids = idTree.getKids();
-        if (kids != null)
-        {
-            for (PDNameTreeNode<PDStructureElement> kid : kids)
-            {
-                names.putAll(getIDTreeAsMap(kid));
-            }
-        }
-        return names;
     }
 
     // PDNumberTreeNode.getNumbers() only brings one level, this is why we need this
