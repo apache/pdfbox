@@ -900,9 +900,10 @@ class PDFMergerUtilityTest
         // StructTreeRoot/IDTree trees.
         PDPageTree pageTree = doc.getPages();
         PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
-        checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject(), structureTreeRoot.getCOSObject());
+        Map<String, PDStructureElement> idTreeMap = PDFMergerUtility.getIDTreeAsMap(structureTreeRoot.getIDTree());
+        checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject(), structureTreeRoot.getCOSObject(), idTreeMap);
         assertNotNull(structureTreeRoot.getK());
-        checkElement(pageTree, structureTreeRoot.getK(), structureTreeRoot.getCOSObject());
+        checkElement(pageTree, structureTreeRoot.getK(), structureTreeRoot.getCOSObject(), idTreeMap);
         checkForIDTreeOrphans(pageTree, PDFMergerUtility.getIDTreeAsMap(structureTreeRoot.getIDTree()));
         checkParentTreeAgainstK(structureTreeRoot);
     }
@@ -945,7 +946,7 @@ class PDFMergerUtilityTest
             }
             if (!element.getKids().isEmpty())
             {
-                checkElement(pageTree, element.getCOSObject().getDictionaryObject(COSName.K), element.getCOSObject());
+                checkElement(pageTree, element.getCOSObject().getDictionaryObject(COSName.K), element.getCOSObject(), idTreeMap);
             }
         }
     }
@@ -1021,7 +1022,8 @@ class PDFMergerUtilityTest
     // See PDF specification Table 325 – Entries in an object reference dictionary
     // example of file with /Kids: 000153.pdf 000208.pdf 000314.pdf 000359.pdf 000671.pdf
     // from digitalcorpora site
-    private void checkElement(PDPageTree pageTree, COSBase base, COSDictionary parentDict) throws IOException
+    private void checkElement(PDPageTree pageTree, COSBase base, COSDictionary parentDict,
+                               Map<String, PDStructureElement> idTreeMap) throws IOException
     {
         if (base instanceof COSArray)
         {
@@ -1031,12 +1033,22 @@ class PDFMergerUtilityTest
                 {
                     base2 = ((COSObject) base2).getObject();
                 }
-                checkElement(pageTree, base2, parentDict);
+                checkElement(pageTree, base2, parentDict, idTreeMap);
             }
         }
         else if (base instanceof COSDictionary)
         {
             COSDictionary kdict = (COSDictionary) base;
+            if (kdict.containsKey(COSName.ID))
+            {
+                // PDFBOX-6273: check that /ID is in the /IDTree
+                PDStructureElement structureElement = new PDStructureElement(kdict);
+                String elementIdentifier = structureElement.getElementIdentifier();
+                if (elementIdentifier != null)
+                {
+                    assertTrue(idTreeMap.containsKey(elementIdentifier));
+                }
+            }
             if (kdict.containsKey(COSName.PG))
             {
                 PDStructureElement structureElement = new PDStructureElement(kdict);
@@ -1044,7 +1056,7 @@ class PDFMergerUtilityTest
             }
             if (kdict.containsKey(COSName.K))
             {
-                checkElement(pageTree, kdict.getDictionaryObject(COSName.K), kdict);
+                checkElement(pageTree, kdict.getDictionaryObject(COSName.K), kdict, idTreeMap);
                 
                 // Check that the /P entry points to the correct object
                 PDStructureNode node = PDStructureNode.create(kdict);
@@ -1062,11 +1074,11 @@ class PDFMergerUtilityTest
             // if we're in a number tree, check /Nums and /Kids
             if (kdict.containsKey(COSName.KIDS))
             {
-                checkElement(pageTree, kdict.getDictionaryObject(COSName.KIDS), kdict);
+                checkElement(pageTree, kdict.getDictionaryObject(COSName.KIDS), kdict, idTreeMap);
             }
             else if (kdict.containsKey(COSName.NUMS))
             {
-                checkElement(pageTree, kdict.getDictionaryObject(COSName.NUMS), kdict);
+                checkElement(pageTree, kdict.getDictionaryObject(COSName.NUMS), kdict, idTreeMap);
             }
 
             if (COSName.OBJR.equals(kdict.getDictionaryObject(COSName.TYPE)) ||
@@ -1479,9 +1491,10 @@ class PDFMergerUtilityTest
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 dstDoc.save(baos);
-                PDDocument reloadedDoc = Loader.loadPDF(baos.toByteArray());
-                assertNotNull(reloadedDoc.getDocumentCatalog().getMetadata());
-                reloadedDoc.close();
+                try (PDDocument reloadedDoc = Loader.loadPDF(baos.toByteArray()))
+                {
+                    assertNotNull(reloadedDoc.getDocumentCatalog().getMetadata());
+                }
 
             }
             // Check that source document is unchanged
