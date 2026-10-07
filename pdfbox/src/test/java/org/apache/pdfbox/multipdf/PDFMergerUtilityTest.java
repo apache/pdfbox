@@ -428,7 +428,7 @@ class PDFMergerUtilityTest
 
         PDStructureTreeRoot structureTreeRoot = src.getDocumentCatalog().getStructureTreeRoot();
         PDNumberTreeNode parentTree = structureTreeRoot.getParentTree();
-        Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
+        Map<Integer, COSObjectable> numberTreeAsMap = parentTree.getTreeAsMap();
         assertEquals(381, numberTreeAsMap.size());
         assertEquals(743, Collections.max(numberTreeAsMap.keySet()) + 1);
         assertEquals(0, (int) Collections.min(numberTreeAsMap.keySet()));
@@ -438,7 +438,7 @@ class PDFMergerUtilityTest
 
         structureTreeRoot = dst.getDocumentCatalog().getStructureTreeRoot();
         parentTree = structureTreeRoot.getParentTree();
-        numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
+        numberTreeAsMap = parentTree.getTreeAsMap();
         assertEquals(7, numberTreeAsMap.size());
         assertEquals(328, Collections.max(numberTreeAsMap.keySet()) + 1);
         assertEquals(321, (int) Collections.min(numberTreeAsMap.keySet()));
@@ -456,7 +456,7 @@ class PDFMergerUtilityTest
 
         structureTreeRoot = dst.getDocumentCatalog().getStructureTreeRoot();
         parentTree = structureTreeRoot.getParentTree();
-        numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
+        numberTreeAsMap = parentTree.getTreeAsMap();
         assertEquals(381+7, numberTreeAsMap.size());
         assertEquals(408+743, Collections.max(numberTreeAsMap.keySet()) + 1);
         assertEquals(321, (int) Collections.min(numberTreeAsMap.keySet()));
@@ -479,7 +479,7 @@ class PDFMergerUtilityTest
 
         PDStructureTreeRoot structureTreeRoot = src.getDocumentCatalog().getStructureTreeRoot();
         PDNumberTreeNode parentTree = structureTreeRoot.getParentTree();
-        Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
+        Map<Integer, COSObjectable> numberTreeAsMap = parentTree.getTreeAsMap();
         assertEquals(33, numberTreeAsMap.size());
         assertEquals(64, Collections.max(numberTreeAsMap.keySet()) + 1);
         assertEquals(31, (int) Collections.min(numberTreeAsMap.keySet()));
@@ -498,7 +498,7 @@ class PDFMergerUtilityTest
 
         structureTreeRoot = dst.getDocumentCatalog().getStructureTreeRoot();
         parentTree = structureTreeRoot.getParentTree();
-        numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
+        numberTreeAsMap = parentTree.getTreeAsMap();
         assertEquals(33, numberTreeAsMap.size());
         assertEquals(64, Collections.max(numberTreeAsMap.keySet()) + 1);
         assertEquals(31, (int) Collections.min(numberTreeAsMap.keySet()));
@@ -636,7 +636,7 @@ class PDFMergerUtilityTest
             PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
             PDNumberTreeNode parentTree = structureTreeRoot.getParentTree();
             parentTree.getValue(0);
-            Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
+            Map<Integer, COSObjectable> numberTreeAsMap = parentTree.getTreeAsMap();
             assertEquals(31, numberTreeAsMap.size());
             assertEquals(31, Collections.max(numberTreeAsMap.keySet()) + 1);
             assertEquals(0, (int) Collections.min(numberTreeAsMap.keySet()));
@@ -669,7 +669,7 @@ class PDFMergerUtilityTest
         PDDocumentCatalog documentCatalog = document.getDocumentCatalog();
         assertNotEquals(-1, documentCatalog.getStructureTreeRoot().getParentTreeNextKey());
         PDNumberTreeNode parentTree = documentCatalog.getStructureTreeRoot().getParentTree();
-        Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
+        Map<Integer, COSObjectable> numberTreeAsMap = parentTree.getTreeAsMap();
         Set<Integer> keySet = numberTreeAsMap.keySet();
         PDAcroForm acroForm = documentCatalog.getAcroForm();
         if (acroForm != null)
@@ -918,7 +918,7 @@ class PDFMergerUtilityTest
         // check that elements in the /ParentTree are in the /K tree
         ElementCounter elementCounter = new ElementCounter();
         elementCounter.walk(structureTreeRoot.getK());
-        Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot.getParentTree());
+        Map<Integer, COSObjectable> numberTreeAsMap = structureTreeRoot.getParentTree().getTreeAsMap();
         for (Map.Entry<Integer, COSObjectable> entry : numberTreeAsMap.entrySet())
         {
             PDParentTreeValue val = (PDParentTreeValue) entry.getValue(); // array or dictionary
@@ -1253,7 +1253,7 @@ class PDFMergerUtilityTest
                 // a PDF viewer that can display structural information.
                 PDStructureTreeRoot structureTreeRoot = dstDoc.getDocumentCatalog().getStructureTreeRoot();
                 assertEquals(126, structureTreeRoot.getIDTree().getTreeAsMap().size());
-                assertEquals(2, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot.getParentTree()).size());
+                assertEquals(2, structureTreeRoot.getParentTree().getTreeAsMap().size());
                 assertEquals(6, structureTreeRoot.getRoleMap().size());
             }
         }
@@ -1277,7 +1277,7 @@ class PDFMergerUtilityTest
                 // these tests just verify the status quo. Changes should be checked visually with
                 // a PDF viewer that can display structural information.
                 PDStructureTreeRoot structureTreeRoot = dstDoc.getDocumentCatalog().getStructureTreeRoot();
-                assertEquals(7, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot.getParentTree()).size());
+                assertEquals(7, structureTreeRoot.getParentTree().getTreeAsMap().size());
                 assertEquals(4, structureTreeRoot.getRoleMap().size());
                 
                 // check that destinations are fixed (only the two first point to the split doc)
@@ -1365,22 +1365,22 @@ class PDFMergerUtilityTest
                 }
             }
             PDStructureTreeRoot structureTreeRoot1 = splitResult.get(0).getDocumentCatalog().getStructureTreeRoot();
-            assertEquals(6, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot1.getParentTree()).size());
+            assertEquals(6, structureTreeRoot1.getParentTree().getTreeAsMap().size());
             assertEquals(3, structureTreeRoot1.getRoleMap().size());
             PDStructureTreeRoot structureTreeRoot2 = splitResult.get(1).getDocumentCatalog().getStructureTreeRoot();
-            assertEquals(6, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot2.getParentTree()).size());
+            assertEquals(6, structureTreeRoot2.getParentTree().getTreeAsMap().size());
             assertEquals(3, structureTreeRoot2.getRoleMap().size());
             PDStructureTreeRoot structureTreeRoot3 = splitResult.get(2).getDocumentCatalog().getStructureTreeRoot();
-            assertEquals(6, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot3.getParentTree()).size());
+            assertEquals(6, structureTreeRoot3.getParentTree().getTreeAsMap().size());
             assertEquals(4, structureTreeRoot3.getRoleMap().size());
             PDStructureTreeRoot structureTreeRoot4 = splitResult.get(3).getDocumentCatalog().getStructureTreeRoot();
-            assertEquals(5, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot4.getParentTree()).size());
+            assertEquals(5, structureTreeRoot4.getParentTree().getTreeAsMap().size());
             assertEquals(4, structureTreeRoot4.getRoleMap().size());
             PDStructureTreeRoot structureTreeRoot5 = splitResult.get(4).getDocumentCatalog().getStructureTreeRoot();
-            assertEquals(1, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot5.getParentTree()).size());
+            assertEquals(1, structureTreeRoot5.getParentTree().getTreeAsMap().size());
             assertEquals(6, structureTreeRoot5.getRoleMap().size());
             PDStructureTreeRoot structureTreeRoot6 = splitResult.get(5).getDocumentCatalog().getStructureTreeRoot();
-            assertEquals(1, PDFMergerUtility.getNumberTreeAsMap(structureTreeRoot6.getParentTree()).size());
+            assertEquals(1, structureTreeRoot6.getParentTree().getTreeAsMap().size());
             assertEquals(7, structureTreeRoot6.getRoleMap().size());
             for (PDDocument dstDoc : splitResult)
             {

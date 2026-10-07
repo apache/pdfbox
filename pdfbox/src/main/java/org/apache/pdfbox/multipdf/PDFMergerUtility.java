@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -744,7 +743,7 @@ public class PDFMergerUtility
             destParentTreeNextKey = destStructTree.getParentTreeNextKey();
             if (destParentTree != null)
             {
-                destNumberTreeAsMap = getNumberTreeAsMap(destParentTree);
+                destNumberTreeAsMap = destParentTree.getTreeAsMap();
                 if (destParentTreeNextKey < 0)
                 {
                     if (destNumberTreeAsMap.isEmpty())
@@ -761,7 +760,7 @@ public class PDFMergerUtility
                     PDNumberTreeNode srcParentTree = srcStructTree.getParentTree();
                     if (srcParentTree != null)
                     {
-                        srcNumberTreeAsMap = getNumberTreeAsMap(srcParentTree);
+                        srcNumberTreeAsMap = srcParentTree.getTreeAsMap();
                         if (!srcNumberTreeAsMap.isEmpty())
                         {
                             mergeStructTree = true;
@@ -1130,36 +1129,6 @@ public class PDFMergerUtility
         // when these are opened in a viewer that uses the tagging information.
         // If this happens, then PDNameTreeNode should be improved with a convenience method that
         // stores the map into a B+Tree, see https://en.wikipedia.org/wiki/B+_tree
-    }
-
-    // PDNumberTreeNode.getNumbers() only brings one level, this is why we need this
-    // might be made public at a later time, or integrated into PDNumberTreeNode.
-    static Map<Integer, COSObjectable> getNumberTreeAsMap(PDNumberTreeNode tree)
-            throws IOException
-    {
-        if (tree == null)
-        {
-            return new LinkedHashMap<>();
-        }
-        Map<Integer, COSObjectable> numbers = tree.getNumbers();
-        if (numbers == null)
-        {
-            numbers = new LinkedHashMap<>();
-        }
-        else
-        {
-            // must copy because the map is read only
-            numbers = new LinkedHashMap<>(numbers);
-        }
-        List<PDNumberTreeNode> kids = tree.getKids();
-        if (kids != null)
-        {
-            for (PDNumberTreeNode kid : kids)
-            {
-                numbers.putAll(getNumberTreeAsMap(kid));
-            }
-        }
-        return numbers;
     }
 
     private void mergeRoleMap(PDStructureTreeRoot srcStructTree, PDStructureTreeRoot destStructTree,
