@@ -35,64 +35,45 @@ import org.junit.jupiter.api.Test;
  * @author Adam Nichols
  */
 class PageExtractorTest
-{
-    
-    private void closeDoc(PDDocument doc)
-    {
-        if(doc != null)
-        {
-            try
-            {
-                doc.close(); 
-            }
-            catch(Exception e)
-            {
-                /* Can't do much about this... */ 
-            }
-        }
-    }
-    
+{    
     /**
      * Test of extract method, of class org.apache.pdfbox.util.PageExtractor.
      */
     @Test
     void testExtract() throws IOException
     {
-        PDDocument sourcePdf = null;
-        PDDocument result = null;
-        try
+        // this should work for most users
+        try (PDDocument sourcePdf = Loader.loadPDF(new File("src/test/resources/input/cweb.pdf")))
         {
-            // this should work for most users
-            sourcePdf = Loader.loadPDF(new File("src/test/resources/input/cweb.pdf"));
             PageExtractor instance = new PageExtractor(sourcePdf);
-            result = instance.extract();
-            assertEquals(sourcePdf.getNumberOfPages(), result.getNumberOfPages());
-            closeDoc(result);
-            
+            try (PDDocument result = instance.extract())
+            {
+                assertEquals(sourcePdf.getNumberOfPages(), result.getNumberOfPages());
+            }
+
             instance = new PageExtractor(sourcePdf, 1, 1);
-            result = instance.extract();
-            assertEquals(1, result.getNumberOfPages());
-            closeDoc(result);
-            
+            try (PDDocument result = instance.extract())
+            {
+                assertEquals(1, result.getNumberOfPages());
+            }
+
             instance = new PageExtractor(sourcePdf, 1, 5);
-            result = instance.extract();
-            assertEquals(5, result.getNumberOfPages());
-            closeDoc(result);
-            
+            try (PDDocument result = instance.extract())
+            {
+                assertEquals(5, result.getNumberOfPages());
+            }
+
             instance = new PageExtractor(sourcePdf, 5, 10);
-            result = instance.extract();
-            assertEquals(6, result.getNumberOfPages());
-            closeDoc(result);
-            
+            try (PDDocument result = instance.extract())
+            {
+                assertEquals(6, result.getNumberOfPages());
+            }
+
             instance = new PageExtractor(sourcePdf, 2, 1);
-            result = instance.extract();
-            assertEquals(0, result.getNumberOfPages());
-            closeDoc(result);
-        }
-        finally
-        {
-            closeDoc(sourcePdf);
-            closeDoc(result);
+            try (PDDocument result = instance.extract())
+            {
+                assertEquals(0, result.getNumberOfPages());
+            }
         }
     }    
 }
