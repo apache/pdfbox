@@ -407,7 +407,7 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
     }
 
     /**
-     * This will get a map of names on ALL levels. The key will be a string,
+     * This will get a flattened recursive map of names on ALL levels. The key will be a string,
      * and the value will depend on where this class is being used.
      *
      * @return ordered map of COS objects, never null.
@@ -417,7 +417,7 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
     public Map<String, T> getTreeAsMap() throws IOException
     {
         Map<String, T> names = getNames();
-        if (getNames() == null)
+        if (names == null)
         {
             names = new LinkedHashMap<>();
         }
