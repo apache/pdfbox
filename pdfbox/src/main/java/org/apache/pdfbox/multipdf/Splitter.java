@@ -18,6 +18,7 @@ package org.apache.pdfbox.multipdf;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -207,7 +208,11 @@ public class Splitter
 
         // transfer ParentTree using the map because the dictionaries are all found in the /K structure.
         PDNumberTreeNode srcParentTree = srcStructureTreeRoot.getParentTree();
-        Map<Integer, COSObjectable> srcNumberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(srcParentTree);
+        Map<Integer, COSObjectable> srcNumberTreeAsMap = Collections.emptyMap();
+        if (srcParentTree != null)
+        {
+            srcNumberTreeAsMap = srcParentTree.getTreeAsMap();
+        }
         Map<Integer, COSObjectable> dstNumberTreeAsMap = new LinkedHashMap<Integer, COSObjectable>();
         int dstPageTreeCount = dstPageTree.getCount();
         for (int p = 0; p < dstPageTreeCount; ++p)
