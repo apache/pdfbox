@@ -252,7 +252,7 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
     }
 
     /**
-     * This will return a map of names on this level. The key will be a string,
+     * This will return a map of names on THIS level. The key will be a string,
      * and the value will depend on where this class is being used.
      *
      * @return ordered map of COS objects or <code>null</code> if the dictionary
@@ -404,5 +404,36 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
             node.setItem(COSName.LIMITS, arr);
         }
         arr.setString( 0, lower );
+    }
+
+    /**
+     * This will get a map of names on ALL levels. The key will be a string,
+     * and the value will depend on where this class is being used.
+     *
+     * @return ordered map of COS objects, never null.
+     *
+     * @throws IOException If there is an error while creating the sub types.
+     */
+    public Map<String, T> getTreeAsMap() throws IOException
+    {
+        Map<String, T> names = getNames();
+        if (getNames() == null)
+        {
+            names = new LinkedHashMap<>();
+        }
+        else
+        {
+            // must copy because the map is read only
+            names = new LinkedHashMap<>(names);
+        }
+        List<PDNameTreeNode<T>> kids = getKids();
+        if (kids != null)
+        {
+            for (PDNameTreeNode<T> kid : kids)
+            {
+                names.putAll(kid.getTreeAsMap());
+            }
+        }
+        return names;
     }
 }
