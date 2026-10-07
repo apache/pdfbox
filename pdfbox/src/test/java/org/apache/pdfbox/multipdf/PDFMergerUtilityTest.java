@@ -902,7 +902,7 @@ class PDFMergerUtilityTest
         checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject(), structureTreeRoot.getCOSObject());
         assertNotNull(structureTreeRoot.getK());
         checkElement(pageTree, structureTreeRoot.getK(), structureTreeRoot.getCOSObject());
-        checkForIDTreeOrphans(pageTree, structureTreeRoot);
+        checkForIDTreeOrphans(pageTree, PDFMergerUtility.getIDTreeAsMap(structureTreeRoot.getIDTree()));
         checkParentTreeAgainstK(structureTreeRoot);
     }
 
@@ -933,16 +933,10 @@ class PDFMergerUtilityTest
         }
     }
 
-    private void checkForIDTreeOrphans(PDPageTree pageTree, PDStructureTreeRoot structureTreeRoot)
+    private void checkForIDTreeOrphans(PDPageTree pageTree, Map<String, PDStructureElement> idTreeMap)
             throws IOException
     {
-        PDNameTreeNode<PDStructureElement> idTree = structureTreeRoot.getIDTree();
-        if (idTree == null)
-        {
-            return;
-        }
-        Map<String, PDStructureElement> map = PDFMergerUtility.getIDTreeAsMap(idTree);
-        for (PDStructureElement element : map.values())
+        for (PDStructureElement element : idTreeMap.values())
         {
             if (element.getPage() != null)
             {
