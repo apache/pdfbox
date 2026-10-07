@@ -961,7 +961,7 @@ public class PDFMergerUtility
         }
         destMark.setMarked(true);
         destMark.setSuspect(srcMark.isSuspect() || destMark.isSuspect());
-        destMark.setSuspect(srcMark.usesUserProperties() || destMark.usesUserProperties());
+        destMark.setUserProperties(srcMark.usesUserProperties() || destMark.usesUserProperties());
         destCatalog.setMarkInfo(destMark);
     }
 
