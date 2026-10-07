@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,7 +38,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
 import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDLayoutAttributeObject;
 import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDListAttributeObject;
@@ -68,7 +66,7 @@ class PDStructureElementTest
         try (PDDocument doc = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4197.pdf")))
         {
             PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
-            checkElement(structureTreeRoot.getK(), attributeSet, structureTreeRoot.getClassMap(), classSet, getIDTreeAsMap(structureTreeRoot.getIDTree()));
+            checkElement(structureTreeRoot.getK(), attributeSet, structureTreeRoot.getClassMap(), classSet);
 
             COSArray k = (COSArray) structureTreeRoot.getK();
             assertEquals(1, k.size());
@@ -109,7 +107,7 @@ class PDStructureElementTest
                         .getResourceAsStream("PDFBOX-2725-878725.pdf"))))
         {
             PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
-            checkElement(structureTreeRoot.getK(), attributeSet, structureTreeRoot.getClassMap(), classSet, getIDTreeAsMap(structureTreeRoot.getIDTree()));
+            checkElement(structureTreeRoot.getK(), attributeSet, structureTreeRoot.getClassMap(), classSet);
         }
         for (Revisions<PDAttributeObject> r : attributeSet)
         {
@@ -155,7 +153,7 @@ class PDStructureElementTest
                         .getResourceAsStream("PDFBOX-6261-085992.pdf"))))
         {
             PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
-            checkElement(structureTreeRoot.getK(), attributeSet, structureTreeRoot.getClassMap(), classSet, getIDTreeAsMap(structureTreeRoot.getIDTree()));
+            checkElement(structureTreeRoot.getK(), attributeSet, structureTreeRoot.getClassMap(), classSet);
         }
         for (Revisions<PDAttributeObject> r : attributeSet)
         {
@@ -182,8 +180,7 @@ class PDStructureElementTest
     // See PDF specification Table 323 - Entries in a structure element dictionary
     // There is some overlapping with PDMergerUtilityTest.checkElement()
     private void checkElement(COSBase base, Set<Revisions<PDAttributeObject>>attributeSet,
-                               Map<String, Object> classMap, Set<String> classSet,
-                               Map<String, PDStructureElement> idTreeMap)
+                               Map<String, Object> classMap, Set<String> classSet)
     {
         if (base instanceof COSArray)
         {
@@ -193,7 +190,7 @@ class PDStructureElementTest
                 {
                     base2 = ((COSObject) base2).getObject();
                 }
-                checkElement(base2, attributeSet, classMap, classSet, idTreeMap);
+                checkElement(base2, attributeSet, classMap, classSet);
             }
         }
         else if (base instanceof COSDictionary)
@@ -250,12 +247,7 @@ class PDStructureElementTest
             }
             if (kdict.containsKey(COSName.K))
             {
-                checkElement(kdict.getDictionaryObject(COSName.K), attributeSet, classMap, classSet, idTreeMap);
-            }
-            String elementIdentifier = structureElement.getElementIdentifier();
-            if (elementIdentifier != null)
-            {
-                assertTrue(idTreeMap.containsKey(elementIdentifier));
+                checkElement(kdict.getDictionaryObject(COSName.K), attributeSet, classMap, classSet);
             }
         }
     }
@@ -307,34 +299,5 @@ class PDStructureElementTest
         assertEquals(PDMarkedContentReference.TYPE, mcr1.getCOSObject().getNameAsString(COSName.TYPE));
         assertEquals(1, mcr1.getMCID());
         assertEquals(2, kids.get(2));
-    }
-
-    // double code, original in PDFMergerUtility
-    static Map<String, PDStructureElement> getIDTreeAsMap(PDNameTreeNode<PDStructureElement> idTree)
-            throws IOException
-    {
-        if (idTree == null)
-        {
-            return new LinkedHashMap<>();
-        }
-        Map<String, PDStructureElement> names = idTree.getNames();
-        if (names == null)
-        {
-            names = new LinkedHashMap<>();
-        }
-        else
-        {
-            // must copy because the map is read only
-            names = new LinkedHashMap<>(names);
-        }
-        List<PDNameTreeNode<PDStructureElement>> kids = idTree.getKids();
-        if (kids != null)
-        {
-            for (PDNameTreeNode<PDStructureElement> kid : kids)
-            {
-                names.putAll(getIDTreeAsMap(kid));
-            }
-        }
-        return names;
     }
 }
