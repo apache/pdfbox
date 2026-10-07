@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,6 +40,7 @@ import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
 import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDLayoutAttributeObject;
+import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDListAttributeObject;
 import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDTableAttributeObject;
 
 import org.junit.jupiter.api.Test;
@@ -136,6 +138,44 @@ class PDStructureElementTest
         assertEquals(12, classSet.size());
     }
 
+    /**
+     * Check that all classes are caught and are in the /ClassMap
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testClassMap2() throws IOException
+    {
+        Set<Revisions<PDAttributeObject>> attributeSet = new HashSet<>();
+        Set<String> classSet = new HashSet<>();
+        try (PDDocument doc = Loader.loadPDF(
+                RandomAccessReadBuffer.createBufferFromStream(PDStructureElementTest.class
+                        .getResourceAsStream("PDFBOX-6261-085992.pdf"))))
+        {
+            PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
+            checkElement(structureTreeRoot.getK(), attributeSet, structureTreeRoot.getClassMap(), classSet);
+        }
+        for (Revisions<PDAttributeObject> r : attributeSet)
+        {
+            // check a few that we know
+            if (r.size() == 1)
+            {
+                PDLayoutAttributeObject obj0 = (PDLayoutAttributeObject) r.getObject(0);
+                assertEquals("Layout", obj0.getOwner());
+                assertEquals(0f, obj0.getSpaceBefore());
+                assertEquals(0f, obj0.getSpaceAfter());
+                assertTrue(obj0.getTextIndent() == 0f || obj0.getTextIndent() == 36f);
+                assertTrue("Start".equals(obj0.getTextAlign()) || "Center".equals(obj0.getTextAlign()));
+                assertEquals(0, r.getRevisionNumber(0));
+            }
+        }
+
+        // collect attributes and check their count.
+        assertEquals(21, attributeSet.size());
+        int cnt = attributeSet.stream().map(Revisions::size).reduce(0, Integer::sum);
+        assertEquals(21, cnt);
+    }
+
     // Each element can be an array, a dictionary or a number.
     // See PDF specification Table 323 - Entries in a structure element dictionary
     private void checkElement(COSBase base, Set<Revisions<PDAttributeObject>>attributeSet,
@@ -161,6 +201,7 @@ class PDStructureElementTest
             {
                 attributeSet.add(attributes);
                 PDAttributeObject obj0 = attributes.getObject(0);
+                assertFalse(obj0.isEmpty());
                 if (obj0 instanceof PDTableAttributeObject) // Table 349
                 {
                     String[] headers = ((PDTableAttributeObject) obj0).getHeaders();
@@ -170,10 +211,25 @@ class PDStructureElementTest
                         {
                             // not a real test, just so that we have something with table headers
                             // after doing TIKA-4891 / PDFBOX-6261
-                            assertTrue(header.startsWith("node0"));
+                            assertTrue(header.startsWith("node0"), "header: " + header);
+                            // PDFBOX-3999-GeneralForbearance.pdf has
+                            // form1[0].#subform[5].CapitalizationTable[0].HeaderRow[0].Cell1[0]
                         }
                     }
                 }
+                if (obj0 instanceof PDLayoutAttributeObject)
+                {
+                    PDLayoutAttributeObject layoutAttributeObject = (PDLayoutAttributeObject) obj0;
+                    // will have to be changed if we test more files
+                    assertEquals(PDLayoutAttributeObject.WRITING_MODE_LRTB, layoutAttributeObject.getWritingMode());
+                }
+                if (obj0 instanceof PDListAttributeObject)
+                {
+                    PDListAttributeObject listAttributeObject = (PDListAttributeObject) obj0;
+                    // will have to be changed if we test more files
+                    assertEquals(PDListAttributeObject.LIST_NUMBERING_DECIMAL, listAttributeObject.getListNumbering());
+                }
+                // Missing: PDPrintFieldAttributeObject, PDExportFormatAttributeObject, PDUserAttributeObject
             }
             Revisions<String> classNames = structureElement.getClassNames();
 
