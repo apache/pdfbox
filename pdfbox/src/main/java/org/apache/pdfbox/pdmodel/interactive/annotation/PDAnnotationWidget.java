@@ -54,7 +54,10 @@ public class PDAnnotationWidget extends PDAnnotation
     public PDAnnotationWidget(COSDictionary field)
     {
         super(field);
-        getCOSObject().setName(COSName.SUBTYPE, SUB_TYPE);
+        if (!SUB_TYPE.equals(getSubtype()))
+        {
+            getCOSObject().setName(COSName.SUBTYPE, SUB_TYPE);
+        }
     }
 
     /**
