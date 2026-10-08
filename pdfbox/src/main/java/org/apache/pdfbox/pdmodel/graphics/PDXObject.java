@@ -126,11 +126,11 @@ public class PDXObject implements COSObjectable
     {
         if (!COSName.XOBJECT.equals(strm.getItem(COSName.TYPE)))
         {
-            strm.setName(COSName.TYPE, COSName.XOBJECT.getName());
+            strm.setItem(COSName.TYPE, COSName.XOBJECT);
         }
         if (!subtype.equals(strm.getItem(COSName.SUBTYPE)))
         {
-            strm.setName(COSName.SUBTYPE, subtype.getName());
+            strm.setItem(COSName.SUBTYPE, subtype);
         }
     }
 
