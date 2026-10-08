@@ -97,9 +97,7 @@ public class PDXObject implements COSObjectable
     protected PDXObject(COSStream stream, COSName subtype)
     {
         this.stream = new PDStream(stream);
-        // could be used for writing:
-        stream.setName(COSName.TYPE, COSName.XOBJECT.getName());
-        stream.setName(COSName.SUBTYPE, subtype.getName());
+        maybeInitNames(stream, subtype);
     }
 
     /**
@@ -110,9 +108,7 @@ public class PDXObject implements COSObjectable
     protected PDXObject(PDStream stream, COSName subtype)
     {
         this.stream = stream;
-        // could be used for writing:
-        stream.getCOSObject().setName(COSName.TYPE, COSName.XOBJECT.getName());
-        stream.getCOSObject().setName(COSName.SUBTYPE, subtype.getName());
+        maybeInitNames(stream.getCOSObject(), subtype);
     }
 
     /**
@@ -123,8 +119,19 @@ public class PDXObject implements COSObjectable
     protected PDXObject(PDDocument document, COSName subtype)
     {
         stream = new PDStream(document);
-        stream.getCOSObject().setName(COSName.TYPE, COSName.XOBJECT.getName());
-        stream.getCOSObject().setName(COSName.SUBTYPE, subtype.getName());
+        maybeInitNames(stream.getCOSObject(), subtype);
+    }
+
+    private void maybeInitNames(COSStream strm, COSName subtype)
+    {
+        if (!COSName.XOBJECT.equals(strm.getItem(COSName.TYPE)))
+        {
+            strm.setName(COSName.TYPE, COSName.XOBJECT.getName());
+        }
+        if (!subtype.equals(strm.getItem(COSName.SUBTYPE)))
+        {
+            strm.setName(COSName.SUBTYPE, subtype.getName());
+        }
     }
 
     /**
