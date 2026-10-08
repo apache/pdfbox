@@ -83,6 +83,7 @@ public class SigUtils
                    "http://www.pki.admin.ch/aia/RootCAIV.crt",
                    "http://www.pki.admin.ch/crl/RegularCA01.crl",
                    "http://www.pki.admin.ch/crl/RootCAII.crl",
+                   "http://www.pki.admin.ch/crl/RootCAIV.crl",
                    "http://www.pki.admin.ch/aia/RegulatedCA02.crt",
                    "http://www.pki.admin.ch/aia/ocsp",
                    "http://www.pki.admin.ch/crl/RegulatedCA02.crl",
