@@ -60,6 +60,8 @@ import org.apache.pdfbox.pdmodel.common.PDDestinationOrAction;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
+import org.apache.pdfbox.pdmodel.common.PDPageLabelRange;
+import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDParentTreeValue;
@@ -644,19 +646,17 @@ public class PDFMergerUtility
         if (srcLabels != null)
         {
             int destPageCount = destination.getNumberOfPages();
-            COSArray destNums;
             COSDictionary destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
             if (destLabels == null)
             {
-                destLabels = new COSDictionary();
-                destNums = new COSArray();
-                destLabels.setItem(COSName.NUMS, destNums);
-                destCatalog.getCOSObject().setItem(COSName.PAGE_LABELS, destLabels);
+                // PDFBOX-6277: create a mandatory 0 entry
+                PDPageLabels pageLabels = new PDPageLabels(destination);
+                PDPageLabelRange pageLabelRange = new PDPageLabelRange();
+                pageLabels.setLabelItem(0, pageLabelRange);
+                destCatalog.setPageLabels(pageLabels);
+                destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
             }
-            else
-            {
-                destNums = destLabels.getCOSArray(COSName.NUMS);
-            }
+            COSArray destNums = destLabels.getCOSArray(COSName.NUMS);
             COSArray srcNums = srcLabels.getCOSArray(COSName.NUMS);
             if (srcNums != null)
             {
