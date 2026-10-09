@@ -28,7 +28,6 @@ import java.util.NavigableSet;
 import java.util.TreeSet;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
@@ -175,10 +174,10 @@ public class PDPageLabels implements COSObjectable
     }
     
     /**
-     * {@inheritDoc} 
+     * {@inheritDoc}
      */
     @Override
-    public COSBase getCOSObject()
+    public COSDictionary getCOSObject()
     {
         COSArray arr = new COSArray();
         labels.forEach((key, value) ->
