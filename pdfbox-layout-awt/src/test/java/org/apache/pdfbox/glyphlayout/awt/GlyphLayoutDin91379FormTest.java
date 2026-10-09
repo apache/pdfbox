@@ -17,11 +17,19 @@
 package org.apache.pdfbox.glyphlayout.awt;
 
 import java.awt.FontFormatException;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.AbstractGlyphLayoutProcessor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -29,7 +37,10 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /*
  * Example of formatting for letters defined in:
@@ -84,15 +95,51 @@ class GlyphLayoutDin91379FormTest extends TestBase
                     + "ƒ ʰ ʳ ˆ ˜ ˢ ᵈ ᵗ ‘ ‚ “ ” „ † … ‰ ′ ″ ‹ › ⁰ ⁴ ⁵ ⁶ ⁷ ⁸ "
                     + "⁹ ⁿ ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ™ ∞ ≤ ≥ \n"
                     + "Additional non-letters (not included in DIN 91379): – — •�";
-
+    /**
+     * Test, no ActualText
+     *
+     * @throws IOException
+     * @throws FontFormatException
+     * @throws URISyntaxException
+     */
     @Test
-    void testGlyphLayoutDin91379Form() throws IOException, FontFormatException, URISyntaxException
+    void testGlyphLayoutDin91379FormNoActualText() throws IOException, FontFormatException, URISyntaxException
     {
-        GlyphLayoutProcessorAwt glyphLayoutProcessor = new GlyphLayoutProcessorAwt();
+        testGlyphLayoutDin91379Form(false, "");
+    }
 
-        String outputName = "GlyphLayoutDIN91379Form.pdf";
-        String outputFilename = "target/" + outputName;
+    /**
+     * Test with ActualText
+     *
+     * @throws IOException
+     * @throws FontFormatException
+     * @throws URISyntaxException
+     */
+    @Test
+    void testGlyphLayoutDin91379FormActualText() throws IOException, FontFormatException, URISyntaxException
+    {
+        testGlyphLayoutDin91379Form(true, "_ActualText");
+    }
 
+    /**
+     * Test
+     * @param useActualText
+     * @throws IOException
+     * @throws FontFormatException
+     * @throws URISyntaxException
+     */
+    void testGlyphLayoutDin91379Form(boolean useActualText, String sActualText) throws IOException, FontFormatException, URISyntaxException
+    {
+        AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions options = new AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions();
+        if (useActualText)
+        {
+            options.useActualText();
+        }
+        GlyphLayoutProcessorAwt glyphLayoutProcessor = new GlyphLayoutProcessorAwt(options);
+
+        String outputBaseName = String.format("GlyphLayoutDIN91379Form%s", sActualText);
+        String outputPDFFilename = "target/" + outputBaseName + ".pdf";
+        String outputTextFilename = "target/" + outputBaseName + ".txt";
         String fontSizeString = "12";
 
         InputStream fontStream = GlyphLayoutDin91379FormTest.class.getResourceAsStream("/ttf/Arimo-Regular.ttf");
@@ -125,8 +172,47 @@ class GlyphLayoutDin91379FormTest extends TestBase
             }
             acroForm.refreshAppearances();
             acroForm.flatten();
-            doc.save(outputFilename);
+            doc.save(outputPDFFilename);
         }
-        checkRenderIdent(outputName);
+
+        checkRenderIdent(outputBaseName + ".pdf");
+
+        // Extract text
+        try (PDDocument doc = Loader.loadPDF(new File(outputPDFFilename))) {
+            assertEquals(1, doc.getNumberOfPages());
+
+            PDFTextStripper stripper = new PDFTextStripper();
+            String s = stripper.getText(doc);
+            String sStripped = s.replace('\n', ' ')
+                    .replaceAll(" +", " ")
+                    .replace(" ", "\n")
+                    .strip();
+
+            String expectedText = ("Test form for PDFBox glyph layout\n" + LATIN_CHARS_DIN_91379)
+                    .replace('\n', ' ')
+                    .replaceAll(" +", " ")
+                    .replace(" ", "\n")
+                    .strip();
+
+            try (OutputStream os = new FileOutputStream(outputTextFilename)) {
+                os.write(0xEF);
+                os.write(0xBB);
+                os.write(0xBF);
+
+                try (Writer writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8))) {
+                    // The output without ActualText is not yet correct
+                    writer.write(s);
+                }
+            }
+
+            if (useActualText) {
+                // ok with ActualText
+                assertEquals(expectedText, sStripped, "Extracted text should equal the written text for " + outputPDFFilename);
+            } else {
+                // not ok without ActualText
+                assertEquals(expectedText, sStripped, "Extracted text should equal the written text for " + outputPDFFilename);
+            }
+
+        }
     }
 }
