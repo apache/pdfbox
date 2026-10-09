@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.IOUtils;
@@ -47,6 +49,8 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
+import org.apache.pdfbox.pdmodel.common.PDPageLabelRange;
+import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkedContentReference;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDObjectReference;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDParentTreeValue;
@@ -652,6 +656,46 @@ class PDFMergerUtilityTest
         {
             List<COSObject> structTreeRootObjects = pdf.getDocument().getObjectsByType(COSName.STRUCT_TREE_ROOT);
             assertEquals(1, structTreeRootObjects.size(), file.getPath() + " " + structTreeRootObjects);
+        }
+    }
+
+    /**
+     * PDFBOX-6277: check that index 0 is present despite missing page labels in destination.
+     */
+    @Test
+    void testPageLabels() throws IOException
+    {
+        try (PDDocument doc1 = new PDDocument();
+             PDDocument doc2 = new PDDocument())
+        {
+            doc1.addPage(new PDPage());
+            doc1.addPage(new PDPage());
+            doc1.addPage(new PDPage());
+            PDPageLabels pageLabels = new PDPageLabels(doc1);
+            PDPageLabelRange pageLabelRange1 = new PDPageLabelRange();
+            pageLabelRange1.setPrefix("RO ");
+            pageLabelRange1.setStart(3);
+            pageLabelRange1.setStyle(PDPageLabelRange.STYLE_ROMAN_UPPER);
+            pageLabels.setLabelItem(0, pageLabelRange1);
+            PDPageLabelRange pageLabelRange2 = new PDPageLabelRange();
+            pageLabelRange2.setStart(1);
+            pageLabelRange2.setStyle(PDPageLabelRange.STYLE_DECIMAL);
+            pageLabels.setLabelItem(2, pageLabelRange2);
+            doc1.getDocumentCatalog().setPageLabels(pageLabels);
+
+            doc2.addPage(new PDPage());
+            doc2.addPage(new PDPage());
+            doc2.addPage(new PDPage());
+
+            PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+            pdfMergerUtility.appendDocument(doc2, doc1);
+
+            COSArray array = doc2.getDocumentCatalog().getCOSObject().getCOSDictionary(COSName.PAGE_LABELS).getCOSArray(COSName.NUMS);
+            assertEquals(COSInteger.ZERO, array.getObject(0));
+            assertTrue(array.getObject(1) instanceof COSDictionary);
+
+            String[] labels = doc2.getDocumentCatalog().getPageLabels().getLabelsByPageIndices();
+            assertEquals("[1, 2, 3, RO III, RO IV, 1]", Arrays.toString(labels));
         }
     }
 

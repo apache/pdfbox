@@ -825,6 +825,7 @@ public class PDFMergerUtility
                 // PDFBOX-6277: create a mandatory 0 entry
                 PDPageLabels pageLabels = new PDPageLabels(destination);
                 PDPageLabelRange pageLabelRange = new PDPageLabelRange();
+                pageLabelRange.setStyle(PDPageLabelRange.STYLE_DECIMAL);
                 pageLabels.setLabelItem(0, pageLabelRange);
                 destCatalog.setPageLabels(pageLabels);
                 destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
