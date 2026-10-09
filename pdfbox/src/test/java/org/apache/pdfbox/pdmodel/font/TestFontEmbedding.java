@@ -355,6 +355,60 @@ class TestFontEmbedding
         }
     }
 
+    /**
+     * Ligature and conjunct glyphs, like "द्ध" here, have no cmap entry, so their ToUnicode
+     * entry has to come from the GSUB table. Without it, text extraction drops those letters.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testToUnicodeForGsubSubstitutedGlyphs() throws IOException
+    {
+        String text = "शुद्ध ज्ञानी";
+        assertEquals(text, showAndExtractText(
+                this.getClass().getResourceAsStream("/org/apache/pdfbox/ttf/Lohit-Devanagari.ttf"), text));
+    }
+
+    /**
+     * Same as {@link #testToUnicodeForGsubSubstitutedGlyphs()} for Latin text. IPA Gothic draws
+     * "æ" and "ə" followed by a combining accent as one glyph that has no cmap entry.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testToUnicodeForLatinGsubSubstitutedGlyphs() throws IOException
+    {
+        String text = "Mòve æ̀ ə́";
+        try (InputStream is = new FileInputStream("target/fonts/ipag00303/ipag.ttf"))
+        {
+            assertEquals(text, showAndExtractText(is, text));
+        }
+    }
+
+    private String showAndExtractText(InputStream fontStream, String text) throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            PDFont font = PDType0Font.load(document, fontStream);
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
+            {
+                contentStream.beginText();
+                contentStream.setFont(font, 18);
+                contentStream.newLineAtOffset(10, 750);
+                contentStream.showText(text);
+                contentStream.endText();
+            }
+            document.save(baos);
+        }
+        try (PDDocument document = Loader.loadPDF(baos.toByteArray()))
+        {
+            return new PDFTextStripper().getText(document).trim();
+        }
+    }
+
     @Test
     void testGujarati() throws IOException
     {
