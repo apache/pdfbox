@@ -80,7 +80,6 @@ import org.apache.pdfbox.text.PDFMarkedContentExtractor;
 import org.junit.Assert;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
-import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
 /**
@@ -639,8 +638,7 @@ public class PDFMergerUtilityTest extends TestCase
     /**
      * PDFBOX-6277: check that index 0 is present despite missing page labels in destination.
      */
-    @Test
-    void testPageLabels() throws IOException
+    public void testPageLabels() throws IOException
     {
         PDDocument doc1 = new PDDocument();
         PDDocument doc2 = new PDDocument();
