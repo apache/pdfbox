@@ -642,46 +642,7 @@ public class PDFMergerUtility
             destCatalog.setPageMode(srcPageMode);
         }
 
-        COSDictionary srcLabels = srcCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
-        if (srcLabels != null)
-        {
-            int destPageCount = destination.getNumberOfPages();
-            COSDictionary destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
-            if (destLabels == null)
-            {
-                // PDFBOX-6277: create a mandatory 0 entry
-                PDPageLabels pageLabels = new PDPageLabels(destination);
-                PDPageLabelRange pageLabelRange = new PDPageLabelRange();
-                pageLabels.setLabelItem(0, pageLabelRange);
-                destCatalog.setPageLabels(pageLabels);
-                destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
-            }
-            COSArray destNums = destLabels.getCOSArray(COSName.NUMS);
-            COSArray srcNums = srcLabels.getCOSArray(COSName.NUMS);
-            if (srcNums != null)
-            {
-                int startSize = destNums.size();
-                for (int i = 0; i < srcNums.size(); i += 2)
-                {
-                    COSBase base = srcNums.getObject(i);
-                    if (!(base instanceof COSNumber))
-                    {
-                        LOG.error("page labels ignored, index {} should be a number, but is {}", i,
-                                base);
-                        // remove what we added
-                        while (destNums.size() > startSize)
-                        {
-                            destNums.remove(startSize);
-                        }
-                        break;
-                    }
-                    COSNumber labelIndex = (COSNumber) base;
-                    long labelIndexValue = labelIndex.intValue();
-                    destNums.add(COSInteger.get(labelIndexValue + destPageCount));
-                    destNums.add(cloner.cloneForNewDocument(srcNums.getObject(i + 1)));
-                }
-            }
-        }
+        mergePageLabels(destination, srcCatalog, destCatalog, cloner);
 
         COSStream destMetadata = destCatalog.getCOSObject().getCOSStream(COSName.METADATA);
         COSStream srcMetadata = srcCatalog.getCOSObject().getCOSStream(COSName.METADATA);
@@ -849,6 +810,50 @@ public class PDFMergerUtility
             mergeMarkInfo(destCatalog, srcCatalog);
             mergeLanguage(destCatalog, srcCatalog);
             mergeViewerPreferences(destCatalog, srcCatalog, cloner);
+        }
+    }
+
+    private void mergePageLabels(PDDocument destination, PDDocumentCatalog srcCatalog, PDDocumentCatalog destCatalog, PDFCloneUtility cloner) throws IOException
+    {
+        COSDictionary srcLabels = srcCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
+        if (srcLabels != null)
+        {
+            int destPageCount = destination.getNumberOfPages();
+            COSDictionary destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
+            if (destLabels == null)
+            {
+                // PDFBOX-6277: create a mandatory 0 entry
+                PDPageLabels pageLabels = new PDPageLabels(destination);
+                PDPageLabelRange pageLabelRange = new PDPageLabelRange();
+                pageLabels.setLabelItem(0, pageLabelRange);
+                destCatalog.setPageLabels(pageLabels);
+                destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
+            }
+            COSArray destNums = destLabels.getCOSArray(COSName.NUMS);
+            COSArray srcNums = srcLabels.getCOSArray(COSName.NUMS);
+            if (srcNums != null)
+            {
+                int startSize = destNums.size();
+                for (int i = 0; i < srcNums.size(); i += 2)
+                {
+                    COSBase base = srcNums.getObject(i);
+                    if (!(base instanceof COSNumber))
+                    {
+                        LOG.error("page labels ignored, index {} should be a number, but is {}", i,
+                                base);
+                        // remove what we added
+                        while (destNums.size() > startSize)
+                        {
+                            destNums.remove(startSize);
+                        }
+                        break;
+                    }
+                    COSNumber labelIndex = (COSNumber) base;
+                    long labelIndexValue = labelIndex.intValue();
+                    destNums.add(COSInteger.get(labelIndexValue + destPageCount));
+                    destNums.add(cloner.cloneForNewDocument(srcNums.getObject(i + 1)));
+                }
+            }
         }
     }
 
