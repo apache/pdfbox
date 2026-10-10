@@ -544,6 +544,11 @@ public class COSParser extends BaseParser implements ICOSParser
             return objectStreamObject;
         }
         final COSObjectKey objKey = getObjectKey(objstmObjNr, 0);
+        if (document == null)
+        {
+            // likely programming error by derived class
+            throw new IllegalStateException("document not initialized");
+        }
         final COSBase objstmBaseObj = document.getObjectFromPool(objKey).getObject();
         if (objstmBaseObj instanceof COSStream)
         {
