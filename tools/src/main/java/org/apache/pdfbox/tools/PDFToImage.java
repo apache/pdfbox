@@ -174,7 +174,7 @@ public final class PDFToImage implements Callable<Integer>
             endPage = Math.min(endPage, document.getNumberOfPages());
             PDFRenderer renderer = new PDFRenderer(document);
             renderer.setSubsamplingAllowed(subsampling);
-            //renderer.setHintingEnabled(hinting)
+            renderer.setHintingEnabled(hinting);
             for (int i = startPage - 1; i < endPage; i++)
             {
                 BufferedImage image = renderer.renderImageWithDPI(i, dpi, imageType);
