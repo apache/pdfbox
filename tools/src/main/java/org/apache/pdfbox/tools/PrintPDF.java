@@ -126,6 +126,9 @@ public final class PrintPDF implements Callable<Integer>
     @Option(names = "-subsampling", description = "activate subsampling (for PDFs with huge images)")
     private boolean subsampling;
 
+    @Option(names = "-hinting", description = "activate TrueType hinting")
+    private boolean hinting;
+
     @Option(names = {"-i", "--input"}, description = "the PDF files to print.", required = true)
     private File infile;
 
@@ -247,6 +250,7 @@ public final class PrintPDF implements Callable<Integer>
             PDFPageable pageable = new PDFPageable(document, orientation, border, dpi, !noCenter);
             pageable.setRenderingHints(renderingHints);
             pageable.setSubsamplingAllowed(subsampling);
+            pageable.setHintingEnabled(hinting);
             printJob.setPageable(pageable);
 
             // We're not using PDFPrintable, because then

@@ -471,6 +471,44 @@ public class PDCIDFontType2 extends PDCIDFont
         return new GeneralPath();
     }
 
+    /**
+     * Returns the grid-fitted (TrueType-hinted) normalized glyph path for the given character code at
+     * the given ppem, or {@code null} if hinting does not apply. Like
+     * {@link #getNormalizedPath(int, PDType0Font)} the result is normalized to the 1000 unit square.
+     * Only a descendant with embedded TrueType outlines can hint, so this returns {@code null} unless
+     * overridden.
+     *
+     * @param code character code in a PDF. Not to be confused with unicode.
+     * @param ppem the pixels-per-em the glyph will be rendered at.
+     *
+     * @return the hinted normalized glyph path, or null to use the unhinted path
+     * @throws java.io.IOException if the font could not be read
+     */
+    @Override
+    public GeneralPath getHintedNormalizedPath(int code, int ppem) throws IOException
+    {
+        if (!isEmbedded() || (otf != null && otf.isPostScript()))
+        {
+            return null;
+        }
+        int gid = codeToGID(code);
+        if (gid == 0)
+        {
+            return null;
+        }
+        GeneralPath path = ttf.getHintedPath(gid, ppem);
+        if (path == null)
+        {
+            return null;
+        }
+        if (ttf.getUnitsPerEm() != 1000)
+        {
+            float scale = 1000f / ttf.getUnitsPerEm();
+            path.transform(AffineTransform.getScaleInstance(scale, scale));
+        }
+        return path;
+    }
+
     @Override
     public GeneralPath getNormalizedPath(int code) throws IOException
     {

@@ -33,6 +33,7 @@ public class ViewMenu extends MenuBase
     private static final String SHOW_FONT_BBOX = "Show Approximate Text Bounds";
     private static final String SHOW_GLYPH_BOUNDS = "Show Glyph Bounds";
     private static final String ALLOW_SUBSAMPLING = "Allow subsampling";            
+    private static final String ENABLE_HINTING = "Enable Hinting";            
     private static final String EXTRACT_TEXT = "Extract Text";            
     private static final String REPAIR_ACROFORM = "Repair AcroForm";
 
@@ -41,6 +42,7 @@ public class ViewMenu extends MenuBase
     private JCheckBoxMenuItem showFontBBox;
     private JCheckBoxMenuItem showGlyphBounds;
     private JCheckBoxMenuItem allowSubsampling;
+    private JCheckBoxMenuItem enableHinting;
     private JCheckBoxMenuItem repairAcroFormMenuItem;
 
     private final PDFDebugger pdfDebugger;
@@ -71,9 +73,10 @@ public class ViewMenu extends MenuBase
     }
     
     /**
-     * Test if the one of the rendering options has been selected
-     * 
-     * @param actionCommand the actioCommand of the menu event 
+     * Test if the one of the rendering options has been selected. This is called by
+     * {@code PagePane.actionPerformed()} to decide whether to start another rendering.
+     *
+     * @param actionCommand the actionCommand of the menu event 
      * @return true if the actionCommand matches one of the rendering options
      */
     public static boolean isRenderingOption(String actionCommand)
@@ -82,6 +85,7 @@ public class ViewMenu extends MenuBase
                 SHOW_TEXT_STRIPPER_BEADS.equals(actionCommand) ||
                 SHOW_FONT_BBOX.equals(actionCommand) ||
                 SHOW_GLYPH_BOUNDS.equals(actionCommand) ||
+                ENABLE_HINTING.equals(actionCommand) ||   
                 ALLOW_SUBSAMPLING.equals(actionCommand);         
     }
     
@@ -144,6 +148,16 @@ public class ViewMenu extends MenuBase
     public static boolean isAllowSubsampling()
     {
         return instance.allowSubsampling.isSelected();
+    }
+
+    /**
+     * State if font hinting shall be used.
+     * 
+     * @return the selection state
+     */
+    public static boolean isHintingEnabled()
+    {
+        return instance.enableHinting.isSelected();
     }
 
     /**
@@ -221,6 +235,9 @@ public class ViewMenu extends MenuBase
 
         allowSubsampling = new JCheckBoxMenuItem(ALLOW_SUBSAMPLING);
         viewMenu.add(allowSubsampling);
+
+        enableHinting = new JCheckBoxMenuItem(ENABLE_HINTING);
+        viewMenu.add(enableHinting);
 
         viewMenu.addSeparator();
 
