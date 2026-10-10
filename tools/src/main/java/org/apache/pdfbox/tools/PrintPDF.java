@@ -41,6 +41,7 @@ import javax.print.attribute.standard.Sides;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
 import org.apache.pdfbox.printing.Orientation;
 import org.apache.pdfbox.printing.PDFPageable;
@@ -122,6 +123,9 @@ public final class PrintPDF implements Callable<Integer>
     @Option(names = "-noColorOpt", description = "disable color optimizations (useful when printing barcodes).")
     private boolean noColorOpt;
 
+    @Option(names = "-subsampling", description = "activate subsampling (for PDFs with huge images)")
+    private boolean subsampling;
+
     @Option(names = {"-i", "--input"}, description = "the PDF files to print.", required = true)
     private File infile;
 
@@ -165,6 +169,12 @@ public final class PrintPDF implements Callable<Integer>
             if (!ap.canPrint())
             {
                 throw new IOException("You do not have permission to print");
+            }
+
+            PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+            if (acroForm != null && acroForm.getNeedAppearances())
+            {
+                acroForm.refreshAppearances();
             }
 
             PrinterJob printJob = PrinterJob.getPrinterJob();
@@ -236,6 +246,7 @@ public final class PrintPDF implements Callable<Integer>
 
             PDFPageable pageable = new PDFPageable(document, orientation, border, dpi, !noCenter);
             pageable.setRenderingHints(renderingHints);
+            pageable.setSubsamplingAllowed(subsampling);
             printJob.setPageable(pageable);
 
             // We're not using PDFPrintable, because then
