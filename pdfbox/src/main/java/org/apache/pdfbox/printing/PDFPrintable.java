@@ -199,7 +199,10 @@ public final class PDFPrintable implements Printable
     }
 
     /**
-     * @return whether TrueType hinting is enabled.
+     * Value indicating whether the renderer grid-fits (hints) TrueType glyph outlines by running the
+     * font's bytecode instructions at the size the glyph is drawn at. Hinting is off by default.
+     *
+     * @return true if TrueType hinting is enabled, false otherwise.
      */
     public boolean isHintingEnabled()
     {
@@ -207,7 +210,11 @@ public final class PDFPrintable implements Printable
     }
 
     /**
-     * @param hintingEnabled whether TrueType hinting is enabled.
+     * Sets a value instructing the renderer whether to grid-fit (hint) TrueType glyph outlines by
+     * running the font's bytecode instructions at the size the glyph is drawn at. Only embedded
+     * TrueType outline fonts are affected; other fonts render as before. Hinting is off by default.
+     *
+     * @param hintingEnabled The new value indicating if TrueType hinting is enabled.
      */
     public void setHintingEnabled(boolean hintingEnabled)
     {
@@ -312,7 +319,7 @@ public final class PDFPrintable implements Printable
             graphics2D.setBackground(Color.WHITE);
             renderer.setSubsamplingAllowed(subsamplingAllowed);
             renderer.setRenderingHints(renderingHints);
-            //renderer.setHintingEnabled(hintingEnabled)
+            renderer.setHintingEnabled(hintingEnabled);
             renderer.renderPageToGraphics(pageIndex, graphics2D, (float) scale, (float) scale, RenderDestination.PRINT);
 
             // draw rasterized bitmap (optional)
