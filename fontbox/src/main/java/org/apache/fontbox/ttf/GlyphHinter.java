@@ -557,7 +557,7 @@ class GlyphHinter
      * {@code prep}, so re-running it per glyph would wipe the values {@code prep} seeded for the glyph
      * programs to read.
      */
-    private void setActivePpem(int ppem) throws IOException
+    private void setActivePpem(int ppem)
     {
         if (ppem != currentPpem)
         {
