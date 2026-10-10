@@ -16,6 +16,7 @@
  */
 package org.apache.fontbox.ttf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -101,7 +103,7 @@ class GoldenHintingTest
                 // null would mean the hinter gave up and the raw outline would be rendered
                 int[][] points = hinter.getHintedPointsF26Dot6(g.gid, ppem);
                 assertNotNull(points, "no hinted points for gid " + g.gid + " at " + ppem + "ppem");
-                assertTrue(points[0].length == g.x.length,
+                assertEquals(points[0].length, g.x.length,
                         "point count mismatch for '" + g.ch + "' at " + ppem + "ppem: ours="
                                 + points[0].length + " freetype=" + g.x.length);
                 s.recordGlyph(g, ppem, points);

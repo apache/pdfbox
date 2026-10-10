@@ -18,6 +18,7 @@ package org.apache.fontbox.ttf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,6 +30,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -215,7 +217,7 @@ class HintingIntegrationTest
         GlyfCompositeComp four = quarter.getComponents().get(2);
         assertEquals(952, four.getXTranslate());
         assertEquals(-561, four.getYTranslate());
-        assertTrue((four.getFlags() & GlyfCompositeComp.ROUND_XY_TO_GRID) != 0);
+        assertNotEquals(0, four.getFlags() & GlyfCompositeComp.ROUND_XY_TO_GRID);
 
         // four.sups has no instructions, so it enters the composite as its plain scaled outline
         GlyphDescription component = font.getGlyph().getGlyph(four.getGlyphIndex()).getDescription();

@@ -520,7 +520,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             // hintingPpem expects the glyph-space-to-device transform, but 'at' only maps glyph space
             // to PDF user space (points) - the device scale lives in 'xform', which the Graphics2D
-            // applies separately. Compose it in so the ppem is the true device pixels-per-em;
+            // applies separately. Compose it in so the ppem is the true device pixels-per-em,
             // otherwise we grid-fit at the font's point size (e.g. 7) instead of its rendered size
             // (e.g. 29 at 300dpi).
             AffineTransform deviceAt = at;
