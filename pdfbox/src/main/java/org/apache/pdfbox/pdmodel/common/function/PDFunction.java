@@ -75,7 +75,9 @@ public abstract class PDFunction implements COSObjectable
      * 4 - PostScript calculator function
      * 
      * @return the function type.
+     * @deprecated this will be removed in 4.0.
      */
+    @Deprecated
     public abstract int getFunctionType();
     
     /**
@@ -396,12 +398,9 @@ public abstract class PDFunction implements COSObjectable
         return yRangeMin + ((x - xRangeMin) * (yRangeMax - yRangeMin)/(xRangeMax - xRangeMin));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString()
     {
-        return "FunctionType" + getFunctionType();
+        return "PDFunction{" + "functionStream=" + functionStream + ", functionDictionary=" + functionDictionary + ", domain=" + domain + ", range=" + range + ", numberOfInputValues=" + numberOfInputValues + ", numberOfOutputValues=" + numberOfOutputValues + '}';
     }
 }

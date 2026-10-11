@@ -54,11 +54,8 @@ public class PDFunctionType4 extends PDFunction
         this.instructions = InstructionSequenceBuilder.parse(string);
     }
     
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public int getFunctionType()
+    @Deprecatedpublic int getFunctionType()
     {
         return 4;
     }
