@@ -77,10 +77,8 @@ public class PDFunctionType0 extends PDFunction
         super(function);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
+    @Deprecated
     public int getFunctionType()
     {
         return 0;

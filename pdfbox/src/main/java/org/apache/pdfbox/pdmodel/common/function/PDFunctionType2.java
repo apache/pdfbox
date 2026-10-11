@@ -87,10 +87,8 @@ public class PDFunctionType2 extends PDFunction
         exponent = getCOSObject().getFloat(COSName.N);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
+    @Deprecated
     public int getFunctionType()
     {
         return 2;
