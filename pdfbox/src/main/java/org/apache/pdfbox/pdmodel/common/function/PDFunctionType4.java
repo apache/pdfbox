@@ -56,15 +56,6 @@ public class PDFunctionType4 extends PDFunction
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getFunctionType()
-    {
-        return 4;
-    }
-
-    /**
     * {@inheritDoc}
     */
     @Override
