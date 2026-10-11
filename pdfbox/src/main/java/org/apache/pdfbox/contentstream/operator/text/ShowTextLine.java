@@ -16,15 +16,16 @@
  */
 package org.apache.pdfbox.contentstream.operator.text;
 
+import java.io.IOException;
+
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
-
-import java.io.IOException;
+import org.apache.pdfbox.cos.COSBase;
 
 /**
  * ': Move to the next line and show text.
@@ -42,7 +43,7 @@ public class ShowTextLine extends OperatorProcessor
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
         PDFStreamEngine context = getContext();
-        context.processOperator(OperatorName.NEXT_LINE, null);
+        context.processOperator(OperatorName.NEXT_LINE, Collections.emptyList());
         context.processOperator(OperatorName.SHOW_TEXT, arguments);
     }
 
