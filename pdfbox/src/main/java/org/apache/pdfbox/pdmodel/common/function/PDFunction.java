@@ -401,6 +401,10 @@ public abstract class PDFunction implements COSObjectable
     @Override
     public String toString()
     {
-        return "PDFunction{" + "functionStream=" + functionStream + ", functionDictionary=" + functionDictionary + ", domain=" + domain + ", range=" + range + ", numberOfInputValues=" + numberOfInputValues + ", numberOfOutputValues=" + numberOfOutputValues + '}';
+        return "PDFunction{" + "functionStream=" +
+                functionStream + ", functionDictionary=" +
+                functionDictionary + ", domain=" + domain + ", range=" +
+                range +", numberOfInputValues=" +
+                numberOfInputValues +", numberOfOutputValues=" + numberOfOutputValues + '}';
     }
 }
