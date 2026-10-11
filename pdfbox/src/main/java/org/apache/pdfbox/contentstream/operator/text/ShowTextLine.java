@@ -36,7 +36,7 @@ public class ShowTextLine extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        context.processOperator(OperatorName.NEXT_LINE, Collections.emptyList());
+        context.processOperator(OperatorName.NEXT_LINE, Collections.<COSBase>emptyList());
         context.processOperator(OperatorName.SHOW_TEXT, arguments);
     }
 
