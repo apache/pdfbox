@@ -55,7 +55,8 @@ public class PDFunctionType4 extends PDFunction
     }
     
     @Override
-    @Deprecatedpublic int getFunctionType()
+    @Deprecated
+    public int getFunctionType()
     {
         return 4;
     }
