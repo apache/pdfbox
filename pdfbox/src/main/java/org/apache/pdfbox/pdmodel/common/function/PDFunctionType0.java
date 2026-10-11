@@ -97,6 +97,10 @@ public class PDFunctionType0 extends PDFunction
         if (size == null)
         {
             size = getCOSObject().getCOSArray(COSName.SIZE);
+            if (size == null)
+            {
+                size = new COSArray();
+            }
         }
         return size;
     }
