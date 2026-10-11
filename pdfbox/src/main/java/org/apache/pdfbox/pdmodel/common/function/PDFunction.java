@@ -21,6 +21,7 @@ import java.io.IOException;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
@@ -174,9 +175,8 @@ public abstract class PDFunction implements COSObjectable
     }
 
     /**
-     * This will get the range for a certain output parameters.  This is will never
-     * return null.  If it is not present then the range 0 to 0 will
-     * be returned.
+     * This will get the range for a certain output parameters. This will never return null. If it
+     * is not present then the range 0 to 0 will be returned.
      *
      * @param n The output parameter number to get the range for.
      *
@@ -185,7 +185,14 @@ public abstract class PDFunction implements COSObjectable
     public PDRange getRangeForOutput(int n)
     {
         COSArray rangeValues = getRangeValues();
-        return new PDRange( rangeValues, n );
+        if (rangeValues == null)
+        {
+            COSArray array = new COSArray();
+            array.add(COSInteger.ZERO);
+            array.add(COSInteger.ZERO);
+            return new PDRange(array);
+        }
+        return new PDRange(rangeValues, n);
     }
 
     /**
@@ -200,34 +207,45 @@ public abstract class PDFunction implements COSObjectable
     }
 
     /**
-     * This will get the number of input parameters that
-     * have a domain specified.
+     * This will get the number of input parameters that have a domain specified.
      *
-     * @return The number of input parameters that have a domain
-     * specified.
+     * @return The number of input parameters that have a domain specified.
      */
     public int getNumberOfInputParameters()
     {
         if (numberOfInputValues == -1)
         {
             COSArray array = getDomainValues();
-            numberOfInputValues = array.size() / 2;
+            if (array == null)
+            {
+                numberOfInputValues = 0;
+            }
+            else
+            {
+                numberOfInputValues = array.size() / 2;
+            }
         }
         return numberOfInputValues;
     }
 
     /**
-     * This will get the range for a certain input parameter.  This is will never
-     * return null.  If it is not present then the range 0 to 0 will
-     * be returned.
+     * This will get the range for a certain input parameter. This will never return null. If it is
+     * not present then the range 0 to 0 will be returned.
      *
-     * @param n The parameter number to get the domain for.
+     * @param n The 0-based parameter number to get the domain for.
      *
      * @return The domain range for this component.
      */
-    public PDRange getDomainForInput(int n) 
+    public PDRange getDomainForInput(int n)
     {
         COSArray domainValues = getDomainValues();
+        if (domainValues == null)
+        {
+            COSArray array = new COSArray();
+            array.add(COSInteger.ZERO);
+            array.add(COSInteger.ZERO);
+            return new PDRange(array);
+        }
         return new PDRange( domainValues, n );
     }
 
@@ -274,23 +292,24 @@ public abstract class PDFunction implements COSObjectable
     public abstract float[] eval(float[] input) throws IOException;
     
     /**
-     * Returns all ranges for the output values as COSArray .
-     * Required for type 0 and type 4 functions
-     * @return the ranges array. 
+     * Returns all ranges for the output values as a COSArray. Required for type 0 and type 4
+     * functions.
+     *
+     * @return the ranges array or null if it is missing.
      */
-    protected COSArray getRangeValues() 
+    protected COSArray getRangeValues()
     {
-        if (range == null) 
+        if (range == null)
         {
             range = getCOSObject().getCOSArray(COSName.RANGE);
         }
         return range;
     }
 
-    /**
-     * Returns all domains for the input values as COSArray.
-     * Required for all function types.
-     * @return the domains array. 
+     /**
+     * Returns all domains for the input values as COSArray. Required for all function types.
+     *
+     * @return the domains array or null if it is missing.
      */
     private COSArray getDomainValues()
     {
