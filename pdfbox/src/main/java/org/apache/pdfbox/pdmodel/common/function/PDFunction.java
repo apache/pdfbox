@@ -90,7 +90,11 @@ public abstract class PDFunction implements COSObjectable
         {
             return functionStream.getCOSObject();
         }
-        else 
+        else if (functionDictionary == null)
+        {
+            throw new UnsupportedOperationException("No dictionary available in " + this.getClass().getSimpleName());
+        }
+        else
         {
             return functionDictionary;
         }
