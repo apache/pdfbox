@@ -29,7 +29,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -249,7 +248,7 @@ public final class PDIndexed extends PDSpecialColorSpace
     // returns "hival" array element
     private int getHival()
     {
-        return ((COSNumber) array.getObject(2)).intValue();
+        return array.getInt(2);
     }
 
     // reads the lookup table data from the array
