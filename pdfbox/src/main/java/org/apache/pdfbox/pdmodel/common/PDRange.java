@@ -91,12 +91,16 @@ public class PDRange implements COSObjectable
     /**
      * This will get the minimum value of the range.
      *
-     * @return The min value.
+     * @return The min value or 0 in case of error.
      */
     public float getMin()
     {
-        COSNumber min = (COSNumber)rangeArray.getObject( startingIndex*2 );
-        return min.floatValue();
+        COSBase base = rangeArray.getObject(startingIndex * 2);
+        if (base instanceof COSNumber)
+        {
+            return ((COSNumber) base).floatValue();
+        }
+        return 0;
     }
 
     /**
@@ -112,12 +116,16 @@ public class PDRange implements COSObjectable
     /**
      * This will get the maximum value of the range.
      *
-     * @return The max value.
+     * @return The max value or 0 in case of error.
      */
     public float getMax()
     {
-        COSNumber max = (COSNumber)rangeArray.getObject( startingIndex*2+1 );
-        return max.floatValue();
+        COSBase base = rangeArray.getObject(startingIndex * 2 + 1);
+        if (base instanceof COSNumber)
+        {
+            return ((COSNumber) base).floatValue();
+        }
+        return 0;
     }
 
     /**
