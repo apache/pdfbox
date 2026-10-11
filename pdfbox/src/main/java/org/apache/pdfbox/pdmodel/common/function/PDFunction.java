@@ -66,20 +66,6 @@ public abstract class PDFunction implements COSObjectable
     }
 
     /**
-     * Returns the function type.
-     * 
-     * Possible values are:
-     * 
-     * 0 - Sampled function
-     * 2 - Exponential interpolation function
-     * 3 - Stitching function
-     * 4 - PostScript calculator function
-     * 
-     * @return the function type.
-     */
-    public abstract int getFunctionType();
-    
-    /**
      * Returns the stream.
      * @return The stream for this object.
      */
@@ -376,12 +362,9 @@ public abstract class PDFunction implements COSObjectable
         return yRangeMin + ((x - xRangeMin) * (yRangeMax - yRangeMin)/(xRangeMax - xRangeMin));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString()
     {
-        return "FunctionType" + getFunctionType();
+        return "PDFunction{" + "functionStream=" + functionStream + ", functionDictionary=" + functionDictionary + ", domain=" + domain + ", range=" + range + ", numberOfInputValues=" + numberOfInputValues + ", numberOfOutputValues=" + numberOfOutputValues + '}';
     }
 }

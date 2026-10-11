@@ -54,7 +54,7 @@ public class PDFunctionType4 extends PDFunction
         String string = new String(bytes, StandardCharsets.ISO_8859_1);
         this.instructions = InstructionSequenceBuilder.parse(string);
     }
-    
+
     /**
      * {@inheritDoc}
      */

@@ -78,15 +78,6 @@ public class PDFunctionType0 extends PDFunction
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getFunctionType()
-    {
-        return 0;
-    }
-
-    /**
      * The "Size" entry, which is the number of samples in each input dimension
      * of the sample table.
      *

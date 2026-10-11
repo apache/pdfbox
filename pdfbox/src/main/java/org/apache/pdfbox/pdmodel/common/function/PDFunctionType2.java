@@ -73,15 +73,6 @@ public class PDFunctionType2 extends PDFunction
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getFunctionType()
-    {
-        return 2;
-    }
-
-    /**
      * Performs exponential interpolation
      *
      * {@inheritDoc}

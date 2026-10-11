@@ -45,15 +45,6 @@ public class PDFunctionType3 extends PDFunction
     {
         super( functionStream );
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getFunctionType()
-    {
-        return 3;
-    }
     
     /**
     * {@inheritDoc}

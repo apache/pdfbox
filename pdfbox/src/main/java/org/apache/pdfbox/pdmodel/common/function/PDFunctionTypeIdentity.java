@@ -31,15 +31,6 @@ public class PDFunctionTypeIdentity extends PDFunction
     public PDFunctionTypeIdentity(COSBase function)
     {
         super(null);
-        //TODO passing null is not good because getCOSObject() can result in an NPE in the base class
-    }
-
-    @Override
-    public int getFunctionType()
-    {
-        // shouldn't be called
-        throw new UnsupportedOperationException();
-        //TODO this is a violation of the interface segregation principle
     }
 
     @Override
