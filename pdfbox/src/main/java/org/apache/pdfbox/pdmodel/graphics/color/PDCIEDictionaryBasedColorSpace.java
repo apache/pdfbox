@@ -17,6 +17,7 @@ package org.apache.pdfbox.pdmodel.graphics.color;
 
 import java.awt.color.ColorSpace;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
@@ -76,8 +77,25 @@ public abstract class PDCIEDictionaryBasedColorSpace extends PDCIEBasedColorSpac
     protected PDCIEDictionaryBasedColorSpace(COSArray rgb)
     {
         array = rgb;
-        dictionary = (COSDictionary) array.getObject(1);
-
+        if (array.size() > 1)
+        {
+            COSBase base = array.getObject(1);
+            if (base instanceof COSDictionary)
+            {
+                dictionary = (COSDictionary) base;
+            }
+            else
+            {
+                dictionary = new COSDictionary();
+                array.set(1, dictionary);
+            }
+        }
+        else
+        {
+            dictionary = new COSDictionary();
+            array.growToSize(2);
+            array.set(1, dictionary);
+        }
         fillWhitepointCache(getWhitepoint());
     }
 
