@@ -30,7 +30,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 
 /**
@@ -141,7 +140,7 @@ public class CSIndexed
 
     private int getHival(COSArray array)
     {
-        int hival = ((COSNumber) array.getObject(2).getCOSObject()).intValue();
+        int hival = array.getInt(2);
         return Math.min(hival, 255);
     }
 }
