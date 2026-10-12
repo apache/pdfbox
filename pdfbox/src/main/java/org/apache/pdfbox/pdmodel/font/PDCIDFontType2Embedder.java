@@ -40,6 +40,8 @@ import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.ttf.VerticalHeaderTable;
 import org.apache.fontbox.ttf.VerticalMetricsTable;
+import org.apache.fontbox.ttf.model.GsubData;
+import org.apache.fontbox.ttf.model.ScriptFeature;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
@@ -143,6 +145,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             }
         }
 
+        Map<Integer, String> substitutedGlyphText = getSubstitutedGlyphText();
         ToUnicodeWriter toUniWriter = new ToUnicodeWriter();
         boolean hasSurrogates = false;
         for (int gid = 1, max = ttf.getMaximumProfile().getNumGlyphs(); gid <= max; gid++)
@@ -181,6 +184,15 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
                 }
                 toUniWriter.add(cid, new String(new int[]{ codePoint }, 0, 1));
             }
+            else if (substitutedGlyphText.containsKey(cid))
+            {
+                String text = substitutedGlyphText.get(cid);
+                if (text.codePoints().anyMatch(Character::isSupplementaryCodePoint))
+                {
+                    hasSurrogates = true;
+                }
+                toUniWriter.add(cid, text);
+            }
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -200,6 +212,52 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         }
 
         dict.setItem(COSName.TO_UNICODE, stream);
+    }
+
+    /**
+     * Returns the text of each glyph that the GSUB table puts in place of other glyphs, e.g. "nd"
+     * for the "nd" ligature of a script font. These glyphs have no cmap entry, so without this
+     * map text extraction would drop their letters.
+     */
+    private Map<Integer, String> getSubstitutedGlyphText() throws IOException
+    {
+        Map<Integer, String> textByGid = new HashMap<>();
+        GsubData gsubData = ttf.getGsubData();
+        if (gsubData == GsubData.NO_DATA_FOUND)
+        {
+            return textByGid;
+        }
+        for (String featureName : gsubData.getSupportedFeatures())
+        {
+            ScriptFeature feature = gsubData.getFeature(featureName);
+            for (List<Integer> sourceGids : feature.getAllGlyphIdsForSubstitution())
+            {
+                String text = toText(sourceGids);
+                if (text != null)
+                {
+                    textByGid.putIfAbsent(feature.getReplacementForGlyphs(sourceGids), text);
+                }
+            }
+        }
+        return textByGid;
+    }
+
+    /**
+     * Returns the text of the given glyphs from the cmap, or null if one of them has no cmap entry.
+     */
+    private String toText(List<Integer> gids)
+    {
+        StringBuilder text = new StringBuilder();
+        for (int gid : gids)
+        {
+            List<Integer> codes = cmapLookup.getCharCodes(gid);
+            if (codes == null)
+            {
+                return null;
+            }
+            text.appendCodePoint(codes.get(0));
+        }
+        return text.toString();
     }
 
     private COSDictionary toCIDSystemInfo(String registry, String ordering, int supplement)
