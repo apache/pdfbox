@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
@@ -899,6 +900,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         {
             if (firstActualTextPosition)
             {
+                text.setFromActualText(true);
                 text.setUnicode(actualText);
                 firstActualTextPosition = false;
             }
@@ -2034,7 +2036,17 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      */
     private WordWithTextPositions createWord(String word, List<TextPosition> wordPositions)
     {
-        return new WordWithTextPositions(normalizeWord(word), wordPositions);
+        WordWithTextPositions wordWithTextPositions;
+        Objects.requireNonNull(wordPositions.get(0), "wordPositions should have one or more entries");
+        if (wordPositions.get(0).isFromActualText())
+        {
+            wordWithTextPositions = new WordWithTextPositions(word, wordPositions);
+        }
+        else
+        {
+            wordWithTextPositions = new WordWithTextPositions(normalizeWord(word), wordPositions);
+        }
+        return wordWithTextPositions;
     }
 
     /**
@@ -2121,7 +2133,14 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         else
         {
             TextPosition text = item.getTextPosition();
-            lineBuilder.append(text.getVisuallyOrderedUnicode());
+            if (text.isFromActualText())
+            {
+                lineBuilder.append(text.getUnicode());
+            }
+            else
+            {
+                lineBuilder.append(text.getVisuallyOrderedUnicode());
+            }
             wordPositions.add(text);
         }
         return lineBuilder;
