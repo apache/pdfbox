@@ -63,6 +63,7 @@ public final class TextPosition
     private float[] widths;
     private String unicode;
     private float direction = -1;
+    private boolean fromActualText;
 
     /**
      * Constructor.
@@ -896,6 +897,25 @@ public final class TextPosition
     public float getPageWidth()
     {
         return pageWidth;
+    }
+
+    /**
+     * Return if this is created form ActualText
+     *
+     * @return true, if this is created from ActualText
+     */
+    public boolean isFromActualText()
+    {
+        return fromActualText;
+    }
+
+    /**
+     * Set the parameter fromActualText
+     * to true, if the text is created from ActualText
+     * @param fromActualText, true if the text is created from ActualText
+     */
+    public void setFromActualText(boolean fromActualText) {
+        this.fromActualText = fromActualText;
     }
 
     @Override
