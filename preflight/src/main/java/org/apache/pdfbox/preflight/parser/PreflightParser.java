@@ -464,6 +464,11 @@ public class PreflightParser extends PDFParser
             }
             source.read();
         }
+        else if (nextChar == ASCII_CR)
+        {
+            // PDFBOX-6282: A single CR is allowed too!
+            eolFound = true;
+        }
         boolean addStreamLengthErrorMessage = false;
         long actualLength = endOffset - startOffset;
         if (!eolFound)
