@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox.cos;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 /**
  * A {@link COSUpdateState} instance manages update states for a {@link COSUpdateInfo}. Such states are used to create
  * a {@link COSIncrement} for the incremental saving of a {@link COSDocument}.
@@ -117,52 +120,72 @@ public class COSUpdateState
      */
     private void setOriginDocumentState(COSDocumentState originDocumentState, boolean dereferencing)
     {
-        if(this.originDocumentState != null || originDocumentState == null)
+        if (originDocumentState == null)
         {
             return;
         }
-        this.originDocumentState = originDocumentState;
-        if(!dereferencing)
+        // The structure is traversed with an explicit stack instead of recursion, as it may be
+        // nested deeper than the call stack allows (PDFBOX-6200).
+        Deque<COSUpdateState> pending = new ArrayDeque<>();
+        pending.push(this);
+        while (!pending.isEmpty())
         {
-            update();
+            COSUpdateState state = pending.pop();
+            if (state.originDocumentState != null)
+            {
+                continue;
+            }
+            state.originDocumentState = originDocumentState;
+            if (!dereferencing)
+            {
+                state.update();
+            }
+            state.pushSubstructures(pending);
         }
-        
-        if(updateInfo instanceof COSDictionary)
+    }
+
+    /**
+     * Pushes the {@link COSUpdateState}s of the substructures directly contained by the managed
+     * {@link #updateInfo} onto the given stack.
+     *
+     * @param pending The stack of {@link COSUpdateState}s that still have to be processed.
+     */
+    private void pushSubstructures(Deque<COSUpdateState> pending)
+    {
+        if (updateInfo instanceof COSDictionary)
         {
             COSDictionary dictionary = (COSDictionary) updateInfo;
-            for(COSBase entry : dictionary.getValues())
+            for (COSBase entry : dictionary.getValues())
             {
-                if (entry instanceof COSUpdateInfo)
-                {
-                    ((COSUpdateInfo) entry).getUpdateState().setOriginDocumentState(originDocumentState, dereferencing);
-                }
+                pushUpdateState(pending, entry);
             }
         }
-        else if(updateInfo instanceof COSArray)
+        else if (updateInfo instanceof COSArray)
         {
             COSArray array = (COSArray) updateInfo;
-            for(COSBase entry : array)
+            for (COSBase entry : array)
             {
-                if (entry instanceof COSUpdateInfo)
-                {
-                    ((COSUpdateInfo) entry).getUpdateState().setOriginDocumentState(originDocumentState, dereferencing);
-                }
+                pushUpdateState(pending, entry);
             }
         }
-        else if(updateInfo instanceof COSObject)
+        else if (updateInfo instanceof COSObject)
         {
             COSObject object = (COSObject) updateInfo;
             if (object.isDereferenced())
             {
-                COSBase reference = object.getObject();
-                if (reference instanceof COSUpdateInfo)
-                {
-                    ((COSUpdateInfo) reference).getUpdateState().setOriginDocumentState(originDocumentState, dereferencing);
-                }
+                pushUpdateState(pending, object.getObject());
             }
         }
     }
-    
+
+    private static void pushUpdateState(Deque<COSUpdateState> pending, COSBase base)
+    {
+        if (base instanceof COSUpdateInfo)
+        {
+            pending.push(((COSUpdateInfo) base).getUpdateState());
+        }
+    }
+
     /**
      * <p>
      * Returns the {@link #originDocumentState}, that is linked to the managed {@link #updateInfo}.

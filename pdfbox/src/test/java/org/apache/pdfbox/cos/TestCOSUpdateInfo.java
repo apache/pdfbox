@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.cos;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -58,4 +59,44 @@ class TestCOSUpdateInfo
         assertFalse(testCOSObject.isNeedToBeUpdated());
     }
 
+    /**
+     * PDFBOX-6200: linking a document state to a deeply nested structure must not overflow the
+     * stack.
+     */
+    @Test
+    void testSetOriginDocumentStateOfDeeplyNestedStructure()
+    {
+        COSDocumentState origin = new COSDocumentState();
+        origin.setParsing(false);
+
+        // a chain of dictionaries, arrays and dereferenced indirect objects, built from the end
+        COSDictionary deepest = new COSDictionary();
+        COSBase current = deepest;
+        for (int i = 0; i < 50_000; i++)
+        {
+            switch (i % 3)
+            {
+                case 0:
+                    COSDictionary dictionary = new COSDictionary();
+                    dictionary.setItem(COSName.getPDFName("Next"), current);
+                    current = dictionary;
+                    break;
+                case 1:
+                    COSArray array = new COSArray();
+                    array.add(current);
+                    current = array;
+                    break;
+                default:
+                    current = new COSObject(current);
+                    break;
+            }
+        }
+        COSUpdateInfo root = (COSUpdateInfo) current;
+
+        root.getUpdateState().setOriginDocumentState(origin);
+
+        assertSame(origin, deepest.getUpdateState().getOriginDocumentState());
+        assertTrue(root.isNeedToBeUpdated());
+        assertTrue(deepest.isNeedToBeUpdated());
+    }
 }
