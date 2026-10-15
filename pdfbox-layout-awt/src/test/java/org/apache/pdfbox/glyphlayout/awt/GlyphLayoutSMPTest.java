@@ -199,7 +199,7 @@ class GlyphLayoutSMPTest extends TestBase
 
             String[] lines
                     = Arrays.stream((TEXT_INTRO + "\n" + "Font used: NotoSansMath-Regular" + "\n" + MATHEMATICAL)
-                            .split("\n")).filter(line -> line.length() > 0).toArray(i -> new String[i]);
+                            .split("\n")).filter(line -> !line.isEmpty()).toArray(i -> new String[i]);
             String text = String.join("\n", lines);
 
             if (useActualText)
