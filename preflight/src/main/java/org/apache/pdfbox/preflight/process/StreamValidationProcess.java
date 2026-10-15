@@ -307,10 +307,10 @@ public class StreamValidationProcess extends AbstractProcess
                     ra.read(buffer2);
 
                     // ---- check the content of 10 last characters
-                    // there has to be an proceeding EOL (LF or CRLF)
+                    // there has to be an proceeding EOL (LF, CR or CRLF)
                     String endStream = new String(buffer2, Charsets.ISO_8859_1);
                     if ((buffer2[0] != '\r' && buffer2[0] != '\n') //
-                            || (buffer2[0] == '\r' && buffer2[1] != '\n') //
+                            || (buffer2[0] == '\r' && buffer2[1] != '\n' && buffer2[1] != 'e') //
                             || (buffer2[0] == '\n' && buffer2[1] != 'e') //
                             || !endStream.contains(ENDSTREAM))
                     {
