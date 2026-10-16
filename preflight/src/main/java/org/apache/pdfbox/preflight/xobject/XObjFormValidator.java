@@ -124,7 +124,8 @@ public class XObjFormValidator extends AbstractXObjValidator
         COSDictionary groupDictionary = COSUtils.getAsDictionary(baseGroup, cosDocument);
         if (groupDictionary != null)
         {
-            if (!XOBJECT_DICTIONARY_KEY_GROUP.equals(groupDictionary.getNameAsString(COSName.TYPE)))
+            COSName type = groupDictionary.getCOSName(COSName.TYPE);
+            if (type != null && !COSName.GROUP.equals(type))
             {
                 context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_MISSING_FIELD, 
                         "The Group dictionary hasn't Group as Type value"));
