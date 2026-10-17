@@ -35,6 +35,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
 import org.apache.pdfbox.pdmodel.PDDestinationNameTreeNode;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -87,6 +88,7 @@ public class Splitter
     private List<PDDocument> destinationDocuments;
     private Map<COSDictionary, COSDictionary> pageDictMap; // map old page => new page for the current destination document
     private List<Map<COSDictionary, COSDictionary>> pageDictMaps; // list of these maps for all destination documents
+    private Map<PDPage,Integer> pageToDocNumMap; // map old page => index of destination document
     private Map<COSDictionary, COSDictionary> structDictMap;
     private List<Map<COSDictionary, COSDictionary>> annotDictMaps; // map old annotation => new annotation for the current destination document
     private Map<COSDictionary, COSDictionary> annotDictMap; // list of these maps for all destination documents
@@ -135,6 +137,7 @@ public class Splitter
         destinationDocuments = new ArrayList<>();
         sourceDocument = document;
         pageDictMaps = new ArrayList<>();
+        pageToDocNumMap = new HashMap<>();
         annotDictMaps = new ArrayList<>();
         destToFixMap = new HashMap<>();
         idSet = new HashSet<>();
@@ -150,10 +153,80 @@ public class Splitter
             cloneStructureTree(destinationDocument);
             fixDestinations(destinationDocument);
         }
-
+        fixNameDestinations();
         return destinationDocuments;
     }
     
+    /**
+     * PDFBOX-6283: Fix the destinations in /Root/Names/Dests by creating clones only for
+     * the destinations that are in the destination documents.
+     *
+     * @throws IOException 
+     */
+    void fixNameDestinations() throws IOException
+    {
+        PDDocumentNameDictionary srcNames = sourceDocument.getDocumentCatalog().getNames();
+        if (srcNames == null)
+        {
+            return;
+        }
+        PDDestinationNameTreeNode srcDests = srcNames.getDests();
+        if (srcDests == null)
+        {
+            return;
+        }
+
+        List<Map<String, PDPageDestination>> dstTreeAsMapList =
+                new ArrayList<>(destinationDocuments.size());
+        for (int i = 0; i < destinationDocuments.size(); ++i)
+        {
+            dstTreeAsMapList.add(new HashMap<>());
+        }
+
+        // map all named destinations to the pages in the new documents
+        Map<String, PDPageDestination> srcTreeAsMap = srcDests.getTreeAsMap();
+        for (Map.Entry<String, PDPageDestination> entry : srcTreeAsMap.entrySet())
+        {
+            PDPageDestination value = entry.getValue();
+            if (value == null)
+            {
+                // happens with file 000671.pdf, entry "Raff1"
+                continue;
+            }
+            PDPage pageInTreeDest = value.getPage();
+            // find out in which destination document this should be added
+            int docIndex = pageToDocNumMap.get(pageInTreeDest);
+            pageDictMap = pageDictMaps.get(docIndex); // get appropriate mapping
+            COSDictionary dstPageDict = pageDictMap.get(pageInTreeDest.getCOSObject());
+
+            // clone destination
+            COSArray clonedDestinationArray = new COSArray(value.getCOSObject().toList());
+            PDPageDestination dstDestination = (PDPageDestination) PDDestination.create(clonedDestinationArray);
+            dstDestination.setPage(new PDPage(dstPageDict));
+
+            // add to the treeMap of the appropriate destination document
+            Map<String, PDPageDestination> dstTreeAsMap = dstTreeAsMapList.get(docIndex);
+            dstTreeAsMap.put(entry.getKey(), dstDestination);
+        }
+
+        // Assign all non empty treemaps to the new documents
+        for (int i = 0; i < destinationDocuments.size(); ++i)
+        {
+            Map<String, PDPageDestination> dstTreeAsMap = dstTreeAsMapList.get(i);
+            if (dstTreeAsMap.isEmpty())
+            {
+                continue;
+            }
+            PDDocument destinationDocument = destinationDocuments.get(i);
+            PDDocumentCatalog dstDocumentCatalog = destinationDocument.getDocumentCatalog();
+            PDDocumentNameDictionary dstDocumentNameDictionary = new PDDocumentNameDictionary(dstDocumentCatalog);
+            PDDestinationNameTreeNode dstDests = new PDDestinationNameTreeNode();
+            dstDocumentNameDictionary.setDests(dstDests);
+            dstDocumentCatalog.setNames(dstDocumentNameDictionary);
+            dstDests.setNames(dstTreeAsMap);            
+        }
+    }
+
     /**
      * Replace the page destinations, if the source and destination pages are in the target
      * document. This must be called after all pages (and its annotations) are processed.
@@ -822,55 +895,7 @@ public class Splitter
         processAnnotations(imported);
 
         pageDictMap.put(page.getCOSObject(), imported.getCOSObject());
-
-        //TODO this segment belongs within fixDestinations() using the pageDictMap
-        // this will prevent some multiple work
-        // Find named destinations that are in the destination document
-        PDDocumentNameDictionary names = sourceDocument.getDocumentCatalog().getNames();
-        if (names != null)
-        {
-            PDDestinationNameTreeNode dests = names.getDests();
-            if (dests != null)
-            {
-                Map<String, PDPageDestination> srcTreeAsMap = dests.getTreeAsMap();
-
-                // create destination structure if needed (may have been done for a previous page)
-                PDDocumentCatalog dstDocumentCatalog = getDestinationDocument().getDocumentCatalog();
-                PDDocumentNameDictionary dstNames = dstDocumentCatalog.getNames();
-                if (dstNames == null)
-                {
-                    dstNames = new PDDocumentNameDictionary(dstDocumentCatalog);
-                }
-                PDDestinationNameTreeNode dstDests = dstNames.getDests();
-                if (dstDests == null)
-                {
-                    dstDests = new PDDestinationNameTreeNode();
-                }
-                Map<String, PDPageDestination> dstTreeAsMap = dstDests.getTreeAsMap();
-                
-                for (Map.Entry<String, PDPageDestination> entry : srcTreeAsMap.entrySet())
-                {
-                    PDPageDestination value = entry.getValue();
-                    PDPage pageInTreeDest = value.getPage();
-                    if (page.equals(pageInTreeDest))
-                    {
-                        // clone destination
-                        COSArray clonedDestinationArray =
-                                new COSArray(value.getCOSObject().toList());
-                        PDPageDestination dstDestination =
-                                (PDPageDestination) PDDestination.create(clonedDestinationArray);
-                        dstDestination.setPage(imported);
-                        dstTreeAsMap.put(entry.getKey(), dstDestination);
-                    }
-                }
-                if (!dstTreeAsMap.isEmpty())
-                {
-                    dstDests.setNames(dstTreeAsMap);
-                    dstNames.setDests(dstDests);
-                    dstDocumentCatalog.setNames(dstNames);
-                }
-            }
-        }
+        pageToDocNumMap.put(page, destinationDocuments.size() - 1);
     }
 
     /**
@@ -928,11 +953,15 @@ public class Splitter
                 }
                 if (srcDestination instanceof PDNamedDestination)
                 {
-                    srcDestination = sourceDocument.getDocumentCatalog().
-                            findNamedDestinationPage((PDNamedDestination) srcDestination);
-                    // we do not use the named destination anymore because names get modified, e.g.
-                    // 0xAD becomes 0, see file 410609.pdf where the name no longer matches with the
-                    // entry in the new name tree; plus the original solution was 40 additional loc
+                    // PDFBOX-5840 / PDFBOX-6283: In a few cases, e.g. in PDFBOX-5840-410609.pdf
+                    // 0xAD becomes 0 so the name would no longer match the entry in the new
+                    // name tree, so we replace the name with the actual destination.
+                    COSString cosString = (COSString) srcDestination.getCOSObject();
+                    if (cosString.toString().contains("\000"))
+                    {
+                        srcDestination = sourceDocument.getDocumentCatalog().
+                                findNamedDestinationPage((PDNamedDestination) srcDestination);
+                    }
                 }
                 if (srcDestination instanceof PDPageDestination)
                 {
