@@ -1722,7 +1722,7 @@ public class PDFMergerUtilityTest extends TestCase
         {
             PDDocument splitDocument = split.get(i);
             PDDocumentNameDestinationDictionary nameDestinationDictionary = splitDocument.getDocumentCatalog().getDests();
-            assertNotNull(, "split document " + i + " should have a dests dictionary", nameDestinationDictionary);
+            assertNotNull("split document " + i + " should have a dests dictionary", nameDestinationDictionary);
 
             // only the destination pointing to this page should be present
             assertEquals(1, nameDestinationDictionary.getCOSObject().size());
