@@ -18,6 +18,8 @@ package org.apache.pdfbox.pdmodel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 
@@ -130,6 +132,20 @@ class TestPDPageTree
                     "Page two should be placed at index 1.");
             assertEquals(2, (document.getPages().indexOf(pageThree)),
                     "Page three should be placed at index 2.");
+        }
+    }
+
+    @Test
+    void getValidPageAfterOutOfBoundsLookup() throws IOException
+    {
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            document.addPage(page);
+            PDPageTree pages = document.getPages();
+
+            assertThrows(IndexOutOfBoundsException.class, () -> pages.get(1));
+            assertSame(page.getCOSObject(), pages.get(0).getCOSObject());
         }
     }
 
