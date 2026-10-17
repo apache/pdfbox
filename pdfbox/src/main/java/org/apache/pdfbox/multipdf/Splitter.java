@@ -35,8 +35,11 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.pdmodel.PDDestinationNameTreeNode;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -822,6 +825,59 @@ public class Splitter
         processAnnotations(imported);
 
         pageDictMap.put(page.getCOSObject(), imported.getCOSObject());
+
+        //TODO this segment belongs within fixDestinations() using the pageDictMap
+        // this will prevent some multiple work
+        // Find named destinations that are in the destination document
+        PDDocumentNameDictionary names = sourceDocument.getDocumentCatalog().getNames();
+        if (names != null)
+        {
+            PDDestinationNameTreeNode dests = names.getDests();
+            if (dests != null)
+            {
+                Map<String, PDPageDestination> srcTreeAsMap = dests.getTreeAsMap();
+
+                // create destination structure if needed (may have been done for a previous page)
+                PDDocumentCatalog dstDocumentCatalog = getDestinationDocument().getDocumentCatalog();
+                PDDocumentNameDictionary dstNames = dstDocumentCatalog.getNames();
+                if (dstNames == null)
+                {
+                    dstNames = new PDDocumentNameDictionary(dstDocumentCatalog);
+                }
+                PDDestinationNameTreeNode dstDests = dstNames.getDests();
+                if (dstDests == null)
+                {
+                    dstDests = new PDDestinationNameTreeNode();
+                }
+                Map<String, PDPageDestination> dstTreeAsMap = dstDests.getTreeAsMap();
+                
+                for (Map.Entry<String, PDPageDestination> entry : srcTreeAsMap.entrySet())
+                {
+                    PDPageDestination value = entry.getValue();
+                    PDPage pageInTreeDest = value.getPage();
+                    if (page.equals(pageInTreeDest))
+                    {
+                        // clone destination
+                        COSArray clonedDestinationArray = new COSArray();
+                        COSArray srcDestinationArray = ((PDPageDestination) value).getCOSObject();
+                        for (int i = 0; i < srcDestinationArray.size(); ++i)
+                        {
+                            clonedDestinationArray.add(srcDestinationArray.getObject(i));
+                        }                        
+                        PDPageDestination dstDestination =
+                                (PDPageDestination) PDDestination.create(clonedDestinationArray);
+                        dstDestination.setPage(imported);
+                        dstTreeAsMap.put(entry.getKey(), dstDestination);
+                    }
+                }
+                if (!dstTreeAsMap.isEmpty())
+                {
+                    dstDests.setNames(dstTreeAsMap);
+                    dstNames.setDests(dstDests);
+                    dstDocumentCatalog.setNames(dstNames);
+                }
+            }
+        }
     }
 
     /**
