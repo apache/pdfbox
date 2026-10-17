@@ -40,6 +40,7 @@ import org.apache.pdfbox.pdmodel.PDDestinationNameTreeNode;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.pdmodel.PDDocumentNameDestinationDictionary;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
@@ -153,6 +154,7 @@ public class Splitter
             fixDestinations(destinationDocument);
         }
         fixNameDestinations();
+        fixNameDestinations2();
         return destinationDocuments;
     }
     
@@ -227,7 +229,79 @@ public class Splitter
             PDDestinationNameTreeNode dstDests = new PDDestinationNameTreeNode();
             dstDocumentNameDictionary.setDests(dstDests);
             dstDocumentCatalog.setNames(dstDocumentNameDictionary);
-            dstDests.setNames(dstTreeAsMap);            
+            dstDests.setNames(dstTreeAsMap);
+        }
+    }
+
+    /**
+     * PDFBOX-6283: Fix the destinations in /Root/Dests by creating clones only for
+     * the destinations that are in the destination documents. Can be tested on file 503088.pdf.
+     *
+     * @throws IOException 
+     */
+    void fixNameDestinations2() throws IOException
+    {
+        PDDocumentNameDestinationDictionary nameDestinationDictionary = sourceDocument.getDocumentCatalog().getDests();
+        if (nameDestinationDictionary == null || nameDestinationDictionary.getCOSObject().size() == 0)
+        {
+            return;
+        }
+
+        List<COSDictionary> dstDests = new ArrayList<>(destinationDocuments.size());
+        for (int i = 0; i < destinationDocuments.size(); ++i)
+        {
+            dstDests.add(new COSDictionary());
+        }
+
+        // map all named destinations to the pages in the new documents
+        for (COSName key : nameDestinationDictionary.getCOSObject().keySet())
+        {
+            PDDestination dest = nameDestinationDictionary.getDestination(key.getName());
+            if (dest instanceof PDPageDestination)
+            {
+                PDPageDestination pageDest = (PDPageDestination) dest;
+                PDPage pageInTreeDest = pageDest.getPage();
+                // find out in which destination document this should be added
+                Integer docIndex = pageToDocNumMap.get(pageInTreeDest);
+                if (docIndex == null)
+                {
+                    // wasn't part of the split
+                    continue;
+                }
+                pageDictMap = pageDictMaps.get(docIndex); // get appropriate mapping
+                COSDictionary dstPageDict = pageDictMap.get(pageInTreeDest.getCOSObject());
+
+                // clone destination
+                COSArray clonedDestinationArray = new COSArray(pageDest.getCOSObject().toList());
+                PDPageDestination dstDestination = (PDPageDestination) PDDestination.create(clonedDestinationArray);
+                dstDestination.setPage(new PDPage(dstPageDict));
+
+                // add to the dictionary of the appropriate destination document
+                COSDictionary dstDict = dstDests.get(docIndex);
+                dstDict.setItem(key, dstDestination);
+            }
+            else if (dest != null)
+            {
+                // add it everywhere, it doesn't reference a specific page
+                for (int i = 0; i < destinationDocuments.size(); ++i)
+                {
+                    dstDests.get(i).setItem(key, dest);
+                }
+            }
+        }
+
+        // Assign all non empty dictionaries to the new documents
+        for (int i = 0; i < destinationDocuments.size(); ++i)
+        {
+            COSDictionary dstDict = dstDests.get(i);
+            if (dstDict.size() == 0)
+            {
+                continue;
+            }
+            PDDocument destinationDocument = destinationDocuments.get(i);
+            PDDocumentCatalog dstDocumentCatalog = destinationDocument.getDocumentCatalog();
+            // catalog.setDests() doesn't exist, maybe because it feels obsolete
+            dstDocumentCatalog.getCOSObject().setItem(COSName.DESTS, new PDDocumentNameDestinationDictionary(dstDict));
         }
     }
 
