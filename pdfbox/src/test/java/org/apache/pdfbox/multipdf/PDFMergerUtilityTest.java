@@ -1674,7 +1674,7 @@ class PDFMergerUtilityTest
      * destinations pointing to other pages are not carried over.
      */
     @Test
-    public void testSplitCopiesNamedDestinations() throws Exception
+    void testSplitCopiesNamedDestinations() throws Exception
     {
         PDDocument document = new PDDocument();
         PDPage page0 = new PDPage();
