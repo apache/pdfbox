@@ -34,7 +34,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDestinationNameTreeNode;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -971,8 +970,8 @@ public class Splitter
                     // PDFBOX-5840 / PDFBOX-6283: In a few cases, e.g. in PDFBOX-5840-410609.pdf
                     // 0xAD becomes 0 so the name would no longer match the entry in the new
                     // name tree, so we replace the name with the actual destination.
-                    COSString cosString = (COSString) srcDestination.getCOSObject();
-                    if (cosString.toString().contains("\000"))
+                    String namedDestinationString = ((PDNamedDestination) srcDestination).getNamedDestination();
+                    if (namedDestinationString.contains("\000"))
                     {
                         srcDestination = sourceDocument.getDocumentCatalog().
                                 findNamedDestinationPage((PDNamedDestination) srcDestination);
