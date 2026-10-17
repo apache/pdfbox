@@ -195,7 +195,12 @@ public class Splitter
             }
             PDPage pageInTreeDest = value.getPage();
             // find out in which destination document this should be added
-            int docIndex = pageToDocNumMap.get(pageInTreeDest);
+            Integer docIndex = pageToDocNumMap.get(pageInTreeDest);
+            if (docIndex == null)
+            {
+                // wasn't part of the split
+                continue;
+            }
             pageDictMap = pageDictMaps.get(docIndex); // get appropriate mapping
             COSDictionary dstPageDict = pageDictMap.get(pageInTreeDest.getCOSObject());
 
