@@ -47,8 +47,6 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     private final COSDictionary root;
     private final PDDocument document; // optional
 
-    private final Set<COSDictionary> pageSet = new HashSet<>();
-
     /**
      * Constructor for embedding.
      */
@@ -273,7 +271,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      */
     public PDPage get(int index)
     {
-        COSDictionary dict = get(index + 1, root, 0);
+        COSDictionary dict = get(index + 1, root, 0, new HashSet<>());
 
         sanitizeType(dict);
 
@@ -305,7 +303,8 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      * @throws IllegalStateException if the requested page number isn't found
      * @throws IndexOutOfBoundsException if the requested page number is higher than the page count
      */
-    private COSDictionary get(int pageNum, COSDictionary node, int encountered)
+    private COSDictionary get(int pageNum, COSDictionary node, int encountered,
+            Set<COSDictionary> pageSet)
     {
         if (pageNum < 1)
         {
@@ -313,7 +312,6 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         }
         if (pageSet.contains(node))
         {
-            pageSet.clear();
             throw new IllegalStateException(
                     "Possible recursion found when searching for page " + pageNum);
         }
@@ -338,7 +336,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
                         if (pageNum <= encountered + kidCount)
                         {
                             // it's this kid
-                            return get(pageNum, kid, encountered);
+                            return get(pageNum, kid, encountered, pageSet);
                         }
                         else
                         {
@@ -352,7 +350,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
                         if (pageNum == encountered)
                         {
                             // it's this page
-                            return get(pageNum, kid, encountered);
+                            return get(pageNum, kid, encountered, pageSet);
                         }
                     }
                 }
@@ -368,7 +366,6 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         {
             if (encountered == pageNum)
             {
-                pageSet.clear();
                 return node;
             }
             else
@@ -466,7 +463,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      */
     public void remove(int index)
     {
-        COSDictionary node = get(index + 1, root, 0);
+        COSDictionary node = get(index + 1, root, 0, new HashSet<>());
         remove(node);
     }
 
