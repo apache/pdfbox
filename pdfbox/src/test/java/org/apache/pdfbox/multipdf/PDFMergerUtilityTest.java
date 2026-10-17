@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -54,6 +55,7 @@ import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDPageLabelRange;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkedContentReference;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDObjectReference;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDParentTreeValue;
@@ -1682,6 +1684,27 @@ class PDFMergerUtilityTest
         document.addPage(page1);
         document.addPage(page2);
 
+        List<PDAnnotation> ann0 = new ArrayList<>();
+        PDAnnotationLink annLink0 = new PDAnnotationLink();
+        annLink0.setDestination(new PDNamedDestination("dest0"));
+        annLink0.setRectangle(new PDRectangle(10, 600, 100, 100));
+        ann0.add(annLink0);
+        page0.setAnnotations(ann0);
+
+        List<PDAnnotation> ann1 = new ArrayList<>();
+        PDAnnotationLink annLink1 = new PDAnnotationLink();
+        annLink1.setDestination(new PDNamedDestination("dest1"));
+        annLink1.setRectangle(new PDRectangle(10, 600, 100, 100));
+        ann1.add(annLink1);
+        page1.setAnnotations(ann1);
+
+        List<PDAnnotation> ann2 = new ArrayList<>();
+        PDAnnotationLink annLink2 = new PDAnnotationLink();
+        annLink2.setDestination(new PDNamedDestination("dest2"));
+        annLink2.setRectangle(new PDRectangle(10, 600, 100, 100));
+        ann2.add(annLink2);
+        page2.setAnnotations(ann2);
+
         PDPageFitDestination dest0 = new PDPageFitDestination();
         dest0.setPage(page0);
         PDPageFitDestination dest1 = new PDPageFitDestination();
@@ -1721,6 +1744,9 @@ class PDFMergerUtilityTest
             // the destination must point to the imported page of the split document
             PDPage importedPage = ((PDPageFitDestination) copied).getPage();
             assertSame(splitDocument.getPage(0).getCOSObject(), importedPage.getCOSObject());
+            PDAnnotationLink annLink = (PDAnnotationLink) importedPage.getAnnotations().get(0);
+            PDNamedDestination namedDestination = (PDNamedDestination) annLink.getDestination();
+            assertEquals(expectedName, namedDestination.getNamedDestination());            
         }
     }
 }
