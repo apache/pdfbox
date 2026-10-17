@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,8 +42,10 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction;
+import org.apache.pdfbox.pdmodel.PDDestinationNameTreeNode;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -1658,6 +1661,64 @@ class PDFMergerUtilityTest
             BufferedImage bim = imageXObject.getImage();
             assertEquals(909, bim.getWidth());
             assertEquals(233, bim.getHeight());
+        }
+    }
+
+    /**
+     * PDFBOX-6283: Verifies that named destinations (/Names /Dests) pointing to a page are copied
+     * to the split document that contains that page, remapped to the imported page, and that
+     * destinations pointing to other pages are not carried over.
+     */
+    @Test
+    public void testSplitCopiesNamedDestinations() throws Exception
+    {
+        PDDocument document = new PDDocument();
+        PDPage page0 = new PDPage();
+        PDPage page1 = new PDPage();
+        PDPage page2 = new PDPage();
+        document.addPage(page0);
+        document.addPage(page1);
+        document.addPage(page2);
+
+        PDPageFitDestination dest0 = new PDPageFitDestination();
+        dest0.setPage(page0);
+        PDPageFitDestination dest1 = new PDPageFitDestination();
+        dest1.setPage(page1);
+        PDPageFitDestination dest2 = new PDPageFitDestination();
+        dest2.setPage(page2);
+
+        Map<String, PDPageDestination> destNames = new LinkedHashMap<>();
+        destNames.put("dest0", dest0);
+        destNames.put("dest1", dest1);
+        destNames.put("dest2", dest2);
+
+        PDDocumentNameDictionary names = new PDDocumentNameDictionary(document.getDocumentCatalog());
+        PDDestinationNameTreeNode dests = new PDDestinationNameTreeNode();
+        dests.setNames(destNames);
+        names.setDests(dests);
+        document.getDocumentCatalog().setNames(names);
+
+        List<PDDocument> split = new Splitter().split(document);
+        assertEquals(3, split.size());
+
+        for (int i = 0; i < split.size(); i++)
+        {
+            PDDocument splitDocument = split.get(i);
+            PDDocumentNameDictionary splitNames = splitDocument.getDocumentCatalog().getNames();
+            assertNotNull(splitNames, "split document " + i + " should have a name dictionary");
+            assertNotNull(splitNames.getDests(), "split document " + i + " should have a dests node");
+
+            Map<String, PDPageDestination> copiedNames = splitNames.getDests().getNames();
+            assertNotNull(copiedNames);
+            // only the destination pointing to this page should be present
+            assertEquals(1, copiedNames.size());
+
+            String expectedName = "dest" + i;
+            COSObjectable copied = copiedNames.get(expectedName);
+            assertTrue(copied instanceof PDPageFitDestination);
+            // the destination must point to the imported page of the split document
+            PDPage importedPage = ((PDPageFitDestination) copied).getPage();
+            assertSame(splitDocument.getPage(0).getCOSObject(), importedPage.getCOSObject());
         }
     }
 }
