@@ -23,8 +23,10 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.EncodedFont;
@@ -392,6 +394,11 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
     @Override
     protected byte[] encode(int unicode) throws IOException
     {
+        byte[] encodedCodepoint = codepointEncoding.get(unicode);
+        if (encodedCodepoint != null)
+        {
+            return encodedCodepoint;
+        }
         String name = getGlyphList().codePointToName(unicode);
         if (!encoding.contains(name))
         {
@@ -409,7 +416,9 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
         }
 
         int code = encoding.getCode(name);
-        return new byte[] { (byte)code };
+        encodedCodepoint = new byte[] { (byte) code };
+        codepointEncoding.put(unicode, encodedCodepoint);
+        return encodedCodepoint;
     }
 
     @Override
@@ -421,9 +430,10 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
             return 0;
         }
         float width = 0;
-        for (int i = 0; i < string.length(); i++)
+        Iterator<Integer> codePoints = string.codePoints().iterator();
+        while (codePoints.hasNext())
         {
-            int codePoint = string.codePointAt(i);
+            int codePoint = codePoints.next();
             String name = getGlyphList().codePointToName(codePoint);
             if (!cffFont.hasGlyph(name))
             {
@@ -431,7 +441,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
                     String.format("U+%04X ('%s') is not available in font %s",
                                   codePoint, name, getName()));
             }
-            width += cffFont.getType1CharString(name).getWidth();
+            width += cffFont.getWidth(name);
         }
         return width;
     }

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,6 +66,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     private float avgFontWidth;
     private float fontWidthOfSpace = -1f;
     private final Map<Integer, Float> codeToWidthMap;
+    protected final Map<Integer, byte[]> codepointEncoding = new HashMap<>();
 
     /**
      * Constructor for embedding.
@@ -326,16 +328,11 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     public final byte[] encode(String text) throws IOException
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream(Math.max(32, text.length()));
-        int offset = 0;
-        while (offset < text.length())
+        Iterator<Integer> codePoints = text.codePoints().iterator();
+        while (codePoints.hasNext())
         {
-            int codePoint = text.codePointAt(offset);
-
-            // multi-byte encoding with 1 to 4 bytes
-            byte[] bytes = encode(codePoint);
+            byte[] bytes = encode(codePoints.next());
             out.write(bytes);
-
-            offset += Character.charCount(codePoint);
         }
         return out.toByteArray();
     }

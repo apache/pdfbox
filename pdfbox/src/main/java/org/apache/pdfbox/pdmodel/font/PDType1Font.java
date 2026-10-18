@@ -92,7 +92,6 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
     /**
      * to improve encoding speed.
      */
-    private final Map<Integer, byte[]> codeToBytesMap = new HashMap<>();
     private Matrix fontMatrix;
     private BoundingBox fontBBox;
 
@@ -394,7 +393,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
     @Override
     protected byte[] encode(int unicode) throws IOException
     {
-        byte[] bytes = codeToBytesMap.get(unicode);
+        byte[] bytes = codepointEncoding.get(unicode);
         if (bytes != null)
         {
             return bytes;
@@ -443,7 +442,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
                             unicode, name, getName(), genericFont.getName(), encoding.getEncodingName()));
         }
         bytes = new byte[] { (byte)code };
-        codeToBytesMap.put(unicode, bytes);
+        codepointEncoding.put(unicode, bytes);
         return bytes;
     }
 

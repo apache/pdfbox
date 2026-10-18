@@ -480,7 +480,14 @@ public class PDType0Font extends PDFont implements PDVectorFont
     @Override
     protected byte[] encode(int unicode) throws IOException
     {
-        return descendantFont.encode(unicode);
+        byte[] encodedCodepoint = codepointEncoding.get(unicode);
+        if (encodedCodepoint != null)
+        {
+            return encodedCodepoint;
+        }
+        encodedCodepoint = descendantFont.encode(unicode);
+        codepointEncoding.put(unicode, encodedCodepoint);
+        return encodedCodepoint;
     }
 
     @Override
