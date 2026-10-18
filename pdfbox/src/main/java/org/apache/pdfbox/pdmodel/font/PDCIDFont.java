@@ -52,6 +52,7 @@ public abstract class PDCIDFont implements COSObjectable
     private static final Logger LOG = LogManager.getLogger(PDCIDFont.class);
 
     private final Map<Integer, Float> widths = new HashMap<>();
+    private final Map<Integer, Float> codeToWidth = new HashMap<>();
     private float defaultWidth;
     private float averageWidth;
 
@@ -496,10 +497,16 @@ public abstract class PDCIDFont implements COSObjectable
      */
     protected float getWidth(int code, PDType0Font parent) throws IOException
     {
-        // these widths are supposed to be consistent with the actual widths given in the CIDFont
-        // program, but PDFBOX-563 shows that when they are not, Acrobat overrides the embedded
-        // font widths with the widths given in the font dictionary
-        return getWidthForCID(codeToCID(code, parent));
+        Float width = codeToWidth.get(code);
+        if (width == null)
+        {
+            // these widths are supposed to be consistent with the actual widths given in the CIDFont
+            // program, but PDFBOX-563 shows that when they are not, Acrobat overrides the embedded
+            // font widths with the widths given in the font dictionary
+            width = getWidthForCID(codeToCID(code, parent));
+            codeToWidth.put(code, width);
+        }
+        return width;
     }
 
     // todo: this method is highly suspicious, the average glyph width is not usually a good metric

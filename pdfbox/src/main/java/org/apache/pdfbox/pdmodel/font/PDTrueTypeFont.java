@@ -390,6 +390,11 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     @Override
     protected byte[] encode(int unicode) throws IOException
     {
+        byte[] encodedCodepoint = codepointEncoding.get(unicode);
+        if (encodedCodepoint != null)
+        {
+            return encodedCodepoint;
+        }
         if (encoding != null)
         {
             if (!encoding.contains(getGlyphList().codePointToName(unicode)))
@@ -413,7 +418,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             }
 
             int code = encoding.getCode(name);
-            return new byte[] { (byte)code };
+            encodedCodepoint = new byte[] { (byte) code };
         }
         else
         {
@@ -434,8 +439,10 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
                     String.format("U+%04X is not available in font %s encoding", unicode, getName()));
             }
             
-            return new byte[] { (byte)(int)code };
+            encodedCodepoint = new byte[] { (byte) code.intValue() };
         }
+        codepointEncoding.put(unicode, encodedCodepoint);
+        return encodedCodepoint;
     }
 
     /**
