@@ -25,6 +25,8 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocume
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 
 import org.junit.After;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 
 /**
@@ -95,5 +97,30 @@ public class TestPDPageTree
     {
         doc = PDDocument.load(TestPDPageTree.class.getResourceAsStream("PDFBOX-6040-nodeloop.pdf"));
         assertNull(doc.getPage(0).getResources());
+    }
+
+    /**
+     * PDFBOX-6286
+     *
+     * @throws IOException 
+     */
+    @Test
+    public void getValidPageAfterOutOfBoundsLookup() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage();
+        document.addPage(page);
+        PDPageTree pages = document.getPages();
+        try
+        {
+            pages.get(1);
+            fail("should throw IndexOutOfBoundsException");
+        }
+        catch (IndexOutOfBoundsException expected)
+        {
+        }
+        // unexpectedly reported recursion before PDFBOX-6286
+        assertSame(page.getCOSObject(), pages.get(0).getCOSObject());
+        document.close();
     }
 }
