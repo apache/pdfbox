@@ -592,10 +592,8 @@ public class PDEncryption implements COSObjectable
      * Set the Perms entry in the encryption dictionary.
      *
      * @param perms A 16 byte array.
-     *
-     * @throws IOException If there is an error setting the data.
      */
-    public void setPerms(byte[] perms) throws IOException
+    public void setPerms(byte[] perms)
     {
         dictionary.setItem( COSName.PERMS, new COSString(perms) );
     }
@@ -604,10 +602,8 @@ public class PDEncryption implements COSObjectable
      * Get the Perms entry in the encryption dictionary.
      *
      * @return A 16 byte array or null if there is no Perms entry.
-     *
-     * @throws IOException If there is an error accessing the data.
      */
-    public byte[] getPerms() throws IOException
+    public byte[] getPerms()
     {
         byte[] perms = null;
         COSString permsCosString = (COSString)dictionary.getDictionaryObject( COSName.PERMS );
