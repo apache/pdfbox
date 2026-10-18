@@ -47,6 +47,8 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     private final COSDictionary root;
     private final PDDocument document; // optional
 
+    private final Set<COSDictionary> pageSet = new HashSet<>();
+
     /**
      * Constructor for embedding.
      */
@@ -271,7 +273,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      */
     public PDPage get(int index)
     {
-        COSDictionary dict = get(index + 1, root, 0, new HashSet<>());
+        COSDictionary dict = get(index + 1, root, 0);
 
         sanitizeType(dict);
 
@@ -303,15 +305,16 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      * @throws IllegalStateException if the requested page number isn't found
      * @throws IndexOutOfBoundsException if the requested page number is higher than the page count
      */
-    private COSDictionary get(int pageNum, COSDictionary node, int encountered,
-            Set<COSDictionary> pageSet)
+    private COSDictionary get(int pageNum, COSDictionary node, int encountered)
     {
         if (pageNum < 1)
         {
+            pageSet.clear();
             throw new IndexOutOfBoundsException("Index out of bounds: " + pageNum);
         }
         if (pageSet.contains(node))
         {
+            pageSet.clear();
             throw new IllegalStateException(
                     "Possible recursion found when searching for page " + pageNum);
         }
@@ -336,7 +339,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
                         if (pageNum <= encountered + kidCount)
                         {
                             // it's this kid
-                            return get(pageNum, kid, encountered, pageSet);
+                            return get(pageNum, kid, encountered);
                         }
                         else
                         {
@@ -350,15 +353,17 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
                         if (pageNum == encountered)
                         {
                             // it's this page
-                            return get(pageNum, kid, encountered, pageSet);
+                            return get(pageNum, kid, encountered);
                         }
                     }
                 }
 
+                pageSet.clear();
                 throw new IllegalStateException("1-based index not found: " + pageNum);
             }
             else
             {
+                pageSet.clear();
                 throw new IndexOutOfBoundsException("1-based index out of bounds: " + pageNum);
             }
         }
@@ -366,10 +371,12 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         {
             if (encountered == pageNum)
             {
+                pageSet.clear();
                 return node;
             }
             else
             {
+                pageSet.clear();
                 throw new IllegalStateException("1-based index not found: " + pageNum);
             }
         }
@@ -463,7 +470,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      */
     public void remove(int index)
     {
-        COSDictionary node = get(index + 1, root, 0, new HashSet<>());
+        COSDictionary node = get(index + 1, root, 0);
         remove(node);
     }
 
