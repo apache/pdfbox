@@ -1248,6 +1248,53 @@ public class PDFMergerUtilityTest extends TestCase
         }
     }
 
+    public void testIllegalSplitting()
+    {
+        Splitter splitter = new Splitter();
+
+        try
+        {
+            splitter.setSplitAtPage(0);
+            fail("Expected IllegalArgumentException");
+        }
+        catch (IllegalArgumentException ex)
+        {
+            assertEquals("Number of pages is smaller than one", ex.getMessage());
+        }
+
+        try
+        {
+            splitter.setStartPage(0);
+            fail("Expected IllegalArgumentException");
+        }
+        catch (IllegalArgumentException ex)
+        {
+            assertEquals("Start page is smaller than one", ex.getMessage());
+        }
+
+        try
+        {
+            splitter.setEndPage(0);
+            fail("Expected IllegalArgumentException");
+        }
+        catch (IllegalArgumentException ex)
+        {
+            assertEquals("End page is smaller than one", ex.getMessage());
+        }
+
+        try
+        {
+            splitter.setStartPage(2);
+            splitter.setEndPage(1);
+            fail("Expected IllegalArgumentException");
+        }
+        catch (IllegalArgumentException ex)
+        {
+            assertEquals("End page is smaller than startPage", ex.getMessage());
+        }
+    }
+
+
     public void testSplitWithStructureTree() throws IOException
     {
         PDDocument doc = PDDocument.load(new File(SRCDIR, "PDFBOX-4417-001031.pdf"));
