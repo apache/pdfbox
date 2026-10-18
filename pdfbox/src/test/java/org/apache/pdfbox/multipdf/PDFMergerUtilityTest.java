@@ -1294,7 +1294,8 @@ class PDFMergerUtilityTest
         assertEquals("Start page is smaller than one", ex.getMessage());
         ex = assertThrows(IllegalArgumentException.class, () -> splitter.setEndPage(0));
         assertEquals("End page is smaller than one", ex.getMessage());
-        ex = assertThrows(IllegalArgumentException.class, () -> { splitter.setStartPage(2); splitter.setEndPage(1); });
+        splitter.setStartPage(2);
+        ex = assertThrows(IllegalArgumentException.class, () -> splitter.setEndPage(1));
         assertEquals("End page is smaller than startPage", ex.getMessage());
     }
 
