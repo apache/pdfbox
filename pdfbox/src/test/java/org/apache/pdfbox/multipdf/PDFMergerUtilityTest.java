@@ -1282,6 +1282,20 @@ class PDFMergerUtilityTest
             assertNotEquals(-1, pageTree.indexOf(page), "Page is not in the page tree");
         }
     }
+    
+    @Test
+    void testIllegalSplitting()
+    {
+        Splitter splitter = new Splitter();
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> splitter.setSplitAtPage(0));
+        assertEquals("Number of pages is smaller than one", ex.getMessage());
+        ex = assertThrows(IllegalArgumentException.class, () -> splitter.setStartPage(0));
+        assertEquals("Start page is smaller than one", ex.getMessage());
+        ex = assertThrows(IllegalArgumentException.class, () -> splitter.setEndPage(0));
+        assertEquals("End page is smaller than one", ex.getMessage());
+        ex = assertThrows(IllegalArgumentException.class, () -> { splitter.setStartPage(2); splitter.setEndPage(1); });
+        assertEquals("End page is smaller than startPage", ex.getMessage());
+    }
 
     @Test
     void testSplitWithStructureTree() throws IOException
