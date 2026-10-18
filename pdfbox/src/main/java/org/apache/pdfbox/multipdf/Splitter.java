@@ -282,10 +282,7 @@ public class Splitter
             else if (dest != null)
             {
                 // add it everywhere, it doesn't reference a specific page
-                for (int i = 0; i < destinationDocuments.size(); ++i)
-                {
-                    dstDests.get(i).setItem(key, dest);
-                }
+                dstDests.forEach(dict -> dict.setItem(key, dest));
             }
         }
 
