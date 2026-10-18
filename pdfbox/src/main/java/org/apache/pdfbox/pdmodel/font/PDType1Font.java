@@ -435,8 +435,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
             }
         }
 
-        Map<String, Integer> inverted = encoding.getNameToCodeMap();
-        int code = inverted.get(name);
+        int code = encoding.getCode(name);
         if (code < 0)
         {
             throw new IllegalArgumentException(
@@ -599,7 +598,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
             //TODO bring up better solution than this
             if ("SymbolMT".equals(genericFont.getName()))
             {
-                Integer code = SymbolEncoding.INSTANCE.getNameToCodeMap().get(name);
+                Integer code = SymbolEncoding.INSTANCE.getCode(name);
                 if (code != null)
                 {
                     uniName = getUniNameOfCodePoint(code + 0xF000);
