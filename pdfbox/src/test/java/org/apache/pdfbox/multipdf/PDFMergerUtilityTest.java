@@ -1282,9 +1282,9 @@ public class PDFMergerUtilityTest extends TestCase
             assertEquals("End page is smaller than one", ex.getMessage());
         }
 
+        splitter.setStartPage(2);
         try
         {
-            splitter.setStartPage(2);
             splitter.setEndPage(1);
             fail("Expected IllegalArgumentException");
         }
