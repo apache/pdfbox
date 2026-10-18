@@ -51,10 +51,10 @@ class TestFontEncoding
     void testAdd()
     {
         // see PDFDBOX-3332
-        int codeForSpace = WinAnsiEncoding.INSTANCE.getNameToCodeMap().get("space");
+        int codeForSpace = WinAnsiEncoding.INSTANCE.getCode("space");
         assertEquals(32, codeForSpace);
 
-        codeForSpace = MacRomanEncoding.INSTANCE.getNameToCodeMap().get("space");
+        codeForSpace = MacRomanEncoding.INSTANCE.getCode("space");
         assertEquals(32, codeForSpace);
     }
 
@@ -70,8 +70,8 @@ class TestFontEncoding
         differences.add(COSName.getPDFName("a"));
         dictEncodingDict.setItem(COSName.DIFFERENCES, differences);
         DictionaryEncoding dictEncoding = new DictionaryEncoding(dictEncodingDict, false, null);
-        assertNull(dictEncoding.getNameToCodeMap().get("space"));
-        assertEquals(32, dictEncoding.getNameToCodeMap().get("a").intValue());
+        assertNull(dictEncoding.getCode("space"));
+        assertEquals(32, dictEncoding.getCode("a").intValue());
     }
 
     /**

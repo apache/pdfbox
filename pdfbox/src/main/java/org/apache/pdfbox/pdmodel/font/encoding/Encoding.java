@@ -169,6 +169,17 @@ public abstract class Encoding implements COSObjectable
     }
 
     /**
+     * This will take a character name and get the code for that name.
+     * 
+     * @param name PostScript glyph name
+     * @return character code
+     */
+    public Integer getCode(String name)
+    {
+        return inverted.get(name);
+    }
+
+    /**
      * Returns the name of this encoding.
      * 
      * @return the name of the encoding

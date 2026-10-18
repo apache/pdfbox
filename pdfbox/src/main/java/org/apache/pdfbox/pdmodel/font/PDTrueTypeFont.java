@@ -75,13 +75,6 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     private static final int START_RANGE_F100 = 0xF100;
     private static final int START_RANGE_F200 = 0xF200;
 
-    private static final Map<String, Integer> INVERTED_MACOS_ROMAN = new HashMap<>(250);
-    static
-    {
-        MacOSRomanEncoding.INSTANCE.getCodeToNameMap().forEach((key, value) -> 
-                INVERTED_MACOS_ROMAN.putIfAbsent(value, key));
-    }
-
     private final TrueTypeFont ttf;
     private final OpenTypeFont otf;
     private final boolean isEmbedded;
@@ -407,7 +400,6 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             }
 
             String name = getGlyphList().codePointToName(unicode);
-            Map<String, Integer> inverted = encoding.getNameToCodeMap();
 
             if (!ttf.hasGlyph(name))
             {
@@ -420,7 +412,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
                 }
             }
 
-            int code = inverted.get(name);
+            int code = encoding.getCode(name);
             return new byte[] { (byte)code };
         }
         else
@@ -752,7 +744,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
         // (1, 0) - (Macintosh, Roman)
         if (gid == 0 && cmapMacRoman != null)
         {
-            Integer macCode = INVERTED_MACOS_ROMAN.get(name);
+            Integer macCode = MacOSRomanEncoding.INSTANCE.getCode(name);
             if (macCode != null)
             {
                 gid = cmapMacRoman.getGlyphId(macCode);

@@ -291,7 +291,7 @@ public final class Standard14Fonts
                 }
                 if ("SymbolMT".equals(mappedFont.getName()))
                 {
-                    Integer code = SymbolEncoding.INSTANCE.getNameToCodeMap().get(glyphName);
+                    Integer code = SymbolEncoding.INSTANCE.getCode(glyphName);
                     if (code != null)
                     {
                         String uniName = getUniNameOfCodePoint(code + 0xF000);

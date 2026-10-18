@@ -404,15 +404,13 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
 
         String nameInFont = getNameInFont(name);
         
-        Map<String, Integer> inverted = encoding.getNameToCodeMap();
-
         if (nameInFont.equals(".notdef") || !genericFont.hasGlyph(nameInFont))
         {
             throw new IllegalArgumentException(
                     String.format("No glyph for U+%04X in font %s", unicode, getName()));
         }
 
-        int code = inverted.get(name);
+        int code = encoding.getCode(name);
         return new byte[] { (byte)code };
     }
 
