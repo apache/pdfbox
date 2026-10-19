@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,6 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.IOException;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -163,5 +167,27 @@ class TestPDPageTree
         doc = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(
                 TestPDPageTree.class.getResourceAsStream("PDFBOX-6040-nodeloop.pdf")));
         assertNull(doc.getPage(0).getResources());
+    }
+
+    /**
+     * Test no argument constructor and an add(). By copilot.
+     */
+    @Test
+    void testNoArgConstructorInitializesEmptyPagesRoot()
+    {
+        PDPageTree pageTree = new PDPageTree();
+        PDPage page = new PDPage();
+
+        pageTree.add(page);
+
+        COSDictionary root = pageTree.getCOSObject();
+        COSArray kids = root.getCOSArray(COSName.KIDS);
+
+        assertNotNull(kids, "Kids array should exist");
+        assertEquals(1, kids.size(), "Kids should contain one page");
+        assertEquals(page.getCOSObject(), kids.getObject(0), "Added page should be first kid");
+        assertEquals(1, root.getInt(COSName.COUNT), "Root count should be incremented to 1");
+        assertEquals(1, pageTree.getCount(), "Page tree count should be 1");
+        assertSame(root, page.getCOSObject().getDictionaryObject(COSName.PARENT), "Page parent should be root");
     }
 }
