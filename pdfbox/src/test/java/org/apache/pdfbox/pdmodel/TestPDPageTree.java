@@ -17,16 +17,21 @@
 package org.apache.pdfbox.pdmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
+
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 
 import org.junit.After;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
 import org.junit.Test;
 
 /**
@@ -122,5 +127,27 @@ public class TestPDPageTree
         // unexpectedly reported recursion before PDFBOX-6286
         assertSame(page.getCOSObject(), pages.get(0).getCOSObject());
         document.close();
+    }
+
+    /**
+     * Test no argument constructor and an add(). By copilot.
+     */
+    @Test
+    public void testNoArgConstructorInitializesEmptyPagesRoot()
+    {
+        PDPageTree pageTree = new PDPageTree();
+        PDPage page = new PDPage();
+
+        pageTree.add(page);
+
+        COSDictionary root = pageTree.getCOSObject();
+        COSArray kids = root.getCOSArray(COSName.KIDS);
+
+        assertNotNull("Kids array should exist", kids);
+        assertEquals("Kids should contain one page", 1, kids.size());
+        assertEquals("Added page should be first kid", page.getCOSObject(), kids.getObject(0));
+        assertEquals("Root count should be incremented to 1", 1, root.getInt(COSName.COUNT));
+        assertEquals("Page tree count should be 1", 1, pageTree.getCount());
+        assertSame("Page tree count should be 1", root, page.getCOSObject().getDictionaryObject(COSName.PARENT));
     }
 }
