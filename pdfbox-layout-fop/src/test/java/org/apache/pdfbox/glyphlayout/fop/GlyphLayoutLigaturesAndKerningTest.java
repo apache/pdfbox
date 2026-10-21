@@ -89,6 +89,7 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
         String dejavuPath = "/ttf/DejaVuSans.ttf"; // ligatures not in Liberation nor in Arimo
         String thaiPath = "/ttf/NotoSansThai-Regular.ttf";
         String lohitBengaliPath = "/ttf/Lohit-Bengali.ttf";
+        String notoBengaliPath = "/ttf/NotoSansBengali-Regular.ttf";
 
         float fontSize = 12.0f;
 
@@ -109,6 +110,8 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
 
             PDType0Font lohitBengaliFont = createPdType0Font(glyphLayoutProcessor, doc, lohitBengaliPath);
             
+            PDType0Font notoBengaliFont = createPdType0Font(glyphLayoutProcessor, doc, notoBengaliPath);
+            
             PDPage page = new PDPage();
             doc.addPage(page);
             try (PDPageContentStream cs = new PDPageContentStream(doc, page))
@@ -125,12 +128,21 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
                 y = showComposites(cs, dejavuLigKernFont, fontSize, x, y, DEJAVU_STRING + " (Ligatures and kerning)");
                 y = showComposites(cs, thaiFont, fontSize, x, y, THAI_STRING);
                 y = showComposites(cs, lohitBengaliFont, fontSize, x, y - 5, BENGALI_STRING + " (ভারত)");
+                y = showComposites(cs, notoBengaliFont, fontSize, x, y - 5, BENGALI_STRING + " (ভারত)");
 
-                // from the related awt test. Unclear if useful in the future if FOP ever supports bengali
-                // and we get access to it.
+                // from the related awt test. (not yet correct, see FOP-3361)
                 cs.beginText();
                 cs.setFont(lohitBengaliFont, 20);
                 cs.newLineAtOffset(x, y - 20);
+                cs.showText(BENGALI_STRING2);
+                cs.showText(" ");
+                cs.showText(BENGALI_STRING2);
+                cs.endText();
+
+                // from the related awt test.
+                cs.beginText();
+                cs.setFont(notoBengaliFont, 20);
+                cs.newLineAtOffset(x, y - 50);
                 cs.showText(BENGALI_STRING2);
                 cs.showText(" ");
                 cs.showText(BENGALI_STRING2);
