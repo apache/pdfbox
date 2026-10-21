@@ -31,7 +31,7 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
  * adapted from org.apache.pdfbox.examples.pdmodel.HelloWorldTTF
  * <p>
  * This subproject is an alternative to the AWT subproject; DIN 91379 characters will work, but
- * complex scripts won't. For most people, the AWT project is the better choice.
+ * not all complex scripts will. For most people, the AWT project is the better choice.
  */
 public class GlyphLayoutHelloWorldFOP
 {
