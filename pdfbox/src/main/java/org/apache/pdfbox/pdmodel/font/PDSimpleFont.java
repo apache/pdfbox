@@ -452,7 +452,7 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     @Override
-    public boolean hasExplicitWidth(int code) throws IOException
+    public boolean hasExplicitWidth(int code)
     {
         if (dict.containsKey(COSName.WIDTHS))
         {
