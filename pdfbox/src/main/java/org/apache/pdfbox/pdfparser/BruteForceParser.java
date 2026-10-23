@@ -85,10 +85,8 @@ public class BruteForceParser
      *
      * @param cosDocument the corresponding COS document
      * @param cosParser the COSParser to be used for reading the pdf
-     * 
-     * @throws IOException if the source data could not be read
      */
-    public BruteForceParser(COSDocument cosDocument, COSParser cosParser) throws IOException
+    public BruteForceParser(COSDocument cosDocument, COSParser cosParser)
     {
         document = cosDocument;
         parser = cosParser;
