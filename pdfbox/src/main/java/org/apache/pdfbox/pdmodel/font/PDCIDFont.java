@@ -414,9 +414,8 @@ public abstract class PDCIDFont implements COSObjectable
      * @param parent the parent Type0 font.
      * 
      * @return true if the Font dictionary specifies an explicit width for the given glyph
-     * @throws IOException if the font could not be read
      */
-    protected boolean hasExplicitWidth(int code, PDType0Font parent) throws IOException
+    protected boolean hasExplicitWidth(int code, PDType0Font parent)
     {
         return widths.get(codeToCID(code, parent)) != null;
     }
