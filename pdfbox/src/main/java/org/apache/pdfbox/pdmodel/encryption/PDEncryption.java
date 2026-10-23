@@ -255,10 +255,8 @@ public class PDEncryption implements COSObjectable
      * This will set the O entry in the standard encryption dictionary.
      *
      * @param o A 32 byte array or null if there is no owner key.
-     *
-     * @throws IOException If there is an error setting the data.
      */
-    public void setOwnerKey(byte[] o) throws IOException
+    public void setOwnerKey(byte[] o)
     {
         dictionary.setItem(COSName.O, new COSString(o));
     }
@@ -267,10 +265,8 @@ public class PDEncryption implements COSObjectable
      * This will get the O entry in the standard encryption dictionary.
      *
      * @return A 32 byte array or null if there is no owner key.
-     *
-     * @throws IOException If there is an error accessing the data.
      */
-    public byte[] getOwnerKey() throws IOException
+    public byte[] getOwnerKey()
     {
         byte[] o = null;
         COSString owner = (COSString) dictionary.getDictionaryObject( COSName.O );
@@ -294,10 +290,8 @@ public class PDEncryption implements COSObjectable
      * This will set the U entry in the standard encryption dictionary.
      *
      * @param u A 32 byte array.
-     *
-     * @throws IOException If there is an error setting the data.
      */
-    public void setUserKey(byte[] u) throws IOException
+    public void setUserKey(byte[] u)
     {
         dictionary.setItem(COSName.U, new COSString(u));
     }
@@ -306,10 +300,8 @@ public class PDEncryption implements COSObjectable
      * This will get the U entry in the standard encryption dictionary.
      *
      * @return A 32 byte array or null if there is no user key.
-     *
-     * @throws IOException If there is an error accessing the data.
      */
-    public byte[] getUserKey() throws IOException
+    public byte[] getUserKey()
     {
         byte[] u = null;
         COSString user = (COSString) dictionary.getDictionaryObject( COSName.U );
@@ -333,10 +325,8 @@ public class PDEncryption implements COSObjectable
      * This will set the OE entry in the standard encryption dictionary.
      *
      * @param oe A 32 byte array or null if there is no owner encryption key.
-     *
-     * @throws IOException If there is an error setting the data.
      */
-    public void setOwnerEncryptionKey(byte[] oe) throws IOException
+    public void setOwnerEncryptionKey(byte[] oe)
     {
         dictionary.setItem( COSName.OE, new COSString(oe) );
     }
@@ -345,10 +335,8 @@ public class PDEncryption implements COSObjectable
      * This will get the OE entry in the standard encryption dictionary.
      *
      * @return A 32 byte array or null if there is no owner encryption key.
-     *
-     * @throws IOException If there is an error accessing the data.
      */
-    public byte[] getOwnerEncryptionKey() throws IOException
+    public byte[] getOwnerEncryptionKey()
     {
         byte[] oe = null;
         COSString ownerEncryptionKey = (COSString)dictionary.getDictionaryObject( COSName.OE );
@@ -363,10 +351,8 @@ public class PDEncryption implements COSObjectable
      * This will set the UE entry in the standard encryption dictionary.
      *
      * @param ue A 32 byte array or null if there is no user encryption key.
-     *
-     * @throws IOException If there is an error setting the data.
      */
-    public void setUserEncryptionKey(byte[] ue) throws IOException
+    public void setUserEncryptionKey(byte[] ue)
     {
         dictionary.setItem( COSName.UE, new COSString(ue) );
     }
@@ -375,10 +361,8 @@ public class PDEncryption implements COSObjectable
      * This will get the UE entry in the standard encryption dictionary.
      *
      * @return A 32 byte array or null if there is no user encryption key.
-     *
-     * @throws IOException If there is an error accessing the data.
      */
-    public byte[] getUserEncryptionKey() throws IOException
+    public byte[] getUserEncryptionKey()
     {
         byte[] ue = null;
         COSString userEncryptionKey = (COSString)dictionary.getDictionaryObject( COSName.UE );
@@ -424,9 +408,8 @@ public class PDEncryption implements COSObjectable
      * This will set the Recipients field of the dictionary. This field contains an array
      * of string.
      * @param recipients the array of bytes arrays to put in the Recipients field.
-     * @throws IOException If there is an error setting the data.
      */
-    public void setRecipients(byte[][] recipients) throws IOException
+    public void setRecipients(byte[][] recipients)
     {
         COSArray array = new COSArray();
         for (byte[] recipient : recipients)
