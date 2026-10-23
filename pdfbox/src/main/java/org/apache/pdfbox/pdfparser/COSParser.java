@@ -1249,7 +1249,7 @@ public class COSParser extends BaseParser implements ICOSParser
         return true;
     }
 
-    protected BruteForceParser getBruteForceParser() throws IOException
+    protected BruteForceParser getBruteForceParser()
     {
         if (bruteForceParser == null)
         {
