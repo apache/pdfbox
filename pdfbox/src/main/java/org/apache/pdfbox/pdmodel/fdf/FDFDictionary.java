@@ -431,10 +431,8 @@ public class FDFDictionary implements COSObjectable
      * is not set.
      *
      * @return A list of FDF annotations.
-     *
-     * @throws IOException If there is an error creating the annotation list.
      */
-    public List<FDFAnnotation> getAnnotations() throws IOException
+    public List<FDFAnnotation> getAnnotations()
     {
         List<FDFAnnotation> retval = null;
         COSArray annotArray = fdf.getCOSArray(COSName.ANNOTS);
