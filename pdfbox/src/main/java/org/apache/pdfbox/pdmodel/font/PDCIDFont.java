@@ -493,9 +493,8 @@ public abstract class PDCIDFont implements COSObjectable
      * @param parent the parent Type0 font.
      * 
      * @return the width of the given character
-     * @throws IOException if the width could not be read
      */
-    protected float getWidth(int code, PDType0Font parent) throws IOException
+    protected float getWidth(int code, PDType0Font parent)
     {
         Float width = codeToWidth.get(code);
         if (width == null)
