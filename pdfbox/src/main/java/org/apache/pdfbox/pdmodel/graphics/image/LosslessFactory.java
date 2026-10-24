@@ -140,7 +140,7 @@ public final class LosslessFactory
         int width = image.getWidth();
         int[] rgbLineBuffer = new int[width];
         int bpc = image.getColorModel().getPixelSize();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(((width*bpc/8)+(width*bpc%8 != 0 ? 1:0))*height);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(((width*bpc/8)+(width*bpc%8 == 0 ? 0 : 1))*height);
         try (MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(baos))
         {
             for (int y = 0; y < height; ++y)
@@ -177,7 +177,7 @@ public final class LosslessFactory
         byte[] alphaImageData;
         if (transparency != Transparency.OPAQUE)
         {
-            alphaImageData = new byte[((width * apbc / 8) + (width * apbc % 8 != 0 ? 1 : 0)) * height];
+            alphaImageData = new byte[((width * apbc / 8) + (width * apbc % 8 == 0 ? 0 : 1)) * height];
         }
         else
         {

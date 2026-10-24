@@ -110,13 +110,13 @@ class HexModel implements HexChangeListener
      */
     public int totalLine()
     {
-        return size() % 16 != 0 ? size()/16 + 1 : size()/16;
+        return size() % 16 == 0 ? size() / 16 : size() / 16 + 1;
     }
 
     public static int lineNumber(int index)
     {
         int elementNo = index + 1;
-        return elementNo % 16 != 0 ? elementNo/16 + 1 : elementNo/16;
+        return elementNo % 16 == 0 ? elementNo / 16 : elementNo / 16 + 1;
     }
 
     public static int elementIndexInLine(int index)
