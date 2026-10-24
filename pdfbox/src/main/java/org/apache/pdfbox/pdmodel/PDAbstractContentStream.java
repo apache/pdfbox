@@ -79,9 +79,9 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
 {
     private static final Logger LOG = LogManager.getLogger(PDAbstractContentStream.class);
 
-    private static final byte[] ASCII_SPACE = new byte[] { 0x20 };
-    private static final byte[] ASCII_LEFT_SQUARE_BRACKET = new byte[] { 0x5B };
-    private static final byte[] ASCII_RIGHT_SQUARE_BRACKET_SPACE = new byte[] { 0x5D, 0x20 };
+    private static final byte[] ASCII_SPACE = { 0x20 };
+    private static final byte[] ASCII_LEFT_SQUARE_BRACKET = { 0x5B };
+    private static final byte[] ASCII_RIGHT_SQUARE_BRACKET_SPACE = { 0x5D, 0x20 };
 
     protected final PDDocument document; // may be null
 
