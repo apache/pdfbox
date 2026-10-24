@@ -117,8 +117,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
     {
         if (numberOfColorComponents == -1)
         {
-            numberOfColorComponents = getFunction() != null ? 1
-                    : getColorSpace().getNumberOfComponents();
+            numberOfColorComponents = getFunction() == null ? getColorSpace().getNumberOfComponents() : 1;
             LOG.debug("numberOfColorComponents: " + numberOfColorComponents);
         }
         return numberOfColorComponents;
