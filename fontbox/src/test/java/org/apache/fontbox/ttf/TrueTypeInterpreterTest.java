@@ -209,7 +209,7 @@ class TrueTypeInterpreterTest
     {
         // outer true, inner (5>3) true -> 99
         // PUSHB 1 ; IF [ PUSHB 5 3 ; GT ; IF PUSHB 99 ELSE PUSHB 1 EIF ] ELSE PUSHB 7 EIF
-        byte[] program = new byte[] {
+        byte[] program = {
                 PUSHB1, 1, IF,
                     PUSHB2, 5, 3, GT, IF,
                         PUSHB1, 99,
