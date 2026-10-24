@@ -18,6 +18,7 @@
 package org.apache.fontbox.ttf;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import org.apache.pdfbox.io.RandomAccessRead;
 
@@ -48,6 +49,12 @@ public final class OTFParser extends TTFParser
     public OpenTypeFont parse(RandomAccessRead randomAccessRead) throws IOException
     {
         return (OpenTypeFont) super.parse(randomAccessRead);
+    }
+
+    @Override
+    public OpenTypeFont parse(ByteBuffer buffer) throws IOException
+    {
+        return (OpenTypeFont) super.parse(buffer);
     }
 
     @Override
