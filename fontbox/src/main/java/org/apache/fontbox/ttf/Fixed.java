@@ -126,7 +126,7 @@ final class Fixed
             lc = -lc;
             sign = -sign;
         }
-        long result = lc != 0 ? (la * lb + lc / 2) / lc : 0x7FFFFFFFL;
+        long result = lc == 0 ? 0x7FFFFFFFL : (la * lb + lc / 2) / lc;
         return (int) (sign * result);
     }
 
