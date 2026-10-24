@@ -43,7 +43,7 @@ public final class PDFontFactory
     private static final String FONT_OPEN_TYPE = "OTTO";
     private static final String FONT_TTF_COLLECTION = "ttcf";
     private static final String FONT_TRUE_TYPE = "true";
-    private static final byte[] TTF_HEADER = new byte[] { 0, 1, 0, 0 };
+    private static final byte[] TTF_HEADER = { 0, 1, 0, 0 };
 
     private PDFontFactory()
     {
