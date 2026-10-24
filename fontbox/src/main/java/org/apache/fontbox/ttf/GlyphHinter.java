@@ -732,7 +732,7 @@ class GlyphHinter
     {
         GraphicsState saved = interpreter.getSavedState();
         // INSTCTRL bit 2: glyph programs start from the default graphics state rather than prep's
-        GraphicsState gs = (saved.getInstructControl() & 2) != 0 ? new GraphicsState() : saved.copy();
+        GraphicsState gs = (saved.getInstructControl() & 2) == 0 ? saved.copy() : new GraphicsState();
         gs.resetForGlyph();
         ExecutionContext ctx = interpreter.newContext(gs);
         ctx.setPpem(ppem);
