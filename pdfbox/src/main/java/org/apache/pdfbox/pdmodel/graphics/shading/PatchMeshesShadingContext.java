@@ -71,7 +71,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     protected int[][] calcPixelTableArray(Rectangle deviceBounds) throws IOException
     {
         int[][] array = new int[deviceBounds.width + 1][deviceBounds.height + 1];
-        int initialValue = getBackground() != null ? getRgbBackground() : -1;
+        int initialValue = getBackground() == null ? -1 : getRgbBackground();
         for (int i = 0; i < deviceBounds.width + 1; i++)
         {
             Arrays.fill(array[i], initialValue);
