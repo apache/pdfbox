@@ -389,7 +389,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
     @Override
     protected byte[] encode(int unicode) throws IOException
     {
-        byte[] bytes = codepointEncoding.get(unicode);
+        byte[] bytes = codepointToEncodingMap.get(unicode);
         if (bytes != null)
         {
             return bytes;
@@ -438,7 +438,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
                             unicode, name, getName(), genericFont.getName(), encoding.getEncodingName()));
         }
         bytes = new byte[] { (byte)code };
-        codepointEncoding.put(unicode, bytes);
+        codepointToEncodingMap.put(unicode, bytes);
         return bytes;
     }
 
@@ -476,12 +476,6 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
         {
             return super.getAverageFontWidth();
         }
-    }
-
-    @Override
-    public int readCode(InputStream in) throws IOException
-    {
-        return in.read();
     }
 
     @Override

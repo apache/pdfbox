@@ -17,10 +17,12 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.geom.GeneralPath;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -499,13 +501,13 @@ public class PDType0Font extends PDFont implements PDVectorFont
     @Override
     protected byte[] encode(int unicode) throws IOException
     {
-        byte[] encodedCodepoint = codepointEncoding.get(unicode);
+        byte[] encodedCodepoint = codepointToEncodingMap.get(unicode);
         if (encodedCodepoint != null)
         {
             return encodedCodepoint;
         }
         encodedCodepoint = descendantFont.encode(unicode, this);
-        codepointEncoding.put(unicode, encodedCodepoint);
+        codepointToEncodingMap.put(unicode, encodedCodepoint);
         return encodedCodepoint;
     }
 
@@ -654,6 +656,31 @@ public class PDType0Font extends PDFont implements PDVectorFont
     {
         // Will be cached by underlying font
         return descendantFont.getBoundingBox();
+    }
+
+    @Override
+    public float getStringWidth(String text) throws IOException
+    {
+        float width = 0;
+        Iterator<Integer> codePoints = text.codePoints().iterator();
+        while (codePoints.hasNext())
+        {
+            int codePoint = codePoints.next();
+            Float codePointWidth = codepointToWidthMap.get(codePoint);
+            if (codePointWidth == null)
+            {
+                codePointWidth = Float.valueOf(0);
+                byte[] encodedBytes = encode(codePoint);
+                ByteArrayInputStream in = new ByteArrayInputStream(encodedBytes);
+                while (in.available() > 0)
+                {
+                    codePointWidth += getWidth(readCode(in));
+                }
+                codepointToWidthMap.put(codePoint, codePointWidth);
+            }
+            width += codePointWidth;
+        }
+        return width;
     }
 
     @Override
