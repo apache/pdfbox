@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,7 +65,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     private float avgFontWidth;
     private float fontWidthOfSpace = -1f;
     private final Map<Integer, Float> codeToWidthMap;
-    protected final Map<Integer, byte[]> codepointEncoding = new HashMap<>();
+    protected final Map<Integer, byte[]> codepointToEncodingMap = new HashMap<>();
+    protected final Map<Integer, Float> codepointToWidthMap = new HashMap<>();
 
     /**
      * Constructor for embedding.
@@ -360,16 +360,25 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      */
     public float getStringWidth(String text) throws IOException
     {
-        byte[] bytes = encode(text);
-        ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-        
         float width = 0;
-        while (in.available() > 0)
+        Iterator<Integer> codePoints = text.codePoints().iterator();
+        while (codePoints.hasNext())
         {
-            int code = readCode(in);
-            width += getWidth(code);
+            Integer codePoint = codePoints.next();
+            Float codePointWidth = codepointToWidthMap.get(codePoint);
+            if (codePointWidth == null)
+            {
+                codePointWidth = Float.valueOf(0);
+                byte[] bytes = encode(codePoint);
+                for (byte value : bytes)
+                {
+                    // skip readCode as it simply reads the next int value in most cases
+                    codePointWidth += getWidth(value & 0xff);
+                }
+                codepointToWidthMap.put(codePoint, codePointWidth);
+            }
+            width += codePointWidth;
         }
-        
         return width;
     }
 
@@ -430,7 +439,11 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @return character code
      * @throws IOException if the CMap or stream cannot be read
      */
-    public abstract int readCode(InputStream in) throws IOException;
+    public int readCode(InputStream in) throws IOException
+    {
+        // implementation that works for most of the different kind of fonts
+        return in.read();
+    }
 
     /**
      * Returns the Unicode character sequence which corresponds to the given character code.

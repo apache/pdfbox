@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 
@@ -243,12 +242,6 @@ public class PDType3Font extends PDSimpleFont
     protected byte[] encode(int unicode) throws IOException
     {
         throw new UnsupportedOperationException("Not implemented: Type3");
-    }
-
-    @Override
-    public int readCode(InputStream in) throws IOException
-    {
-        return in.read();
     }
 
     @Override
