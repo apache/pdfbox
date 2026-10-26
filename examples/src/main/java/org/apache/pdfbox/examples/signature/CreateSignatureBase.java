@@ -149,7 +149,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
                 ValidationTimeStamp validation = new ValidationTimeStamp(tsaUrl);
                 signedData = validation.addSignedTimeStamp(signedData);
             }
-            return signedData.getEncoded();
+            return signedData.getEncoded("DER"); // PDFBOX-6289: ensure DER
         }
         catch (GeneralSecurityException e)
         {
