@@ -925,7 +925,7 @@ public class TestCreateSignature
      * @throws CertificateVerificationException 
      */
     @Test
-    void testSignEncrypted(boolean externallySign)
+    public void testSignEncrypted()
             throws IOException, GeneralSecurityException, CMSException,
             OperatorCreationException, TSPException, CertificateVerificationException
     {
