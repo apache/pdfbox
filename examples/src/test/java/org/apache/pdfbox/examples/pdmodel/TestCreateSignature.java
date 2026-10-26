@@ -17,7 +17,6 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -94,7 +93,9 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
+import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
@@ -128,6 +129,7 @@ import org.bouncycastle.tsp.TimeStampTokenInfo;
 import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -965,6 +967,58 @@ class TestCreateSignature
         final String fileNameSigned2 = getOutputFileName("PDFBOX-6071-santander_freistellungsauftrag.pdf_signed{0}.pdf", externallySign);
         signing.signDetached(file2, new File(OUT_DIR + fileNameSigned2));
         checkSignature(file2, new File(OUT_DIR, fileNameSigned2), false);
+    }
+
+    /** 
+     * PDFBOX-6289: sign an encrypted PDF and check that the placeholder wasn't encrypted.
+     *
+     * @param externallySign
+     *
+     * @throws IOException
+     * @throws GeneralSecurityException
+     * @throws CMSException
+     * @throws OperatorCreationException
+     * @throws TSPException
+     * @throws CertificateVerificationException 
+     */
+    @ParameterizedTest
+    @MethodSource("signingTypes")
+    void testSignEncrypted(boolean externallySign)
+            throws IOException, GeneralSecurityException, CMSException,
+            OperatorCreationException, TSPException, CertificateVerificationException
+    {
+        File encryptedFile;
+        String password = "12345"; // https://www.youtube.com/watch?v=a6iW-8xPw3k
+
+        // encrypt
+        try (PDDocument doc = Loader.loadPDF(new File(IN_DIR, "sign_me.pdf")))
+        {
+            StandardProtectionPolicy spp =
+                    new StandardProtectionPolicy("owner", password, new AccessPermission());
+            spp.setPreferAES(true);
+            doc.protect(spp);
+            encryptedFile = new File(OUT_DIR, getOutputFileName("PDFBOX-6289-encrypted{0}.pdf", externallySign));
+            doc.save(encryptedFile);
+        }
+
+        // sign PDF
+        CreateSignature signing = new CreateSignature(keyStore, PASSWORD.toCharArray());
+        signing.setExternalSigning(externallySign);
+        final String fileNameSigned = getOutputFileName("PDFBOX-6289-encrypted_signed{0}.pdf", externallySign);
+        signing.signDetached(encryptedFile, new File(OUT_DIR, fileNameSigned), null, password);
+
+        checkSignature(encryptedFile, new File(OUT_DIR, fileNameSigned), false, password);
+
+        try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameSigned), password))
+        {
+            PDSignature sig = doc.getLastSignatureDictionary();
+            byte[] contents = sig.getContents();
+            assertEquals(0, contents[contents.length - 1]);
+            assertEquals(0, contents[contents.length - 2]);
+            assertEquals(0, contents[contents.length - 3]);
+            assertEquals(0, contents[contents.length - 4]);
+            assertEquals(0, contents[contents.length - 5]);
+        }
     }
 
     private void checkLTV(File outFile)
