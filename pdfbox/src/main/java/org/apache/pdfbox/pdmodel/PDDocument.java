@@ -1055,9 +1055,10 @@ public class PDDocument implements Closeable
 
     /**
      * Save the PDF as an incremental update. This is only possible if the PDF was loaded from a file or a stream, not
-     * if the document was created in PDFBox itself. There must be a path of objects that have
-     * {@link COSUpdateInfo#isNeedToBeUpdated()} set, starting from the document catalog. For signatures this is taken
-     * care by PDFBox itself.
+     * if the document was created in PDFBox itself. PDFBox traverses the document catalog and collects updated
+     * objects. When an updated direct child needs its containing dictionary rewritten, that dictionary is included
+     * automatically; callers do not need to mark every object along the path from the catalog. For signatures this is
+     * taken care by PDFBox itself.
      * <p>
      * Other usages of this method are for experienced users only. You will usually never need it. It is useful only if
      * you are required to keep the current revision and append the changes. A typical use case is changing a signed
@@ -1069,16 +1070,8 @@ public class PDDocument implements Closeable
      * <a href="https://stackoverflow.com/questions/74836898/">can cause trouble when PDFs get
      * signed</a>. (PDFBox already does this for signature widget annotations)
      * <p>
-     * Another problem with page-based modifications can occur if the page tree isn't flat: there
-     * won't be a closed update path from the catalog to the page. To fix this, add code like this:
-     * <pre>{@code
-     * COSDictionary parent = page.getCOSObject().getCOSDictionary(COSName.PARENT);
-     * while (parent != null)
-     * {
-     *     parent.setNeedToBeUpdated(true);
-     *     parent = parent.getCOSDictionary(COSName.PARENT);
-     * }
-     * }</pre>
+     * The incremental writer traverses the document graph from the catalog, including non-flat page trees. It is not
+     * necessary to mark each ancestor solely to make a changed page reachable to the incremental writer.
      * <p>
      * Don't use the input file as target as this will produce a corrupted file.
      *
