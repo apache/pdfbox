@@ -168,7 +168,7 @@ public class CreateEmbeddedTimeStamp
             signedData = validation.addSignedTimeStamp(signedData);
         }
 
-        byte[] newEncoded = Hex.getBytes(signedData.getEncoded());
+        byte[] newEncoded = Hex.getBytes(signedData.getEncoded("DER")); // PDFBOX-6289: ensure DER
         int maxSize = byteRange[2] - byteRange[1];
         LOG.info("New Signature has size: {} maxSize: {}", newEncoded.length, maxSize);
 
