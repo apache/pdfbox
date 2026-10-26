@@ -98,6 +98,20 @@ public class CreateSignature extends CreateSignatureBase
      */
     public void signDetached(File inFile, File outFile, String tsaUrl) throws IOException
     {
+        signDetached(inFile, outFile, tsaUrl, null);
+    }
+
+    /**
+     * Signs the given PDF file.
+     *
+     * @param inFile input PDF file
+     * @param outFile output PDF file
+     * @param tsaUrl optional TSA url
+     * @param password PDF password (for encrypted files)
+     * @throws IOException if the input file could not be read
+     */
+    public void signDetached(File inFile, File outFile, String tsaUrl, String password) throws IOException
+    {
         if (inFile == null || !inFile.exists())
         {
             throw new FileNotFoundException("Document for signing does not exist");
@@ -107,7 +121,7 @@ public class CreateSignature extends CreateSignatureBase
 
         // sign
         try (FileOutputStream fos = new FileOutputStream(outFile);
-                PDDocument doc = Loader.loadPDF(inFile))
+                PDDocument doc = Loader.loadPDF(inFile, password))
         {
             signDetached(doc, fos);
         }
