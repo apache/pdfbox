@@ -70,7 +70,9 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
+import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -908,6 +910,55 @@ public class TestCreateSignature
         final String fileNameSigned2 = getOutputFileName("PDFBOX-6071-santander_freistellungsauftrag.pdf_signed{0}.pdf");
         signing.signDetached(file2, new File(outDir + fileNameSigned2));
         checkSignature(file2, new File(outDir, fileNameSigned2), false);
+    }
+
+    /** 
+     * PDFBOX-6289: sign an encrypted PDF and check that the placeholder wasn't encrypted.
+     *
+     * @param externallySign
+     *
+     * @throws IOException
+     * @throws GeneralSecurityException
+     * @throws CMSException
+     * @throws OperatorCreationException
+     * @throws TSPException
+     * @throws CertificateVerificationException 
+     */
+    @Test
+    void testSignEncrypted(boolean externallySign)
+            throws IOException, GeneralSecurityException, CMSException,
+            OperatorCreationException, TSPException, CertificateVerificationException
+    {
+        File encryptedFile;
+        String pdfPassword = "12345"; // https://www.youtube.com/watch?v=a6iW-8xPw3k
+
+        // encrypt
+        PDDocument doc1 = PDDocument.load(new File(inDir, "sign_me.pdf"));
+        StandardProtectionPolicy spp
+                = new StandardProtectionPolicy("owner", pdfPassword, new AccessPermission());
+        spp.setPreferAES(true);
+        doc1.protect(spp);
+        encryptedFile = new File(outDir, getOutputFileName("PDFBOX-6289-encrypted{0}.pdf"));
+        doc1.save(encryptedFile);
+        doc1.close();
+
+        // sign PDF
+        CreateSignature signing = new CreateSignature(keyStore, password.toCharArray());
+        signing.setExternalSigning(externallySign);
+        final String fileNameSigned = getOutputFileName("PDFBOX-6289-encrypted_signed{0}.pdf");
+        signing.signDetached(encryptedFile, new File(outDir, fileNameSigned), null, pdfPassword);
+
+        checkSignature(encryptedFile, new File(outDir, fileNameSigned), false, pdfPassword);
+
+        PDDocument doc2 = PDDocument.load(new File(outDir, fileNameSigned), pdfPassword);
+        PDSignature sig = doc2.getLastSignatureDictionary();
+        byte[] contents = sig.getContents();
+        Assert.assertEquals(0, contents[contents.length - 1]);
+        Assert.assertEquals(0, contents[contents.length - 2]);
+        Assert.assertEquals(0, contents[contents.length - 3]);
+        Assert.assertEquals(0, contents[contents.length - 4]);
+        Assert.assertEquals(0, contents[contents.length - 5]);
+        doc2.close();
     }
 
     private void checkLTV(File outFile)
