@@ -65,8 +65,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     private float avgFontWidth;
     private float fontWidthOfSpace = -1f;
     private final Map<Integer, Float> codeToWidthMap;
-    protected final Map<Integer, byte[]> codepointToEncodingMap = new HashMap<>();
-    protected final Map<Integer, Float> codepointToWidthMap = new HashMap<>();
+    protected final Map<Integer, byte[]> codepointToEncodingMap;
+    protected final Map<Integer, Float> codepointToWidthMap;
 
     /**
      * Constructor for embedding.
@@ -79,6 +79,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         fontDescriptor = null;
         afmStandard14 = null;
         codeToWidthMap = new HashMap<>();
+        codepointToEncodingMap = new HashMap<>();
+        codepointToWidthMap = new HashMap<>();
     }
 
     /**
@@ -97,6 +99,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         fontDescriptor = PDType1FontEmbedder.buildFontDescriptor(afmStandard14);
         // standard 14 fonts may be accessed concurrently, as they are singletons
         codeToWidthMap = new ConcurrentHashMap<>();
+        codepointToEncodingMap = new ConcurrentHashMap<>();
+        codepointToWidthMap = new ConcurrentHashMap<>();
     }
 
     /**
@@ -108,6 +112,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     {
         dict = fontDictionary;
         codeToWidthMap = new HashMap<>();
+        codepointToEncodingMap = new HashMap<>();
+        codepointToWidthMap = new HashMap<>();
 
         // standard 14 fonts use an AFM
         afmStandard14 = Standard14Fonts.getAFM(getName()); // may be null (it usually is)
