@@ -438,17 +438,24 @@ public class TestCreateSignature
         return MessageFormat.format(filePattern,(externallySign ? "_ext" : ""));
     }
 
-    // This check fails with a file created with the code before PDFBOX-3011 was solved.
     private void checkSignature(File origFile, File signedFile, boolean checkTimeStamp)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
             TSPException, CertificateVerificationException
     {
-        PDDocument document = PDDocument.load(origFile);
+        checkSignature(origFile, signedFile, checkTimeStamp, null);
+    }
+
+    // This check fails with a file created with the code before PDFBOX-3011 was solved.
+    private void checkSignature(File origFile, File signedFile, boolean checkTimeStamp, String password)
+            throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
+            TSPException, CertificateVerificationException
+    {
+        PDDocument document = PDDocument.load(origFile, password);
         // get string representation of pages COSObject
         String origPageKey = document.getDocumentCatalog().getCOSObject().getItem(COSName.PAGES).toString();
         document.close();
 
-        document = PDDocument.load(signedFile);
+        document = PDDocument.load(signedFile, password);
         
         // early detection of problems in the page structure
         int p = 0;
