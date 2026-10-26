@@ -1106,15 +1106,18 @@ public class COSWriter implements ICOSVisitor, Closeable
                 {
                     // If we reach the pdf signature, we need to determinate the position of the
                     // content and byterange
-                    if(reachedSignature && COSName.CONTENTS.equals(entry.getKey()))
+                    if (reachedSignature && value instanceof COSString && COSName.CONTENTS.equals(entry.getKey()))
                     {
                         signatureOffset = getStandardOutput().getPos();
+                        boolean savedWE = willEncrypt;
+                        willEncrypt = false; // PDFBOX-6289: do not encrypt placeholder
                         value.accept(this);
-                        signatureLength = getStandardOutput().getPos()- signatureOffset;
+                        willEncrypt = savedWE;
+                        signatureLength = getStandardOutput().getPos() - signatureOffset;
                     }
-                    else if(reachedSignature && COSName.BYTERANGE.equals(entry.getKey()))
+                    else if (reachedSignature && value instanceof COSArray && COSName.BYTERANGE.equals(entry.getKey()))
                     {
-                        byteRangeArray = (COSArray) entry.getValue();
+                        byteRangeArray = (COSArray) value;
                         byteRangeOffset = getStandardOutput().getPos() + 1;
                         value.accept(this);
                         byteRangeLength = getStandardOutput().getPos() - 1 - byteRangeOffset;
