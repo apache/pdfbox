@@ -133,6 +133,7 @@ public class Splitter
     {
         // reset the currentPageNumber for a case if the split method will be used several times
         currentPageNumber = 0;
+        currentDestinationDocument = null;
         destinationDocuments = new ArrayList<PDDocument>();
         sourceDocument = document;
         pageDictMaps = new ArrayList<Map<COSDictionary, COSDictionary>>();
