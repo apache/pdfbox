@@ -167,13 +167,18 @@ public class SigUtils
      *
      * @param doc The document.
      * @param signature The signature object.
-     * @param accessPermissions The permission value (1, 2 or 3).
+     * @param permissions The permissions value (1, 2 or 3).
      *
-     * @throws IOException if a signature exists.
+     * @throws IOException if an approval signature exists.
+     * @throws IllegalArgumentException if the permissions value is invalid.
      */
-    public static void setMDPPermission(PDDocument doc, PDSignature signature, int accessPermissions)
+    public static void setMDPPermission(PDDocument doc, PDSignature signature, int permissions)
             throws IOException
     {
+        if (permissions != 1 && permissions != 2 && permissions != 3)
+        {
+            throw new IllegalArgumentException("The permissions value must be 1, 2 or 3");
+        }
         for (PDSignature sig : doc.getSignatureDictionaries())
         {
             // "Approval signatures shall follow the certification signature if one is present"
@@ -194,7 +199,7 @@ public class SigUtils
         // all values in the signature dictionary shall be direct objects
         COSDictionary transformParameters = new COSDictionary();
         transformParameters.setItem(COSName.TYPE, COSName.TRANSFORM_PARAMS);
-        transformParameters.setInt(COSName.P, accessPermissions);
+        transformParameters.setInt(COSName.P, permissions);
         transformParameters.setName(COSName.V, "1.2");
         transformParameters.setNeedToBeUpdated(true);
         transformParameters.setDirect(true);
