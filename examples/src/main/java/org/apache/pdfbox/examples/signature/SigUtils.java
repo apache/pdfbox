@@ -326,6 +326,7 @@ public class SigUtils
             {
                 return lastSignature;
             }
+            LOG.warn("Signature with unknown type ignored: " + type);
         }
         return null;
     }
