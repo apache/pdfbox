@@ -65,6 +65,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.util.Store;
+import org.bouncycastle.util.StoreException;
 
 /**
  * Utility class for the signature / timestamp examples.
@@ -346,15 +347,12 @@ public class SigUtils
     }
 
     public static void validateTimestampToken(TimeStampToken timeStampToken)
-            throws TSPException, CertificateException, OperatorCreationException
+            throws TSPException, CertificateException, OperatorCreationException, IOException
     {
         // https://stackoverflow.com/questions/42114742/
-        @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
-        Collection<X509CertificateHolder> tstMatches =
-                timeStampToken.getCertificates().getMatches(timeStampToken.getSID());
-        X509CertificateHolder certificateHolder = tstMatches.iterator().next();
+        X509CertificateHolder tstCertificateHolder = getCertificateHolderFromTimeStampToken(timeStampToken);
         SignerInformationVerifier siv = 
-                new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(certificateHolder);
+                new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(tstCertificateHolder);
         timeStampToken.validate(siv);
     }
 
@@ -417,15 +415,27 @@ public class SigUtils
      * @param timeStampToken
      * @return the X.509 certificate.
      * @throws CertificateException 
+     * @throws IOException 
      */
     public static X509Certificate getCertificateFromTimeStampToken(TimeStampToken timeStampToken)
-            throws CertificateException
+            throws CertificateException, IOException
+    {
+        X509CertificateHolder tstCertificateHolder = getCertificateHolderFromTimeStampToken(timeStampToken);
+        return new JcaX509CertificateConverter().getCertificate(tstCertificateHolder);
+    }
+
+    private static X509CertificateHolder getCertificateHolderFromTimeStampToken(TimeStampToken timeStampToken)
+            throws StoreException, IOException
     {
         @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
         Collection<X509CertificateHolder> tstMatches =
                 timeStampToken.getCertificates().getMatches(timeStampToken.getSID());
-        X509CertificateHolder tstCertHolder = tstMatches.iterator().next();
-        return new JcaX509CertificateConverter().getCertificate(tstCertHolder);
+        if (tstMatches.isEmpty())
+        {
+            throw new IOException("Timestamp token has no certificates");
+        }
+        X509CertificateHolder tstCertificateHolder = tstMatches.iterator().next();
+        return tstCertificateHolder;
     }
 
     /**
