@@ -611,7 +611,6 @@ public class Splitter
 
             // Create and fill clone
             dstDict = new COSDictionary();
-            structDictMap.put(srcDict, dstDict);
             for (Map.Entry<COSName,COSBase> entry : srcDict.entrySet())
             {
                 COSName key = entry.getKey();
@@ -684,6 +683,7 @@ public class Splitter
             {
                 roleSet.add(s);
             }
+            structDictMap.put(srcDict, dstDict);
             return dstDict;
         }
 
