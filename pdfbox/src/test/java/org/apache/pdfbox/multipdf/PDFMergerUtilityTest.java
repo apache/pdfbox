@@ -1248,7 +1248,7 @@ public class PDFMergerUtilityTest extends TestCase
         }
     }
 
-    public void testIllegalSplitting()
+    public void testIllegalSplitting() throws IOException
     {
         Splitter splitter = new Splitter();
 
@@ -1283,9 +1283,10 @@ public class PDFMergerUtilityTest extends TestCase
         }
 
         splitter.setStartPage(2);
+        splitter.setEndPage(1);
         try
         {
-            splitter.setEndPage(1);
+            splitter.split(new PDDocument());
             fail("Expected IllegalArgumentException");
         }
         catch (IllegalArgumentException ex)
