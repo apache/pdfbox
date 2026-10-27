@@ -1147,7 +1147,7 @@ public class Splitter
     }
 
     /**
-     * The source PDF document.
+     * The current destination PDF document.
      * 
      * @return current destination pdf
      */
