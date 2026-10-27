@@ -170,6 +170,7 @@ public class Splitter
             {
                 IOUtils.closeQuietly(doc);
             }
+            throw ex;
         }
         return destinationDocuments;
     }
