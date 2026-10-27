@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.cos.COSArray;
@@ -48,6 +49,7 @@ import org.apache.pdfbox.examples.util.ConnectedInputStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
@@ -77,7 +79,7 @@ public class SigUtils
 
     // Certificates / CRLs / LDAP needed for our unit tests; add yours
     // or create your own logic in checkAccess()
-    private static final Set<String> allowUrlSet =
+    private static final Set<String> ALLOW_URL_SET =
             Set.of("http://www.pki.admin.ch/aia/RegularCA01.crt",
                    "http://www.pki.admin.ch/aia/RootCAII.crt",
                    "http://www.pki.admin.ch/aia/RootCAIV.crt",
@@ -404,7 +406,7 @@ public class SigUtils
         // ( getRootCertificates() is not helpful because these are SSL certificates)
     }
 
-     /**
+    /**
      * Get certificate of a TSA. This sends a real timestamp request for an empty input just to get
      * a certificate. That may have side effects such as quota and rate limits.
      *
@@ -448,8 +450,7 @@ public class SigUtils
         {
             throw new IOException("Timestamp token has no certificates");
         }
-        X509CertificateHolder tstCertificateHolder = tstMatches.iterator().next();
-        return tstCertificateHolder;
+        return tstMatches.iterator().next();
     }
 
     /**
@@ -488,9 +489,9 @@ public class SigUtils
      */
     public static void checkAccess(URI uri) throws IOException
     {
-        if (!allowUrlSet.contains(uri.toString()))
+        if (!ALLOW_URL_SET.contains(uri.toString()))
         {
-            throw new IOException("URL '" + uri + "' not in allowUrlSet");
+            throw new IOException("URL '" + uri + "' not in ALLOW_URL_SET");
         }
     }
 
@@ -517,7 +518,7 @@ public class SigUtils
         try
         {
             int responseCode = con.getResponseCode();
-            LOG.info(responseCode + " " + con.getResponseMessage());
+            LOG.info("{} {}", responseCode, con.getResponseMessage());
             if (isRedirect(responseCode))
             {
                 String location = con.getHeaderField("Location");
@@ -537,13 +538,13 @@ public class SigUtils
                     LOG.info("redirection to {} ignored", location);
                 }
             }
+            return new ConnectedInputStream(con, con.getInputStream());
         }
         catch (IOException | URISyntaxException ex)
         {
             con.disconnect();
             throw ex;
         }
-        return new ConnectedInputStream(con, con.getInputStream());
     }
 
     private static HttpURLConnection openURI(URI uri) throws IOException
