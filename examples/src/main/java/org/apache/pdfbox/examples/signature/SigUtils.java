@@ -313,7 +313,7 @@ public class SigUtils
     public static PDSignature getLastRelevantSignature(PDDocument document)
     {
         Comparator<PDSignature> comparatorByOffset =
-                Comparator.comparing(sig -> sig.getByteRange()[1]);
+                Comparator.comparingInt(sig -> sig.getByteRange()[1]);
 
         // we can't use getLastSignatureDictionary() because this will fail (see PDFBOX-3978) 
         // if a signature is assigned to a pre-defined empty signature field that isn't the last.
@@ -328,6 +328,7 @@ public class SigUtils
             {
                 return lastSignature;
             }
+            LOG.warn("Signature with unknown type ignored: " + type);
         }
         return null;
     }
@@ -396,8 +397,9 @@ public class SigUtils
     }
 
     /**
-     * Get certificate of a TSA.
-     * 
+     * Get certificate of a TSA. This sends a real timestamp request for an empty input just to get
+     * a certificate. That may have side effects such as quota and rate limits.
+     *
      * @param tsaUrl URL
      * @return the X.509 certificate.
      *
