@@ -96,7 +96,7 @@ public class Splitter
     private Set<String> idSet;
     private Set<COSName> roleSet;
 
-    private int currentPageNumber;
+    private int currentPageNumber; // 0-based
 
     private StreamCacheCreateFunction streamCacheCreateFunction = null;
 
@@ -140,13 +140,13 @@ public class Splitter
         pageToDocNumMap = new HashMap<>();
         annotDictMaps = new ArrayList<>();
         destToFixMap = new HashMap<>();
-        idSet = new HashSet<>();
-        roleSet = new HashSet<>();
 
         processPages();
 
         for (int i = 0; i < destinationDocuments.size(); ++i)
         {
+            idSet = new HashSet<>();
+            roleSet = new HashSet<>();
             PDDocument destinationDocument = destinationDocuments.get(i);
             pageDictMap = pageDictMaps.get(i);
             annotDictMap = annotDictMaps.get(i);
@@ -433,7 +433,7 @@ public class Splitter
         // See comment at the end of PDFMergerUtility.mergeIDTree()
     }
 
-    // needed because getRoleMap() and setRoleMap() habe different map types?!
+    // needed because getRoleMap() and setRoleMap() have different map types?!
     private void cloneRoleMap(PDStructureTreeRoot srcStructTree, PDStructureTreeRoot destStructTree)
     {
         COSDictionary srcDict = srcStructTree.getCOSObject().getCOSDictionary(COSName.ROLE_MAP);
