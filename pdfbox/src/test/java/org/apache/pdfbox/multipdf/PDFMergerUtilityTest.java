@@ -1426,13 +1426,13 @@ public class PDFMergerUtilityTest extends TestCase
         assertEquals(4, structureTreeRoot3.getRoleMap().size());
         PDStructureTreeRoot structureTreeRoot4 = splitResult.get(3).getDocumentCatalog().getStructureTreeRoot();
         assertEquals(5, structureTreeRoot4.getParentTree().getTreeAsMap().size());
-        assertEquals(4, structureTreeRoot4.getRoleMap().size());
+        assertEquals(3, structureTreeRoot4.getRoleMap().size());
         PDStructureTreeRoot structureTreeRoot5 = splitResult.get(4).getDocumentCatalog().getStructureTreeRoot();
         assertEquals(1, structureTreeRoot5.getParentTree().getTreeAsMap().size());
-        assertEquals(6, structureTreeRoot5.getRoleMap().size());
+        assertEquals(5, structureTreeRoot5.getRoleMap().size());
         PDStructureTreeRoot structureTreeRoot6 = splitResult.get(5).getDocumentCatalog().getStructureTreeRoot();
         assertEquals(1, structureTreeRoot6.getParentTree().getTreeAsMap().size());
-        assertEquals(7, structureTreeRoot6.getRoleMap().size());
+        assertEquals(6, structureTreeRoot6.getRoleMap().size());
         for (PDDocument dstDoc : splitResult)
         {
             dstDoc.close();
