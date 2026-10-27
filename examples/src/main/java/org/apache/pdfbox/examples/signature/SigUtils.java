@@ -490,26 +490,34 @@ public class SigUtils
         checkAccess(uri);
 
         HttpURLConnection con = openURI(uri);
-        int responseCode = con.getResponseCode();
-        LOG.info(responseCode + " " + con.getResponseMessage());
-        if (isRedirect(responseCode))
+        try
         {
-            String location = con.getHeaderField("Location");
-            if (location != null &&
-                urlString.startsWith("http://") &&
-                location.startsWith("https://") &&
-                urlString.substring(7).equals(location.substring(8)))
+            int responseCode = con.getResponseCode();
+            LOG.info(responseCode + " " + con.getResponseMessage());
+            if (isRedirect(responseCode))
             {
-                // redirection from http:// to https://
-                // change this code if you want to be more flexible (but think about security!)
-                LOG.info("redirection to " + location + " followed");
-                con.disconnect();
-                con = openURI(new URI(location));
+                String location = con.getHeaderField("Location");
+                if (location != null &&
+                    urlString.startsWith("http://") &&
+                    location.startsWith("https://") &&
+                    urlString.substring(7).equals(location.substring(8)))
+                {
+                    // redirection from http:// to https://
+                    // change this code if you want to be more flexible (but think about security!)
+                    LOG.info("redirection to " + location + " followed");
+                    con.disconnect();
+                    con = openURI(new URI(location));
+                }
+                else
+                {
+                    LOG.info("redirection to " + location + " ignored");
+                }
             }
-            else
-            {
-                LOG.info("redirection to " + location + " ignored");
-            }
+        }
+        catch (IOException | URISyntaxException ex)
+        {
+            con.disconnect();
+            throw ex;
         }
         return new ConnectedInputStream(con, con.getInputStream());
     }
