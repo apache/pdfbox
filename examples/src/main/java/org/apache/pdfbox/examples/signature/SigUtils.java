@@ -101,8 +101,8 @@ public class SigUtils
                    "http://www.gemboxsoftware.com/test/pki/cert/GemBoxRSA.crt",
                    "http://www.ca.gov.si/crt/si-trust-root.crt",
                    "ldap://x500.gov.si/cn=SI-TRUST%20Root,oi=VATSI-17659957,o=Republika%20Slovenija,c=SI?certificateRevocationList"));
-    private static final int CONNECT_TIMEOUT_MS = 10_000; 
-    private static final int READ_TIMEOUT_MS = 20_000;
+    private static final int CONNECT_TIMEOUT_MS = 10000; 
+    private static final int READ_TIMEOUT_MS = 20000;
 
     private SigUtils()
     {
