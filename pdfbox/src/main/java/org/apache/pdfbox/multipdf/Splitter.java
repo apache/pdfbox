@@ -867,19 +867,12 @@ public class Splitter
             if (currentPageNumber + 1 >= startPage && currentPageNumber + 1 <= endPage)
             {
                 processPage(page);
-                currentPageNumber++;
             }
-            else
+            else if (currentPageNumber >= endPage)
             {
-                if (currentPageNumber > endPage)
-                {
-                    break;
-                }
-                else
-                {
-                    currentPageNumber++;
-                }
+                break;
             }
+            currentPageNumber++;
         }
     }
 
