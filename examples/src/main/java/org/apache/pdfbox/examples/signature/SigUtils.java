@@ -120,44 +120,52 @@ public class SigUtils
      */
     public static int getMDPPermission(PDDocument doc)
     {
-        COSBase base = doc.getDocumentCatalog().getCOSObject().getDictionaryObject(COSName.PERMS);
-        if (base instanceof COSDictionary)
+        COSDictionary permsDict = doc.getDocumentCatalog().getCOSObject()
+                .getCOSDictionary(COSName.PERMS);
+        if (permsDict == null)
         {
-            COSDictionary permsDict = (COSDictionary) base;
-            base = permsDict.getDictionaryObject(COSName.DOCMDP);
-            if (base instanceof COSDictionary)
+            return 0;
+        }
+        COSDictionary signatureDict = permsDict.getCOSDictionary(COSName.DOCMDP);
+        if (signatureDict == null)
+        {
+            return 0;
+        }
+        COSArray refArray = signatureDict.getCOSArray(COSName.REFERENCE);
+        if (refArray == null)
+        {
+            return 0;
+        }
+
+        for (int i = 0; i < refArray.size(); ++i)
+        {
+            COSDictionary transformDict = getDocMdpTransformParams(refArray.getObject(i));
+            if (transformDict != null)
             {
-                COSDictionary signatureDict = (COSDictionary) base;
-                base = signatureDict.getDictionaryObject(COSName.REFERENCE);
-                if (base instanceof COSArray)
-                {
-                    COSArray refArray = (COSArray) base;
-                    for (int i = 0; i < refArray.size(); ++i)
-                    {
-                        base = refArray.getObject(i);
-                        if (base instanceof COSDictionary)
-                        {
-                            COSDictionary sigRefDict = (COSDictionary) base;
-                            if (COSName.DOCMDP.equals(sigRefDict.getDictionaryObject(COSName.TRANSFORM_METHOD)))
-                            {
-                                base = sigRefDict.getDictionaryObject(COSName.TRANSFORM_PARAMS);
-                                if (base instanceof COSDictionary)
-                                {
-                                    COSDictionary transformDict = (COSDictionary) base;
-                                    int accessPermissions = transformDict.getInt(COSName.P, 2);
-                                    if (accessPermissions < 1 || accessPermissions > 3)
-                                    {
-                                        accessPermissions = 2;
-                                    }
-                                    return accessPermissions;
-                                }
-                            }
-                        }
-                    }
-                }
+                int accessPermissions = transformDict.getInt(COSName.P, 2);
+                return accessPermissions < 1 || accessPermissions > 3 ? 2 : accessPermissions;
             }
         }
         return 0;
+    }
+
+    /**
+     * Returns the transform parameters if the given signature reference entry uses the DocMDP
+     * transform method, otherwise null.
+     */
+    private static COSDictionary getDocMdpTransformParams(COSBase base)
+    {
+        if (!(base instanceof COSDictionary))
+        {
+            return null;
+        }
+        COSDictionary sigRefDict = (COSDictionary) base;
+        if (!COSName.DOCMDP.equals(sigRefDict.getDictionaryObject(COSName.TRANSFORM_METHOD)))
+        {
+            return null;
+        }
+        COSBase params = sigRefDict.getDictionaryObject(COSName.TRANSFORM_PARAMS);
+        return params instanceof COSDictionary ? (COSDictionary) params : null;
     }
 
     /**
