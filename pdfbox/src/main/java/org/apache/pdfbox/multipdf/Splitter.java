@@ -150,8 +150,18 @@ public class Splitter
 
         try
         {
-            processPages();
-            
+            for (PDPage page : sourceDocument.getPages())
+            {
+                if (currentPageNumber + 1 >= startPage && currentPageNumber + 1 <= endPage)
+                {
+                    processPage(page);
+                }
+                else if (currentPageNumber >= endPage)
+                {
+                    break;
+                }
+                currentPageNumber++;
+            }
             for (int i = 0; i < destinationDocuments.size(); ++i)
             {
                 idSet = new HashSet<>();
@@ -675,7 +685,9 @@ public class Splitter
             }
 
             dstDict.setItem(COSName.PG, dstPageDict);
-            
+
+            structDictMap.put(srcDict, dstDict);
+
             // stack overflow here with 207658.pdf and 113484.pdf, too complex; works with -Xss50m
             COSBase cloneKid = createClone(kid, dstDict, dstPageDict != null ? dstPageDict : currentPageDict);
             if (cloneKid == null && kid != null)
@@ -702,7 +714,6 @@ public class Splitter
             {
                 roleSet.add(s);
             }
-            structDictMap.put(srcDict, dstDict);
             return dstDict;
         }
 
@@ -840,27 +851,6 @@ public class Splitter
             throw new IllegalArgumentException("End page is smaller than one");
         }
         endPage = end;
-    }
-
-    /**
-     * Interface method to handle the start of the page processing.
-     *
-     * @throws IOException If an IO error occurs.
-     */
-    private void processPages() throws IOException
-    {
-        for (PDPage page : sourceDocument.getPages())
-        {
-            if (currentPageNumber + 1 >= startPage && currentPageNumber + 1 <= endPage)
-            {
-                processPage(page);
-            }
-            else if (currentPageNumber >= endPage)
-            {
-                break;
-            }
-            currentPageNumber++;
-        }
     }
 
     /**
