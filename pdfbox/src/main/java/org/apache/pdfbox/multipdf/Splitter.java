@@ -34,6 +34,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDestinationNameTreeNode;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -141,20 +142,30 @@ public class Splitter
         annotDictMaps = new ArrayList<Map<COSDictionary, COSDictionary>>();
         destToFixMap = new HashMap<PDPageDestination,PDPage>();
 
-        processPages();
-
-        for (int i = 0; i < destinationDocuments.size(); ++i)
+        try
         {
-            idSet = new HashSet<String>();
-            roleSet = new HashSet<COSName>();
-            PDDocument destinationDocument = destinationDocuments.get(i);
-            pageDictMap = pageDictMaps.get(i);
-            annotDictMap = annotDictMaps.get(i);
-            cloneStructureTree(destinationDocument);
-            fixDestinations(destinationDocument);
+            processPages();
+            
+            for (int i = 0; i < destinationDocuments.size(); ++i)
+            {
+                idSet = new HashSet<String>();
+                roleSet = new HashSet<COSName>();
+                PDDocument destinationDocument = destinationDocuments.get(i);
+                pageDictMap = pageDictMaps.get(i);
+                annotDictMap = annotDictMaps.get(i);
+                cloneStructureTree(destinationDocument);
+                fixDestinations(destinationDocument);
+            }
+            fixNameDestinations();
+            fixNameDestinations2();
         }
-        fixNameDestinations();
-        fixNameDestinations2();
+        catch (IOException ex)
+        {
+            for (PDDocument doc : destinationDocuments)
+            {
+                IOUtils.closeQuietly(doc);
+            }
+        }
         return destinationDocuments;
     }
 
