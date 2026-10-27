@@ -350,11 +350,10 @@ public class Splitter
             }
             COSDictionary srcPageDict = pageDestination.getPage().getCOSObject();
             COSDictionary dstPageDict = pageDictMap.get(srcPageDict);
-            PDPage dstPage = new PDPage(dstPageDict);
             // Find whether destination page is inside or outside
-            if (pageTree.indexOf(dstPage) >= 0)
+            if (dstPageDict != null)
             {
-                pageDestination.setPage(dstPage);
+                pageDestination.setPage(new PDPage(dstPageDict));
             }
             else
             {
@@ -383,7 +382,7 @@ public class Splitter
 
         // clone /K, also fills dictMap
         COSBase k1 = srcStructureTreeRoot.getK();
-        COSBase k2 = new KCloner(dstPageTree).createClone(k1, dstStructureTreeRoot.getCOSObject(), null);
+        COSBase k2 = new KCloner().createClone(k1, dstStructureTreeRoot.getCOSObject(), null);
         dstStructureTreeRoot.setK(k2);
 
         // transfer ParentTree using the map because the dictionaries are all found in the /K structure.
@@ -538,13 +537,6 @@ public class Splitter
      */
     private class KCloner
     {
-        PDPageTree dstPageTree;
-
-        KCloner(PDPageTree dstPageTree)
-        {
-            this.dstPageTree = dstPageTree;
-        }
-
         /**
          * Creates a clone of the source.
          *
@@ -609,15 +601,7 @@ public class Splitter
             if (srcPageDict != null)
             {
                 dstPageDict = pageDictMap.get(srcPageDict);
-                if (dstPageDict != null)
-                {
-                    PDPage dstPage = new PDPage(dstPageDict);
-                    if (dstPageTree.indexOf(dstPage) == -1)
-                    {
-                        return null;
-                    }
-                }
-                else
+                if (dstPageDict == null)
                 {
                     // PDFBOX-6009: "wrong" /Pg entry
                     // quit if MCIDs because these need a /Pg entry
@@ -692,6 +676,7 @@ public class Splitter
             COSBase cloneKid = createClone(kid, dstDict, dstPageDict != null ? dstPageDict : currentPageDict);
             if (cloneKid == null && kid != null)
             {
+                structDictMap.remove(srcDict);
                 return null; // kids array wasn't empty, but is empty now => ignore
             }
             
@@ -701,6 +686,7 @@ public class Splitter
             if (dstPageDict == null && cloneKid == null && currentPageDict == null)
             {
                 // if no parent page and no page here and no kids, assume this is an orphan
+                structDictMap.remove(srcDict);
                 return null;
             }
             dstDict.setItem(COSName.K, cloneKid);
