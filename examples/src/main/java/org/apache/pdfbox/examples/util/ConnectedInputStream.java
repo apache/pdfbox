@@ -16,78 +16,36 @@
  */
 package org.apache.pdfbox.examples.util;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 /**
- * Delegate class to close the connection when the class gets closed.
+ * Class to close the connection when the class gets closed.
  *
- * @author Tilman Hausherr
+ * @author Tilman Hausherr with Claude Code
  */
-public class ConnectedInputStream extends InputStream
+public class ConnectedInputStream extends FilterInputStream
 {
-    HttpURLConnection con;
-    InputStream is;
+    private final HttpURLConnection con;
 
     public ConnectedInputStream(HttpURLConnection con, InputStream is)
     {
+        super(is);
         this.con = con;
-        this.is = is;
-    }
-
-    @Override
-    public int read() throws IOException
-    {
-        return is.read();
-    }
-
-    @Override
-    public int read(byte[] b) throws IOException
-    {
-        return is.read(b);
-    }
-
-    @Override
-    public int read(byte[] b, int off, int len) throws IOException
-    {
-        return is.read(b, off, len);
-    }
-
-    @Override
-    public long skip(long n) throws IOException
-    {
-        return is.skip(n);
-    }
-
-    @Override
-    public int available() throws IOException
-    {
-        return is.available();
-    }
-
-    @Override
-    public synchronized void mark(int readlimit)
-    {
-        is.mark(readlimit);
-    }
-
-    @Override
-    public synchronized void reset() throws IOException
-    {
-        is.reset();
-    }
-
-    @Override
-    public boolean markSupported()
-    {
-        return is.markSupported();
     }
 
     @Override
     public void close() throws IOException
     {
-        is.close();
-        con.disconnect();
-    }    
+        try
+        {
+            super.close();
+        }
+        finally
+        {
+            con.disconnect();
+        }
+    }
 }
