@@ -129,7 +129,7 @@ public class Splitter
      * not be saved with encryption.
      *
      * @throws IOException If there is an IOError
-     * @throws IllegalArgumentException if the end page is smaller thanthe start page.
+     * @throws IllegalArgumentException if the end page is smaller than the start page.
      */
     public List<PDDocument> split(PDDocument document) throws IOException
     {
@@ -518,7 +518,7 @@ public class Splitter
                     // 164421.pdf, structure tree is weird.
                     // also 250052.pdf, 250198.pdf, 257012.pdf, 271459.pdf (multiple), 
                     // 670045.pdf (multiple)
-                    // In 71459.pdf annotations on page 1 have StructParent numbers
+                    // In 271459.pdf annotations on page 1 have StructParent numbers
                     // that point to structure elements in the /ParentTree that point to
                     // a different page.
                     LOG.warn("ParentTree index " + sp + " dictionary not found in /K");
@@ -897,18 +897,20 @@ public class Splitter
     }
 
     /**
-     * Check if it is necessary to create a new document.
-     * By default a split occurs at every page.  If you wanted to split
-     * based on some complex logic then you could override this method.  For example.
-     * <code>
-     * protected void splitAtPage()
+     * Check if it is necessary to create a new document. By default a split occurs at every page.
+     * If you wanted to split based on some complex logic then you could override this method like
+     * this:
+     * <pre>
+     * &#64;Override
+     * protected boolean splitAtPage(int pageNumber)
      * {
      *     // will split at pages with prime numbers only
      *     return isPrime(pageNumber);
      * }
-     * </code>
+     * </pre>
+     *
      * @param pageNumber the 0-based page number to be checked as splitting page
-     * 
+     *
      * @return true If a new document should be created.
      */
     protected boolean splitAtPage(int pageNumber)
@@ -920,7 +922,7 @@ public class Splitter
      * Create a new document to write the split contents to.
      *
      * @return the newly created PDDocument. 
-     * @throws IOException If there is an problem creating the new document.
+     * @throws IOException If there is a problem creating the new document.
      */
     protected PDDocument createNewDocument() throws IOException
     {
