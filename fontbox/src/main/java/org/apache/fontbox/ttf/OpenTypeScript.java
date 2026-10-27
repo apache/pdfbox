@@ -16,7 +16,6 @@
  */
 package org.apache.fontbox.ttf;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -209,8 +208,7 @@ public final class OpenTypeScript
     static
     {
         String path = "/org/apache/fontbox/unicode/Scripts.txt";
-        try (InputStream resourceAsStream = OpenTypeScript.class.getResourceAsStream(path);
-             InputStream input = new BufferedInputStream(resourceAsStream))
+        try (InputStream input = OpenTypeScript.class.getResourceAsStream(path))
         {
             parseScriptsFile(input);
         }
