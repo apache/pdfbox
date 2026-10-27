@@ -129,9 +129,14 @@ public class Splitter
      * not be saved with encryption.
      *
      * @throws IOException If there is an IOError
+     * @throws IllegalArgumentException if the end page is smaller thanthe start page.
      */
     public List<PDDocument> split(PDDocument document) throws IOException
     {
+        if (endPage < startPage)
+        {
+            throw new IllegalArgumentException("End page is smaller than startPage");
+        }
         // reset the currentPageNumber for a case if the split method will be used several times
         currentPageNumber = 0;
         currentDestinationDocument = null;
@@ -840,17 +845,13 @@ public class Splitter
      * This will set the end page.
      *
      * @param end the 1-based end page
-     * @throws IllegalArgumentException if the end page is smaller than one or than the start page.
+     * @throws IllegalArgumentException if the end page is smaller than one.
      */
     public void setEndPage(int end)
     {
         if(end <= 0)
         {
             throw new IllegalArgumentException("End page is smaller than one");
-        }
-        if (end < startPage)
-        {
-            throw new IllegalArgumentException("End page is smaller than startPage");
         }
         endPage = end;
     }
