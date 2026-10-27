@@ -20,6 +20,7 @@ import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
@@ -289,6 +290,21 @@ abstract class TTFDataStream implements Closeable
     public RandomAccessRead createSubView(long length)
     {
         return null;
+    }
+
+    /**
+     * Creates a stream over the next {@code length} bytes. It has its own position and stays
+     * readable after this stream is closed. This stream's position moves past those bytes.
+     * <p>
+     * This implementation copies the bytes.
+     *
+     * @param length the number of bytes.
+     * @return A new stream.
+     * @throws IOException If there is an error reading the data.
+     */
+    TTFDataStream createSubStream(int length) throws IOException
+    {
+        return new RandomAccessReadDataStream(ByteBuffer.wrap(read(length)));
     }
 
     /**

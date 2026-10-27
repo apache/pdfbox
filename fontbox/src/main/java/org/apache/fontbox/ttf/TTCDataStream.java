@@ -89,4 +89,10 @@ class TTCDataStream extends TTFDataStream
     {
         return stream.createSubView(length);
     }
+
+    @Override
+    TTFDataStream createSubStream(int length) throws IOException
+    {
+        return stream.createSubStream(length);
+    }
 }
