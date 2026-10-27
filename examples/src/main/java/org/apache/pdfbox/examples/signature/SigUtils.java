@@ -16,7 +16,6 @@
 
 package org.apache.pdfbox.examples.signature;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -312,7 +311,7 @@ public class SigUtils
     public static PDSignature getLastRelevantSignature(PDDocument document)
     {
         Comparator<PDSignature> comparatorByOffset =
-                Comparator.comparing(sig -> sig.getByteRange()[1]);
+                Comparator.comparingInt(sig -> sig.getByteRange()[1]);
 
         // we can't use getLastSignatureDictionary() because this will fail (see PDFBOX-3978) 
         // if a signature is assigned to a pre-defined empty signature field that isn't the last.
@@ -327,6 +326,7 @@ public class SigUtils
             {
                 return lastSignature;
             }
+            LOG.warn("Signature with unknown type ignored: {}", type);
         }
         return null;
     }
@@ -394,9 +394,10 @@ public class SigUtils
         // ( getRootCertificates() is not helpful because these are SSL certificates)
     }
 
-    /**
-     * Get certificate of a TSA.
-     * 
+     /**
+     * Get certificate of a TSA. This sends a real timestamp request for an empty input just to get
+     * a certificate. That may have side effects such as quota and rate limits.
+     *
      * @param tsaUrl URL
      * @return the X.509 certificate.
      *
@@ -409,8 +410,7 @@ public class SigUtils
     {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         TSAClient tsaClient = new TSAClient(new URI(tsaUrl).toURL(), null, null, digest);
-        InputStream emptyStream = new ByteArrayInputStream(new byte[0]);
-        TimeStampToken timeStampToken = tsaClient.getTimeStampToken(emptyStream);
+        TimeStampToken timeStampToken = tsaClient.getTimeStampToken(InputStream.nullInputStream());
         return getCertificateFromTimeStampToken(timeStampToken);
     }
 
