@@ -102,6 +102,8 @@ public class SigUtils
                    "http://www.gemboxsoftware.com/test/pki/cert/GemBoxRSA.crt",
                    "http://www.ca.gov.si/crt/si-trust-root.crt",
                    "ldap://x500.gov.si/cn=SI-TRUST%20Root,oi=VATSI-17659957,o=Republika%20Slovenija,c=SI?certificateRevocationList");
+    private static final int CONNECT_TIMEOUT_MS = 10_000; 
+    private static final int READ_TIMEOUT_MS = 20_000;
 
     private SigUtils()
     {
@@ -479,22 +481,22 @@ public class SigUtils
     public static InputStream openURL(String urlString) throws IOException, URISyntaxException
     {
         URI uri = new URI(urlString);
-        if (!uri.getScheme().startsWith("http"))
+        String scheme = uri.getScheme();
+        if (!"http".equals(scheme) && !"https".equals(scheme))
         {
-            throw new IOException(uri.getScheme() + " schema not supported");
+            throw new IOException(scheme + " scheme not supported");
         }
 
         checkAccess(uri);
 
-        HttpURLConnection con = (HttpURLConnection) uri.toURL().openConnection();
+        HttpURLConnection con = openURI(uri);
         int responseCode = con.getResponseCode();
-        LOG.info("{} {}", responseCode, con.getResponseMessage());
-        if (responseCode == HttpURLConnection.HTTP_MOVED_TEMP ||
-            responseCode == HttpURLConnection.HTTP_MOVED_PERM ||
-            responseCode == HttpURLConnection.HTTP_SEE_OTHER)
+        LOG.info(responseCode + " " + con.getResponseMessage());
+        if (isRedirect(responseCode))
         {
             String location = con.getHeaderField("Location");
-            if (urlString.startsWith("http://") &&
+            if (location != null &&
+                urlString.startsWith("http://") &&
                 location.startsWith("https://") &&
                 urlString.substring(7).equals(location.substring(8)))
             {
@@ -502,7 +504,7 @@ public class SigUtils
                 // change this code if you want to be more flexible (but think about security!)
                 LOG.info("redirection to {} followed", location);
                 con.disconnect();
-                con = (HttpURLConnection) new URI(location).toURL().openConnection();
+                con = openURI(new URI(location));
             }
             else
             {
@@ -510,5 +512,21 @@ public class SigUtils
             }
         }
         return new ConnectedInputStream(con, con.getInputStream());
+    }
+
+    private static HttpURLConnection openURI(URI uri) throws IOException
+    {
+        HttpURLConnection con = (HttpURLConnection) uri.toURL().openConnection();
+        con.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        con.setReadTimeout(READ_TIMEOUT_MS);
+        return con;
+    }
+
+    private static boolean isRedirect(int responseCode)
+    {
+        return responseCode == HttpURLConnection.HTTP_MOVED_TEMP ||
+               responseCode == HttpURLConnection.HTTP_MOVED_PERM ||
+               responseCode == HttpURLConnection.HTTP_SEE_OTHER ||
+               responseCode == 307 || responseCode == 308;
     }
 }
