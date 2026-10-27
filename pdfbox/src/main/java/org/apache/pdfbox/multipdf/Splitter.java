@@ -90,8 +90,8 @@ public class Splitter
     private List<Map<COSDictionary, COSDictionary>> pageDictMaps; // list of these maps for all destination documents
     private Map<PDPage,Integer> pageToDocNumMap; // map old page => index of destination document
     private Map<COSDictionary, COSDictionary> structDictMap;
-    private List<Map<COSDictionary, COSDictionary>> annotDictMaps; // map old annotation => new annotation for the current destination document
-    private Map<COSDictionary, COSDictionary> annotDictMap; // list of these maps for all destination documents
+    private List<Map<COSDictionary, COSDictionary>> annotDictMaps; // list of these maps for all destination documents
+    private Map<COSDictionary, COSDictionary> annotDictMap; // map old annotation => new annotation for the current destination document
     private Map<PDPageDestination,PDPage> destToFixMap;
     private Set<String> idSet;
     private Set<COSName> roleSet;
