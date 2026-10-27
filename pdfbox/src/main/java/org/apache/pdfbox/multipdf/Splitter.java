@@ -149,8 +149,18 @@ public class Splitter
 
         try
         {
-            processPages();
-            
+            for (PDPage page : sourceDocument.getPages())
+            {
+                if (currentPageNumber + 1 >= startPage && currentPageNumber + 1 <= endPage)
+                {
+                    processPage(page);
+                }
+                else if (currentPageNumber >= endPage)
+                {
+                    break;
+                }
+                currentPageNumber++;
+            }
             for (int i = 0; i < destinationDocuments.size(); ++i)
             {
                 idSet = new HashSet<>();
@@ -674,6 +684,8 @@ public class Splitter
             }
 
             dstDict.setItem(COSName.PG, dstPageDict);
+
+            structDictMap.put(srcDict, dstDict);
             
             // stack overflow here with 207658.pdf, too complex
             COSBase cloneKid = createClone(kid, dstDict, dstPageDict != null ? dstPageDict : currentPageDict);
@@ -701,7 +713,6 @@ public class Splitter
             {
                 roleSet.add(s);
             }
-            structDictMap.put(srcDict, dstDict);
             return dstDict;
         }
 
@@ -839,27 +850,6 @@ public class Splitter
             throw new IllegalArgumentException("End page is smaller than one");
         }
         endPage = end;
-    }
-
-    /**
-     * Interface method to handle the start of the page processing.
-     *
-     * @throws IOException If an IO error occurs.
-     */
-    private void processPages() throws IOException
-    {
-        for (PDPage page : sourceDocument.getPages())
-        {
-            if (currentPageNumber + 1 >= startPage && currentPageNumber + 1 <= endPage)
-            {
-                processPage(page);
-            }
-            else if (currentPageNumber >= endPage)
-            {
-                break;
-            }
-            currentPageNumber++;
-        }
     }
 
     /**
