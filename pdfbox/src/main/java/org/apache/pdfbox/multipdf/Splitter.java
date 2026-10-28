@@ -94,6 +94,7 @@ public class Splitter
     private List<Map<COSDictionary, COSDictionary>> annotDictMaps; // list of these maps for all destination documents
     private Map<COSDictionary, COSDictionary> annotDictMap; // map old annotation => new annotation for the current destination document
     private Map<PDPageDestination,PDPage> destToFixMap;
+    private Map<Integer, COSObjectable> srcParentTreeAsMap;
     private Set<String> idSet;
     private Set<COSName> roleSet;
 
@@ -147,6 +148,7 @@ public class Splitter
         pageToDocNumMap = new HashMap<>();
         annotDictMaps = new ArrayList<>();
         destToFixMap = new HashMap<>();
+        srcParentTreeAsMap = getSrcParentTreeAsMap();
 
         try
         {
@@ -386,12 +388,6 @@ public class Splitter
         dstStructureTreeRoot.setK(k2);
 
         // transfer ParentTree using the map because the dictionaries are all found in the /K structure.
-        PDNumberTreeNode srcParentTree = srcStructureTreeRoot.getParentTree();
-        Map<Integer, COSObjectable> srcNumberTreeAsMap = Collections.emptyMap();
-        if (srcParentTree != null)
-        {
-            srcNumberTreeAsMap = srcParentTree.getTreeAsMap();
-        }
         Map<Integer, COSObjectable> dstNumberTreeAsMap = new LinkedHashMap<>();
         int dstPageTreeCount = dstPageTree.getCount();
         for (int p = 0; p < dstPageTreeCount; ++p)
@@ -400,22 +396,22 @@ public class Splitter
             int sp1 = page.getStructParents();
             if (sp1 != -1)
             {
-                cloneTreeElement(srcNumberTreeAsMap, dstNumberTreeAsMap, sp1);
+                cloneTreeElement(dstNumberTreeAsMap, sp1);
             }
             for (PDAnnotation ann : page.getAnnotations())
             {
                 int sp2 = ann.getStructParent();
                 if (sp2 != -1)
                 {
-                    cloneTreeElement(srcNumberTreeAsMap, dstNumberTreeAsMap, sp2);
+                    cloneTreeElement(dstNumberTreeAsMap, sp2);
                 }
                 PDAppearanceStream normalAppearanceStream = ann.getNormalAppearanceStream();
                 if (normalAppearanceStream != null)
                 {
-                    processResources(normalAppearanceStream.getResources(), srcNumberTreeAsMap, dstNumberTreeAsMap, new HashSet<>());
+                    processResources(normalAppearanceStream.getResources(), dstNumberTreeAsMap, new HashSet<>());
                 }
             }
-            processResources(page.getResources(), srcNumberTreeAsMap, dstNumberTreeAsMap, new HashSet<>());
+            processResources(page.getResources(), dstNumberTreeAsMap, new HashSet<>());
         }
         PDNumberTreeNode dstNumberTreeNode = new PDNumberTreeNode(PDParentTreeValue.class);
         dstNumberTreeNode.setNumbers(dstNumberTreeAsMap);
@@ -430,6 +426,21 @@ public class Splitter
         cloneIDTree(srcStructureTreeRoot, dstStructureTreeRoot);
 
         destinationDocument.getDocumentCatalog().setStructureTreeRoot(dstStructureTreeRoot);
+    }
+
+    private Map<Integer, COSObjectable> getSrcParentTreeAsMap() throws IOException
+    {
+        PDStructureTreeRoot srcStructureTreeRoot = sourceDocument.getDocumentCatalog().getStructureTreeRoot();
+        if (srcStructureTreeRoot == null)
+        {
+            return Collections.emptyMap();
+        }
+        PDNumberTreeNode srcParentTree = srcStructureTreeRoot.getParentTree();
+        if (srcParentTree == null)
+        {
+            return Collections.emptyMap();
+        }
+        return srcParentTree.getTreeAsMap();
     }
 
     private void cloneIDTree(PDStructureTreeRoot srcStructTree, PDStructureTreeRoot destStructTree)
@@ -481,11 +492,9 @@ public class Splitter
 
     // clone tree element using the map so that structure elements are replaced
     private void cloneTreeElement(
-            Map<Integer, COSObjectable> srcNumberTreeAsMap, 
-            Map<Integer, COSObjectable> dstNumberTreeAsMap, 
-            int sp)
+            Map<Integer, COSObjectable> dstNumberTreeAsMap, int sp)
     {
-        COSObjectable srcObj = srcNumberTreeAsMap.get(sp); // this is a PDParentTreeValue class
+        COSObjectable srcObj = srcParentTreeAsMap.get(sp); // this is a PDParentTreeValue class
         COSObjectable dstObj = null;
         if (srcObj != null)
         {
@@ -755,7 +764,6 @@ public class Splitter
 
     // Look for /StructParent and /StructParents and add them to the destination tree
     private void processResources(PDResources res, 
-            Map<Integer, COSObjectable> srcNumberTreeAsMap, 
             Map<Integer, COSObjectable> dstNumberTreeAsMap,
             Set<COSDictionary> visited) throws IOException
     {
@@ -777,7 +785,7 @@ public class Splitter
             if (xObject instanceof PDFormXObject)
             {
                 sp2 = ((PDFormXObject) xObject).getStructParents();
-                processResources(((PDFormXObject) xObject).getResources(), srcNumberTreeAsMap, dstNumberTreeAsMap, visited);
+                processResources(((PDFormXObject) xObject).getResources(), dstNumberTreeAsMap, visited);
             }
             else if (xObject instanceof PDImageXObject)
             {
@@ -785,7 +793,7 @@ public class Splitter
             }
             if (sp2 != -1)
             {
-                cloneTreeElement(srcNumberTreeAsMap, dstNumberTreeAsMap, sp2);
+                cloneTreeElement(dstNumberTreeAsMap, sp2);
             }
         }
     }
