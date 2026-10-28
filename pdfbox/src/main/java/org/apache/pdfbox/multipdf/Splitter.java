@@ -94,6 +94,7 @@ public class Splitter
     private Map<COSDictionary, COSDictionary> annotDictMap; // map old annotation => new annotation for the current destination document
     private Map<PDPageDestination,PDPage> destToFixMap;
     private Map<Integer, COSObjectable> srcParentTreeAsMap;
+    private Map<String, PDStructureElement> srcIDTreeAsMap;
     private Set<String> idSet;
     private Set<COSName> roleSet;
 
@@ -148,6 +149,7 @@ public class Splitter
         annotDictMaps = new ArrayList<Map<COSDictionary, COSDictionary>>();
         destToFixMap = new HashMap<PDPageDestination,PDPage>();
         srcParentTreeAsMap = getSrcParentTreeAsMap();
+        srcIDTreeAsMap = getSrcIDTreeAsMap();
 
         try
         {
@@ -437,7 +439,7 @@ public class Splitter
         }
         dstStructureTreeRoot.setClassMap(srcStructureTreeRoot.getClassMap());
         cloneRoleMap(srcStructureTreeRoot, dstStructureTreeRoot);
-        cloneIDTree(srcStructureTreeRoot, dstStructureTreeRoot);
+        cloneIDTree(dstStructureTreeRoot);
 
         destinationDocument.getDocumentCatalog().setStructureTreeRoot(dstStructureTreeRoot);
     }
@@ -457,15 +459,23 @@ public class Splitter
         return srcParentTree.getTreeAsMap();
     }
 
-    private void cloneIDTree(PDStructureTreeRoot srcStructTree, PDStructureTreeRoot destStructTree)
-            throws IOException
+    private Map<String,PDStructureElement> getSrcIDTreeAsMap() throws IOException
     {
-        PDNameTreeNode<PDStructureElement> srcIDTree = srcStructTree.getIDTree();
+        PDStructureTreeRoot srcStructureTreeRoot = sourceDocument.getDocumentCatalog().getStructureTreeRoot();
+        if (srcStructureTreeRoot == null)
+        {
+            return Collections.emptyMap();
+        }
+        PDNameTreeNode<PDStructureElement> srcIDTree = srcStructureTreeRoot.getIDTree();
         if (srcIDTree == null)
         {
-            return;
+            return Collections.emptyMap();
         }
-        Map<String, PDStructureElement> srcIDTreeAsMap = srcIDTree.getTreeAsMap();
+        return srcIDTree.getTreeAsMap();
+    }
+
+    private void cloneIDTree(PDStructureTreeRoot destStructTree)
+    {
         Map<String, PDStructureElement> destNames = new HashMap<String, PDStructureElement>();
         for (Map.Entry<String, PDStructureElement> entry : srcIDTreeAsMap.entrySet())
         {
@@ -479,6 +489,10 @@ public class Splitter
             {
                 destNames.put(key, new PDStructureElement(dstDict));
             }
+        }
+        if (destNames.isEmpty())
+        {
+            return;
         }
         PDNameTreeNode<PDStructureElement> destIDTree = new PDStructureElementNameTreeNode();
         destIDTree.setNames(destNames);
