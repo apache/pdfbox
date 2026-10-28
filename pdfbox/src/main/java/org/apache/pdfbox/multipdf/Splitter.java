@@ -624,16 +624,12 @@ public class Splitter
             if (srcPageDict != null)
             {
                 dstPageDict = pageDictMap.get(srcPageDict);
-                if (dstPageDict == null)
+                // PDFBOX-6009: "wrong" /Pg entry:
+                // quit if MCR/OBJR dict type, or if MCIDs because these need a /Pg entry
+                // otherwise (no destination page, but not MCR/OBJR/MCID) keep this as an intermediate element for now.
+                if (dstPageDict == null && (COSName.MCR.equals(type) || COSName.OBJR.equals(type) || hasMCIDs(kid)))
                 {
-                    // PDFBOX-6009: "wrong" /Pg entry
-                    // quit if MCIDs because these need a /Pg entry
-                    // or if MCR/OBJR dicts
-                    if (COSName.MCR.equals(type) || COSName.OBJR.equals(type) || hasMCIDs(kid))
-                    {
-                        return null;
-                    }
-                    // else keep this as an intermediate element for now
+                    return null;
                 }
             }
 
