@@ -790,14 +790,13 @@ public class Splitter
     }
 
     /**
-     * This will tell the splitting algorithm where to split the pages.  The default
-     * is 1, so every page will become a new document.  If it was two then each document would
-     * contain 2 pages.  If the source document had 5 pages it would split into
-     * 3 new documents, 2 documents containing 2 pages and 1 document containing one
-     * page.
+     * Sets the number of pages each split document should contain. The default is 1, so every page
+     * becomes a new document. With 2, each document contains 2 pages; a 5-page source is split into
+     * 3 documents, two with 2 pages and one with 1 page. If a start page is set, counting begins
+     * there.
      *
      * @param split The number of pages each split document should contain.
-     * @throws IllegalArgumentException if the page is smaller than one.
+     * @throws IllegalArgumentException if the number of pages is smaller than one.
      */
     public void setSplitAtPage(int split)
     {
@@ -868,6 +867,10 @@ public class Splitter
      *     return isPrime(pageNumber);
      * }
      * </pre>
+     * Note that this method is called only for pages within the start..end range. An
+     * override replaces the built-in logic, so {@link #setSplitAtPage(int)} and
+     * {@link #setStartPage(int)} have no effect on it. The first processed page always gets a new
+     * document, even if the override returns false for it.
      *
      * @param pageNumber the 0-based page number to be checked as splitting page
      *
