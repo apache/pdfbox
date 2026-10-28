@@ -89,7 +89,7 @@ public class Splitter
     private Map<COSDictionary, COSDictionary> pageDictMap; // map old page => new page for the current destination document
     private List<Map<COSDictionary, COSDictionary>> pageDictMaps; // list of these maps for all destination documents
     private Map<PDPage,Integer> pageToDocNumMap; // map old page => index of destination document
-    private Map<COSDictionary, COSDictionary> structDictMap;
+    private Map<COSDictionary, COSDictionary> structDictMap; // map src Structure element => Struct Element in current destination document
     private List<Map<COSDictionary, COSDictionary>> annotDictMaps; // list of these maps for all destination documents
     private Map<COSDictionary, COSDictionary> annotDictMap; // map old annotation => new annotation for the current destination document
     private Map<PDPageDestination,PDPage> destToFixMap;
@@ -233,17 +233,8 @@ public class Splitter
                 // wasn't part of the split
                 continue;
             }
-            pageDictMap = pageDictMaps.get(docIndex); // get appropriate mapping
-            COSDictionary dstPageDict = pageDictMap.get(pageInTreeDest.getCOSObject());
-
-            // clone destination
-            COSArray clonedDestinationArray = new COSArray();
-            COSArray srcDestinationArray = value.getCOSObject();
-            for (int i = 0; i < srcDestinationArray.size(); ++i)
-            {
-                clonedDestinationArray.add(srcDestinationArray.getObject(i));
-            }
-            PDPageDestination dstDestination = (PDPageDestination) PDDestination.create(clonedDestinationArray);
+            COSDictionary dstPageDict = pageDictMaps.get(docIndex).get(pageInTreeDest.getCOSObject());
+            PDPageDestination dstDestination = clonePageDestination(value);
             dstDestination.setPage(new PDPage(dstPageDict));
 
             // add to the treeMap of the appropriate destination document
@@ -304,17 +295,8 @@ public class Splitter
                     // wasn't part of the split
                     continue;
                 }
-                pageDictMap = pageDictMaps.get(docIndex); // get appropriate mapping
-                COSDictionary dstPageDict = pageDictMap.get(pageInTreeDest.getCOSObject());
-
-                // clone destination
-                COSArray clonedDestinationArray = new COSArray();
-                COSArray srcDestinationArray = pageDest.getCOSObject();
-                for (int i = 0; i < srcDestinationArray.size(); ++i)
-                {
-                    clonedDestinationArray.add(srcDestinationArray.getObject(i));
-                }
-                PDPageDestination dstDestination = (PDPageDestination) PDDestination.create(clonedDestinationArray);
+                COSDictionary dstPageDict = pageDictMaps.get(docIndex).get(pageInTreeDest.getCOSObject());
+                PDPageDestination dstDestination = clonePageDestination(pageDest);
                 dstDestination.setPage(new PDPage(dstPageDict));
 
                 // add to the dictionary of the appropriate destination document
@@ -347,10 +329,11 @@ public class Splitter
     }
 
     /**
-     * Replace the page destinations, if the source and destination pages are in the target
-     * document. This must be called after all pages (and its annotations) are processed.
+     * Replace the PDPage destinations in PDPageDestination objects, if these PDPageDestination
+     * objects are in the destination document and if they point to a page within. This must be
+     * called after all pages (and its annotations) have been processed.
      *
-     * @param destinationDocument
+     * @param destinationDocument The destination document.
      */
     private void fixDestinations(PDDocument destinationDocument)
     {
@@ -380,10 +363,10 @@ public class Splitter
 
     /**
      * Clone the structure tree from the source to the current destination document. This must be
-     * called after all pages are processed.
+     * called after all pages have been processed.
      *
-     * @param destinationDocument
-     * @throws IOException 
+     * @param destinationDocument The destination document.
+     * @throws IOException
      */
     private void cloneStructureTree(PDDocument destinationDocument) throws IOException
     {
@@ -442,6 +425,17 @@ public class Splitter
         cloneIDTree(dstStructureTreeRoot);
 
         destinationDocument.getDocumentCatalog().setStructureTreeRoot(dstStructureTreeRoot);
+    }
+
+    private PDPageDestination clonePageDestination(PDPageDestination pageDest) throws IOException
+    {
+        COSArray clonedDestinationArray = new COSArray();
+        COSArray srcDestinationArray = pageDest.getCOSObject();
+        for (int i = 0; i < srcDestinationArray.size(); ++i)
+        {
+            clonedDestinationArray.add(srcDestinationArray.getObject(i));
+        }
+        return (PDPageDestination) PDDestination.create(clonedDestinationArray);
     }
 
     private Map<Integer, COSObjectable> getSrcParentTreeAsMap() throws IOException
@@ -520,9 +514,7 @@ public class Splitter
     }
 
     // clone tree element using the map so that structure elements are replaced
-    private void cloneTreeElement(
-            Map<Integer, COSObjectable> dstNumberTreeAsMap, 
-            int sp)
+    private void cloneTreeElement(Map<Integer, COSObjectable> dstNumberTreeAsMap, int sp)
     {
         COSObjectable srcObj = srcParentTreeAsMap.get(sp); // this is a PDParentTreeValue class
         COSObjectable dstObj = null;
@@ -1000,12 +992,12 @@ public class Splitter
      * Clone all annotations because of changes possibly made, and because the structure tree is
      * cloned.
      *
-     * @param imported
-     * @throws IOException 
+     * @param dstPage Page in the destination document.
+     * @throws IOException if there is an error creating an annotation or a destination object.
      */
-    private void processAnnotations(PDPage imported) throws IOException
+    private void processAnnotations(PDPage dstPage) throws IOException
     {
-        List<PDAnnotation> annotations = imported.getAnnotations();
+        List<PDAnnotation> annotations = dstPage.getAnnotations();
         if (annotations.isEmpty())
         {
             return;
@@ -1071,18 +1063,10 @@ public class Splitter
                     PDPage destinationPage = ((PDPageDestination) srcDestination).getPage();
                     if (destinationPage != null)
                     {
-                        // clone destination
-                        COSArray clonedDestinationArray = new COSArray();
-                        COSArray srcDestinationArray = ((PDPageDestination) srcDestination).getCOSObject();
-                        for (int i = 0; i < srcDestinationArray.size(); ++i)
-                        {
-                            clonedDestinationArray.add(srcDestinationArray.getObject(i));
-                        }
-                        PDPageDestination dstDestination =
-                                (PDPageDestination) PDDestination.create(clonedDestinationArray);
+                        PDPageDestination dstDestination = clonePageDestination((PDPageDestination) srcDestination);
 
                         // remember the destination to adjust / remove page later
-                        destToFixMap.put(dstDestination, imported);
+                        destToFixMap.put(dstDestination, dstPage);
 
                         if (action != null)
                         {
@@ -1110,7 +1094,7 @@ public class Splitter
             }
             if (annotation.getPage() != null)
             {
-                annotationClone.setPage(imported);
+                annotationClone.setPage(dstPage);
             }
         }
         // Second loop for markup and popup annotations, which reference annotations themselves
@@ -1139,7 +1123,7 @@ public class Splitter
                     ((PDAnnotationMarkup) annotation).setPopup(annotationPopupClone);
                     if (annotationPopupClone.getPage() != null)
                     {
-                        annotationPopupClone.setPage(imported);
+                        annotationPopupClone.setPage(dstPage);
                     }
                 }
             }
@@ -1155,7 +1139,7 @@ public class Splitter
                 annotation.getCOSObject().setItem(COSName.PARENT, clonedMarkupDict);
             }
         }
-        imported.setAnnotations(clonedAnnotations);
+        dstPage.setAnnotations(clonedAnnotations);
     }
 
     /**
