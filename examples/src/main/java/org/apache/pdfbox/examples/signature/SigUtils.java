@@ -180,7 +180,7 @@ public class SigUtils
      *
      * @param doc The document.
      * @param signature The signature object.
-     * @param @param permissions The permissions value (1, 2 or 3).
+     * @param permissions The permissions value (1, 2 or 3).
      *
      * @throws IOException if an approval signature exists.
      * @throws IllegalArgumentException if the permissions value is invalid.
