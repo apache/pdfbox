@@ -92,7 +92,7 @@ public class Splitter
     private Map<COSDictionary, COSDictionary> structDictMap; // map src Structure element => Struct Element in current destination document
     private List<Map<COSDictionary, COSDictionary>> annotDictMaps; // list of these maps for all destination documents
     private Map<COSDictionary, COSDictionary> annotDictMap; // map old annotation => new annotation for the current destination document
-    private Map<PDPageDestination,PDPage> destToFixMap;
+    private List<List<PDPageDestination>> destToFixLists;
     private Map<Integer, COSObjectable> srcParentTreeAsMap;
     private Map<String, PDStructureElement> srcIDTreeAsMap;
     private Set<String> idSet;
@@ -146,12 +146,13 @@ public class Splitter
         // reset the currentPageNumber for a case if the split method will be used several times
         currentPageNumber = 0;
         currentDestinationDocument = null;
-        destinationDocuments = new ArrayList<PDDocument>();
+        List<PDDocument> result = new ArrayList<PDDocument>();
+        destinationDocuments = result;
         sourceDocument = document;
         pageDictMaps = new ArrayList<Map<COSDictionary, COSDictionary>>();
         pageToDocNumMap = new HashMap<PDPage, Integer>();
         annotDictMaps = new ArrayList<Map<COSDictionary, COSDictionary>>();
-        destToFixMap = new HashMap<PDPageDestination,PDPage>();
+        destToFixLists = new ArrayList<List<PDPageDestination>>();
         boolean success = false;
 
         try
@@ -178,7 +179,7 @@ public class Splitter
                 pageDictMap = pageDictMaps.get(i);
                 annotDictMap = annotDictMaps.get(i);
                 cloneStructureTree(destinationDocument);
-                fixDestinations(destinationDocument);
+                fixDestinations(i);
             }
             fixNameDestinations();
             fixNameDestinations2();
@@ -192,28 +193,30 @@ public class Splitter
             structDictMap = null;
             annotDictMaps = null;
             annotDictMap = null;
-            destToFixMap = null;
+            destToFixLists = null;
             srcParentTreeAsMap = null;
             srcIDTreeAsMap = null;
             currentDestinationDocument = null;
+            destinationDocuments = null;
             if (!success)
             {
                 // make sure to close even on uncaught exceptions
-                for (PDDocument doc : destinationDocuments)
+                for (PDDocument doc : result)
                 {
                     IOUtils.closeQuietly(doc);
                 }
-                destinationDocuments.clear();
+                result.clear();
             }
         }
-        return destinationDocuments;
+        return result;
     }
 
     /**
      * PDFBOX-6283: Fix the destinations in /Root/Names/Dests by creating clones only for
      * the destinations that are in the destination documents.
      *
-     * @throws IOException 
+     * @throws IOException if the name tree of the source document can't be read, or if a
+     * destination can't be cloned.
      */
     void fixNameDestinations() throws IOException
     {
@@ -284,7 +287,8 @@ public class Splitter
      * PDFBOX-6283: Fix the destinations in /Root/Dests by creating clones only for
      * the destinations that are in the destination documents. Can be tested on file 503088.pdf.
      *
-     * @throws IOException 
+     * @throws IOException if a destination of the source /Dests dictionary can't be read, or if
+     * it can't be cloned.
      */
     void fixNameDestinations2() throws IOException
     {
@@ -349,35 +353,20 @@ public class Splitter
     }
 
     /**
-     * Replace the PDPage destinations in PDPageDestination objects, if these PDPageDestination
-     * objects are in the destination document and if they point to a page within. This must be
-     * called after all pages (and its annotations) have been processed.
+     * Replace the source page in the link destinations of the given destination document by the
+     * corresponding page of that document, or remove the page if it is not part of that document.
+     * This must be called after all pages (and their annotations) have been processed.
      *
-     * @param destinationDocument The destination document.
+     * @param docIndex The destination document index.
      */
-    private void fixDestinations(PDDocument destinationDocument)
+    private void fixDestinations(int docIndex)
     {
-        PDPageTree pageTree = destinationDocument.getPages();
-        for (Map.Entry<PDPageDestination,PDPage> entry : destToFixMap.entrySet())
+        for (PDPageDestination pageDestination : destToFixLists.get(docIndex))
         {
-            PDPageDestination pageDestination = entry.getKey();
-            // Find whether source page is inside or outside
-            PDPage srcPage = entry.getValue();
-            if (pageTree.indexOf(srcPage) < 0)
-            {
-                continue;
-            }
             COSDictionary srcPageDict = pageDestination.getPage().getCOSObject();
             COSDictionary dstPageDict = pageDictMap.get(srcPageDict);
-            // Find whether destination page is inside or outside
-            if (dstPageDict != null)
-            {
-                pageDestination.setPage(new PDPage(dstPageDict));
-            }
-            else
-            {
-                pageDestination.setPage(null);
-            }
+            // destination page is inside or outside this document
+            pageDestination.setPage(dstPageDict != null ? new PDPage(dstPageDict) : null);
         }
     }
 
@@ -386,7 +375,8 @@ public class Splitter
      * called after all pages have been processed.
      *
      * @param destinationDocument The destination document.
-     * @throws IOException
+     * @throws IOException if the annotations or the XObject resources of a destination page can't
+     * be read while collecting the /StructParent and /StructParents entries.
      */
     private void cloneStructureTree(PDDocument destinationDocument) throws IOException
     {
@@ -899,6 +889,7 @@ public class Splitter
             pageDictMaps.add(pageDictMap);
             annotDictMap = new HashMap<COSDictionary, COSDictionary>();
             annotDictMaps.add(annotDictMap);
+            destToFixLists.add(new ArrayList<PDPageDestination>());
         }
     }
 
@@ -984,7 +975,8 @@ public class Splitter
      *
      * @param page The page that is about to get processed.
      *
-     * @throws IOException If there is an error creating the new document.
+     * @throws IOException If there is an error creating the new document, importing the page, or
+     * processing its annotations.
      */
     protected void processPage(PDPage page) throws IOException
     {
@@ -1086,7 +1078,7 @@ public class Splitter
                         PDPageDestination dstDestination = clonePageDestination((PDPageDestination) srcDestination);
 
                         // remember the destination to adjust / remove page later
-                        destToFixMap.put(dstDestination, dstPage);
+                        destToFixLists.get(destToFixLists.size() - 1).add(dstDestination);
 
                         if (action != null)
                         {
