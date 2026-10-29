@@ -123,6 +123,9 @@ public class Splitter
 
     /**
      * This will take a document and split into several other documents.
+     * <p>
+     * This class is not thread-safe. Use one instance per thread, and do not access the source
+     * document from other threads while it is being split.
      *
      * @param document The document to split.
      *
@@ -131,7 +134,8 @@ public class Splitter
      * reloading them, to avoid problems due to resource sharing. For the same reason, they should
      * not be saved with encryption.
      *
-     * @throws IOException If there is an IOError
+     * @throws IOException If there is an IOError. All created documents are closed if the method
+     * throws. In that case you should take care to close the source as well.
      * @throws IllegalArgumentException if the end page is smaller than the start page.
      */
     public List<PDDocument> split(PDDocument document) throws IOException
@@ -149,12 +153,12 @@ public class Splitter
         pageToDocNumMap = new HashMap<>();
         annotDictMaps = new ArrayList<>();
         destToFixMap = new HashMap<>();
-        srcParentTreeAsMap = getSrcParentTreeAsMap();
-        srcIDTreeAsMap = getSrcIDTreeAsMap();
         boolean success = false;
 
         try
         {
+            srcParentTreeAsMap = getSrcParentTreeAsMap();
+            srcIDTreeAsMap = getSrcIDTreeAsMap();
             for (PDPage page : sourceDocument.getPages())
             {
                 if (currentPageNumber + 1 >= startPage && currentPageNumber + 1 <= endPage)
@@ -183,10 +187,21 @@ public class Splitter
         }
         finally
         {
-            // make sure to close even on uncaught exceptions
+            pageDictMaps = null;
+            pageDictMap = null;
+            pageToDocNumMap = null;
+            structDictMap = null;
+            annotDictMaps = null;
+            annotDictMap = null;
+            destToFixMap = null;
+            srcParentTreeAsMap = null;
+            srcIDTreeAsMap = null;
+            currentDestinationDocument = null;
             if (!success)
             {
+                // make sure to close even on uncaught exceptions
                 destinationDocuments.forEach(IOUtils::closeQuietly);
+                destinationDocuments.clear();
             }
         }
         return destinationDocuments;
@@ -980,7 +995,7 @@ public class Splitter
 
     /**
      * Clones all annotations, because they may be changed and because the structure tree is cloned,
-     * and prepares the link destinations so that they don’t pull pages of other split documents
+     * and prepares the link destinations so that they don't pull pages of other split documents
      * into this one. The destinations are fixed or removed later in {@link #fixDestinations}.
      *
      * @param dstPage Page in the destination document.
