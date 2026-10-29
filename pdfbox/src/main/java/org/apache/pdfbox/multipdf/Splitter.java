@@ -151,6 +151,7 @@ public class Splitter
         destToFixMap = new HashMap<>();
         srcParentTreeAsMap = getSrcParentTreeAsMap();
         srcIDTreeAsMap = getSrcIDTreeAsMap();
+        boolean success = false;
 
         try
         {
@@ -178,14 +179,15 @@ public class Splitter
             }
             fixNameDestinations();
             fixNameDestinations2();
+            success = true;
         }
-        catch (IOException ex)
+        finally
         {
-            for (PDDocument doc : destinationDocuments)
+            // make sure to close even on uncaught exceptions
+            if (!success)
             {
-                IOUtils.closeQuietly(doc);
+                destinationDocuments.forEach(IOUtils::closeQuietly);
             }
-            throw ex;
         }
         return destinationDocuments;
     }
@@ -377,7 +379,7 @@ public class Splitter
         PDStructureTreeRoot dstStructureTreeRoot = new PDStructureTreeRoot();
         PDPageTree dstPageTree = destinationDocument.getPages();
 
-        // clone /K, also fills dictMap
+        // clone /K, also fills structDictMap
         COSBase k1 = srcStructureTreeRoot.getK();
         COSBase k2 = new KCloner().createClone(k1, dstStructureTreeRoot.getCOSObject(), null);
         dstStructureTreeRoot.setK(k2);
@@ -970,7 +972,6 @@ public class Splitter
             imported.getCOSObject().removeItem(COSName.B);
             LOG.warn("/B entry (beads) removed by splitter");
         }
-        // remove page links to avoid copying not needed resources 
         processAnnotations(imported);
 
         pageDictMap.put(page.getCOSObject(), imported.getCOSObject());
@@ -978,8 +979,9 @@ public class Splitter
     }
 
     /**
-     * Clone all annotations because of changes possibly made, and because the structure tree is
-     * cloned.
+     * Clones all annotations, because they may be changed and because the structure tree is cloned,
+     * and prepares the link destinations so that they don’t pull pages of other split documents
+     * into this one. The destinations are fixed or removed later in {@link #fixDestinations}.
      *
      * @param dstPage Page in the destination document.
      * @throws IOException if there is an error creating an annotation or a destination object.
