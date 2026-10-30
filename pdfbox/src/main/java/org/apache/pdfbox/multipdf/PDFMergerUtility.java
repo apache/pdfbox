@@ -36,9 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
@@ -810,46 +808,33 @@ public class PDFMergerUtility
 
     private void mergePageLabels(PDDocument destination, PDDocumentCatalog srcCatalog, PDDocumentCatalog destCatalog, PDFCloneUtility cloner) throws IOException
     {
-        COSDictionary srcLabels = srcCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
-        if (srcLabels != null)
+        PDPageLabels srcPageLabels = srcCatalog.getPageLabels();
+        if (srcPageLabels == null)
         {
-            int destPageCount = destination.getNumberOfPages();
-            COSDictionary destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
-            if (destLabels == null)
-            {
-                // PDFBOX-6277: create a mandatory 0 entry
-                PDPageLabels pageLabels = new PDPageLabels(destination);
-                PDPageLabelRange pageLabelRange = new PDPageLabelRange();
-                pageLabelRange.setStyle(PDPageLabelRange.STYLE_DECIMAL);
-                pageLabels.setLabelItem(0, pageLabelRange);
-                destCatalog.setPageLabels(pageLabels);
-                destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
-            }
-            COSArray destNums = destLabels.getCOSArray(COSName.NUMS);
-            COSArray srcNums = srcLabels.getCOSArray(COSName.NUMS);
-            if (srcNums != null)
-            {
-                int startSize = destNums.size();
-                for (int i = 0; i < srcNums.size(); i += 2)
-                {
-                    COSBase base = srcNums.getObject(i);
-                    if (!(base instanceof COSNumber))
-                    {
-                        LOG.error("page labels ignored, index " + i + " should be a number, but is " + base);
-                        // remove what we added
-                        while (destNums.size() > startSize)
-                        {
-                            destNums.remove(startSize);
-                        }
-                        break;
-                    }
-                    COSNumber labelIndex = (COSNumber) base;
-                    long labelIndexValue = labelIndex.intValue();
-                    destNums.add(COSInteger.get(labelIndexValue + destPageCount));
-                    destNums.add(cloner.cloneForNewDocument(srcNums.getObject(i + 1)));
-                }
-            }
+            return;
         }
+        int destPageCount = destination.getNumberOfPages();
+        PDPageLabels dstPageLabels = destCatalog.getPageLabels();
+        if (dstPageLabels == null)
+        {
+            // PDFBOX-6277: create a mandatory 0 entry
+            dstPageLabels = new PDPageLabels(destination);
+        }
+        // the parsed source always contains a range at key 0 (seeded by the constructor),
+        // so the source pages never inherit the destination's last range
+
+        for (int index : srcPageLabels.getPageIndices())
+        {
+            PDPageLabelRange range = srcPageLabels.getPageLabelRange(index);
+            if (range == null)
+            {
+                LOG.warn("page label range at " + index + " ignored, null");
+                continue;
+            }
+            COSDictionary clone = (COSDictionary) cloner.cloneForNewDocument(range.getCOSObject());
+            dstPageLabels.setLabelItem(index + destPageCount, new PDPageLabelRange(clone));
+        }
+        destCatalog.setPageLabels(dstPageLabels);
     }
 
     private void mergeOpenAction(PDDocumentCatalog srcCatalog, PDDocumentCatalog dstCatalog,
