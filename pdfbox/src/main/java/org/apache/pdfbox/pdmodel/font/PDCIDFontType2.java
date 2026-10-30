@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.Type2CharString;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.ttf.CmapLookup;
@@ -49,6 +50,9 @@ public class PDCIDFontType2 extends PDCIDFont
     private final boolean isEmbedded;
     private final boolean isDamaged;
     private final CmapLookup cmap; // may be null
+    // PDFBOX-6293: substitute is CID-keyed with a different ROS: this font's CIDs are meaningless in it,
+    // resolve glyphs via Unicode instead (only when ordering is identity)
+    private final boolean isForeignCIDSubstitute;
     private Matrix fontMatrix;
     private BoundingBox fontBBox;
     private final Set<Integer> noMapping = new HashSet<Integer>();
@@ -136,6 +140,26 @@ public class PDCIDFontType2 extends PDCIDFont
         }
         cmap = ttf.getUnicodeCmapLookup(false);
         cid2gid = readCIDToGIDMap();
+        isForeignCIDSubstitute = !isEmbedded && ttf instanceof OpenTypeFont && isForeignCIDFont((OpenTypeFont) ttf);
+    }
+
+    private boolean isForeignCIDFont(OpenTypeFont substitute) throws IOException
+    {
+        if (substitute == null || !substitute.isPostScript() || !substitute.isSupportedOTF() ||
+            !(substitute.getCFF().getFont() instanceof CFFCIDFont))
+        {
+            return false;
+        }
+        CFFCIDFont cff = (CFFCIDFont) substitute.getCFF().getFont();
+        PDCIDSystemInfo ros = getCIDSystemInfo();
+        return "Identity".equals(cff.getOrdering()) && (ros == null ||
+            !nullSafeEquals(ros.getRegistry(), cff.getRegistry()) ||
+            !nullSafeEquals(ros.getOrdering(), cff.getOrdering()));
+    }
+
+    private static boolean nullSafeEquals(Object a, Object b)
+    {
+        return a == null ? b == null : a.equals(b);
     }
 
     private TrueTypeFont findFontOrSubstitute() throws IOException
@@ -274,7 +298,7 @@ public class PDCIDFontType2 extends PDCIDFont
                     // see PDFBOX-2599
                     return codeToCID(code);
                 }
-                else if (ttf instanceof OpenTypeFont && ((OpenTypeFont) ttf).isPostScript())
+                else if (ttf instanceof OpenTypeFont && ((OpenTypeFont) ttf).isPostScript() && !isForeignCIDSubstitute)
                 {
                     // "Identity" is the default for CFF-based OpenTypeFonts
                     // (copied from segment below where font is embedded)
