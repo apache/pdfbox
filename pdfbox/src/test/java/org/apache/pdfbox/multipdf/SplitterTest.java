@@ -53,7 +53,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -67,15 +66,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 class SplitterTest
 {
     private static final String SRCDIR = "src/test/resources/input/merge/";
-    private static final String TARGETTESTDIR = "target/test-output/merge/";
     private static final File TARGETPDFDIR = new File("target/pdfs");
-    private static final int DPI = 96;
-
-    @BeforeAll
-    static void setUp()
-    {
-        new File(TARGETTESTDIR).mkdirs();
-    }
 
     @Test
     void testIllegalSplitting()
