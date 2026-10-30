@@ -58,21 +58,7 @@ import org.junit.function.ThrowingRunnable;
 public class SplitterTest extends TestCase
 {
     final String SRCDIR = "src/test/resources/input/merge/";
-    final String TARGETTESTDIR = "target/test-output/merge/";
     private static final File TARGETPDFDIR = new File("target/pdfs");
-    final int DPI = 96;
-
-    @Override
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-
-        new File(TARGETTESTDIR).mkdirs();
-        if (!new File(TARGETTESTDIR).exists())
-        {
-            throw new IOException("could not create output directory");
-        }
-    }
 
     public void testIllegalSplitting() throws IOException
     {
