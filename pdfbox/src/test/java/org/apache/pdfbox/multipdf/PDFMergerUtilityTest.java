@@ -701,7 +701,7 @@ class PDFMergerUtilityTest
      *
      * @param document
      */
-    void checkWithNumberTree(PDDocument document) throws IOException
+    static void checkWithNumberTree(PDDocument document) throws IOException
     {
         PDDocumentCatalog documentCatalog = document.getDocumentCatalog();
         PDNumberTreeNode parentTree = documentCatalog.getStructureTreeRoot().getParentTree();
@@ -931,7 +931,7 @@ class PDFMergerUtilityTest
         }
     }
 
-    private void checkForPageOrphans(PDDocument doc) throws IOException
+    static void checkForPageOrphans(PDDocument doc) throws IOException
     {
         // check for orphan pages in the StructTreeRoot/K, StructTreeRoot/ParentTree and
         // StructTreeRoot/IDTree trees.
@@ -950,7 +950,7 @@ class PDFMergerUtilityTest
         checkParentTreeAgainstK(structureTreeRoot);
     }
 
-    private void checkParentTreeAgainstK(PDStructureTreeRoot structureTreeRoot) throws IOException
+    static private void checkParentTreeAgainstK(PDStructureTreeRoot structureTreeRoot) throws IOException
     {
         // check that elements in the /ParentTree are in the /K tree
         ElementCounter elementCounter = new ElementCounter();
@@ -977,7 +977,7 @@ class PDFMergerUtilityTest
         }
     }
 
-    private void checkForIDTreeOrphans(PDPageTree pageTree, Map<String, PDStructureElement> idTreeMap)
+    static private void checkForIDTreeOrphans(PDPageTree pageTree, Map<String, PDStructureElement> idTreeMap)
             throws IOException
     {
         for (PDStructureElement element : idTreeMap.values())
@@ -1002,7 +1002,7 @@ class PDFMergerUtilityTest
         }
     }
 
-    private class ElementCounter
+    static private class ElementCounter
     {
         int cnt = 0;
         final Set<COSBase> set = new HashSet<>();
@@ -1064,7 +1064,7 @@ class PDFMergerUtilityTest
     // See PDF specification Table 325 – Entries in an object reference dictionary
     // example of file with /Kids: 000153.pdf 000208.pdf 000314.pdf 000359.pdf 000671.pdf
     // from digitalcorpora site
-    private void checkElement(PDPageTree pageTree, COSBase base, COSDictionary parentDict,
+    static private void checkElement(PDPageTree pageTree, COSBase base, COSDictionary parentDict,
                                Map<String, PDStructureElement> idTreeMap) throws IOException
     {
         if (base instanceof COSArray)
@@ -1262,7 +1262,7 @@ class PDFMergerUtilityTest
         }
     }
 
-    private void checkForPage(PDPageTree pageTree, PDStructureElement structureElement)
+    static private void checkForPage(PDPageTree pageTree, PDStructureElement structureElement)
     {
         PDPage page = structureElement.getPage();
         if (page != null)
