@@ -21,10 +21,12 @@ import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.Type2CharString;
 import org.apache.fontbox.cmap.CMap;
@@ -55,6 +57,9 @@ public class PDCIDFontType2 extends PDCIDFont
     private final OpenTypeFont otf;
     private final int[] cid2gid;
     private final CmapLookup cmap; // may be null
+    // PDFBOX-6293: substitute is CID-keyed with a different ROS: this font's CIDs are meaningless in it,
+    // resolve glyphs via Unicode instead (only when ordering is identity)
+    private final boolean isForeignCIDSubstitute;
     private Matrix fontMatrix;
     private BoundingBox fontBBox;
     private final Set<Integer> noMapping = new HashSet<>();
@@ -153,6 +158,21 @@ public class PDCIDFontType2 extends PDCIDFont
         }
         cmap = ttf.getUnicodeCmapLookup(false);
         cid2gid = readCIDToGIDMap();
+        isForeignCIDSubstitute = !isEmbedded && isForeignCIDFont(otf);
+    }
+
+    private boolean isForeignCIDFont(OpenTypeFont substitute) throws IOException
+    {
+        if (substitute == null || !substitute.isPostScript() ||
+            !(substitute.getCFF().getFont() instanceof CFFCIDFont))
+        {
+            return false;
+        }
+        CFFCIDFont cff = (CFFCIDFont) substitute.getCFF().getFont();
+        PDCIDSystemInfo ros = getCIDSystemInfo();
+        return "Identity".equals(cff.getOrdering()) && (ros == null ||
+            !Objects.equals(ros.getRegistry(), cff.getRegistry()) ||
+            !Objects.equals(ros.getOrdering(), cff.getOrdering()));
     }
 
     private TrueTypeFont findFontOrSubstitute() throws IOException
@@ -291,7 +311,7 @@ public class PDCIDFontType2 extends PDCIDFont
                     // see PDFBOX-2599
                     return codeToCID(code, parent);
                 }
-                else if (otf != null && otf.isPostScript())
+                else if (otf != null && otf.isPostScript() && !isForeignCIDSubstitute)
                 {
                     // "Identity" is the default for CFF-based OpenTypeFonts
                     // (copied from segment below where font is embedded)
