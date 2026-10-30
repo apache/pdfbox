@@ -925,7 +925,7 @@ public class PDFMergerUtilityTest extends TestCase
         checkParentTreeAgainstK(structureTreeRoot);
     }
 
-    static private void checkParentTreeAgainstK(PDStructureTreeRoot structureTreeRoot) throws IOException
+    private static void checkParentTreeAgainstK(PDStructureTreeRoot structureTreeRoot) throws IOException
     {
         // check that elements in the /ParentTree are in the /K tree
         ElementCounter elementCounter = new ElementCounter();
@@ -952,7 +952,7 @@ public class PDFMergerUtilityTest extends TestCase
         }
     }
 
-    static private void checkForIDTreeOrphans(PDPageTree pageTree, Map<String, PDStructureElement> idTreeMap)
+    private static void checkForIDTreeOrphans(PDPageTree pageTree, Map<String, PDStructureElement> idTreeMap)
             throws IOException
     {
         for (PDStructureElement element : idTreeMap.values())
@@ -976,7 +976,7 @@ public class PDFMergerUtilityTest extends TestCase
         doc.close();
     }
 
-    static private class ElementCounter
+    private static class ElementCounter
     {
         int cnt = 0;
         Set<COSBase> set = new HashSet<COSBase>();
@@ -1038,7 +1038,7 @@ public class PDFMergerUtilityTest extends TestCase
     // See PDF specification Table 325 – Entries in an object reference dictionary
     // example of file with /Kids: 000153.pdf 000208.pdf 000314.pdf 000359.pdf 000671.pdf
     // from digitalcorpora site
-    static private void checkElement(PDPageTree pageTree, COSBase base, COSDictionary parentDict,
+    private static void checkElement(PDPageTree pageTree, COSBase base, COSDictionary parentDict,
                                Map<String, PDStructureElement> idTreeMap) throws IOException
     {
         if (base instanceof COSArray)
@@ -1228,7 +1228,7 @@ public class PDFMergerUtilityTest extends TestCase
         }
     }
 
-    static private void checkForPage(PDPageTree pageTree, PDStructureElement structureElement)
+    private static void checkForPage(PDPageTree pageTree, PDStructureElement structureElement)
     {
         PDPage page = structureElement.getPage();
         if (page != null)
