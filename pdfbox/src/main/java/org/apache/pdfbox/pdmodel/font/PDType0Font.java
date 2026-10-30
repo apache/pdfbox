@@ -484,6 +484,15 @@ public class PDType0Font extends PDFont implements PDVectorFont
     }
 
     @Override
+    protected boolean isEncodedViaSubstitute()
+    {
+        // PDFBOX-6292: Identity CMap without ToUnicode: encode() returns the substitute's GIDs
+        return !isEmbedded() && descendantFont instanceof PDCIDFontType2 &&
+                cMap != null && cMap.getName() != null && cMap.getName().startsWith("Identity-") &&
+                !getCOSObject().containsKey(COSName.TO_UNICODE);
+    }
+
+    @Override
     public boolean isEmbedded()
     {
         return descendantFont.isEmbedded();
