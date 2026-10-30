@@ -559,6 +559,17 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     }
 
     /**
+     * Whether {@link #encode(int)} derives codes from a substitute font program rather than from
+     * this font's encoding, so that the codes need not exist in the PDF.
+     *
+     * @return true if encoded codes depend on the installed substitute
+     */
+    protected boolean isEncodedViaSubstitute()
+    {
+        return false;
+    }
+
+    /**
      * Determines the width of the space character. This is very important for text extraction.
      *
      * @return the width of the space character
@@ -579,16 +590,19 @@ public abstract class PDFont implements COSObjectable, PDFontLike
                 }
                 else
                 {
-                    try
+                    if (!isEncodedViaSubstitute())
                     {
-                        // PDFBOX-5920: try with encoding, which gets the correct code
-                        fontWidthOfSpace = getStringWidth(" ");
-                    }
-                    catch (IllegalArgumentException | UnsupportedOperationException ex)
-                    {
-                        // Happens if space is not available in the font
-                        // or if encoding isn't implemented
-                        LOG.debug(ex.getMessage(), ex);
+                        try
+                        {
+                            // PDFBOX-5920: try with encoding, which gets the correct code
+                            fontWidthOfSpace = getStringWidth(" ");
+                        }
+                        catch (IllegalArgumentException | UnsupportedOperationException ex)
+                        {
+                            // Happens if space is not available in the font
+                            // or if encoding isn't implemented
+                            LOG.debug(ex.getMessage(), ex);
+                        }
                     }
                     if (fontWidthOfSpace <= 0)
                     {
