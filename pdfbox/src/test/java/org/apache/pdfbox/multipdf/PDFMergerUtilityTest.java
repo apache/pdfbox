@@ -1783,4 +1783,141 @@ public class PDFMergerUtilityTest extends TestCase
             assertSame(splitDocument.getPage(0).getCOSObject(), importedPage.getCOSObject());
         }
     }
+
+    // Start Claude Sonnet 5.5 generated tests
+
+    /**
+     * Links must be fixed per split document: a link to a page in the same split document points to
+     * the imported page, a link to a page of another split document has no page.
+     */
+    public void testSplitFixesLinkDestinationsPerDocument() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        PDPage[] pages = new PDPage[4];
+        for (int i = 0; i < pages.length; ++i)
+        {
+            pages[i] = new PDPage();
+            document.addPage(pages[i]);
+        }
+        addLink(pages[0], pages[1]); // same split document
+        addLink(pages[0], pages[2]); // other split document
+        addLink(pages[2], pages[3]); // same split document
+
+        Splitter splitter = new Splitter();
+        splitter.setSplitAtPage(2);
+        List<PDDocument> split = splitter.split(document);
+        try
+        {
+            List<PDAnnotation> annotations0 = split.get(0).getPage(0).getAnnotations();
+            assertEquals(2, annotations0.size());
+            PDPageDestination inside0
+                    = (PDPageDestination) ((PDAnnotationLink) annotations0.get(0)).getDestination();
+            PDPageDestination outside0
+                    = (PDPageDestination) ((PDAnnotationLink) annotations0.get(1)).getDestination();
+            assertEquals(1, split.get(0).getPages().indexOf(inside0.getPage()));
+            assertNull(outside0.getPage());
+
+            List<PDAnnotation> annotations1 = split.get(1).getPage(0).getAnnotations();
+            assertEquals(1, annotations1.size());
+            PDPageDestination inside1
+                    = (PDPageDestination) ((PDAnnotationLink) annotations1.get(0)).getDestination();
+            assertEquals(1, split.get(1).getPages().indexOf(inside1.getPage()));
+        }
+        finally
+        {
+            for (PDDocument dstDoc : split)
+            {
+                dstDoc.close();
+            }
+        }
+        document.close();
+    }
+
+    private static void addLink(PDPage from, PDPage to) throws IOException
+    {
+        PDPageFitDestination destination = new PDPageFitDestination();
+        destination.setPage(to);
+        PDAnnotationLink link = new PDAnnotationLink();
+        link.setDestination(destination);
+        link.setRectangle(new PDRectangle(10, 600, 100, 100));
+        List<PDAnnotation> annotations = new ArrayList<PDAnnotation>(from.getAnnotations());
+        annotations.add(link);
+        from.setAnnotations(annotations);
+    }
+
+    public void testSplitStartPageBeyondLastPage() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        document.addPage(new PDPage());
+        Splitter splitter = new Splitter();
+        splitter.setStartPage(5);
+        assertTrue(splitter.split(document).isEmpty());
+        document.close();
+    }
+
+    /**
+     * All documents created so far must be closed when splitting fails, and the original exception
+     * must reach the caller.
+     */
+    public void testSplitClosesCreatedDocumentsOnFailure() throws IOException
+    {
+        final List<PDDocument> created = new ArrayList<PDDocument>();
+        Splitter splitter = new Splitter()
+        {
+            @Override
+            protected PDDocument createNewDocument() throws IOException
+            {
+                if (created.size() == 2)
+                {
+                    throw new IOException("simulated failure");
+                }
+                PDDocument newDocument = super.createNewDocument();
+                created.add(newDocument);
+                return newDocument;
+            }
+        };
+        PDDocument source = new PDDocument();
+        for (int i = 0; i < 3; ++i)
+        {
+            source.addPage(new PDPage());
+        }
+        try
+        {
+            splitter.split(source);
+            fail("simulated failure expected");
+        }
+        catch (IOException ex)
+        {
+            assertEquals("simulated failure", ex.getMessage());
+        }
+        source.close();
+        assertEquals(2, created.size());
+        for (PDDocument newDocument : created)
+        {
+            assertTrue(newDocument.getDocument().isClosed());
+        }
+    }
+
+    public void testSplitterCanBeReused() throws IOException
+    {
+        Splitter splitter = new Splitter();
+        for (int pageCount : new int[] { 3, 2 })
+        {
+            PDDocument source = new PDDocument();
+            for (int i = 0; i < pageCount; ++i)
+            {
+                source.addPage(new PDPage());
+            }
+            List<PDDocument> split = splitter.split(source);
+            assertEquals(pageCount, split.size());
+            for (PDDocument dstDoc : split)
+            {
+                assertEquals(1, dstDoc.getNumberOfPages());
+                dstDoc.close();
+            }
+            source.close();
+        }
+    }
+    
+    // End Claude Sonnet 5.5 generated tests
 }
