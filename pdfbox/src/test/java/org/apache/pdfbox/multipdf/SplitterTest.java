@@ -19,57 +19,34 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import junit.framework.TestCase;
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.fail;
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSObject;
 
 import org.apache.pdfbox.pdmodel.PDDestinationNameTreeNode;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDestinationDictionary;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
-import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
-import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkedContentReference;
-import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDObjectReference;
-import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDParentTreeValue;
-import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
-import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
-import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
-import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPopup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationText;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitDestination;
-import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDField;
-import org.apache.pdfbox.text.PDFMarkedContentExtractor;
-import org.junit.Assert;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 import org.junit.function.ThrowingRunnable;
 
@@ -94,410 +71,6 @@ public class SplitterTest extends TestCase
         if (!new File(TARGETTESTDIR).exists())
         {
             throw new IOException("could not create output directory");
-        }
-    }
-
-    /**
-     * PDFBOX-4408: Check that /StructParents values from pages and /StructParent values from
-     * annotations are found in the /ParentTree.
-     * <p>
-     * Expanded in 2025 to check that all MCIDs of a page content stream have an entry in the
-     * ParentTree.
-     *
-     * @param document
-     */
-    void checkWithNumberTree(PDDocument document) throws IOException
-    {
-        PDDocumentCatalog documentCatalog = document.getDocumentCatalog();
-        PDNumberTreeNode parentTree = documentCatalog.getStructureTreeRoot().getParentTree();
-        assertNotEquals(-1, documentCatalog.getStructureTreeRoot().getParentTreeNextKey());
-        Map<Integer, COSObjectable> numberTreeAsMap = parentTree.getTreeAsMap();
-        Set<Integer> keySet = numberTreeAsMap.keySet();
-        PDAcroForm acroForm = documentCatalog.getAcroForm();
-        if (acroForm != null)
-        {
-            for (PDField field : acroForm.getFieldTree())
-            {
-                for (PDAnnotationWidget widget : field.getWidgets())
-                {
-                    if (widget.getStructParent() >= 0)
-                    {
-                        assertTrue("field '" + field.getFullyQualifiedName() + "' /StructParent " +
-                                   widget.getStructParent() + " missing in /ParentTree",
-                                   keySet.contains(widget.getStructParent()));
-                    }
-                }
-            }
-        }
-        PDPageTree pageTree = document.getPages();
-        for (PDPage page : pageTree)
-        {
-            int pageNum = pageTree.indexOf(page) + 1;
-            if (page.getStructParents() >= 0)
-            {
-                assertTrue("/StructParents " + page.getStructParents() + " from page " + pageNum + " not found in /ParentTree",
-                        keySet.contains(page.getStructParents()));
-                PDParentTreeValue obj = (PDParentTreeValue) numberTreeAsMap.get(page.getStructParents());
-                assertTrue("Expected array in page " + pageNum + ", got " + obj.getClass(),
-                        obj.getCOSObject() instanceof COSArray);
-                COSArray array = (COSArray) obj.getCOSObject();
-
-                PDFMarkedContentExtractor markedContentExtractor = new PDFMarkedContentExtractor();
-                markedContentExtractor.processPage(page);
-                List<PDMarkedContent> markedContents = markedContentExtractor.getMarkedContents();
-                TreeSet<Integer> set = new TreeSet<Integer>();
-                for (PDMarkedContent pdMarkedContent : markedContents)
-                {
-                    COSDictionary pdmcProperties = pdMarkedContent.getProperties();
-                    if (pdmcProperties == null)
-                    {
-                        continue;
-                    }
-                    int mcid = pdMarkedContent.getMCID();
-                    if (mcid >= 0)
-                    {
-                        // "For a page object (...), the value shall be an array of references
-                        // to the parent elements of those marked-content sequences."
-                        // this means that the /Pg entry doesn't have to match the page
-                        COSDictionary dict = (COSDictionary) array.getObject(mcid);
-                        assertNotNull(dict);
-                        set.add(mcid);
-                        PDStructureElement structureElemen = (PDStructureElement) PDStructureNode.create(dict);
-                        List<Object> kids = structureElemen.getKids();
-                        boolean found = false;
-                        for (Object kid : kids)
-                        {
-                            if (kid instanceof Integer && ((Integer) kid) == mcid)
-                            {
-                                found = true;
-                                break;
-                            }
-                            if (kid instanceof PDMarkedContentReference)
-                            {
-                                PDMarkedContentReference mcr = (PDMarkedContentReference) kid;
-                                if (mcid == mcr.getMCID())
-                                {
-                                    found = true;
-                                    if (mcr.getPage() != null)
-                                    {
-                                        assertEquals(page, mcr.getPage());
-                                    }
-                                    else
-                                    {
-                                        assertEquals(page, structureElemen.getPage());
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                        assertTrue("page: " + pageNum + ", mcid: " + mcid +
-                                " not found in /ParentTree entry " + array.get(mcid) +
-                                " for number " + page.getStructParents(), found);
-                    }
-                }
-                // actual count may be larger if last element is null, e.g. PDFBOX-4408
-                // set can be empty, see last page of pdf_32000_2008.pdf
-                assertTrue(set.isEmpty() || set.last() <= array.size() - 1);
-            }
-            for (PDAnnotation ann : page.getAnnotations())
-            {
-                int structParent = ann.getStructParent();
-                if (structParent >= 0)
-                {
-                    assertTrue("/StructParent " + structParent + " missing in /ParentTree", keySet.contains(structParent));
-
-                    // but is it the SAME? Example of a fail:
-                    // https://github.com/veraPDF/veraPDF-library/issues/1630
-                    PDParentTreeValue obj = (PDParentTreeValue) numberTreeAsMap.get(structParent);
-                    PDStructureElement structureElement = new PDStructureElement((COSDictionary) obj.getCOSObject());
-                    // search kids for OBJR entry
-                    boolean found = false;
-                    for (Object kid : structureElement.getKids())
-                    {
-                        if (kid instanceof PDObjectReference)
-                        {
-                            PDObjectReference objRef = (PDObjectReference) kid;
-                            assertEquals(String.format("/StructureTree entry %d for page %d doesn't have the expected annotation", structParent, pageNum),
-                                    ann, objRef.getReferencedObject());
-                            if (objRef.getPage() != null)
-                            {
-                                assertEquals(String.format("/StructureTree entry %d for page %d doesn't have the expected page", structParent, pageNum),
-                                        page, objRef.getPage());
-                            }
-                            found = true; // don't break, there might be another (wrong) OBJR entry
-                        }
-                    }
-                    assertTrue(String.format("/StructureTree entry %d for page %d doesn't have expected page and annotation", structParent, pageNum),
-                            found);
-                }
-            }
-        }
-
-        // might also test image and form dictionaries...
-    }
-
-    private void checkForPageOrphans(PDDocument doc) throws IOException
-    {
-        // check for orphan pages in the StructTreeRoot/K, StructTreeRoot/ParentTree and
-        // StructTreeRoot/IDTree trees.
-        PDPageTree pageTree = doc.getPages();
-        PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
-        PDNameTreeNode<PDStructureElement> idTree = structureTreeRoot.getIDTree();
-        Map<String, PDStructureElement> idTreeMap = Collections.emptyMap();
-        if (idTree != null)
-        {
-            idTreeMap = idTree.getTreeAsMap();
-        }
-        checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject(), structureTreeRoot.getCOSObject(), idTreeMap);
-        assertNotNull(structureTreeRoot.getK());
-        checkElement(pageTree, structureTreeRoot.getK(), structureTreeRoot.getCOSObject(), idTreeMap);
-        checkForIDTreeOrphans(pageTree, idTreeMap);
-        checkParentTreeAgainstK(structureTreeRoot);
-    }
-
-    private void checkParentTreeAgainstK(PDStructureTreeRoot structureTreeRoot) throws IOException
-    {
-        // check that elements in the /ParentTree are in the /K tree
-        ElementCounter elementCounter = new ElementCounter();
-        elementCounter.walk(structureTreeRoot.getK());
-        Map<Integer, COSObjectable> numberTreeAsMap = structureTreeRoot.getParentTree().getTreeAsMap();
-        for (Map.Entry<Integer, COSObjectable> entry : numberTreeAsMap.entrySet())
-        {
-            PDParentTreeValue val = (PDParentTreeValue) entry.getValue(); // array or dictionary
-            COSBase base = val.getCOSObject();
-            if (base instanceof COSArray)
-            {
-                COSArray array = (COSArray) base;
-                for (int i = 0; i < array.size(); ++i)
-                {
-                    COSBase arrayElement = array.getObject(i);
-                    if (arrayElement instanceof COSDictionary)
-                    {
-                        assertTrue("Element " + entry.getKey() + ":" + i + " from /ParentTree missing in /K ",
-                                elementCounter.set.contains(arrayElement));
-                    }
-                }
-            }
-            // can't check this COSDictionary; ElementsCounter only counts those with a /Pg entry
-        }
-    }
-
-    private void checkForIDTreeOrphans(PDPageTree pageTree, Map<String, PDStructureElement> idTreeMap)
-            throws IOException
-    {
-        for (PDStructureElement element : idTreeMap.values())
-        {
-            if (element.getPage() != null)
-            {
-                checkForPage(pageTree, element);
-            }
-            if (!element.getKids().isEmpty())
-            {
-                checkElement(pageTree, element.getCOSObject().getDictionaryObject(COSName.K), element.getCOSObject(), idTreeMap);
-            }
-        }
-    }
-
-    private void createSimpleFile(File file) throws IOException
-    {
-        PDDocument doc = new PDDocument();
-        doc.addPage(new PDPage());
-        doc.save(file);
-        doc.close();
-    }
-
-    private class ElementCounter
-    {
-        int cnt = 0;
-        Set<COSBase> set = new HashSet<COSBase>();
-
-        void walk(COSBase base)
-        {
-            if (base instanceof COSArray)
-            {
-                for (COSBase base2 : (COSArray) base)
-                {
-                    if (base2 instanceof COSObject)
-                    {
-                        base2 = ((COSObject) base2).getObject();
-                    }
-                    walk(base2);
-                }
-            }
-            else if (base instanceof COSDictionary)
-            {
-                COSDictionary kdict = (COSDictionary) base;
-                if (kdict.containsKey(COSName.PG))
-                {
-                    ++cnt;
-                    set.add(kdict);
-                }
-                else if (kdict.containsKey(COSName.K))
-                {
-                    // at least 1 kid with dict with /Pg, /MCID and type /MCR
-                    // happens with confidential file from PDFBOX-6009
-                    COSArray kidArray = kdict.getCOSArray(COSName.K);
-                    if (kidArray != null)
-                    {
-                        for (int i = 0; i < kidArray.size(); ++i)
-                        {
-                            COSBase base2 = kidArray.getObject(i);
-                            if (base2 instanceof COSDictionary &&
-                                    ((COSDictionary) base2).containsKey(COSName.PG) &&
-                                    ((COSDictionary) base2).containsKey(COSName.MCID))
-                            {
-                                ++cnt;
-                                set.add(kdict);
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (kdict.containsKey(COSName.K))
-                {
-                    walk(kdict.getDictionaryObject(COSName.K));
-                }
-            }
-        }
-    }
-
-    // Each element can be an array, a dictionary or a number.
-    // See PDF specification Table 37 - Entries in a number tree node dictionary
-    // See PDF specification Table 322 - Entries in the structure tree root
-    // See PDF specification Table 323 - Entries in a structure element dictionary
-    // See PDF specification Table 325 – Entries in an object reference dictionary
-    // example of file with /Kids: 000153.pdf 000208.pdf 000314.pdf 000359.pdf 000671.pdf
-    // from digitalcorpora site
-    private void checkElement(PDPageTree pageTree, COSBase base, COSDictionary parentDict,
-                               Map<String, PDStructureElement> idTreeMap) throws IOException
-    {
-        if (base instanceof COSArray)
-        {
-            for (COSBase base2 : (COSArray) base)
-            {
-                if (base2 instanceof COSObject)
-                {
-                    base2 = ((COSObject) base2).getObject();
-                }
-                checkElement(pageTree, base2, parentDict, idTreeMap);
-            }
-        }
-        else if (base instanceof COSDictionary)
-        {
-            COSDictionary kdict = (COSDictionary) base;
-            if (kdict.containsKey(COSName.ID))
-            {
-                // PDFBOX-6273: check that /ID is in the /IDTree
-                PDStructureElement structureElement = new PDStructureElement(kdict);
-                String elementIdentifier = structureElement.getElementIdentifier();
-                if (elementIdentifier != null)
-                {
-                    assertTrue(idTreeMap.containsKey(elementIdentifier));
-                }
-            }
-            if (kdict.containsKey(COSName.PG))
-            {
-                PDStructureElement structureElement = new PDStructureElement(kdict);
-                checkForPage(pageTree, structureElement);
-            }
-            if (kdict.containsKey(COSName.K))
-            {
-                checkElement(pageTree, kdict.getDictionaryObject(COSName.K), kdict, idTreeMap);
-                
-                // Check that the /P entry points to the correct object
-                PDStructureNode node = PDStructureNode.create(kdict);
-                for (Object obj : node.getKids())
-                {
-                    if (obj instanceof PDStructureElement)
-                    {
-                        PDStructureNode parent = ((PDStructureElement) obj).getParent();
-                        assertTrue(parent.getCOSObject() == kdict);
-                    }
-                }
-                return;
-            }
-
-            // if we're in a number tree, check /Nums and /Kids
-            if (kdict.containsKey(COSName.KIDS))
-            {
-                checkElement(pageTree, kdict.getDictionaryObject(COSName.KIDS), kdict, idTreeMap);
-            }
-            else if (kdict.containsKey(COSName.NUMS))
-            {
-                checkElement(pageTree, kdict.getDictionaryObject(COSName.NUMS), kdict, idTreeMap);
-            }
-
-            if (COSName.OBJR.equals(kdict.getDictionaryObject(COSName.TYPE)) ||
-                COSName.MCR.equals(kdict.getDictionaryObject(COSName.TYPE)))
-            {
-                assertFalse(kdict.getCOSDictionary(COSName.PG) == null && parentDict.getCOSDictionary(COSName.PG) == null);
-            }
-
-            // if we're an object reference dictionary (/OBJR), check the obj
-            if (kdict.containsKey(COSName.OBJ))
-            {
-                COSDictionary obj = (COSDictionary) kdict.getDictionaryObject(COSName.OBJ);
-                COSBase type = obj.getDictionaryObject(COSName.TYPE);
-                COSBase subtype = obj.getDictionaryObject(COSName.SUBTYPE);
-                if (COSName.ANNOT.equals(type) || COSName.LINK.equals(subtype))
-                {
-                    PDAnnotation annotation = PDAnnotation.createAnnotation(obj);
-                    PDPage page = annotation.getPage();
-                    if (annotation instanceof PDAnnotationLink)
-                    {
-                        // PDFBOX-5928: check whether the destination of a link annotation is an orphan
-                        PDAnnotationLink link = (PDAnnotationLink) annotation;
-                        PDDestination destination = link.getDestination();
-                        if (destination == null)
-                        {
-                            PDAction action = link.getAction();
-                            if (action instanceof PDActionGoTo)
-                            {
-                                PDActionGoTo goToAction = (PDActionGoTo) action;
-                                destination = goToAction.getDestination();
-                            }
-                        }
-                        if (destination instanceof PDPageDestination)
-                        {
-                            PDPageDestination pageDestination = (PDPageDestination) destination;
-                            PDPage destPage = pageDestination.getPage();
-                            if (destPage != null)
-                            {
-                                Assert.assertNotEquals("Annotation destination page is not in the page tree: " + destPage, 
-                                        -1, pageTree.indexOf(destPage));
-                            }
-                        }
-                    }
-                    if (page != null && pageTree.indexOf(page) == -1)
-                    {
-                        COSBase item = kdict.getItem(COSName.OBJ);
-                        if (item instanceof COSObject)
-                        {
-                            Assert.assertNotEquals("Annotation page is not in the page tree: " + item, -1, pageTree.indexOf(page));
-                        }
-                        else
-                        {
-                            // don't display because of stack overflow
-                            Assert.assertNotEquals("Annotation page is not in the page tree", -1, pageTree.indexOf(page));
-                        }
-                    }
-                }
-                else
-                {
-                    //TODO needs to be investigated. Specification mentions
-                    // "such as an XObject or an annotation"
-                    fail("Other type: " + type + ", obj: " + obj);
-                }
-            }
-        }
-    }
-
-    private void checkForPage(PDPageTree pageTree, PDStructureElement structureElement)
-    {
-        PDPage page = structureElement.getPage();
-        if (page != null)
-        {
-            Assert.assertNotEquals("Page is not in the page tree", -1, pageTree.indexOf(page));
         }
     }
 
@@ -548,7 +121,6 @@ public class SplitterTest extends TestCase
         }
     }
 
-
     public void testSplitWithStructureTree() throws IOException
     {
         PDDocument doc = PDDocument.load(new File(SRCDIR, "PDFBOX-4417-001031.pdf"));
@@ -560,7 +132,7 @@ public class SplitterTest extends TestCase
         assertEquals(1, splitResult.size());
         PDDocument dstDoc = splitResult.get(0);
         assertEquals(2, dstDoc.getNumberOfPages());
-        checkForPageOrphans(dstDoc);
+        PDFMergerUtilityTest.checkForPageOrphans(dstDoc);
         // these tests just verify the status quo. Changes should be checked visually with
         // a PDF viewer that can display structural information.
         PDStructureTreeRoot structureTreeRoot = dstDoc.getDocumentCatalog().getStructureTreeRoot();
@@ -582,7 +154,7 @@ public class SplitterTest extends TestCase
         assertEquals(1, splitResult.size());
         PDDocument dstDoc = splitResult.get(0);
         assertEquals(2, dstDoc.getNumberOfPages());
-        checkForPageOrphans(dstDoc);
+        PDFMergerUtilityTest.checkForPageOrphans(dstDoc);
         // these tests just verify the status quo. Changes should be checked visually with
         // a PDF viewer that can display structural information.
         PDStructureTreeRoot structureTreeRoot = dstDoc.getDocumentCatalog().getStructureTreeRoot();
@@ -639,7 +211,7 @@ public class SplitterTest extends TestCase
         PDDocument dstDoc = splitResult.get(0);
 
         assertEquals(2, dstDoc.getNumberOfPages());
-        checkForPageOrphans(dstDoc);
+        PDFMergerUtilityTest.checkForPageOrphans(dstDoc);
         dstDoc.close();
         doc.close();
     }
@@ -660,7 +232,7 @@ public class SplitterTest extends TestCase
         for (PDDocument dstDoc : splitResult)
         {
             assertEquals(1, dstDoc.getNumberOfPages());
-            checkForPageOrphans(dstDoc);
+            PDFMergerUtilityTest.checkForPageOrphans(dstDoc);
             for (PDAnnotation ann : dstDoc.getPage(0).getAnnotations())
             {
                 PDAnnotationLink link = (PDAnnotationLink) ann;
@@ -704,7 +276,7 @@ public class SplitterTest extends TestCase
         List<PDDocument> splitResult = splitter.split(doc);
         assertEquals(1, splitResult.size());
         PDDocument dstDoc = splitResult.get(0);
-        checkForPageOrphans(dstDoc);
+        PDFMergerUtilityTest.checkForPageOrphans(dstDoc);
         assertEquals(1, dstDoc.getNumberOfPages());
         List<PDAnnotation> annotations = dstDoc.getPage(0).getAnnotations();
         assertEquals(5, annotations.size());
@@ -737,7 +309,7 @@ public class SplitterTest extends TestCase
         assertEquals(1, splitResult.size());
         List<PDAnnotation> annotations;
         PDDocument dstDoc = splitResult.get(0);
-        checkForPageOrphans(dstDoc);
+        PDFMergerUtilityTest.checkForPageOrphans(dstDoc);
         assertEquals(1, dstDoc.getNumberOfPages());
         annotations = dstDoc.getPage(0).getAnnotations();
         assertEquals(1, annotations.size());
@@ -768,7 +340,7 @@ public class SplitterTest extends TestCase
         assertEquals(1, splitResult.size());
         List<PDAnnotation> annotations;
         PDDocument dstDoc = splitResult.get(0);
-        checkForPageOrphans(dstDoc);
+        PDFMergerUtilityTest.checkForPageOrphans(dstDoc);
         assertEquals(6, dstDoc.getNumberOfPages());
         annotations = dstDoc.getPage(0).getAnnotations();
         assertEquals(5, annotations.size());
@@ -819,8 +391,8 @@ public class SplitterTest extends TestCase
         for (PDDocument dstDoc : splitResult)
         {
             assertEquals(1, dstDoc.getNumberOfPages());
-            checkWithNumberTree(dstDoc);
-            checkForPageOrphans(dstDoc);
+            PDFMergerUtilityTest.checkWithNumberTree(dstDoc);
+            PDFMergerUtilityTest.checkForPageOrphans(dstDoc);
         }
         for (PDDocument dstDoc : splitResult)
         {
