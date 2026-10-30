@@ -600,7 +600,7 @@ class SplitterTest
         }
     }
 
-    private static void addLink(PDPage from, PDPage to) throws IOException
+    private static void addLink(PDPage from, PDPage to)
     {
         PDPageFitDestination destination = new PDPageFitDestination();
         destination.setPage(to);
