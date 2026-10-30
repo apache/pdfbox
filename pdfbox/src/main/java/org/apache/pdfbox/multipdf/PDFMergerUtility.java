@@ -544,7 +544,7 @@ public class PDFMergerUtility
         mergeAcroForm(cloner, destCatalog, srcCatalog);
 
         COSArray destThreads = destCatalog.getCOSObject().getCOSArray(COSName.THREADS);
-        COSArray srcThreads = cloner.cloneForNewDocument(destCatalog.getCOSObject().getCOSArray(
+        COSArray srcThreads = cloner.cloneForNewDocument(srcCatalog.getCOSObject().getCOSArray(
                 COSName.THREADS));
         if (destThreads == null)
         {
