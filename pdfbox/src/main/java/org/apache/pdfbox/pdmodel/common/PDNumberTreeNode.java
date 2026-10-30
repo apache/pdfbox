@@ -233,7 +233,8 @@ public class PDNumberTreeNode implements COSObjectable
         }
         catch( Throwable t )
         {
-            throw new IOException("Error while trying to create value in number tree:" + t.getMessage(), t);
+            throw new IOException("Error while trying to create " + valueType.getSimpleName() +
+                    "-typed value in number tree: " + t.getMessage(), t);
         }
     }
 
