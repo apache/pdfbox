@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
@@ -45,7 +46,7 @@ import org.apache.pdfbox.cos.COSString;
  *     --output-file=NotoSansCJKsc-Regular-subset.otf
  * </pre>
  */
-final class IdentityCJKFixture implements AutoCloseable
+final class IdentityCJKFixture implements Closeable
 {
     private static final File FIXTURE = new File(
             "src/test/resources/org/apache/pdfbox/pdmodel/font/NotoSansCJKsc-Regular-subset.otf");
