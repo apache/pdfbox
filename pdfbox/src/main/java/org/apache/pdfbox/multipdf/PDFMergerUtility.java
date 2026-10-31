@@ -262,7 +262,7 @@ public class PDFMergerUtility
     }
 
     /**
-     * Set the destination metadata that is to be set in
+     * Get the destination metadata that is to be set in
      * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction) }.
      * The default is null, which means that it is ignored.
      *
