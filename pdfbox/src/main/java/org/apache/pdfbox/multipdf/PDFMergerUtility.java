@@ -641,7 +641,7 @@ public class PDFMergerUtility
             destCatalog.setPageMode(srcPageMode);
         }
 
-        mergePageLabels(destination, srcCatalog, destCatalog, cloner);
+        mergePageLabels(source, destination, srcCatalog, destCatalog, cloner);
 
         COSStream destMetadata = destCatalog.getCOSObject().getCOSStream(COSName.METADATA);
         COSStream srcMetadata = srcCatalog.getCOSObject().getCOSStream(COSName.METADATA);
@@ -812,23 +812,29 @@ public class PDFMergerUtility
         mergeViewerPreferences(destCatalog, srcCatalog, cloner);
     }
 
-    private void mergePageLabels(PDDocument destination, PDDocumentCatalog srcCatalog, PDDocumentCatalog destCatalog, PDFCloneUtility cloner) throws IOException
+    private void mergePageLabels(PDDocument srcDoc, PDDocument dstDoc,
+            PDDocumentCatalog srcCatalog, PDDocumentCatalog destCatalog,
+            PDFCloneUtility cloner) throws IOException
     {
         PDPageLabels srcPageLabels = srcCatalog.getPageLabels();
-        if (srcPageLabels == null)
+        PDPageLabels dstPageLabels = destCatalog.getPageLabels();
+        if (srcPageLabels == null && dstPageLabels == null)
         {
             return;
         }
-        int destPageCount = destination.getNumberOfPages();
-        PDPageLabels dstPageLabels = destCatalog.getPageLabels();
+        // Set default entries so that the documents don't influence each other, and
+        // that there is always a range at key 0 (seeded by the constructor).
+        if (srcPageLabels == null)
+        {
+            // PDFBOX-6300: create a mandatory 0 entry
+            srcPageLabels = new PDPageLabels(srcDoc);
+        }
         if (dstPageLabels == null)
         {
             // PDFBOX-6277: create a mandatory 0 entry
-            dstPageLabels = new PDPageLabels(destination);
+            dstPageLabels = new PDPageLabels(dstDoc);
         }
-        // the parsed source always contains a range at key 0 (seeded by the constructor),
-        // so the source pages never inherit the destination's last range
-
+        int destPageCount = dstDoc.getNumberOfPages();
         for (int index : srcPageLabels.getPageIndices())
         {
             PDPageLabelRange range = srcPageLabels.getPageLabelRange(index);
