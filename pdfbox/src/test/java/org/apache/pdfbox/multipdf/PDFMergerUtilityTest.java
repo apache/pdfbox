@@ -657,7 +657,7 @@ class PDFMergerUtilityTest
      * PDFBOX-6277: check that index 0 is present despite missing page labels in destination.
      */
     @Test
-    void testPageLabels() throws IOException
+    void testMergePageLabels() throws IOException
     {
         try (PDDocument doc1 = new PDDocument();
              PDDocument doc2 = new PDDocument())
@@ -690,6 +690,72 @@ class PDFMergerUtilityTest
 
             String[] labels = doc2.getDocumentCatalog().getPageLabels().getLabelsByPageIndices();
             assertEquals("[1, 2, 3, RO III, RO IV, 1]", Arrays.toString(labels));
+        }
+    }
+
+    /**
+     * Test that if the source doesn't have page labels but the destination has non decimal (here:
+     * roman), that the source file has default numbering instead of more roman.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testMergePageLabels2() throws IOException
+    {
+        try (PDDocument doc1 = new PDDocument();
+             PDDocument doc2 = new PDDocument())
+        {
+            doc1.addPage(new PDPage());
+            doc1.addPage(new PDPage());
+            doc1.addPage(new PDPage());
+            PDPageLabels pageLabels = new PDPageLabels(doc1);
+            PDPageLabelRange pageLabelRange1 = new PDPageLabelRange();
+            pageLabelRange1.setPrefix("RO ");
+            pageLabelRange1.setStart(3);
+            pageLabelRange1.setStyle(PDPageLabelRange.STYLE_ROMAN_UPPER);
+            pageLabels.setLabelItem(0, pageLabelRange1);
+            doc1.getDocumentCatalog().setPageLabels(pageLabels);
+
+            doc2.addPage(new PDPage());
+            doc2.addPage(new PDPage());
+            doc2.addPage(new PDPage());
+
+            PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+            pdfMergerUtility.appendDocument(doc1, doc2);
+
+            String[] labels = doc1.getDocumentCatalog().getPageLabels().getLabelsByPageIndices();
+            assertEquals("[RO III, RO IV, RO V, 1, 2, 3]", Arrays.toString(labels));
+        }
+    }
+
+    /**
+     * Test of page label merging with two minimal default ranges.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testMergePageLabels3() throws IOException
+    {
+        try (PDDocument doc1 = new PDDocument();
+             PDDocument doc2 = new PDDocument())
+        {
+            doc1.addPage(new PDPage());
+            doc1.addPage(new PDPage());
+            doc1.addPage(new PDPage());
+            PDPageLabels pageLabels1 = new PDPageLabels(doc1);
+            doc1.getDocumentCatalog().setPageLabels(pageLabels1);
+
+            doc2.addPage(new PDPage());
+            doc2.addPage(new PDPage());
+            doc2.addPage(new PDPage());
+            PDPageLabels pageLabels2 = new PDPageLabels(doc2);
+            doc2.getDocumentCatalog().setPageLabels(pageLabels2);
+
+            PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+            pdfMergerUtility.appendDocument(doc1, doc2);
+
+            String[] labels = doc1.getDocumentCatalog().getPageLabels().getLabelsByPageIndices();
+            assertEquals("[1, 2, 3, 1, 2, 3]", Arrays.toString(labels));
         }
     }
 
