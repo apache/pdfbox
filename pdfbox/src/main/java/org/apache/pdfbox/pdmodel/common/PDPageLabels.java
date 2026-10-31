@@ -47,7 +47,7 @@ public class PDPageLabels implements COSObjectable
     private PDDocument doc;
 
     /**
-     * Creates an empty page label dictionary for the given document.
+     * Creates an empty page label dictionary with a page 0 entry for the given document.
      * 
      * <p>
      * Note that the page label dictionary won't be automatically added to the
@@ -69,8 +69,8 @@ public class PDPageLabels implements COSObjectable
     }
 
     /**
-     * Creates an page label dictionary for a document using the information in
-     * the given COS dictionary.
+     * Creates an empty page label dictionary with a page 0 entry for the given document, then adds
+     * the information from the given COS dictionary.
      * 
      * <p>
      * Note that the page label dictionary won't be automatically added to the
@@ -112,11 +112,12 @@ public class PDPageLabels implements COSObjectable
             Map<Integer,COSObjectable> numbers = node.getNumbers();
             if (numbers != null)
             {
-                for (Entry<Integer, COSObjectable> i : numbers.entrySet())
+                for (Entry<Integer, COSObjectable> entry : numbers.entrySet())
                 {
-                    if (i.getKey() >= 0)
+                    COSObjectable value = entry.getValue();
+                    if (entry.getKey() >= 0 && value instanceof PDPageLabelRange)
                     {
-                        labels.put(i.getKey(), (PDPageLabelRange) i.getValue());
+                        labels.put(entry.getKey(), (PDPageLabelRange) entry.getValue());
                     }
                 }
             }
