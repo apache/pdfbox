@@ -463,7 +463,6 @@ public class PDFMergerUtility
     private void legacyMergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
     {
         // Make sure that:
-        // - first Exception is kept
         // - destination is closed
         // - all PDDocuments are closed
         // - all FileInputStreams are closed
