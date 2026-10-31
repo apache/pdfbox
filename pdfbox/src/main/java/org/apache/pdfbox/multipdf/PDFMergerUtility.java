@@ -254,7 +254,7 @@ public class PDFMergerUtility
     }
 
     /**
-     * Set the destination metadata that is to be set in {@link #mergeDocuments(org.apache.pdfbox.io.MemoryUsageSetting)
+     * Get the destination metadata that is to be set in {@link #mergeDocuments(org.apache.pdfbox.io.MemoryUsageSetting)
      * }. The default is null, which means that it is ignored.
      *
      * @return The destination metadata.
