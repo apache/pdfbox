@@ -562,6 +562,7 @@ public class PDFMergerUtility
                 cloner.cloneMerge(srcNames, destNames);
             }
         }
+        destNames = destCatalog.getNames();
         
         if (destNames != null && destNames.getCOSObject().containsKey(COSName.ID_TREE))
         {
