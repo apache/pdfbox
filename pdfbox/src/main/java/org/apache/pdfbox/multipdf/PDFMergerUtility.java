@@ -346,6 +346,10 @@ public class PDFMergerUtility
      */
     public void mergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
     {
+        if (destinationFileName == null && destinationStream == null)
+        {
+            throw new IllegalStateException("Neither destination filename nor stream has been set");
+        }
         if (documentMergeMode == DocumentMergeMode.PDFBOX_LEGACY_MODE)
         {
             legacyMergeDocuments(memUsageSetting);
