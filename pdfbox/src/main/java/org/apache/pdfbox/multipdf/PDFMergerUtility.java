@@ -351,6 +351,10 @@ public class PDFMergerUtility
         {
             throw new IllegalStateException("Neither destination filename nor stream has been set");
         }
+        if (sources.isEmpty())
+        {
+            return;
+        }
         if (documentMergeMode == DocumentMergeMode.PDFBOX_LEGACY_MODE)
         {
             legacyMergeDocuments(memUsageSetting);
@@ -435,69 +439,66 @@ public class PDFMergerUtility
      */
     private void legacyMergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
     {
+        // Make sure that:
+        // - first Exception is kept
+        // - destination is closed
+        // - all PDDocuments are closed
+        // - all FileInputStreams are closed
+        // - there's a way to see which errors occurred
         PDDocument destination = null;
-        if (!sources.isEmpty())
+        try
         {
-            // Make sure that:
-            // - first Exception is kept
-            // - destination is closed
-            // - all PDDocuments are closed
-            // - all FileInputStreams are closed
-            // - there's a way to see which errors occurred
-            try
-            {
-                MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ? 
-                        memUsageSetting.getPartitionedCopy(sources.size()+1) :
-                        MemoryUsageSetting.setupMainMemoryOnly();
-                destination = new PDDocument(partitionedMemSetting);
+            MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ? 
+                    memUsageSetting.getPartitionedCopy(sources.size()+1) :
+                    MemoryUsageSetting.setupMainMemoryOnly();
+            destination = new PDDocument(partitionedMemSetting);
 
-                for (Object sourceObject : sources)
+            for (Object sourceObject : sources)
+            {
+                PDDocument sourceDoc;
+                if (sourceObject instanceof File)
                 {
-                    PDDocument sourceDoc;
-                    if (sourceObject instanceof File)
-                    {
-                        sourceDoc = PDDocument.load((File) sourceObject, partitionedMemSetting);
-                    }
-                    else
-                    {
-                        sourceDoc = PDDocument.load((InputStream) sourceObject,
-                                partitionedMemSetting);
-                    }
-                    try
-                    {
-                        appendDocument(destination, sourceDoc);
-                    }
-                    finally
-                    {
-                        IOUtils.closeAndLogException(sourceDoc, LOG, "PDDocument", null);
-                    }
-                }
-                
-                // optionally set meta data
-                if (destinationDocumentInformation != null)
-                {
-                    destination.setDocumentInformation(destinationDocumentInformation);
-                }
-                if (destinationMetadata != null)
-                {
-                    destination.getDocumentCatalog().setMetadata(destinationMetadata);
-                }
-                
-                if (destinationStream == null)
-                {
-                    destination.save(destinationFileName);
+                    sourceDoc = PDDocument.load((File) sourceObject, partitionedMemSetting);
                 }
                 else
                 {
-                    destination.save(destinationStream);
+                    sourceDoc = PDDocument.load((InputStream) sourceObject,
+                            partitionedMemSetting);
+                }
+                try
+                {
+                    appendDocument(destination, sourceDoc);
+                }
+                finally
+                {
+                    IOUtils.closeAndLogException(sourceDoc, LOG, "PDDocument", null);
                 }
             }
-            finally
+
+            // optionally set meta data
+            if (destinationDocumentInformation != null)
             {
-                if (destination != null)
-                {
-                    IOUtils.closeAndLogException(destination, LOG, "PDDocument", null);
-                }
+                destination.setDocumentInformation(destinationDocumentInformation);
+            }
+            if (destinationMetadata != null)
+            {
+                destination.getDocumentCatalog().setMetadata(destinationMetadata);
+            }
+
+            if (destinationStream == null)
+            {
+                destination.save(destinationFileName);
+            }
+            else
+            {
+                destination.save(destinationStream);
+            }
+        }
+        finally
+        {
+            if (destination != null)
+            {
+                IOUtils.closeAndLogException(destination, LOG, "PDDocument", null);
             }
         }
     }
