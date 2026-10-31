@@ -115,16 +115,16 @@ public class PDFMergerUtility
      *      Not supported:
      *      <ul>
      *          <li>metadata
-     *          <li>mocument information
+     *          <li>document information
      *          <li>outlines
      *          <li>named destinations
      *          <li>acroForm
      *          <li>page labels
-     *          <li>structure tree
+     *          <li>structure tree (the merged document will not be tagged)
      *          <li>viewer preferences
      *          <li>language
      *      </ul>
-     * <li>{@link DocumentMergeMode#PDFBOX_LEGACY_MODE} tries to merge as much document elements as
+     * <li>{@link DocumentMergeMode#PDFBOX_LEGACY_MODE} tries to merge as many document elements as
      * possible. Contact us on the user mailing list if you miss any.
      * <br>This is the standard mode for PDFBox 2.0.
      * </ul>
@@ -462,11 +462,6 @@ public class PDFMergerUtility
      */
     private void legacyMergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
     {
-        // Make sure that:
-        // - destination is closed
-        // - all PDDocuments are closed
-        // - all FileInputStreams are closed
-        // - there's a way to see which errors occurred
         PDDocument destination = null;
         try
         {
