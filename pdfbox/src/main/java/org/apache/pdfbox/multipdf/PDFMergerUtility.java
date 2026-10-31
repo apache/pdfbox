@@ -362,6 +362,10 @@ public class PDFMergerUtility
         {
             throw new IllegalStateException("Neither destination filename nor stream has been set");
         }
+        if (sources.isEmpty())
+        {
+            return;
+        }
         if (documentMergeMode == DocumentMergeMode.PDFBOX_LEGACY_MODE)
         {
             legacyMergeDocuments(streamCacheCreateFunction, compressParameters);
@@ -444,56 +448,53 @@ public class PDFMergerUtility
     private void legacyMergeDocuments(StreamCacheCreateFunction streamCacheCreateFunction,
             CompressParameters compressParameters) throws IOException
     {
-        if (!sources.isEmpty())
+        // Make sure that:
+        // - first Exception is kept
+        // - all PDDocuments are closed
+        // - all FileInputStreams are closed
+        // - there's a way to see which errors occurred
+        StreamCacheCreateFunction strmCacheFunc = streamCacheCreateFunction != null ? streamCacheCreateFunction
+                : IOUtils.createMemoryOnlyStreamCache();
+        try (PDDocument destination = new PDDocument(strmCacheFunc))
         {
-            // Make sure that:
-            // - first Exception is kept
-            // - all PDDocuments are closed
-            // - all FileInputStreams are closed
-            // - there's a way to see which errors occurred
-            StreamCacheCreateFunction strmCacheFunc = streamCacheCreateFunction != null ? streamCacheCreateFunction
-                    : IOUtils.createMemoryOnlyStreamCache();
-            try (PDDocument destination = new PDDocument(strmCacheFunc))
+            for (Object sourceObject : sources)
             {
-                for (Object sourceObject : sources)
+                PDDocument sourceDoc;
+                if (sourceObject instanceof File)
                 {
-                    PDDocument sourceDoc;
-                    if (sourceObject instanceof File)
-                    {
-                        sourceDoc = Loader.loadPDF((File) sourceObject);
-                    }
-                    else
-                    {
-                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject);
-                    }
-                    try
-                    {
-                        appendDocument(destination, sourceDoc);
-                    }
-                    finally
-                    {
-                        IOUtils.closeAndLogException(sourceDoc, LOG, "PDDocument", null);
-                    }
-                }
-                
-                // optionally set meta data
-                if (destinationDocumentInformation != null)
-                {
-                    destination.setDocumentInformation(destinationDocumentInformation);
-                }
-                if (destinationMetadata != null)
-                {
-                    destination.getDocumentCatalog().setMetadata(destinationMetadata);
-                }
-                
-                if (destinationStream == null)
-                {
-                    destination.save(destinationFileName, compressParameters);
+                    sourceDoc = Loader.loadPDF((File) sourceObject);
                 }
                 else
                 {
-                    destination.save(destinationStream, compressParameters);
+                    sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject);
                 }
+                try
+                {
+                    appendDocument(destination, sourceDoc);
+                }
+                finally
+                {
+                    IOUtils.closeAndLogException(sourceDoc, LOG, "PDDocument", null);
+                }
+            }
+
+            // optionally set meta data
+            if (destinationDocumentInformation != null)
+            {
+                destination.setDocumentInformation(destinationDocumentInformation);
+            }
+            if (destinationMetadata != null)
+            {
+                destination.getDocumentCatalog().setMetadata(destinationMetadata);
+            }
+
+            if (destinationStream == null)
+            {
+                destination.save(destinationFileName, compressParameters);
+            }
+            else
+            {
+                destination.save(destinationStream, compressParameters);
             }
         }
     }
