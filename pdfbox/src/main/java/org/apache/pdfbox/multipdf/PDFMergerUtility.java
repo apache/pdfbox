@@ -80,7 +80,7 @@ import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferenc
 
 /**
  * This class will take a list of pdf documents and merge them, saving the
- * result in a new document.
+ * result in a new document. The class is not thread-safe.
  *
  * @author Ben Litchfield
  */
@@ -97,6 +97,7 @@ public class PDFMergerUtility
     private boolean ignoreAcroFormErrors = false;
     private PDDocumentInformation destinationDocumentInformation = null;
     private PDMetadata destinationMetadata = null;
+    private int nextFieldNum = 1;
 
     private DocumentMergeMode documentMergeMode = DocumentMergeMode.PDFBOX_LEGACY_MODE;
     private AcroFormMergeMode acroFormMergeMode = AcroFormMergeMode.PDFBOX_LEGACY_MODE;
@@ -568,7 +569,7 @@ public class PDFMergerUtility
             }
         }
         destNames = destCatalog.getNames();
-        
+
         if (destNames != null && destNames.getCOSObject().containsKey(COSName.ID_TREE))
         {
             // found in 001031.pdf from PDFBOX-4417 and doesn't belong there
@@ -1308,9 +1309,6 @@ public class PDFMergerUtility
             dstOutputIntents.add(srcOI);
         }
     }
-
-    private int nextFieldNum = 1;
-
 
     /**
      * Indicates if acroform errors are ignored or not.
