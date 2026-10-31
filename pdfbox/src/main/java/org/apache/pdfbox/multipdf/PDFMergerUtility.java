@@ -807,9 +807,9 @@ public class PDFMergerUtility
             mergeRoleMap(srcStructTree, destStructTree, cloner);
             mergeIDTree(cloner, srcStructTree, destStructTree);
             mergeMarkInfo(destCatalog, srcCatalog);
-            mergeLanguage(destCatalog, srcCatalog);
-            mergeViewerPreferences(destCatalog, srcCatalog, cloner);
         }
+        mergeLanguage(destCatalog, srcCatalog);
+        mergeViewerPreferences(destCatalog, srcCatalog, cloner);
     }
 
     private void mergePageLabels(PDDocument destination, PDDocumentCatalog srcCatalog, PDDocumentCatalog destCatalog, PDFCloneUtility cloner) throws IOException
