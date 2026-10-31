@@ -358,6 +358,7 @@ public class PDFMergerUtility
      * @param compressParameters defines if compressed object streams are enabled
      * 
      * @throws IOException If there is an error saving the document.
+     * @throws IllegalStateException if neither destination filename nor stream has been set.
      */
     public void mergeDocuments(StreamCacheCreateFunction streamCacheCreateFunction,
             CompressParameters compressParameters) throws IOException
