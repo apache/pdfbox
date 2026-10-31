@@ -17,7 +17,6 @@
 package org.apache.pdfbox.multipdf;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -289,10 +288,8 @@ public class PDFMergerUtility
      * Add a source file to the list of files to merge.
      *
      * @param source Full path and file name of source document.
-     * 
-     * @throws FileNotFoundException If the file doesn't exist
      */
-    public void addSource(String source) throws FileNotFoundException
+    public void addSource(String source)
     {
         addSource(new File(source));
     }
@@ -301,10 +298,8 @@ public class PDFMergerUtility
      * Add a source file to the list of files to merge.
      *
      * @param source File representing source document
-     * 
-     * @throws FileNotFoundException If the file doesn't exist
      */
-    public void addSource(File source) throws FileNotFoundException
+    public void addSource(File source)
     {
         sources.add(source);
     }
