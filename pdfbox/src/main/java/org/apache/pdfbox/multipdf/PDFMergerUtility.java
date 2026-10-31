@@ -110,10 +110,15 @@ public class PDFMergerUtility
      *      the PDFBOX_LEGACY_MODE. Currently supported are:
      *      <ul>
      *          <li>Page content and resources
-     *      </ul>  
+     *      </ul>
+     *      Not supported:
+     *      <ul>
+     *          <li>Metadata
+     *          <li>Document information
+     *      </ul>
      * <li>{@link DocumentMergeMode#PDFBOX_LEGACY_MODE} Keeps all files open until the
-     *      merge has been completed. This is  currently necessary to merge documents
-     *      containing a Structure Tree.
+     *      merge has been completed. This is currently necessary to merge documents
+     *      containing a structure tree.
      * </ul>
      */
     public enum DocumentMergeMode
@@ -239,8 +244,9 @@ public class PDFMergerUtility
 
     /**
      * Get the destination document information that is to be set in
-     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction) }.
-     * The default is null, which means that it is ignored.
+     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction)}
+     * when using {@link DocumentMergeMode#PDFBOX_LEGACY_MODE}. The default is null, which means
+     * that it is ignored.
      *
      * @return The destination document information.
      */
@@ -251,8 +257,9 @@ public class PDFMergerUtility
 
     /**
      * Set the destination document information that is to be set in
-     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction) }.
-     * The default is null, which means that it is ignored.
+     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction)}
+     * when using {@link DocumentMergeMode#PDFBOX_LEGACY_MODE}. The default is null, which means
+     * that it is ignored.
      *
      * @param info The destination document information.
      */
@@ -263,8 +270,9 @@ public class PDFMergerUtility
 
     /**
      * Get the destination metadata that is to be set in
-     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction) }.
-     * The default is null, which means that it is ignored.
+     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction)}
+     * when using {@link DocumentMergeMode#PDFBOX_LEGACY_MODE}. The default is null, which means
+     * that it is ignored.
      *
      * @return The destination metadata.
      */
@@ -275,8 +283,9 @@ public class PDFMergerUtility
 
     /**
      * Set the destination metadata that is to be set in
-     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction) }.
-     * The default is null, which means that it is ignored.
+     * {@link #mergeDocuments(org.apache.pdfbox.io.RandomAccessStreamCache.StreamCacheCreateFunction)}
+     * when using {@link DocumentMergeMode#PDFBOX_LEGACY_MODE}. The default is null, which means
+     * that it is ignored.
      *
      * @param meta The destination metadata.
      */
