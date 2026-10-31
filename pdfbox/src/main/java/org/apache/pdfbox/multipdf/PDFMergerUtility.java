@@ -343,6 +343,7 @@ public class PDFMergerUtility
      *                        in case of <code>null</code> unrestricted main memory is used 
      * 
      * @throws IOException If there is an error saving the document.
+     * @throws IllegalStateException if neither destination filename nor stream has been set.
      */
     public void mergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
     {
