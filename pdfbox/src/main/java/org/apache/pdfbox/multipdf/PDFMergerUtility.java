@@ -469,7 +469,6 @@ public class PDFMergerUtility
             CompressParameters compressParameters) throws IOException
     {
         // Make sure that:
-        // - first Exception is kept
         // - all PDDocuments are closed
         // - all FileInputStreams are closed
         // - there's a way to see which errors occurred
