@@ -105,20 +105,26 @@ public class PDFMergerUtility
      * The mode to use when merging documents:
      * 
      * <ul>
-     * <li>{@link DocumentMergeMode#OPTIMIZE_RESOURCES_MODE} Optimizes resource handling such as
-     *      closing documents early. <strong>Not all document elements are merged</strong> compared to
+     * <li>{@link DocumentMergeMode#OPTIMIZE_RESOURCES_MODE} Optimizes resource handling.
+     * <strong>Not all document elements are merged</strong> compared to
      *      the PDFBOX_LEGACY_MODE. Currently supported are:
      *      <ul>
-     *          <li>Page content and resources
+     *          <li>page content and resources
      *      </ul>
      *      Not supported:
      *      <ul>
-     *          <li>Metadata
-     *          <li>Document information
+     *          <li>metadata
+     *          <li>mocument information
+     *          <li>outlines
+     *          <li>named destinations
+     *          <li>acroForm
+     *          <li>page labels
+     *          <li>structure tree
+     *          <li>viewer preferences
+     *          <li>language
      *      </ul>
-     * <li>{@link DocumentMergeMode#PDFBOX_LEGACY_MODE} Keeps all files open until the
-     *      merge has been completed. This is currently necessary to merge documents
-     *      containing a structure tree.
+     * <li>{@link DocumentMergeMode#PDFBOX_LEGACY_MODE} tries to merge as much document elements as
+     * possible. Contact us on the user mailing list if you miss any.
      * </ul>
      */
     public enum DocumentMergeMode
@@ -394,6 +400,7 @@ public class PDFMergerUtility
         {
             PDFCloneUtility cloner = new PDFCloneUtility(destination);
             PDPageTree destinationPageTree = destination.getPages(); // cache PageTree
+            float maxVersion = destination.getVersion();
             for (Object sourceObject : sources)
             {
                 PDDocument sourceDoc = null;
@@ -407,6 +414,7 @@ public class PDFMergerUtility
                     {
                         sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject);
                     }
+                    maxVersion = Math.max(maxVersion, sourceDoc.getVersion());
                     for (PDPage page : sourceDoc.getPages())
                     {
                         PDPage newPage = new PDPage(cloner.cloneForNewDocument(page.getCOSObject()));
@@ -433,7 +441,10 @@ public class PDFMergerUtility
                     IOUtils.closeQuietly(sourceDoc);
                 }
             }
-            
+            if (maxVersion > destination.getVersion())
+            {
+                destination.setVersion(maxVersion);
+            }
             if (destinationStream == null)
             {
                 destination.save(destinationFileName, compressParameters);
