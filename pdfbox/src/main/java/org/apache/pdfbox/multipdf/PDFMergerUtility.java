@@ -1578,7 +1578,6 @@ public class PDFMergerUtility
             page.setStructParents(structParents + structParentOffset);
         }
         List<PDAnnotation> annots = page.getAnnotations();
-        List<PDAnnotation> newannots = new ArrayList<PDAnnotation>(annots.size());
         for (PDAnnotation annot : annots)
         {
             int structParent = annot.getStructParent();
@@ -1586,9 +1585,7 @@ public class PDFMergerUtility
             {
                 annot.setStructParent(structParent + structParentOffset);
             }
-            newannots.add(annot);
         }
-        page.setAnnotations(newannots);
     }
     
     /**
