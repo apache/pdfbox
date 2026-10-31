@@ -114,16 +114,16 @@ public class PDFMergerUtility
      *      Not supported:
      *      <ul>
      *          <li>metadata
-     *          <li>mocument information
+     *          <li>document information
      *          <li>outlines
      *          <li>named destinations
      *          <li>acroForm
      *          <li>page labels
-     *          <li>structure tree
+     *          <li>structure tree (the merged document will not be tagged)
      *          <li>viewer preferences
      *          <li>language
      *      </ul>
-     * <li>{@link DocumentMergeMode#PDFBOX_LEGACY_MODE} tries to merge as much document elements as
+     * <li>{@link DocumentMergeMode#PDFBOX_LEGACY_MODE} tries to merge as many document elements as
      * possible. Contact us on the user mailing list if you miss any.
      * </ul>
      */
@@ -468,10 +468,6 @@ public class PDFMergerUtility
     private void legacyMergeDocuments(StreamCacheCreateFunction streamCacheCreateFunction,
             CompressParameters compressParameters) throws IOException
     {
-        // Make sure that:
-        // - all PDDocuments are closed
-        // - all FileInputStreams are closed
-        // - there's a way to see which errors occurred
         StreamCacheCreateFunction strmCacheFunc = streamCacheCreateFunction != null ? streamCacheCreateFunction
                 : IOUtils.createMemoryOnlyStreamCache();
         try (PDDocument destination = new PDDocument(strmCacheFunc))
