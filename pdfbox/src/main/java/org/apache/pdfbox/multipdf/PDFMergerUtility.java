@@ -1491,7 +1491,7 @@ public class PDFMergerUtility
     private void updateStructParentEntries(PDResources oldResources, PDResources newResources,
             int structParentOffset, Map<COSDictionary, COSDictionary> objMapping) throws IOException
     {
-        if (newResources == null)
+        if (oldResources == null || newResources == null)
         {
             return;
         }
@@ -1499,7 +1499,7 @@ public class PDFMergerUtility
         {
             PDXObject newXObject = newResources.getXObject(name);
             PDXObject oldXObject = oldResources.getXObject(name);
-            if (objMapping.containsKey(oldXObject.getCOSObject()))
+            if (oldXObject == null || objMapping.containsKey(oldXObject.getCOSObject()))
             {
                 continue;
             }
