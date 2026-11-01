@@ -1500,6 +1500,12 @@ public class PDFMergerUtility
         }
         for (COSName name : newResources.getXObjectNames())
         {
+            // PDResources.getXObject() decompresses images. We may have to use a different
+            // approach to save time: either (1) create a new method in PDResources that just gets the
+            // COSDictionary, or (2) do a "weak" check whether we can skip the object (we can skip for sure
+            // if there is a COSDictionary in the resource, and it doesn't contain a StructParent
+            // nor a StructParents item). We would still have to run the existing code for
+            // cases where the object is somewhere higher in the hierarchy.
             PDXObject newXObject = newResources.getXObject(name);
             PDXObject oldXObject = oldResources.getXObject(name);
             if (oldXObject == null || !visited.add(oldXObject.getCOSObject()))
