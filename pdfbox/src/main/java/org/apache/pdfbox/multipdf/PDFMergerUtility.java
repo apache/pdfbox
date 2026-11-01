@@ -1520,7 +1520,7 @@ public class PDFMergerUtility
                 if (structParent >= 0)
                 {
                     form.setStructParents(structParent + structParentOffset);
-                    objMapping.put(newXObject.getCOSObject(), newXObject.getCOSObject());
+                    objMapping.put(oldXObject.getCOSObject(), newXObject.getCOSObject());
                 }
                 updateStructParentEntries(((PDFormXObject) oldXObject).getResources(), form.getResources(), 
                         structParentOffset, objMapping);
