@@ -757,6 +757,7 @@ public class PDFMergerUtility
         }
 
         Map<COSDictionary, COSDictionary> objMapping = new HashMap<>();
+        Set<COSDictionary> visitedXObjects = new HashSet<>();
         PDPageTree destinationPageTree = destination.getPages(); // cache PageTree
         for (PDPage page : srcCatalog.getPages())
         {
@@ -788,7 +789,7 @@ public class PDFMergerUtility
             {
                 // add the value of the destination ParentTreeNextKey to every source element 
                 // StructParent(s) value so that these don't overlap with the existing values
-                updateStructParentEntries(page, newPage, destParentTreeNextKey, objMapping);
+                updateStructParentEntries(page, newPage, destParentTreeNextKey, objMapping, visitedXObjects);
             }
             destinationPageTree.add(newPage);
         }
@@ -1463,7 +1464,8 @@ public class PDFMergerUtility
      * @throws IOException if there is an error creating an XObject.
      */
     private void updateStructParentEntries(PDPage oldPage, PDPage newPage,
-            int structParentOffset, Map<COSDictionary, COSDictionary> objMapping) throws IOException
+            int structParentOffset, Map<COSDictionary, COSDictionary> objMapping,
+            Set<COSDictionary> visited) throws IOException
     {
         int structParents = newPage.getStructParents();
         if (structParents >= 0)
@@ -1487,11 +1489,12 @@ public class PDFMergerUtility
             objMapping.put(oldAnnots.get(i).getCOSObject(), newAnnots.get(i).getCOSObject());
         }
         updateStructParentEntries(oldPage.getResources(), newPage.getResources(),
-                structParentOffset, objMapping);
+                structParentOffset, objMapping, visited);
     }
 
     private void updateStructParentEntries(PDResources oldResources, PDResources newResources,
-            int structParentOffset, Map<COSDictionary, COSDictionary> objMapping) throws IOException
+            int structParentOffset, Map<COSDictionary, COSDictionary> objMapping,
+            Set<COSDictionary> visited) throws IOException
     {
         if (oldResources == null || newResources == null)
         {
@@ -1501,7 +1504,7 @@ public class PDFMergerUtility
         {
             PDXObject newXObject = newResources.getXObject(name);
             PDXObject oldXObject = oldResources.getXObject(name);
-            if (oldXObject == null || objMapping.containsKey(oldXObject.getCOSObject()))
+            if (oldXObject == null || objMapping.containsKey(oldXObject.getCOSObject()) || !visited.add(oldXObject.getCOSObject()))
             {
                 continue;
             }
@@ -1525,8 +1528,7 @@ public class PDFMergerUtility
                     objMapping.put(oldXObject.getCOSObject(), newXObject.getCOSObject());
                 }
                 updateStructParentEntries(((PDFormXObject) oldXObject).getResources(), form.getResources(), 
-                        structParentOffset, objMapping);
-                //TODO add visited to avoid endless recursion
+                        structParentOffset, objMapping, visited);
             }
         }
     }
