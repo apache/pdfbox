@@ -1639,7 +1639,7 @@ public class PDFMergerUtility
         {
             PDXObject newXObject = newResources.getXObject(name);
             PDXObject oldXObject = oldResources.getXObject(name);
-            if (oldXObject == null || objMapping.containsKey(oldXObject.getCOSObject()) || !visited.add(oldXObject.getCOSObject()))
+            if (oldXObject == null || !visited.add(oldXObject.getCOSObject()))
             {
                 continue;
             }
