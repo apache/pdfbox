@@ -57,6 +57,7 @@ import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructur
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
@@ -972,6 +973,47 @@ class PDFMergerUtilityTest
         pdfMergerUtility.mergeDocuments(IOUtils.createMemoryOnlyStreamCache());
 
         checkParts(new File(TARGETTESTDIR + "PDFA3A-merged3.pdf"));
+    }
+    
+    /**
+     * PDFBOX-6301: check that form XObjects are getting mapped.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testMappingXObjects() throws IOException
+    {
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+        pdfMergerUtility.addSource(new File(TARGETPDFDIR, "PDFBOX-6301-octopdf-sample.pdf"));
+        pdfMergerUtility.addSource(new File(TARGETPDFDIR, "PDFBOX-6301-octopdf-sample.pdf"));
+        pdfMergerUtility.setDestinationFileName(TARGETTESTDIR + "PDFBOX-6301-octopdf-sample-merged3.pdf");
+        pdfMergerUtility.mergeDocuments(IOUtils.createMemoryOnlyStreamCache());
+
+        try (PDDocument doc = Loader.loadPDF(new File(TARGETTESTDIR, "PDFBOX-6301-octopdf-sample-merged3.pdf")))
+        {
+            int parentTreeNextKey = doc.getDocumentCatalog().getStructureTreeRoot().getParentTreeNextKey();
+            assertEquals(16 * 2, parentTreeNextKey); // original file has 16 elements
+            PDPage page1 = doc.getPage(0);
+            PDPage page2 = doc.getPage(1);
+            PDPage page3 = doc.getPage(2);
+            PDPage page4 = doc.getPage(3);
+            assertEquals(1, page1.getStructParents());
+            assertEquals(13, page2.getStructParents());
+            assertEquals(page1.getStructParents() + parentTreeNextKey / 2, page3.getStructParents());
+            assertEquals(page2.getStructParents() + parentTreeNextKey / 2, page4.getStructParents());
+            PDFormXObject r8 = (PDFormXObject) page1.getResources().getXObject(COSName.getPDFName("R8"));
+            PDFormXObject r9 = (PDFormXObject) page1.getResources().getXObject(COSName.getPDFName("R9"));
+            PDFormXObject r10 = (PDFormXObject) r9.getResources().getXObject(COSName.getPDFName("R10"));
+            assertEquals(0, r8.getStructParents());
+            assertEquals(2, r9.getStructParents());
+            assertEquals(3, r10.getStructParents());
+            PDFormXObject r8b = (PDFormXObject) page3.getResources().getXObject(COSName.getPDFName("R8"));
+            PDFormXObject r9b = (PDFormXObject) page3.getResources().getXObject(COSName.getPDFName("R9"));
+            PDFormXObject r10b = (PDFormXObject) r9b.getResources().getXObject(COSName.getPDFName("R10"));
+            assertEquals(r8.getStructParents() + parentTreeNextKey / 2, r8b.getStructParents());
+            assertEquals(r9.getStructParents() + parentTreeNextKey / 2, r9b.getStructParents());
+            assertEquals(r10.getStructParents() + parentTreeNextKey / 2, r10b.getStructParents());
+        }
     }
 
     /**
