@@ -63,7 +63,10 @@ import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDParentTreeValue;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
@@ -782,15 +785,7 @@ public class PDFMergerUtility
             {
                 // add the value of the destination ParentTreeNextKey to every source element 
                 // StructParent(s) value so that these don't overlap with the existing values
-                updateStructParentEntries(newPage, destParentTreeNextKey);
-                objMapping.put(page.getCOSObject(), newPage.getCOSObject());
-                List<PDAnnotation> oldAnnots = page.getAnnotations();
-                List<PDAnnotation> newAnnots = newPage.getAnnotations();
-                for (int i = 0; i < oldAnnots.size(); i++)
-                {
-                    objMapping.put(oldAnnots.get(i).getCOSObject(), newAnnots.get(i).getCOSObject());
-                }
-                // TODO update mapping for XObjects
+                updateStructParentEntries(page, newPage, destParentTreeNextKey, objMapping);
             }
             destinationPageTree.add(newPage);
         }
@@ -1596,17 +1591,21 @@ public class PDFMergerUtility
     /**
      * Update the StructParents and StructParent values in a PDPage.
      *
-     * @param page the new page
-     * @param structParentOffset the offset which should be applied
+     * @param oldPage the old page.
+     * @param newPage the new page.
+     * @param structParentOffset the offset which should be applied.
+     * @param objMapping mapping between old and new references.
+     * @throws IOException if there is an error creating an XObject.
      */
-    private void updateStructParentEntries(PDPage page, int structParentOffset) throws IOException
+    private void updateStructParentEntries(PDPage oldPage, PDPage newPage,
+            int structParentOffset, Map<COSDictionary, COSDictionary> objMapping) throws IOException
     {
-        int structParents = page.getStructParents();
+        int structParents = newPage.getStructParents();
         if (structParents >= 0)
         {
-            page.setStructParents(structParents + structParentOffset);
+            newPage.setStructParents(structParents + structParentOffset);
         }
-        List<PDAnnotation> annots = page.getAnnotations();
+        List<PDAnnotation> annots = newPage.getAnnotations();
         for (PDAnnotation annot : annots)
         {
             int structParent = annot.getStructParent();
@@ -1615,8 +1614,58 @@ public class PDFMergerUtility
                 annot.setStructParent(structParent + structParentOffset);
             }
         }
+        objMapping.put(newPage.getCOSObject(), newPage.getCOSObject());
+        List<PDAnnotation> oldAnnots = newPage.getAnnotations();
+        List<PDAnnotation> newAnnots = newPage.getAnnotations();
+        for (int i = 0; i < oldAnnots.size(); i++)
+        {
+            objMapping.put(oldAnnots.get(i).getCOSObject(), newAnnots.get(i).getCOSObject());
+        }
+        updateStructParentEntries(oldPage.getResources(), newPage.getResources(),
+                structParentOffset, objMapping);
     }
-    
+
+    private void updateStructParentEntries(PDResources oldResources, PDResources newResources,
+            int structParentOffset, Map<COSDictionary, COSDictionary> objMapping) throws IOException
+    {
+        if (newResources == null)
+        {
+            return;
+        }
+        for (COSName name : newResources.getXObjectNames())
+        {
+            PDXObject newXObject = newResources.getXObject(name);
+            PDXObject oldXObject = oldResources.getXObject(name);
+            if (objMapping.containsKey(oldXObject.getCOSObject()))
+            {
+                continue;
+            }
+            if (newXObject instanceof PDImageXObject)
+            {
+                PDImageXObject img = (PDImageXObject) newXObject;
+                int structParent = img.getStructParent();
+                if (structParent >= 0)
+                {
+                    img.setStructParent(structParent + structParentOffset);
+                    objMapping.put(oldXObject.getCOSObject(), newXObject.getCOSObject());
+                }
+            }
+            else if (newXObject instanceof PDFormXObject)
+            {
+                PDFormXObject form = (PDFormXObject) newXObject;
+                int structParent = form.getStructParents();
+                if (structParent >= 0)
+                {
+                    form.setStructParents(structParent + structParentOffset);
+                    objMapping.put(newXObject.getCOSObject(), newXObject.getCOSObject());
+                }
+                updateStructParentEntries(((PDFormXObject) oldXObject).getResources(), form.getResources(), 
+                        structParentOffset, objMapping);
+                //TODO add visited to avoid endless recursion
+            }
+        }
+    }
+
     /**
      * Test for dynamic XFA content.
      * 
