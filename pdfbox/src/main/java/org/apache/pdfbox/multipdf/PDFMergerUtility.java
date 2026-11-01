@@ -416,11 +416,11 @@ public class PDFMergerUtility
                 {
                     if (sourceObject instanceof File)
                     {
-                        sourceDoc = Loader.loadPDF((File) sourceObject);
+                        sourceDoc = Loader.loadPDF((File) sourceObject, streamCacheCreateFunction);
                     }
                     else
                     {
-                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject);
+                        sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject, streamCacheCreateFunction);
                     }
                     maxVersion = Math.max(maxVersion, sourceDoc.getVersion());
                     for (PDPage page : sourceDoc.getPages())
@@ -485,11 +485,11 @@ public class PDFMergerUtility
                 PDDocument sourceDoc;
                 if (sourceObject instanceof File)
                 {
-                    sourceDoc = Loader.loadPDF((File) sourceObject);
+                    sourceDoc = Loader.loadPDF((File) sourceObject, streamCacheCreateFunction);
                 }
                 else
                 {
-                    sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject);
+                    sourceDoc = Loader.loadPDF((RandomAccessRead) sourceObject, streamCacheCreateFunction);
                 }
                 try
                 {
