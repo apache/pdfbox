@@ -1047,6 +1047,19 @@
                             <sha512>022755d4abeaa60ed99b3252441aaa1b65daa8d5414348f6c4ae5c8e3dfdb7d2be5ea0705117b8bfbb88f13e79d168dcb1f3b2ff9d9c7be21ad987965ccfc562</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-6301</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/13086155/octopdf-sample.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-6301-octopdf-sample.pdf</outputFileName>
+                            <sha512>96341bf96b4832c7d1611cf5e64ee95edd46904102ee480b74f62c3b9320c298de9bb06c7a7ee8bce9c235b625ba52bbb64aaf3240e9f4a63210277f6ff135cb</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
