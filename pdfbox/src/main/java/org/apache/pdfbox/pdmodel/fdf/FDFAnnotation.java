@@ -294,7 +294,7 @@ public abstract class FDFAnnotation implements COSObjectable
             if (dashes != null && !dashes.isEmpty())
             {
                 String[] dashesValues = dashes.split(",");
-                COSArray dashPattern = new COSArray();
+                COSArray dashPattern = new COSArray(dashesValues.length);
                 for (String dashesValue : dashesValues)
                 {
                     dashPattern.add(COSNumber.get(dashesValue));

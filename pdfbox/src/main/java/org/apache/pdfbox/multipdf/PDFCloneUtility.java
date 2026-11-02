@@ -126,7 +126,7 @@ public class PDFCloneUtility
 
     private COSArray cloneCOSArray(COSArray array) throws IOException
     {
-        COSArray newArray = new COSArray();
+        COSArray newArray = new COSArray(array.size());
         for (int i = 0; i < array.size(); i++)
         {
             COSBase value = array.get(i);

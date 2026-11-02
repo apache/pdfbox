@@ -86,7 +86,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         // repair bad PDFs which contain a Page dict instead of a page tree, see PDFBOX-3154
         if (COSName.PAGE.equals(root.getCOSName(COSName.TYPE)))
         {
-            COSArray kids = new COSArray();
+            COSArray kids = new COSArray(1);
             kids.add(root);
             this.root = new COSDictionary();
             this.root.setItem(COSName.KIDS, kids);
