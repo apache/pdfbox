@@ -96,7 +96,7 @@ class TestBaseParser
     public void testPDFBox276() throws IOException
     {
         // this is an invalid sequence.
-        byte[] inputBytes = new byte[] { '(', 'c', ':', '\\', ')', '\r', '/', 'P' };
+        byte[] inputBytes = { '(', 'c', ':', '\\', ')', '\r', '/', 'P' };
         RandomAccessReadBuffer buffer = new RandomAccessReadBuffer(inputBytes);
         COSParser cosParser = new COSParser(buffer);
         COSString cosString = cosParser.parseCOSString();
@@ -107,7 +107,7 @@ class TestBaseParser
     public void testPDFBox6167() throws IOException
     {
         // this is a valid sequence.
-        byte[] inputBytes = new byte[] { '(', '\\', '0', '1', '4', '\\', ')', 0x0A, '>', ')', '5' };
+        byte[] inputBytes = { '(', '\\', '0', '1', '4', '\\', ')', 0x0A, '>', ')', '5' };
         RandomAccessReadBuffer buffer = new RandomAccessReadBuffer(inputBytes);
         COSParser cosParser = new COSParser(buffer);
         COSString cosString = cosParser.parseCOSString();
