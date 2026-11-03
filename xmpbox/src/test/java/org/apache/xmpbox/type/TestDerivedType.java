@@ -74,7 +74,7 @@ class TestDerivedType
         );
     }
 
-    protected TextType instanciate(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName,
+    protected TextType instantiate(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName,
             Object value) throws ReflectiveOperationException
     {
         Object[] initargs = { metadata, namespaceURI, prefix, propertyName, value };
@@ -86,7 +86,7 @@ class TestDerivedType
     void test1(Class<? extends TextType> clz, String type) throws ReflectiveOperationException
     {
         constructor = clz.getDeclaredConstructor(XMPMetadata.class, String.class, String.class, String.class, Object.class);
-        TextType element = instanciate(xmp, null, PREFIX, NAME, VALUE);
+        TextType element = instantiate(xmp, null, PREFIX, NAME, VALUE);
         assertNull(element.getNamespace());
         assertTrue(element.getValue() instanceof String);
         assertEquals(VALUE, element.getValue());
