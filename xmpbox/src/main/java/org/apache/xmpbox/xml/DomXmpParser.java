@@ -776,7 +776,7 @@ public class DomXmpParser
                             "' not defined in " + firstChildQName.getNamespaceURI());
         }
         Types tt = ctype.type();
-        AbstractStructuredType ast = instanciateStructured(tm, tt, parentQName.getLocalPart(), firstLiDescriptionElementChild.getNamespaceURI());
+        AbstractStructuredType ast = instantiateStructured(tm, tt, parentQName.getLocalPart(), firstLiDescriptionElementChild.getNamespaceURI());
 
         ast.setNamespace(firstLiDescriptionElementChild.getNamespaceURI());
         ast.setPrefix(firstLiDescriptionElementChild.getPrefix());
@@ -831,7 +831,7 @@ public class DomXmpParser
             else if (type.type().isStructured())
             {
                 // create a new structured type
-                AbstractStructuredType inner = instanciateStructured(tm, type.type(), name, null);
+                AbstractStructuredType inner = instantiateStructured(tm, type.type(), name, null);
                 inner.setNamespace(namespace);
                 inner.setPrefix(prefix);
                 ast.getContainer().addProperty(inner);
@@ -1057,7 +1057,7 @@ public class DomXmpParser
         forDeletion.forEach(root::removeChild);
     }
 
-    private AbstractStructuredType instanciateStructured(TypeMapping tm, Types type, String name,
+    private AbstractStructuredType instantiateStructured(TypeMapping tm, Types type, String name,
             String structuredNamespace) throws XmpParsingException
     {
         try
@@ -1149,7 +1149,7 @@ public class DomXmpParser
                         "Property '" + attrQName.getLocalPart() + "' not defined in " + attrQName.getNamespaceURI());
                 }
                 Types tt = ctype.type();
-                ast = instanciateStructured(tm, tt, qName.getLocalPart(), attr.getNamespaceURI());
+                ast = instantiateStructured(tm, tt, qName.getLocalPart(), attr.getNamespaceURI());
                 if (tt.isStructured())
                 {
                     pm = tm.getStructuredPropMapping(tt);
