@@ -2218,7 +2218,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         Point2D getOrigin()
         {
             Rectangle2D r;
-            if (flipTG)
+            boolean useFlipBranch = !flipTG || !transparencyGroupStack.isEmpty();
+            if (!useFlipBranch)
             {
                 // Fixes PDFBOX-5966 and PDFBOX-5251, but not pdfium 1317, which has similar PDF code.
                 // https://bugs.chromium.org/p/pdfium/issues/detail?id=1317
