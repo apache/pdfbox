@@ -86,7 +86,7 @@ public class TestDerivedType
                 Object.class);
     }
 
-    protected TextType instanciate(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName,
+    protected TextType instantiate(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName,
             Object value) throws Exception
     {
         Object[] initargs = new Object[] { metadata, namespaceURI, prefix, propertyName, value };
@@ -96,7 +96,7 @@ public class TestDerivedType
     @Test
     public void test1() throws Exception
     {
-        TextType element = instanciate(xmp, null, PREFIX, NAME, VALUE);
+        TextType element = instantiate(xmp, null, PREFIX, NAME, VALUE);
         Assert.assertNull(element.getNamespace());
         Assert.assertTrue(element.getValue() instanceof String);
         Assert.assertEquals(VALUE, element.getValue());
