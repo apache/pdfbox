@@ -16,28 +16,22 @@
  */
 package org.apache.fontbox.ttf;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 
 /**
- * An implementation of the TTFDataStream using RandomAccessRead as source.
- * The underlying RandomAccessRead can be any length, but this implementation supports
- * only bufferLengths upto Integer.MAX_VALUE.
+ * An implementation of the TTFDataStream that holds the font data in memory.
+ * The data can be any length up to Integer.MAX_VALUE.
  */
 class RandomAccessReadDataStream extends TTFDataStream
 {
-    private static final Logger LOG = LogManager.getLogger(RandomAccessReadDataStream.class);
-
     private final long length;
-    private final byte[] data;
-    private int currentPosition = 0;
+    private final ByteBuffer data;
 
     /**
      * Constructor.
@@ -54,14 +48,15 @@ class RandomAccessReadDataStream extends TTFDataStream
             // PDFBOX-5991
             throw new IOException("Stream is too long, size: " + length);
         }
-        data = new byte[(int) length];
-        int remainingBytes = data.length;
+        byte[] bytes = new byte[(int) length];
+        int remainingBytes = bytes.length;
         int amountRead;
-        while ((amountRead = randomAccessRead.read(data, data.length - remainingBytes,
+        while ((amountRead = randomAccessRead.read(bytes, bytes.length - remainingBytes,
                 remainingBytes)) > 0)
         {
             remainingBytes -= amountRead;
         }
+        data = ByteBuffer.wrap(bytes);
     }
 
     /**
@@ -73,8 +68,20 @@ class RandomAccessReadDataStream extends TTFDataStream
      */
     RandomAccessReadDataStream(InputStream inputStream) throws IOException
     {
-        data = inputStream.readAllBytes();
-        length = data.length;
+        this(ByteBuffer.wrap(inputStream.readAllBytes()));
+    }
+
+    /**
+     * Constructor. The data is not copied. This stream has its own position, so several streams
+     * may read the same buffer at the same time.
+     *
+     * @param buffer the data from its position to its limit. It must not be changed while this
+     * stream is in use.
+     */
+    RandomAccessReadDataStream(ByteBuffer buffer)
+    {
+        data = buffer.slice();
+        length = data.limit();
     }
 
     /**
@@ -85,7 +92,7 @@ class RandomAccessReadDataStream extends TTFDataStream
     @Override
     public long getCurrentPosition() throws IOException
     {
-        return currentPosition;
+        return data.position();
     }
 
     /**
@@ -107,11 +114,11 @@ class RandomAccessReadDataStream extends TTFDataStream
     @Override
     public int read() throws IOException
     {
-        if (currentPosition >= length)
+        if (!data.hasRemaining())
         {
             return -1;
         }
-        return data[currentPosition++] & 0xff;
+        return data.get() & 0xff;
     }
 
     /**
@@ -143,7 +150,7 @@ class RandomAccessReadDataStream extends TTFDataStream
     /**
      * Seek into the datasource.
      * When the requested <code>pos</code> is &lt; 0, an IOException() is fired.
-     * When the requested <code>pos</code> is &ge; {@link #length}, the {@link #currentPosition}
+     * When the requested <code>pos</code> is &ge; {@link #length}, the position
      * is set to the first byte <i>after</i> the {@link #data}!
      *
      * @param pos The position to seek to.
@@ -156,7 +163,7 @@ class RandomAccessReadDataStream extends TTFDataStream
         {
             throw new IOException("Invalid position " + pos);
         }
-        currentPosition = pos < length ? (int) pos : (int) length;
+        data.position(pos < length ? (int) pos : (int) length);
     }
 
     /**
@@ -173,31 +180,39 @@ class RandomAccessReadDataStream extends TTFDataStream
     @Override
     public int read(byte[] b, int off, int len) throws IOException
     {
-        if (currentPosition >= length)
+        if (!data.hasRemaining())
         {
             return -1;
         }
-        int remainingBytes = (int) (length - currentPosition);
-        int bytesToRead = Math.min(remainingBytes, len);
-        System.arraycopy(data, currentPosition, b, off, bytesToRead);
-        currentPosition += bytesToRead;
+        int bytesToRead = Math.min(data.remaining(), len);
+        data.get(b, off, bytesToRead);
         return bytesToRead;
     }
 
     @Override
-    @SuppressWarnings("java:S2095") // buffer is intentionally not closed, must remain alive for the lifetime of the view
     public RandomAccessRead createSubView(long length)
     {
-        try
+        ByteBuffer view = data.slice();
+        view.limit((int) Math.min(length, view.limit()));
+        return new RandomAccessReadBuffer(view);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation doesn't copy the bytes.
+     */
+    @Override
+    TTFDataStream createSubStream(int length) throws IOException
+    {
+        if (length > data.remaining())
         {
-            RandomAccessReadBuffer buffer = new RandomAccessReadBuffer(data);
-            return buffer.createView(currentPosition, length);
+            throw new IOException("Unexpected end of TTF stream reached");
         }
-        catch (IOException e)
-        {
-            LOG.warn("Could not create a SubView", e);
-            return null;
-        }
+        ByteBuffer view = data.slice();
+        view.limit(length);
+        data.position(data.position() + length);
+        return new RandomAccessReadDataStream(view);
     }
 
     /**
@@ -206,7 +221,9 @@ class RandomAccessReadDataStream extends TTFDataStream
     @Override
     public InputStream getOriginalData() throws IOException
     {
-        return new ByteArrayInputStream(data);
+        ByteBuffer view = data.duplicate();
+        view.rewind();
+        return new RandomAccessInputStream(new RandomAccessReadBuffer(view));
     }
 
     /**
