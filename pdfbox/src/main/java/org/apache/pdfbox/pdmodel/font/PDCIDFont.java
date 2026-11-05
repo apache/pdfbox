@@ -342,16 +342,10 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
     @Override
     public float getWidth(int code) throws IOException
     {
-        Float width = codeToWidth.get(code);
-        if (width == null)
-        {
-            // these widths are supposed to be consistent with the actual widths given in the CIDFont
-            // program, but PDFBOX-563 shows that when they are not, Acrobat overrides the embedded
-            // font widths with the widths given in the font dictionary
-            width = getWidthForCID(codeToCID(code));
-            codeToWidth.put(code, width);
-        }
-        return width;
+        // these widths are supposed to be consistent with the actual widths given in the CIDFont
+        // program, but PDFBOX-563 shows that when they are not, Acrobat overrides the embedded
+        // font widths with the widths given in the font dictionary
+        return codeToWidth.computeIfAbsent(code, key -> getWidthForCID(codeToCID(key)));
     }
 
     @Override
