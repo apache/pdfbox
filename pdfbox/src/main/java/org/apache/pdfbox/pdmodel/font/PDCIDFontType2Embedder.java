@@ -40,6 +40,8 @@ import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.ttf.VerticalHeaderTable;
 import org.apache.fontbox.ttf.VerticalMetricsTable;
+import org.apache.fontbox.ttf.model.GsubData;
+import org.apache.fontbox.ttf.model.ScriptFeature;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
@@ -58,6 +60,16 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
 {
 
     private static final Logger LOG = LogManager.getLogger(PDCIDFontType2Embedder.class);
+
+    /**
+     * The GSUB features that the GSUB workers apply when showText() shapes text. The other
+     * features list glyphs that may be drawn for another purpose: FiraCode's "aalt" lists the
+     * empty "exclam.spacer" glyph as an alternate of "!", but that glyph is drawn next to the
+     * "!=" ligature, so mapping it to "!" adds an extra "!" to the extracted text.
+     */
+    private static final Set<String> SHAPING_FEATURES = Set.of("ccmp", "locl", "liga", "clig",
+            "calt", "nukt", "akhn", "rphf", "rkrf", "pref", "blwf", "half", "pstf", "vatu", "cjct",
+            "init", "pres", "abvs", "blws", "psts", "haln");
 
     private final PDDocument document;
     private final COSDictionary dict;
@@ -140,6 +152,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             }
         }
 
+        Map<Integer, String> substitutedGlyphText = getSubstitutedGlyphText();
         ToUnicodeWriter toUniWriter = new ToUnicodeWriter();
         boolean hasSurrogates = false;
         for (int gid = 1, max = ttf.getMaximumProfile().getNumGlyphs(); gid <= max; gid++)
@@ -182,6 +195,15 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
                 }
                 toUniWriter.add(cid, new String(new int[]{ codePoint }, 0, 1));
             }
+            else if (substitutedGlyphText.containsKey(cid))
+            {
+                String text = substitutedGlyphText.get(cid);
+                if (text.codePoints().anyMatch(Character::isSupplementaryCodePoint))
+                {
+                    hasSurrogates = true;
+                }
+                toUniWriter.add(cid, text);
+            }
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -201,6 +223,60 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         }
 
         dict.setItem(COSName.TO_UNICODE, stream);
+    }
+
+    /**
+     * Returns the text of each glyph that the GSUB table puts in place of other glyphs, e.g. "nd"
+     * for the "nd" ligature of a script font. These glyphs have no cmap entry, so without this
+     * map text extraction would drop their letters.
+     * <p>
+     * Only one-to-one and many-to-one substitutions are used: when one glyph becomes several,
+     * there is no way to tell which part of the text each of them stands for.
+     */
+    private Map<Integer, String> getSubstitutedGlyphText() throws IOException
+    {
+        Map<Integer, String> textByGid = new HashMap<>();
+        GsubData gsubData = ttf.getGsubData();
+        if (gsubData == GsubData.NO_DATA_FOUND)
+        {
+            return textByGid;
+        }
+        for (String featureName : gsubData.getSupportedFeatures())
+        {
+            if (!SHAPING_FEATURES.contains(featureName))
+            {
+                continue;
+            }
+            ScriptFeature feature = gsubData.getFeature(featureName);
+            for (List<Integer> sourceGids : feature.getAllGlyphIdsForSubstitution())
+            {
+                String text = toText(sourceGids);
+                List<Integer> replacement = feature.getReplacementForGlyphs(sourceGids);
+                if (text != null && replacement.size() == 1)
+                {
+                    textByGid.putIfAbsent(replacement.get(0), text);
+                }
+            }
+        }
+        return textByGid;
+    }
+
+    /**
+     * Returns the text of the given glyphs from the cmap, or null if one of them has no cmap entry.
+     */
+    private String toText(List<Integer> gids)
+    {
+        StringBuilder text = new StringBuilder();
+        for (int gid : gids)
+        {
+            List<Integer> codes = cmapLookup.getCharCodes(gid);
+            if (codes == null)
+            {
+                return null;
+            }
+            text.appendCodePoint(codes.get(0));
+        }
+        return text.toString();
     }
 
     private COSDictionary toCIDSystemInfo(String registry, String ordering, int supplement)
