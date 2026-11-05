@@ -212,7 +212,6 @@ public final class PDFontFactory
     }
 
     private static FontType getFontTypeFromFont(COSDictionary fontDescriptor, COSName fontType)
-            throws IOException
     {
         byte[] fontHeader = getFontHeader(fontDescriptor);
         if (fontHeader == null)
@@ -321,7 +320,7 @@ public final class PDFontFactory
         return null;
     }
 
-    private static byte[] getFontHeader(COSDictionary fontDescriptor) throws IOException
+    private static byte[] getFontHeader(COSDictionary fontDescriptor)
     {
         if (fontDescriptor == null)
         {
