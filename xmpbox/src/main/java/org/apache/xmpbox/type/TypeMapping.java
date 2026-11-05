@@ -186,7 +186,7 @@ public final class TypeMapping
         }
     }
 
-    public AbstractStructuredType instanciateDefinedType(String propertyName, String namespace)
+    public AbstractStructuredType instantiateDefinedType(String propertyName, String namespace)
     {
         return new DefinedStructuredType(metadata, namespace, null, propertyName);
     }

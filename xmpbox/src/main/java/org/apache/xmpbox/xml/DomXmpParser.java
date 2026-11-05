@@ -1068,7 +1068,7 @@ public class DomXmpParser
             }
             else if (type.isDefined())
             {
-                return tm.instanciateDefinedType(name, structuredNamespace);
+                return tm.instantiateDefinedType(name, structuredNamespace);
             }
             else
             {
