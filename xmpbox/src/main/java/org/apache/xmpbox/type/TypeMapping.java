@@ -166,7 +166,7 @@ public final class TypeMapping
         return null;
     }
 
-    public AbstractStructuredType instanciateStructuredType(Types type, String propertyName)
+    public AbstractStructuredType instantiateStructuredType(Types type, String propertyName)
             throws BadFieldValueException
     {
         try
@@ -191,7 +191,7 @@ public final class TypeMapping
         return new DefinedStructuredType(metadata, namespace, null, propertyName);
     }
 
-    public AbstractSimpleProperty instanciateSimpleProperty(String nsuri, String prefix, String name, Object value,
+    public AbstractSimpleProperty instantiateSimpleProperty(String nsuri, String prefix, String name, Object value,
             Types type)
     {
         // constructor parameters
@@ -212,13 +212,13 @@ public final class TypeMapping
         }
     }
 
-    public AbstractSimpleProperty instanciateSimpleField(Class<?> clz, String nsuri, String prefix,
+    public AbstractSimpleProperty instantiateSimpleField(Class<?> clz, String nsuri, String prefix,
             String propertyName, Object value)
     {
         PropertiesDescription pm = initializePropMapping(clz);
         PropertyType simpleType = pm.getPropertyType(propertyName);
         Types type = simpleType.type();
-        return instanciateSimpleProperty(nsuri, prefix, propertyName, value, type);
+        return instantiateSimpleProperty(nsuri, prefix, propertyName, value, type);
     }
 
     /**

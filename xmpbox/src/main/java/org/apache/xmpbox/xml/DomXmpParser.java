@@ -389,7 +389,7 @@ public class DomXmpParser
 
             try
             {
-                AbstractSimpleProperty sp = tm.instanciateSimpleProperty(namespace, schema.getPrefix(),
+                AbstractSimpleProperty sp = tm.instantiateSimpleProperty(namespace, schema.getPrefix(),
                         attr.getLocalName(), attr.getValue(), type.type());
                 container.addProperty(sp);
             }
@@ -560,7 +560,7 @@ public class DomXmpParser
         String prefix = property.getPrefix();
         String name = property.getLocalName();
         String namespace = property.getNamespaceURI();
-        AbstractSimpleProperty sp = tm.instanciateSimpleProperty(namespace, prefix, name, property.getTextContent(),
+        AbstractSimpleProperty sp = tm.instantiateSimpleProperty(namespace, prefix, name, property.getTextContent(),
                 type);
         loadAttributes(sp, property);
         container.addProperty(sp);
@@ -690,7 +690,7 @@ public class DomXmpParser
         TypeMapping tm = xmp.getTypeMapping();
         if (type.isSimple())
         {
-            AbstractField af = tm.instanciateSimpleProperty(descriptor.getNamespaceURI(),
+            AbstractField af = tm.instantiateSimpleProperty(descriptor.getNamespaceURI(),
                     descriptor.getPrefix(), descriptor.getLocalPart(), text, type);
             loadAttributes(af, liElement);
             return af;
@@ -699,7 +699,7 @@ public class DomXmpParser
         AbstractStructuredType af;
         try
         {
-            af = tm.instanciateStructuredType(type, descriptor.getLocalPart());
+            af = tm.instantiateStructuredType(type, descriptor.getLocalPart());
         }
         catch (BadFieldValueException ex)
         {
@@ -776,7 +776,7 @@ public class DomXmpParser
                             "' not defined in " + firstChildQName.getNamespaceURI());
         }
         Types tt = ctype.type();
-        AbstractStructuredType ast = instanciateStructured(tm, tt, parentQName.getLocalPart(), firstLiDescriptionElementChild.getNamespaceURI());
+        AbstractStructuredType ast = instantiateStructured(tm, tt, parentQName.getLocalPart(), firstLiDescriptionElementChild.getNamespaceURI());
 
         ast.setNamespace(firstLiDescriptionElementChild.getNamespaceURI());
         ast.setPrefix(firstLiDescriptionElementChild.getPrefix());
@@ -823,7 +823,7 @@ public class DomXmpParser
             }
             else if (type.type().isSimple())
             {
-                AbstractSimpleProperty sp = tm.instanciateSimpleProperty(namespace, prefix, name,
+                AbstractSimpleProperty sp = tm.instantiateSimpleProperty(namespace, prefix, name,
                         liDescriptionElementChild.getTextContent(), type.type());
                 loadAttributes(sp, liDescriptionElementChild);
                 ast.getContainer().addProperty(sp);
@@ -831,7 +831,7 @@ public class DomXmpParser
             else if (type.type().isStructured())
             {
                 // create a new structured type
-                AbstractStructuredType inner = instanciateStructured(tm, type.type(), name, null);
+                AbstractStructuredType inner = instantiateStructured(tm, type.type(), name, null);
                 inner.setNamespace(namespace);
                 inner.setPrefix(prefix);
                 ast.getContainer().addProperty(inner);
@@ -1057,14 +1057,14 @@ public class DomXmpParser
         forDeletion.forEach(root::removeChild);
     }
 
-    private AbstractStructuredType instanciateStructured(TypeMapping tm, Types type, String name,
+    private AbstractStructuredType instantiateStructured(TypeMapping tm, Types type, String name,
             String structuredNamespace) throws XmpParsingException
     {
         try
         {
             if (type.isStructured())
             {
-                return tm.instanciateStructuredType(type, name);
+                return tm.instantiateStructuredType(type, name);
             }
             else if (type.isDefined())
             {
@@ -1149,7 +1149,7 @@ public class DomXmpParser
                         "Property '" + attrQName.getLocalPart() + "' not defined in " + attrQName.getNamespaceURI());
                 }
                 Types tt = ctype.type();
-                ast = instanciateStructured(tm, tt, qName.getLocalPart(), attr.getNamespaceURI());
+                ast = instantiateStructured(tm, tt, qName.getLocalPart(), attr.getNamespaceURI());
                 if (tt.isStructured())
                 {
                     pm = tm.getStructuredPropMapping(tt);
@@ -1187,7 +1187,7 @@ public class DomXmpParser
                     }
                     type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
                 }
-                AbstractSimpleProperty asp = tm.instanciateSimpleProperty(
+                AbstractSimpleProperty asp = tm.instantiateSimpleProperty(
                         attr.getNamespaceURI(), attr.getPrefix(), attr.getLocalName(),
                         attr.getValue(), type.type());
                 ast.getContainer().addProperty(asp);

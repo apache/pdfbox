@@ -165,7 +165,7 @@ public class XMPBasicSchema extends XMPSchema
      */
     public void setBaseURL(String url)
     {
-        URLType tt = (URLType) instanciateSimple(BASEURL, url);
+        URLType tt = (URLType) instantiateSimple(BASEURL, url);
         setBaseURLProperty(tt);
     }
 
@@ -188,7 +188,7 @@ public class XMPBasicSchema extends XMPSchema
      */
     public void setCreateDate(Calendar date)
     {
-        DateType tt = (DateType) instanciateSimple(CREATEDATE, date);
+        DateType tt = (DateType) instantiateSimple(CREATEDATE, date);
         setCreateDateProperty(tt);
     }
 
@@ -211,7 +211,7 @@ public class XMPBasicSchema extends XMPSchema
      */
     public void setCreatorTool(String creatorTool)
     {
-        AgentNameType tt = (AgentNameType) instanciateSimple(CREATORTOOL, creatorTool);
+        AgentNameType tt = (AgentNameType) instantiateSimple(CREATORTOOL, creatorTool);
         setCreatorToolProperty(tt);
     }
 
@@ -250,7 +250,7 @@ public class XMPBasicSchema extends XMPSchema
      */
     public void setLabel(String text)
     {
-        TextType tt = (TextType) instanciateSimple(LABEL, text);
+        TextType tt = (TextType) instantiateSimple(LABEL, text);
         setLabelProperty(tt);
     }
 
@@ -274,7 +274,7 @@ public class XMPBasicSchema extends XMPSchema
      */
     public void setMetadataDate(Calendar date)
     {
-        DateType tt = (DateType) instanciateSimple(METADATADATE, date);
+        DateType tt = (DateType) instantiateSimple(METADATADATE, date);
         setMetadataDateProperty(tt);
     }
 
@@ -297,13 +297,13 @@ public class XMPBasicSchema extends XMPSchema
      */
     public void setModifyDate(Calendar date)
     {
-        DateType tt = (DateType) instanciateSimple(MODIFYDATE, date);
+        DateType tt = (DateType) instantiateSimple(MODIFYDATE, date);
         setModifyDateProperty(tt);
     }
 
     public void setModifierDate(Calendar date)
     {
-        DateType tt = (DateType) instanciateSimple(MODIFIER_DATE, date);
+        DateType tt = (DateType) instantiateSimple(MODIFIER_DATE, date);
         setModifierDateProperty(tt);
     }
 
@@ -331,7 +331,7 @@ public class XMPBasicSchema extends XMPSchema
      */
     public void setNickname(String text)
     {
-        TextType tt = (TextType) instanciateSimple(NICKNAME, text);
+        TextType tt = (TextType) instantiateSimple(NICKNAME, text);
         setNicknameProperty(tt);
     }
 
@@ -355,7 +355,7 @@ public class XMPBasicSchema extends XMPSchema
      */
     public void setRating(Integer rate)
     {
-        IntegerType tt = (IntegerType) instanciateSimple(RATING, rate);
+        IntegerType tt = (IntegerType) instantiateSimple(RATING, rate);
         setRatingProperty(tt);
 
     }

@@ -127,7 +127,7 @@ public class XMPRightsManagementSchema extends XMPSchema
      */
     public void setMarked(Boolean marked)
     {
-        BooleanType tt = (BooleanType) instanciateSimple(MARKED,
+        BooleanType tt = (BooleanType) instantiateSimple(MARKED,
                 marked != null && marked ? BooleanType.TRUE : BooleanType.FALSE);
         setMarkedProperty(tt);
     }
@@ -262,7 +262,7 @@ public class XMPRightsManagementSchema extends XMPSchema
      */
     public void setWebStatement(String url)
     {
-        URLType tt = (URLType) instanciateSimple(WEBSTATEMENT, url);
+        URLType tt = (URLType) instantiateSimple(WEBSTATEMENT, url);
         setWebStatementProperty(tt);
     }
 
@@ -306,7 +306,7 @@ public class XMPRightsManagementSchema extends XMPSchema
      */
     public void setCertificate(String url)
     {
-        URLType tt = (URLType) instanciateSimple(CERTIFICATE, url);
+        URLType tt = (URLType) instantiateSimple(CERTIFICATE, url);
         setCertificateProperty(tt);
     }
 

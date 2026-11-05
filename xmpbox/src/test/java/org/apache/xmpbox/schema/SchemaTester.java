@@ -118,7 +118,7 @@ class SchemaTester extends AbstractTypeTester
         XMPSchema schema = getSchema();
         // only test simple properties
         Object value = getJavaValue(type);
-        AbstractSimpleProperty property = schema.instanciateSimple(fieldName, value);
+        AbstractSimpleProperty property = schema.instantiateSimple(fieldName, value);
         schema.addProperty(property);
         String qn = getPropertyQualifiedName(fieldName);
         assertNotNull(schema.getProperty(fieldName));
@@ -160,7 +160,7 @@ class SchemaTester extends AbstractTypeTester
 
         // only test array properties
         Object value = getJavaValue(type);
-        AbstractSimpleProperty property = schema.instanciateSimple(fieldName, value);
+        AbstractSimpleProperty property = schema.instantiateSimple(fieldName, value);
         switch (cardinality)
         {
             case Seq:
@@ -221,7 +221,7 @@ class SchemaTester extends AbstractTypeTester
 
         String setter = calculateSimpleSetter(fieldName) + "Property";
         Object value = getJavaValue(type);
-        AbstractSimpleProperty asp = typeMapping.instanciateSimpleProperty(schema.getNamespace(), schema
+        AbstractSimpleProperty asp = typeMapping.instantiateSimpleProperty(schema.getNamespace(), schema
                 .getPrefix(), fieldName, value, type);
         Method set = schemaClass.getMethod(setter, type.getImplementingClass());
         set.invoke(schema, asp);

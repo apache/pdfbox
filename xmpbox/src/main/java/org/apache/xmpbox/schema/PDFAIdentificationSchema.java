@@ -87,7 +87,7 @@ public class PDFAIdentificationSchema extends XMPSchema
      */
     public void setPartValueWithString(String value)
     {
-        IntegerType part = (IntegerType) instanciateSimple(PART, value);
+        IntegerType part = (IntegerType) instantiateSimple(PART, value);
         addProperty(part);
     }
 
@@ -99,7 +99,7 @@ public class PDFAIdentificationSchema extends XMPSchema
      */
     public void setPartValueWithInt(int value)
     {
-        IntegerType part = (IntegerType) instanciateSimple(PART, value);
+        IntegerType part = (IntegerType) instantiateSimple(PART, value);
         addProperty(part);
     }
 
@@ -315,7 +315,7 @@ public class PDFAIdentificationSchema extends XMPSchema
      */
     public void setRevValueWithString(String value)
     {
-        IntegerType rev = (IntegerType) instanciateSimple(REV, value);
+        IntegerType rev = (IntegerType) instantiateSimple(REV, value);
         addProperty(rev);
     }
 
@@ -326,7 +326,7 @@ public class PDFAIdentificationSchema extends XMPSchema
      */
     public void setRevValueWithInt(int value)
     {
-        IntegerType rev = (IntegerType) instanciateSimple(REV, value);
+        IntegerType rev = (IntegerType) instantiateSimple(REV, value);
         addProperty(rev);
     }
 

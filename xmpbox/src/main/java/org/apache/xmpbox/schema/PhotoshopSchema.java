@@ -128,7 +128,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setAncestorID(String text)
     {
-        URIType tt = (URIType) instanciateSimple(ANCESTORID, text);
+        URIType tt = (URIType) instantiateSimple(ANCESTORID, text);
         setAncestorIDProperty(tt);
     }
 
@@ -150,7 +150,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setAuthorsPosition(String text)
     {
-        TextType tt = (TextType) instanciateSimple(AUTHORS_POSITION, text);
+        TextType tt = (TextType) instantiateSimple(AUTHORS_POSITION, text);
         setAuthorsPositionProperty(tt);
     }
 
@@ -172,7 +172,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setCaptionWriter(String text)
     {
-        ProperNameType tt = (ProperNameType) instanciateSimple(CAPTION_WRITER, text);
+        ProperNameType tt = (ProperNameType) instantiateSimple(CAPTION_WRITER, text);
         setCaptionWriterProperty(tt);
     }
 
@@ -194,7 +194,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setCategory(String text)
     {
-        TextType tt = (TextType) instanciateSimple(CATEGORY, text);
+        TextType tt = (TextType) instantiateSimple(CATEGORY, text);
         setCategoryProperty(tt);
     }
 
@@ -216,7 +216,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setCity(String text)
     {
-        TextType tt = (TextType) instanciateSimple(CITY, text);
+        TextType tt = (TextType) instantiateSimple(CITY, text);
         setCityProperty(tt);
     }
 
@@ -238,7 +238,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setColorMode(String text)
     {
-        IntegerType tt = (IntegerType) instanciateSimple(COLOR_MODE, text);
+        IntegerType tt = (IntegerType) instantiateSimple(COLOR_MODE, text);
         setColorModeProperty(tt);
     }
 
@@ -260,7 +260,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setCountry(String text)
     {
-        TextType tt = (TextType) instanciateSimple(COUNTRY, text);
+        TextType tt = (TextType) instantiateSimple(COUNTRY, text);
         setCountryProperty(tt);
     }
 
@@ -282,7 +282,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setCredit(String text)
     {
-        TextType tt = (TextType) instanciateSimple(CREDIT, text);
+        TextType tt = (TextType) instantiateSimple(CREDIT, text);
         setCreditProperty(tt);
     }
 
@@ -304,7 +304,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setDateCreated(String text)
     {
-        DateType tt = (DateType) instanciateSimple(DATE_CREATED, text);
+        DateType tt = (DateType) instantiateSimple(DATE_CREATED, text);
         setDateCreatedProperty(tt);
     }
 
@@ -341,7 +341,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setHeadline(String text)
     {
-        TextType tt = (TextType) instanciateSimple(HEADLINE, text);
+        TextType tt = (TextType) instantiateSimple(HEADLINE, text);
         setHeadlineProperty(tt);
     }
 
@@ -363,7 +363,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setHistory(String text)
     {
-        TextType tt = (TextType) instanciateSimple(HISTORY, text);
+        TextType tt = (TextType) instantiateSimple(HISTORY, text);
         setHistoryProperty(tt);
     }
 
@@ -385,7 +385,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setICCProfile(String text)
     {
-        TextType tt = (TextType) instanciateSimple(ICC_PROFILE, text);
+        TextType tt = (TextType) instantiateSimple(ICC_PROFILE, text);
         setICCProfileProperty(tt);
     }
 
@@ -407,7 +407,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setInstructions(String text)
     {
-        TextType tt = (TextType) instanciateSimple(INSTRUCTIONS, text);
+        TextType tt = (TextType) instantiateSimple(INSTRUCTIONS, text);
         setInstructionsProperty(tt);
 
     }
@@ -430,7 +430,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setSource(String text)
     {
-        TextType source = (TextType) instanciateSimple(SOURCE, text);
+        TextType source = (TextType) instantiateSimple(SOURCE, text);
         setSourceProperty(source);
     }
 
@@ -452,7 +452,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setState(String text)
     {
-        TextType tt = (TextType) instanciateSimple(STATE, text);
+        TextType tt = (TextType) instantiateSimple(STATE, text);
         setStateProperty(tt);
     }
 
@@ -474,7 +474,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setSupplementalCategories(String text)
     {
-        TextType tt = (TextType) instanciateSimple(SUPPLEMENTAL_CATEGORIES, text);
+        TextType tt = (TextType) instantiateSimple(SUPPLEMENTAL_CATEGORIES, text);
         setSupplementalCategoriesProperty(tt);
     }
 
@@ -533,7 +533,7 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setTransmissionReference(String text)
     {
-        TextType tt = (TextType) instanciateSimple(TRANSMISSION_REFERENCE, text);
+        TextType tt = (TextType) instantiateSimple(TRANSMISSION_REFERENCE, text);
         setTransmissionReferenceProperty(tt);
     }
 
@@ -555,13 +555,13 @@ public class PhotoshopSchema extends XMPSchema
 
     public void setUrgency(String s)
     {
-        IntegerType tt = (IntegerType) instanciateSimple(URGENCY, s);
+        IntegerType tt = (IntegerType) instantiateSimple(URGENCY, s);
         setUrgencyProperty(tt);
     }
 
     public void setUrgency(Integer s)
     {
-        IntegerType tt = (IntegerType) instanciateSimple(URGENCY, s);
+        IntegerType tt = (IntegerType) instantiateSimple(URGENCY, s);
         setUrgencyProperty(tt);
     }
 
