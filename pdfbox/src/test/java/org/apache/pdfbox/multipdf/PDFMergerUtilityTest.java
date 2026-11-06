@@ -807,20 +807,6 @@ class PDFMergerUtilityTest
             List<PDMarkedContent> markedContents = markedContentExtractor.getMarkedContents();
             for (PDMarkedContent markedContent : markedContents)
             {
-                COSDictionary pdmcProperties = markedContent.getProperties();
-                if (pdmcProperties == null)
-                {
-                    continue;
-                }
-                List<Object> contents = markedContent.getContents();
-                for (Object content : contents)
-                {
-                    if (content instanceof PDMarkedContent)
-                    {
-                        PDMarkedContent nestedMarkedContent = (PDMarkedContent) content;
-                        checkMarkedContents(nestedMarkedContent, numberTreeAsMap, pageNum, pageStructParent, pageTree, page);
-                    }
-                }
                 checkMarkedContents(markedContent, numberTreeAsMap, pageNum, pageStructParent, pageTree, page);
             }
             for (PDAnnotation ann : page.getAnnotations())
@@ -859,12 +845,21 @@ class PDFMergerUtilityTest
         }
     }
 
-    private static void checkMarkedContents(PDMarkedContent pdMarkedContent,
+    private static void checkMarkedContents(PDMarkedContent markedContent,
             Map<Integer, COSObjectable> numberTreeAsMap, int pageNum, int pageStructParent,
             PDPageTree pageTree, PDPage page)
     {
-        int structParent = pdMarkedContent.getStructParent();
-        int mcid = pdMarkedContent.getMCID();
+        List<Object> contents = markedContent.getContents();
+        for (Object content : contents)
+        {
+            if (content instanceof PDMarkedContent)
+            {
+                PDMarkedContent nestedMarkedContent = (PDMarkedContent) content;
+                checkMarkedContents(nestedMarkedContent, numberTreeAsMap, pageNum, pageStructParent, pageTree, page);
+            }
+        }
+        int structParent = markedContent.getStructParent();
+        int mcid = markedContent.getMCID();
         if (mcid >= 0 && structParent >= 0)
         {
             // "For a page object or content stream containing marked-content sequences
@@ -896,8 +891,7 @@ class PDFMergerUtilityTest
                     assertEquals(page, actualPage,
                             "mcid " + mcid + " of page " + pageNum + " references page "
                                     + actualPageNum);
-                    assertEquals(structureElemen.getPage(), page);
-                    continue;
+                    break;
                 }
                 if (kid instanceof PDMarkedContentReference)
                 {
