@@ -576,9 +576,8 @@ public abstract class PDCIDFont implements COSObjectable
      * @param parent the parent Type0 font.
      * 
      * @return Array of 1 to 4 PDF content stream bytes.
-     * @throws IOException If the text could not be encoded.
      */
-    protected byte[] encode(int unicode, PDType0Font parent) throws IOException
+    protected byte[] encode(int unicode, PDType0Font parent)
     {
         if (this instanceof PDCIDFontType0)
         {
