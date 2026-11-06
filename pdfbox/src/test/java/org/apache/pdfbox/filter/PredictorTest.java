@@ -18,7 +18,13 @@ package org.apache.pdfbox.filter;
 import static org.apache.pdfbox.filter.Predictor.getBitSeq;
 import static org.apache.pdfbox.filter.Predictor.calcSetBitSeq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -85,5 +91,18 @@ class PredictorTest
         
         // check truncation
         assertEquals(Integer.parseInt("00000010", 2), calcSetBitSeq(Integer.parseInt("00000000", 2), 1, 1, 3));
+    }
+
+    /**
+     * A non-PNG predictor whose parameters give a zero row length (such as /Columns 0) must be rejected rather than
+     * leaving {@link Predictor#wrapPredictor} with an output stream whose write loop never makes progress.
+     */
+    @Test
+    void testNonPositiveRowLengthRejected() throws IOException
+    {
+        final COSDictionary decodeParams = new COSDictionary();
+        decodeParams.setInt(COSName.PREDICTOR, 2);
+        decodeParams.setInt(COSName.COLUMNS, 0);
+        assertThrows(IOException.class, () -> Predictor.wrapPredictor(new ByteArrayOutputStream(), decodeParams));
     }
 }
