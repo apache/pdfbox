@@ -74,7 +74,7 @@ class TestDerivedType
         );
     }
 
-    protected TextType instanciate(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName,
+    protected TextType instantiate(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName,
             Object value) throws ReflectiveOperationException
     {
         Object[] initargs = { metadata, namespaceURI, prefix, propertyName, value };
