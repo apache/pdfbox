@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination;
 
-import java.io.IOException;
-
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
@@ -104,10 +102,8 @@ public class PDNamedDestination extends PDDestination
      * Set the named destination.
      *
      * @param dest The new named destination.
-     *
-     * @throws IOException If there is an error setting the named destination.
      */
-    public void setNamedDestination( String dest ) throws IOException
+    public void setNamedDestination( String dest )
     {
         if (dest == null)
         {
