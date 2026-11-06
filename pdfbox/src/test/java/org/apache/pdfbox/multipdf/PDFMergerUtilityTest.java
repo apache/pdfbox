@@ -796,7 +796,7 @@ class PDFMergerUtilityTest
         {
             int pageStructParent = page.getStructParents();
             int pageNum = pageTree.indexOf(page) + 1;
-            if (page.getStructParents() < 0)
+            if (pageStructParent < 0)
             {
                 continue;
             }
@@ -814,11 +814,7 @@ class PDFMergerUtilityTest
                 }
                 int structParent = pdMarkedContent.getStructParent();
                 int mcid = pdMarkedContent.getMCID();
-                if (mcid < 0)
-                {
-                    continue;
-                }
-                if (mcid >= 0)
+                if (mcid >= 0 && structParent >= 0)
                 {
                     // "For a page object or content stream containing marked-content sequences
                     //  that are content items, the value shall be an array of references to
@@ -840,7 +836,17 @@ class PDFMergerUtilityTest
                         if (kid instanceof Integer && ((Integer) kid) == mcid)
                         {
                             found = true;
-                            break;
+                            // This must be a page, because a form would have an /Stm entry
+                            assertEquals(pageStructParent, structParent,
+                                    "Integer kid for MCID " + mcid + " on page " + pageNum +
+                                    " used for content with /StructParents " + structParent);
+                            PDPage actualPage = structureElemen.getPage();
+                            int actualPageNum = pageTree.indexOf(actualPage) + 1;
+                            assertEquals(page, actualPage,
+                                    "mcid " + mcid + " of page " + pageNum + " references page "
+                                    + actualPageNum);
+                            assertEquals(structureElemen.getPage(), page);
+                            continue;
                         }
                         if (kid instanceof PDMarkedContentReference)
                         {
@@ -853,20 +859,20 @@ class PDFMergerUtilityTest
                                 assertEquals(page, actualPage,
                                         "mcid " + mcid + " of page " + pageNum + " references page " +
                                          actualPageNum);
+                                // See "Entries in a marked-content reference dictionary"
+                                COSStream stm = mcr.getCOSObject().getCOSStream(COSName.STM);
+                                if (stm == null)
+                                {
+                                    // this is a page content stream
+                                    assertEquals(pageStructParent, structParent);
+                                }
+                                else
+                                {
+                                    // content stream other than the content stream for the page
+                                    // i.e. form XObject or appearance stream
+                                    assertNotEquals(pageStructParent, structParent);
+                                }
                                 break;
-                            }
-                            // See "Entries in a marked-content reference dictionary"
-                            COSStream stm = mcr.getCOSObject().getCOSStream(COSName.STM);
-                            if (stm == null)
-                            {
-                                // this is a page content stream
-                                assertEquals(pageStructParent, structParent);
-                            }
-                            else
-                            {
-                                // content stream other than the content stream for the page
-                                // i.e. form XObject or appearance stream
-                                assertNotEquals(pageStructParent, structParent);
                             }
                         }
                     }
@@ -909,8 +915,6 @@ class PDFMergerUtilityTest
                 }
             }
         }
-
-        // might also test image and form dictionaries...
     }
 
     /**
@@ -1010,6 +1014,8 @@ class PDFMergerUtilityTest
         try (PDDocument doc = Loader.loadPDF(new File(TARGETTESTDIR, "PDFBOX-6301-octopdf-sample-merged3.pdf")))
         {
             int parentTreeNextKey = doc.getDocumentCatalog().getStructureTreeRoot().getParentTreeNextKey();
+            Set<Integer> keySet = doc.getDocumentCatalog().getStructureTreeRoot().getParentTree().getTreeAsMap().keySet();
+            assertEquals(16 * 2, keySet.size()); // original file has 16 elements
             assertEquals(16 * 2, parentTreeNextKey); // original file has 16 elements
             checkWithNumberTree(doc);
             PDPage page1 = doc.getPage(0);
@@ -1023,6 +1029,9 @@ class PDFMergerUtilityTest
             PDFormXObject r8 = (PDFormXObject) page1.getResources().getXObject(COSName.getPDFName("R8"));
             PDFormXObject r9 = (PDFormXObject) page1.getResources().getXObject(COSName.getPDFName("R9"));
             PDFormXObject r10 = (PDFormXObject) r9.getResources().getXObject(COSName.getPDFName("R10"));
+            assertTrue(keySet.contains(r8.getStructParents()));
+            assertTrue(keySet.contains(r9.getStructParents()));
+            assertTrue(keySet.contains(r10.getStructParents()));
             assertEquals(0, r8.getStructParents());
             assertEquals(2, r9.getStructParents());
             assertEquals(3, r10.getStructParents());
@@ -1032,6 +1041,9 @@ class PDFMergerUtilityTest
             assertEquals(r8.getStructParents() + parentTreeNextKey / 2, r8b.getStructParents());
             assertEquals(r9.getStructParents() + parentTreeNextKey / 2, r9b.getStructParents());
             assertEquals(r10.getStructParents() + parentTreeNextKey / 2, r10b.getStructParents());
+            assertTrue(keySet.contains(r8b.getStructParents()));
+            assertTrue(keySet.contains(r9b.getStructParents()));
+            assertTrue(keySet.contains(r10b.getStructParents()));
         }
     }
 
