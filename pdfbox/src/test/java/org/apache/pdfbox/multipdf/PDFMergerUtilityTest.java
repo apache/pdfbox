@@ -916,6 +916,8 @@ class PDFMergerUtilityTest
                 }
             }
             assertTrue(found, "page: " + pageNum + ", mcid: " + mcid +
+                    ", expected " + (isPageContent ? "page" : "form") + " content kid" +
+                    " (" + (isPageContent ? "integer or MCR without /Stm" : "MCR with /Stm") + ")" +
                     " not found in /ParentTree entry " + array.get(mcid) +
                     " for StructParent " + structParent);
         }
