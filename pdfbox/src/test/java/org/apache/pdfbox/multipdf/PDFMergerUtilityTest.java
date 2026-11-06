@@ -876,27 +876,34 @@ class PDFMergerUtilityTest
                     pageNum + " in /ParentTree entry " + structParent + " is null"); // 286810.pdf
             PDStructureElement structureElemen = (PDStructureElement) PDStructureNode.create(dict);
             List<Object> kids = structureElemen.getKids();
+            // MCIDs are only unique per content stream. Content with the page's /StructParents
+            // key is in the page content stream, anything else is in a form (or similar) stream.
+            boolean isPageContent = structParent == pageStructParent;
             boolean found = false;
             for (Object kid : kids)
             {
-                if (kid instanceof Integer && ((Integer) kid) == mcid)
+                if (kid instanceof Integer)
                 {
-                    found = true;
-                    // This must be a page, because a form would have an /Stm entry
-                    assertEquals(pageStructParent, structParent,
-                            "Integer kid for MCID " + mcid + " on page " + pageNum +
-                                    " used for content with /StructParents " + structParent);
-                    PDPage actualPage = structureElemen.getPage();
-                    int actualPageNum = pageTree.indexOf(actualPage) + 1;
-                    assertEquals(page, actualPage,
-                            "mcid " + mcid + " of page " + pageNum + " references page "
-                                    + actualPageNum);
-                    break;
+                    // an integer kid can only refer to the content stream of the page
+                    if (isPageContent && ((Integer) kid) == mcid)
+                    {
+                        found = true;
+                        PDPage actualPage = structureElemen.getPage();
+                        int actualPageNum = pageTree.indexOf(actualPage) + 1;
+                        assertEquals(page, actualPage,
+                                "mcid " + mcid + " of page " + pageNum + " references page " +
+                                        actualPageNum);
+                        break;
+                    }
                 }
-                if (kid instanceof PDMarkedContentReference)
+                else if (kid instanceof PDMarkedContentReference)
                 {
                     PDMarkedContentReference mcr = (PDMarkedContentReference) kid;
-                    if (mcid == mcr.getMCID())
+                    // See "Entries in a marked-content reference dictionary":
+                    // no /Stm = page content stream, /Stm = form XObject or appearance stream
+                    COSStream stm = mcr.getCOSObject().getCOSStream(COSName.STM);
+                    boolean mcrIsPageContent = stm == null;
+                    if (mcid == mcr.getMCID() && isPageContent == mcrIsPageContent)
                     {
                         found = true;
                         PDPage actualPage = mcr.getPage() != null ? mcr.getPage() : structureElemen.getPage();
@@ -904,19 +911,6 @@ class PDFMergerUtilityTest
                         assertEquals(page, actualPage,
                                 "mcid " + mcid + " of page " + pageNum + " references page " +
                                         actualPageNum);
-                        // See "Entries in a marked-content reference dictionary"
-                        COSStream stm = mcr.getCOSObject().getCOSStream(COSName.STM);
-                        if (stm == null)
-                        {
-                            // this is a page content stream
-                            assertEquals(pageStructParent, structParent);
-                        }
-                        else
-                        {
-                            // content stream other than the content stream for the page
-                            // i.e. form XObject or appearance stream
-                            assertNotEquals(pageStructParent, structParent);
-                        }
                         break;
                     }
                 }
