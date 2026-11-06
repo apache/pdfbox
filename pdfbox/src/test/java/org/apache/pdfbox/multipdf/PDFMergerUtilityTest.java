@@ -805,81 +805,23 @@ class PDFMergerUtilityTest
             PDFMarkedContentExtractor markedContentExtractor = new PDFMarkedContentExtractor();
             markedContentExtractor.processPage(page);
             List<PDMarkedContent> markedContents = markedContentExtractor.getMarkedContents();
-            for (PDMarkedContent pdMarkedContent : markedContents)
+            for (PDMarkedContent markedContent : markedContents)
             {
-                COSDictionary pdmcProperties = pdMarkedContent.getProperties();
+                COSDictionary pdmcProperties = markedContent.getProperties();
                 if (pdmcProperties == null)
                 {
                     continue;
                 }
-                int structParent = pdMarkedContent.getStructParent();
-                int mcid = pdMarkedContent.getMCID();
-                if (mcid >= 0 && structParent >= 0)
+                List<Object> contents = markedContent.getContents();
+                for (Object content : contents)
                 {
-                    // "For a page object or content stream containing marked-content sequences
-                    //  that are content items, the value shall be an array of references to
-                    // the parent elements of those marked-content sequences."
-                    PDParentTreeValue obj = (PDParentTreeValue) numberTreeAsMap.get(structParent);
-                    assertTrue(obj.getCOSObject() instanceof COSArray, "Expected array in page " + pageNum + ", got " + obj.getClass());
-                    COSArray array = (COSArray) obj.getCOSObject();
-                    assertTrue(mcid < array.size(),
-                            "MCID " + mcid + " larger than MCID count " + array.size() +
-                            " for page " + pageNum + " in /ParentTree entry " + structParent); // 271158.pdf
-                    COSDictionary dict = (COSDictionary) array.getObject(mcid);
-                    assertNotNull(dict, "Element for MCID " + mcid + " for page " +
-                            pageNum + " in /ParentTree entry " + structParent + " is null"); // 286810.pdf
-                    PDStructureElement structureElemen = (PDStructureElement) PDStructureNode.create(dict);
-                    List<Object> kids = structureElemen.getKids();
-                    boolean found = false;
-                    for (Object kid : kids)
+                    if (content instanceof PDMarkedContent)
                     {
-                        if (kid instanceof Integer && ((Integer) kid) == mcid)
-                        {
-                            found = true;
-                            // This must be a page, because a form would have an /Stm entry
-                            assertEquals(pageStructParent, structParent,
-                                    "Integer kid for MCID " + mcid + " on page " + pageNum +
-                                    " used for content with /StructParents " + structParent);
-                            PDPage actualPage = structureElemen.getPage();
-                            int actualPageNum = pageTree.indexOf(actualPage) + 1;
-                            assertEquals(page, actualPage,
-                                    "mcid " + mcid + " of page " + pageNum + " references page "
-                                    + actualPageNum);
-                            assertEquals(structureElemen.getPage(), page);
-                            continue;
-                        }
-                        if (kid instanceof PDMarkedContentReference)
-                        {
-                            PDMarkedContentReference mcr = (PDMarkedContentReference) kid;
-                            if (mcid == mcr.getMCID())
-                            {
-                                found = true;
-                                PDPage actualPage = mcr.getPage() != null ? mcr.getPage() : structureElemen.getPage();
-                                int actualPageNum = pageTree.indexOf(actualPage) + 1;
-                                assertEquals(page, actualPage,
-                                        "mcid " + mcid + " of page " + pageNum + " references page " +
-                                         actualPageNum);
-                                // See "Entries in a marked-content reference dictionary"
-                                COSStream stm = mcr.getCOSObject().getCOSStream(COSName.STM);
-                                if (stm == null)
-                                {
-                                    // this is a page content stream
-                                    assertEquals(pageStructParent, structParent);
-                                }
-                                else
-                                {
-                                    // content stream other than the content stream for the page
-                                    // i.e. form XObject or appearance stream
-                                    assertNotEquals(pageStructParent, structParent);
-                                }
-                                break;
-                            }
-                        }
+                        PDMarkedContent nestedMarkedContent = (PDMarkedContent) content;
+                        checkMarkedContents(nestedMarkedContent, numberTreeAsMap, pageNum, pageStructParent, pageTree, page);
                     }
-                    assertTrue(found, "page: " + pageNum + ", mcid: " + mcid +
-                            " not found in /ParentTree entry " + array.get(mcid) +
-                            " for StructParent " + structParent);
                 }
+                checkMarkedContents(markedContent, numberTreeAsMap, pageNum, pageStructParent, pageTree, page);
             }
             for (PDAnnotation ann : page.getAnnotations())
             {
@@ -914,6 +856,80 @@ class PDFMergerUtilityTest
                             String.format("/StructureTree entry %d for page %d doesn't have expected page and annotation", structParent, pageNum));
                 }
             }
+        }
+    }
+
+    private static void checkMarkedContents(PDMarkedContent pdMarkedContent,
+            Map<Integer, COSObjectable> numberTreeAsMap, int pageNum, int pageStructParent,
+            PDPageTree pageTree, PDPage page)
+    {
+        int structParent = pdMarkedContent.getStructParent();
+        int mcid = pdMarkedContent.getMCID();
+        if (mcid >= 0 && structParent >= 0)
+        {
+            // "For a page object or content stream containing marked-content sequences
+            //  that are content items, the value shall be an array of references to
+            // the parent elements of those marked-content sequences."
+            PDParentTreeValue obj = (PDParentTreeValue) numberTreeAsMap.get(structParent);
+            assertTrue(obj.getCOSObject() instanceof COSArray, "Expected array in page " + pageNum + ", got " + obj.getClass());
+            COSArray array = (COSArray) obj.getCOSObject();
+            assertTrue(mcid < array.size(),
+                    "MCID " + mcid + " larger than MCID count " + array.size() +
+                            " for page " + pageNum + " in /ParentTree entry " + structParent); // 271158.pdf
+            COSDictionary dict = (COSDictionary) array.getObject(mcid);
+            assertNotNull(dict, "Element for MCID " + mcid + " for page " +
+                    pageNum + " in /ParentTree entry " + structParent + " is null"); // 286810.pdf
+            PDStructureElement structureElemen = (PDStructureElement) PDStructureNode.create(dict);
+            List<Object> kids = structureElemen.getKids();
+            boolean found = false;
+            for (Object kid : kids)
+            {
+                if (kid instanceof Integer && ((Integer) kid) == mcid)
+                {
+                    found = true;
+                    // This must be a page, because a form would have an /Stm entry
+                    assertEquals(pageStructParent, structParent,
+                            "Integer kid for MCID " + mcid + " on page " + pageNum +
+                                    " used for content with /StructParents " + structParent);
+                    PDPage actualPage = structureElemen.getPage();
+                    int actualPageNum = pageTree.indexOf(actualPage) + 1;
+                    assertEquals(page, actualPage,
+                            "mcid " + mcid + " of page " + pageNum + " references page "
+                                    + actualPageNum);
+                    assertEquals(structureElemen.getPage(), page);
+                    continue;
+                }
+                if (kid instanceof PDMarkedContentReference)
+                {
+                    PDMarkedContentReference mcr = (PDMarkedContentReference) kid;
+                    if (mcid == mcr.getMCID())
+                    {
+                        found = true;
+                        PDPage actualPage = mcr.getPage() != null ? mcr.getPage() : structureElemen.getPage();
+                        int actualPageNum = pageTree.indexOf(actualPage) + 1;
+                        assertEquals(page, actualPage,
+                                "mcid " + mcid + " of page " + pageNum + " references page " +
+                                        actualPageNum);
+                        // See "Entries in a marked-content reference dictionary"
+                        COSStream stm = mcr.getCOSObject().getCOSStream(COSName.STM);
+                        if (stm == null)
+                        {
+                            // this is a page content stream
+                            assertEquals(pageStructParent, structParent);
+                        }
+                        else
+                        {
+                            // content stream other than the content stream for the page
+                            // i.e. form XObject or appearance stream
+                            assertNotEquals(pageStructParent, structParent);
+                        }
+                        break;
+                    }
+                }
+            }
+            assertTrue(found, "page: " + pageNum + ", mcid: " + mcid +
+                    " not found in /ParentTree entry " + array.get(mcid) +
+                    " for StructParent " + structParent);
         }
     }
 
