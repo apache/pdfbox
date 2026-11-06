@@ -57,6 +57,7 @@ import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructur
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
@@ -765,6 +766,9 @@ class PDFMergerUtilityTest
      * <p>
      * Expanded in 2025 to check that all MCIDs of a page content stream have an entry in the
      * ParentTree.
+     * <p>
+     * Expanded in 2026 (PDFBOX-6301 and PDFBOX-6303) to check the StructParent entries that are now
+     * provided by PDMarkedContent.getStructParent().
      *
      * @param document
      */
@@ -847,7 +851,7 @@ class PDFMergerUtilityTest
 
     private static void checkMarkedContents(PDMarkedContent markedContent,
             Map<Integer, COSObjectable> numberTreeAsMap, int pageNum, int pageStructParent,
-            PDPageTree pageTree, PDPage page)
+            PDPageTree pageTree, PDPage page) throws IOException
     {
         List<Object> contents = markedContent.getContents();
         for (Object content : contents)
@@ -906,6 +910,12 @@ class PDFMergerUtilityTest
                     if (mcid == mcr.getMCID() && isPageContent == mcrIsPageContent)
                     {
                         found = true;
+                        if (!mcrIsPageContent)
+                        {
+                            PDFormXObject form = (PDFormXObject) PDXObject.createXObject(stm, null);
+                            assertEquals(structParent, form.getStructParents(),
+                                    "MCR /Stm form for MCID " + mcid + " on page " + pageNum + " has a different /StructParents");
+                        }
                         PDPage actualPage = mcr.getPage() != null ? mcr.getPage() : structureElemen.getPage();
                         int actualPageNum = pageTree.indexOf(actualPage) + 1;
                         assertEquals(page, actualPage,
