@@ -35,6 +35,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
@@ -793,12 +794,13 @@ class PDFMergerUtilityTest
         PDPageTree pageTree = document.getPages();
         for (PDPage page : pageTree)
         {
+            int pageStructParent = page.getStructParents();
             int pageNum = pageTree.indexOf(page) + 1;
             if (page.getStructParents() < 0)
             {
                 continue;
             }
-            assertTrue(keySet.contains(page.getStructParents()), "/StructParents " + page.getStructParents() + " from page " +
+            assertTrue(keySet.contains(pageStructParent), "/StructParents " + pageStructParent + " from page " +
                        pageNum + " not found in /ParentTree");
             PDFMarkedContentExtractor markedContentExtractor = new PDFMarkedContentExtractor();
             markedContentExtractor.processPage(page);
@@ -821,7 +823,6 @@ class PDFMergerUtilityTest
                     // "For a page object or content stream containing marked-content sequences
                     //  that are content items, the value shall be an array of references to
                     // the parent elements of those marked-content sequences."
-                    // this means that the /Pg entry doesn't have to match the page
                     PDParentTreeValue obj = (PDParentTreeValue) numberTreeAsMap.get(structParent);
                     assertTrue(obj.getCOSObject() instanceof COSArray, "Expected array in page " + pageNum + ", got " + obj.getClass());
                     COSArray array = (COSArray) obj.getCOSObject();
@@ -848,11 +849,24 @@ class PDFMergerUtilityTest
                             {
                                 found = true;
                                 PDPage actualPage = mcr.getPage() != null ? mcr.getPage() : structureElemen.getPage();
-                                int actualPageNum = pageTree.indexOf(actualPage);
+                                int actualPageNum = pageTree.indexOf(actualPage) + 1;
                                 assertEquals(page, actualPage,
                                         "mcid " + mcid + " of page " + pageNum + " references page " +
                                          actualPageNum);
                                 break;
+                            }
+                            // See "Entries in a marked-content reference dictionary"
+                            COSStream stm = mcr.getCOSObject().getCOSStream(COSName.STM);
+                            if (stm == null)
+                            {
+                                // this is a page content stream
+                                assertEquals(pageStructParent, structParent);
+                            }
+                            else
+                            {
+                                // content stream other than the content stream for the page
+                                // i.e. form XObject or appearance stream
+                                assertNotEquals(pageStructParent, structParent);
                             }
                         }
                     }

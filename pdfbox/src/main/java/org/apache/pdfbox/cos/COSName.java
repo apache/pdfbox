@@ -570,6 +570,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName STD_CF = getPDFName("StdCF");
     public static final COSName STEM_H = getPDFName("StemH");
     public static final COSName STEM_V = getPDFName("StemV");
+    public static final COSName STM = getPDFName("Stm");
     public static final COSName STM_F = getPDFName("StmF");
     public static final COSName STR_F = getPDFName("StrF");
     public static final COSName STRUCT_ELEM = getPDFName("StructElem");
