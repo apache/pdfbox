@@ -113,9 +113,8 @@ public class PDEmbeddedFile extends PDStream
      * Get the creation date of the embedded file.
      *
      * @return The Creation date.
-     * @throws IOException If there is an error while constructing the date.
      */
-    public Calendar getCreationDate() throws IOException
+    public Calendar getCreationDate()
     {
         return getCOSObject().getEmbeddedDate(COSName.PARAMS, COSName.CREATION_DATE);
     }
@@ -134,9 +133,8 @@ public class PDEmbeddedFile extends PDStream
      * Get the mod date of the embedded file.
      *
      * @return The mod date.
-     * @throws IOException If there is an error while constructing the date.
      */
-    public Calendar getModDate() throws IOException
+    public Calendar getModDate()
     {
         return getCOSObject().getEmbeddedDate(COSName.PARAMS, COSName.MOD_DATE);
     }
