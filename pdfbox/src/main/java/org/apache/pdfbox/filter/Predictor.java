@@ -285,9 +285,11 @@ public final class Predictor
             this.bitsPerComponent = bitsPerComponent;
             this.columns = columns;
             this.rowLength = calculateRowLength(colors, bitsPerComponent, columns);
-            if (rowLength < 0)
+            if (rowLength <= 0)
             {
-                throw new IOException("Calculated row length is negative: " + rowLength);
+                // A zero row length (e.g. /Columns 0) would leave write() making no progress,
+                // a non-terminating loop for non-PNG predictors; reject it alongside negatives.
+                throw new IOException("Calculated row length is not positive: " + rowLength);
             }
             // PDFBOX-6265: prevent OOM with extreme values
             long maxRowLength = 10_000_000L;
