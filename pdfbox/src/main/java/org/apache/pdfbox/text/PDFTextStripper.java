@@ -2179,7 +2179,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
         public boolean isWordSeparator()
         {
-            return textPosition == null;
+            return this == WORD_SEPARATOR;
         }
     }
 
