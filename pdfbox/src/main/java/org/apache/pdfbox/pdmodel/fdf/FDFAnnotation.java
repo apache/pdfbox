@@ -817,10 +817,8 @@ public abstract class FDFAnnotation implements COSObjectable
      * The annotation create date.
      *
      * @return The date of the creation of the annotation date
-     *
-     * @throws IOException If there is an error converting the string to a Calendar object.
      */
-    public Calendar getCreationDate() throws IOException
+    public Calendar getCreationDate()
     {
         return annot.getDate(COSName.CREATION_DATE);
     }
