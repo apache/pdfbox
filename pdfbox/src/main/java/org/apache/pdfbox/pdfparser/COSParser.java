@@ -1627,10 +1627,6 @@ public class COSParser extends BaseParser implements ICOSParser
                     decryptionMaterial);
             accessPermission = securityHandler.getCurrentAccessPermission();
         }
-        catch (IOException e)
-        {
-            throw e;
-        }
         catch (GeneralSecurityException e)
         {
             throw new IOException("Error (" + e.getClass().getSimpleName()
