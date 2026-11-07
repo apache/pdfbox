@@ -897,6 +897,8 @@ public class PDDocument implements Closeable
 
     /**
      * Returns the list of fonts which will be subset before the document is saved.
+     * 
+     * @deprecated use {@link #addFontForSubsetting(PDFont)} instead
      */
     Set<PDFont> getFontsToSubset()
     {
@@ -904,14 +906,29 @@ public class PDDocument implements Closeable
     }
     
     /**
+     * Adds the given font to the list of fonts for subsetting.
+     * 
+     * @param font the font to be added to the list of fonts for subsetting
+     * @throws IllegalArgumentException If the font doesn't support subsetting
+     */
+    public void addFontForSubsetting(PDFont font)
+    {
+        if (!font.willBeSubset())
+        {
+            throw new IllegalArgumentException(
+                    "The font " + font.getName() + " doesn't support subsetting");
+        }
+        fontsToSubset.add(font);
+    }
+
+    /**
      * Save the document to a file using default compression.
      * <p>
      * Don't use the input file as target as this will produce a corrupted file.
      * <p>
      * If encryption has been activated (with {@link #protect(org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy)
-     * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted.
-     * The same applies if your file was created from parts of another file and that
-     * one is to be used after saving.
+     * protect(ProtectionPolicy)}), do not use the document after saving because the contents are now encrypted. The
+     * same applies if your file was created from parts of another file and that one is to be used after saving.
      *
      * @param fileName The file to save as.
      *
