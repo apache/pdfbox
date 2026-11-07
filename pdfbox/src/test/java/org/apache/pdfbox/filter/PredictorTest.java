@@ -95,7 +95,7 @@ public class PredictorTest
      * leaving {@link Predictor#wrapPredictor} with an output stream whose write loop never makes progress.
      */
     @Test
-    public void testNonPositiveRowLengthRejected() throws IOException
+    public void testNonPositiveRowLengthRejected()
     {
         final COSDictionary decodeParams = new COSDictionary();
         decodeParams.setInt(COSName.PREDICTOR, 2);
