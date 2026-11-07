@@ -1284,6 +1284,12 @@ class PDFMergerUtilityTest
             {
                 assertFalse(kdict.getCOSDictionary(COSName.PG) == null && parentDict.getCOSDictionary(COSName.PG) == null);
             }
+            if (COSName.MCR.equals(kdict.getDictionaryObject(COSName.TYPE)))
+            {
+                // MCID is mandatory in a marked-content reference dictionary
+                assertTrue(kdict.getInt(COSName.MCID) >= 0, 
+                        "MCR without valid /MCID, parent /S: " + parentDict.getDictionaryObject(COSName.S));
+            }
 
             // if we're an object reference dictionary (/OBJR), check the obj
             if (kdict.containsKey(COSName.OBJ))
