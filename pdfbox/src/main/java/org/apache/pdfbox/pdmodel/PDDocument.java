@@ -995,10 +995,28 @@ public class PDDocument implements Closeable
 
     /**
      * Returns the list of fonts which will be subset before the document is saved.
+     * 
+     * @deprecated use {@link #addFontForSubsetting(PDFont)} instead
      */
     Set<PDFont> getFontsToSubset()
     {
         return fontsToSubset;
+    }
+
+    /**
+     * Adds the given font to the list of fonts for subsetting.
+     * 
+     * @param font the font to be added to the list of fonts for subsetting
+     * @throws IllegalArgumentException If the font doesn't support subsetting
+     */
+    public void addFontForSubsetting(PDFont font)
+    {
+        if (!font.willBeSubset())
+        {
+            throw new IllegalArgumentException(
+                    "The font " + font.getName() + " doesn't support subsetting");
+        }
+        fontsToSubset.add(font);
     }
 
     /**

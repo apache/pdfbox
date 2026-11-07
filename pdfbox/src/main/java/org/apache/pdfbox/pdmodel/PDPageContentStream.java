@@ -409,7 +409,7 @@ public final class PDPageContentStream implements Closeable
         
         if (font.willBeSubset())
         {
-            document.getFontsToSubset().add(font);
+            document.addFontForSubsetting(font);
         }
         
         writeOperand(resources.add(font));

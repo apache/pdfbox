@@ -166,7 +166,7 @@ abstract class PDAbstractContentStream implements Closeable
         {
             if (document != null)
             {
-                document.getFontsToSubset().add(font);
+                document.addFontForSubsetting(font);
             }
             else
             {
