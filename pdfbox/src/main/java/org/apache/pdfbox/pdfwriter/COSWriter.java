@@ -259,9 +259,10 @@ public class COSWriter implements ICOSVisitor
     }
 
     /**
-     * COSWriter constructor for incremental updates. There must be a path of objects that have
-     * {@link COSUpdateInfo#isNeedToBeUpdated()} set, starting from the document catalog. For signatures this is taken
-     * care by PDFBox itself.
+     * COSWriter constructor for incremental updates. PDFBox traverses the document catalog and collects updated
+     * objects. When an updated direct child needs its containing dictionary rewritten, that dictionary is included
+     * automatically; callers do not need to mark every object along the path from the catalog. For signatures this is
+     * taken care by PDFBox itself.
      *
      * @param outputStream output stream where the new PDF data will be written.
      * @param inputData random access read containing source PDF data
