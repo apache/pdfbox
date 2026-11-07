@@ -209,7 +209,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
         {
             if (document != null)
             {
-                document.getFontsToSubset().add(font);
+                document.addFontForSubsetting(font);
             }
             else
             {
