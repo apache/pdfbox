@@ -45,7 +45,7 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 public class GlyphLayoutProcessorFop extends AbstractGlyphLayoutProcessor implements GlyphLayoutProcessorInterface
 {
 
-    private final GlyphLayoutFontLoaderFop glyphLayoutFontLoaderFop = new GlyphLayoutFontLoaderFop();
+    private final GlyphLayoutFontLoaderFop glyphLayoutFontLoaderFop = createGlyphLayoutFontLoaderFop();
 
     /*
         Before you call GlyphMapping.doGlyphMapping to position the glyphs,
@@ -69,6 +69,15 @@ public class GlyphLayoutProcessorFop extends AbstractGlyphLayoutProcessor implem
      */
     public GlyphLayoutProcessorFop()
     {
+    }
+
+    /**
+     * Create GlyphLayoutFontLoaderFop
+     * can be overridden by subclasses
+     */
+    protected GlyphLayoutFontLoaderFop createGlyphLayoutFontLoaderFop()
+    {
+        return new GlyphLayoutFontLoaderFop();
     }
 
     /**
