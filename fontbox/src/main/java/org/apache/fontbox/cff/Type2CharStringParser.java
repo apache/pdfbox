@@ -37,6 +37,10 @@ public class Type2CharStringParser
     private static final int HINTMASK = CharStringCommand.HINTMASK.getValue();
     private static final int CNTRMASK = CharStringCommand.CNTRMASK.getValue();
 
+    // The formats allow 10 nested subroutine calls, but fonts in use exceed that. This is only a
+    // safeguard against endless recursion.
+    static final int MAX_SUBR_NESTING = 100;
+
     private final String fontName;
 
     /**
@@ -140,7 +144,14 @@ public class Type2CharStringParser
     private void processSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex, byte[] subrBytes,
             GlyphData glyphData) throws IOException
     {
+        if (glyphData.subrNesting >= MAX_SUBR_NESTING)
+        {
+            throw new IOException("Subroutines are nested more than " + MAX_SUBR_NESTING
+                    + " levels deep in font " + fontName);
+        }
+        glyphData.subrNesting++;
         parseSequence(subrBytes, globalSubrIndex, localSubrIndex, glyphData);
+        glyphData.subrNesting--;
         Object lastItem = glyphData.sequence.get(glyphData.sequence.size() - 1);
         if (lastItem instanceof CharStringCommand
                 && Type2KeyWord.RET == ((CharStringCommand) lastItem).getType2KeyWord())
@@ -249,6 +260,7 @@ public class Type2CharStringParser
         final List<Object> sequence = new ArrayList<>();
         int hstemCount = 0;
         int vstemCount = 0;
+        int subrNesting = 0;
 
         private GlyphData()
         {
