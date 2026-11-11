@@ -108,7 +108,13 @@ public interface PDFTemplateBuilder
             throws IOException;
 
     /**
-     * Creates SignatureRectangle.
+     * Creates SignatureRectangle. By default, the y axis of the properties is measured from the top
+     * of the template, i.e. the rectangle is calculated from <code>xAxis</code>,
+     * <code>templateHeight - yAxis</code>, width and height. If
+     * {@link PDVisibleSignDesigner#isUseBottomLeftOrigin()} is true, <code>xAxis</code> and
+     * <code>yAxis</code> are used as given as the lower left corner of the rectangle (PDF user space,
+     * origin at the bottom left), and the upper right corner is <code>xAxis + width</code>,
+     * <code>yAxis + height</code>.
      * 
      * @param signatureField the signature field
      * @param properties properties

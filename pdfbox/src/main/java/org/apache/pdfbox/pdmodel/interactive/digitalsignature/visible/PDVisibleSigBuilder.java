@@ -149,7 +149,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     {
 
         PDRectangle rect = new PDRectangle();
-        if (properties.isUseCustomCoordinates())
+        if (properties.isUseBottomLeftOrigin())
         {
             rect.setLowerLeftX(properties.getxAxis());
             rect.setLowerLeftY(properties.getyAxis());
