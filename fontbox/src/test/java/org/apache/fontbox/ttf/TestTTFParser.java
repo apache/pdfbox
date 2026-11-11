@@ -15,6 +15,7 @@
  */
 package org.apache.fontbox.ttf;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -24,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -201,4 +204,36 @@ class TestTTFParser
         assertEquals(ttf.getOS2Windows().getSuperscriptYSize(),headers.getOS2Windows().getSuperscriptYSize());
     }
 
+    /**
+     * Parse from a ByteBuffer: the buffer isn't changed, so it can be parsed again, and the font
+     * reads the same as one parsed from a RandomAccessRead.
+     *
+     * @throws IOException If something went wrong
+     */
+    @Test
+    void testParseByteBuffer() throws IOException
+    {
+        final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        byte[] fontBytes = Files.readAllBytes(testFile.toPath());
+        // the font starts after a prefix, so the buffer must be read from its position
+        ByteBuffer buffer = ByteBuffer.allocate(fontBytes.length + 3);
+        buffer.position(3);
+        buffer.put(fontBytes);
+        buffer.position(3);
+        buffer = buffer.asReadOnlyBuffer();
+
+        TrueTypeFont expected = new TTFParser().parse(new RandomAccessReadBufferedFile(testFile));
+        TrueTypeFont ttf1 = new TTFParser().parse(buffer);
+        TrueTypeFont ttf2 = new TTFParser().parse(buffer);
+        assertEquals(3, buffer.position());
+        assertEquals(expected.getName(), ttf2.getName());
+        assertEquals(expected.getNumberOfGlyphs(), ttf2.getNumberOfGlyphs());
+        assertEquals(expected.getPath("A").getBounds2D(), ttf1.getPath("A").getBounds2D());
+        assertEquals(expected.getPath("Aacute").getBounds2D(), ttf2.getPath("Aacute").getBounds2D());
+        assertEquals(fontBytes.length, ttf1.getOriginalDataSize());
+        try (InputStream is = ttf1.getOriginalData())
+        {
+            assertArrayEquals(fontBytes, is.readAllBytes());
+        }
+    }
 }
