@@ -53,7 +53,7 @@ public class PDVisibleSignDesigner
     private AffineTransform affineTransform = new AffineTransform();
     private float imageSizeInPercents;
     private int rotation = 0;
-    private boolean useBottomLeftOrigin = false;
+    private boolean useUserSpaceCoordinates = false;
 
     /**
      * Constructor.
@@ -357,29 +357,32 @@ public class PDVisibleSignDesigner
     /**
      * Tells how {@link #getyAxis()} is interpreted.
      *
-     * @return true if the x/y position is used as the lower left corner of the signature rectangle,
-     * as in PDF user space; false if y is measured from the top of the template (default).
+     * @return true if the x/y position is used as the lower left corner of the signature rectangle
+     * in the default user space of the page; false if y is measured from the top of the template
+     * (default).
      */
-    public boolean isUseBottomLeftOrigin()
+    public boolean isUseUserSpaceCoordinates()
     {
-        return useBottomLeftOrigin;
+        return useUserSpaceCoordinates;
     }
 
     /**
      * Sets how the signature position is interpreted. By default (false), the y axis is measured
      * from the top of the template, i.e. the lower left corner of the signature rectangle is
      * calculated as <code>templateHeight - yAxis - height</code>. If set to true, the position is
-     * used as given, i.e. x and y are the lower left corner of the signature rectangle in PDF user
-     * space (origin at the bottom left), and no conversion with the template height is done. The
-     * rectangle then extends to <code>x + width</code> and <code>y + height</code>.
+     * used as given, i.e. x and y are the lower left corner of the signature rectangle in the default
+     * user space of the page (origin at the lower left of the unrotated page), and no conversion with
+     * the template height is done. The rectangle then extends to <code>x + width</code> and
+     * <code>y + height</code>. The page rotation (<code>/Rotate</code>) is not taken into account,
+     * so for rotated pages the caller has to provide coordinates in the unrotated user space.
      *
-     * @param useBottomLeftOrigin true to use x/y as the lower left corner, false to measure y from
-     * the top.
+     * @param useUserSpaceCoordinates true to use x/y as the lower left corner in user space, false
+     * to measure y from the top.
      * @return Visible Signature Configuration Object
      */
-    public PDVisibleSignDesigner useBottomLeftOrigin(boolean useBottomLeftOrigin)
+    public PDVisibleSignDesigner useUserSpaceCoordinates(boolean useUserSpaceCoordinates)
     {
-        this.useBottomLeftOrigin = useBottomLeftOrigin;
+        this.useUserSpaceCoordinates = useUserSpaceCoordinates;
         return this;
     }
 

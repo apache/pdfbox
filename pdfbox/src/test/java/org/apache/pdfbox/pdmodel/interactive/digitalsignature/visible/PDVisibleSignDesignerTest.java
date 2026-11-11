@@ -17,16 +17,16 @@ import org.junit.Test;
 public class PDVisibleSignDesignerTest {
 
     @Test
-    public void testUseBottomLeftOrigin() throws IOException {
+    public void testUseUserSpaceCoordinates() throws IOException {
         BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
         PDDocument doc = new PDDocument();
         doc.addPage(new PDPage(PDRectangle.A4));
         
         PDVisibleSignDesigner designer = new PDVisibleSignDesigner(doc, image, 1);
-        assertFalse(designer.isUseBottomLeftOrigin());
+        assertFalse(designer.isUseUserSpaceCoordinates());
         
-        designer.useBottomLeftOrigin(true);
-        assertTrue(designer.isUseBottomLeftOrigin());
+        designer.useUserSpaceCoordinates(true);
+        assertTrue(designer.isUseUserSpaceCoordinates());
         
         designer.xAxis(100).yAxis(200).width(50).height(30);
         
@@ -54,7 +54,7 @@ public class PDVisibleSignDesignerTest {
         float pageHeight = page.getMediaBox().getHeight();
         
         PDVisibleSignDesigner designer = new PDVisibleSignDesigner(doc, image, 1);
-        assertFalse(designer.isUseBottomLeftOrigin());
+        assertFalse(designer.isUseUserSpaceCoordinates());
         
         designer.xAxis(100).yAxis(200).width(50).height(30);
         
