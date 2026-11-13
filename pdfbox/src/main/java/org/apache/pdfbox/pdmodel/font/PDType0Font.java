@@ -133,7 +133,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
      * @param vertical whether to enable vertical substitutions.
      * @throws IOException
      */
-    private PDType0Font(PDDocument document, TrueTypeFont ttf, boolean embedSubset,
+    protected PDType0Font(PDDocument document, TrueTypeFont ttf, boolean embedSubset,
             boolean closeTTF, boolean vertical) throws IOException
     {
         if (vertical)

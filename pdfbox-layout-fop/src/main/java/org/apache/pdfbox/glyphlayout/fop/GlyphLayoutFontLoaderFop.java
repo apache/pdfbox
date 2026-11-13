@@ -58,6 +58,17 @@ public class GlyphLayoutFontLoaderFop
     private final Map<PDType0Font, MultiByteFont> fopFontMap = new ConcurrentHashMap<>();
 
     /**
+     * Load the PDType0Font
+     * can be overridden by subclasses
+     */
+    protected PDType0Font loadPDType0Font(PDDocument pdDocument, byte[] fontBytes,
+                                          boolean embedSubset) throws IOException
+    {
+        return PDType0Font.load(pdDocument, new RandomAccessReadBuffer(fontBytes), embedSubset, false);
+    }
+
+
+    /**
      * Loads the AWT font needed for layout
      *
      * @param pdDocument document
@@ -73,7 +84,7 @@ public class GlyphLayoutFontLoaderFop
         PDType0Font pdType0Font;
 
         byte[] bytes = inputStream.readAllBytes();
-        pdType0Font = PDType0Font.load(pdDocument, new RandomAccessReadBuffer(bytes), embedSubset, false);
+        pdType0Font = loadPDType0Font(pdDocument, bytes, embedSubset);
         loadFopFont(pdType0Font, new ByteArrayInputStream(bytes));
         return pdType0Font;
     }
@@ -131,7 +142,7 @@ public class GlyphLayoutFontLoaderFop
      */
     public boolean supportsFont(PDFont font)
     {
-        return fopFontMap.containsKey(font);
+        return font instanceof PDType0Font && fopFontMap.containsKey((PDType0Font)font);
     }
 
     /**
