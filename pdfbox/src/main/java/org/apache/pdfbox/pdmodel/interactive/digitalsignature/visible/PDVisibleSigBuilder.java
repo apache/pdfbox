@@ -149,11 +149,21 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     {
 
         PDRectangle rect = new PDRectangle();
-        rect.setUpperRightX(properties.getxAxis() + properties.getWidth());
-        rect.setUpperRightY(properties.getTemplateHeight() - properties.getyAxis());
-        rect.setLowerLeftY(properties.getTemplateHeight() - properties.getyAxis() -
-                           properties.getHeight());
-        rect.setLowerLeftX(properties.getxAxis());
+        if (properties.isUseUserSpaceCoordinates())
+        {
+            rect.setLowerLeftX(properties.getxAxis());
+            rect.setLowerLeftY(properties.getyAxis());
+            rect.setUpperRightX(properties.getxAxis() + properties.getWidth());
+            rect.setUpperRightY(properties.getyAxis() + properties.getHeight());
+        }
+        else
+        {
+            rect.setUpperRightX(properties.getxAxis() + properties.getWidth());
+            rect.setUpperRightY(properties.getTemplateHeight() - properties.getyAxis());
+            rect.setLowerLeftY(properties.getTemplateHeight() - properties.getyAxis() -
+                               properties.getHeight());
+            rect.setLowerLeftX(properties.getxAxis());
+        }
         signatureField.getWidgets().get(0).setRectangle(rect);
         pdfStructure.setSignatureRectangle(rect);
         LOG.info("Signature rectangle has been created");
