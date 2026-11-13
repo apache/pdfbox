@@ -1,0 +1,94 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+
+class PDVisibleSignDesignerTest
+{
+
+    @Test
+    void testUseUserSpaceCoordinates() throws IOException
+    {
+        BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+        try (PDDocument doc = new PDDocument())
+        {
+            doc.addPage(new PDPage(PDRectangle.A4));
+            
+            PDVisibleSignDesigner designer = new PDVisibleSignDesigner(doc, image, 1);
+            assertFalse(designer.isUseUserSpaceCoordinates());
+            
+            designer.useUserSpaceCoordinates(true);
+            assertTrue(designer.isUseUserSpaceCoordinates());
+            
+            designer.xAxis(100).yAxis(200).width(50).height(30);
+            
+            PDVisibleSigBuilder builder = new PDVisibleSigBuilder();
+            PDAcroForm acroForm = new PDAcroForm(doc);
+            PDSignatureField signatureField = new PDSignatureField(acroForm);
+            
+            builder.createSignatureRectangle(signatureField, designer);
+            PDRectangle rect = builder.getStructure().getSignatureRectangle();
+            
+            assertEquals(100f, rect.getLowerLeftX(), 0.01f);
+            assertEquals(200f, rect.getLowerLeftY(), 0.01f);
+            assertEquals(150f, rect.getUpperRightX(), 0.01f);
+            assertEquals(230f, rect.getUpperRightY(), 0.01f);
+        }
+    }
+
+    @Test
+    void testStandardCoordinates() throws IOException
+    {
+        BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage(PDRectangle.A4);
+            doc.addPage(page);
+            float pageHeight = page.getMediaBox().getHeight();
+            
+            PDVisibleSignDesigner designer = new PDVisibleSignDesigner(doc, image, 1);
+            assertFalse(designer.isUseUserSpaceCoordinates());
+            
+            designer.xAxis(100).yAxis(200).width(50).height(30);
+            
+            PDVisibleSigBuilder builder = new PDVisibleSigBuilder();
+            PDAcroForm acroForm = new PDAcroForm(doc);
+            PDSignatureField signatureField = new PDSignatureField(acroForm);
+            
+            builder.createSignatureRectangle(signatureField, designer);
+            PDRectangle rect = builder.getStructure().getSignatureRectangle();
+            
+            // Without custom coordinates, Y is transformed: pageHeight - yAxis
+            assertEquals(100f, rect.getLowerLeftX(), 0.01f);
+            assertEquals(pageHeight - 200f - 30f, rect.getLowerLeftY(), 0.01f);
+            assertEquals(150f, rect.getUpperRightX(), 0.01f);
+            assertEquals(pageHeight - 200f, rect.getUpperRightY(), 0.01f);
+        }
+    }
+}
