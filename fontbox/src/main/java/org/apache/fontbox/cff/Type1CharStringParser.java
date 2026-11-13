@@ -47,6 +47,10 @@ public class Type1CharStringParser
     private static final int CALLOTHERSUBR = 16;
     private static final int POP = 17;
 
+    // The formats allow 10 nested subroutine calls, but fonts in use exceed that. This is only a
+    // safeguard against endless recursion.
+    static final int MAX_SUBR_NESTING = 100;
+
     private final String fontName;
     private String currentGlyph;
 
@@ -72,11 +76,11 @@ public class Type1CharStringParser
     public List<Object> parse(byte[] bytes, List<byte[]> subrs, String glyphName) throws IOException
     {
         currentGlyph = glyphName;
-        return parse(bytes, subrs, new ArrayList<>());
+        return parse(bytes, subrs, new ArrayList<>(), 0);
     }
 
-    private List<Object> parse(byte[] bytes, List<byte[]> subrs, List<Object> sequence)
-            throws IOException
+    private List<Object> parse(byte[] bytes, List<byte[]> subrs, List<Object> sequence,
+            int subrNesting) throws IOException
     {
         DataInput input = new DataInputByteArray(bytes);
         while (input.hasRemaining())
@@ -84,7 +88,7 @@ public class Type1CharStringParser
             int b0 = input.readUnsignedByte();
             if (b0 == CALLSUBR)
             {
-                processCallSubr(subrs, sequence);
+                processCallSubr(subrs, sequence, subrNesting);
             }
             else if (b0 == TWO_BYTE && input.peekUnsignedByte(0) == CALLOTHERSUBR)
             {
@@ -106,7 +110,8 @@ public class Type1CharStringParser
         return sequence;
     }
 
-    private void processCallSubr(List<byte[]> subrs, List<Object> sequence) throws IOException
+    private void processCallSubr(List<byte[]> subrs, List<Object> sequence, int subrNesting)
+            throws IOException
     {
         // callsubr command
         Object obj = sequence.remove(sequence.size() - 1);
@@ -121,8 +126,13 @@ public class Type1CharStringParser
 
         if (operand >= 0 && operand < subrs.size())
         {
+            if (subrNesting >= MAX_SUBR_NESTING)
+            {
+                throw new IOException("Subroutines are nested more than " + MAX_SUBR_NESTING
+                        + " levels deep in glyph '" + currentGlyph + "' of font " + fontName);
+            }
             byte[] subrBytes = subrs.get(operand);
-            parse(subrBytes, subrs, sequence);
+            parse(subrBytes, subrs, sequence, subrNesting + 1);
             Object lastItem = sequence.get(sequence.size() - 1);
             if (lastItem instanceof CharStringCommand
                     && Type1KeyWord.RET == ((CharStringCommand) lastItem).getType1KeyWord())
