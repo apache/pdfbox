@@ -476,7 +476,7 @@ final class FontMapperImpl implements FontMapper
         FontInfo info = fontInfoByName.get(postScriptName.toLowerCase(Locale.ENGLISH));
         if (info != null && info.getFormat() == format)
         {
-            LOG.debug(String.format("getFont('%s','%s') returns %s", format, postScriptName, info));
+            LOG.debug("getFont('{}','{}') returns {}", format, postScriptName, info);
             return info;
         }
         return null;
