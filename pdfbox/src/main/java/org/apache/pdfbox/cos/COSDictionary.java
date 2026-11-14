@@ -1179,7 +1179,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be an long. -1 is returned
+     * This is a convenience method that will get the dictionary object that is expected to be a long. -1 is returned
      * if there is no value.
      *
      * @param key The key to the item in the dictionary.
@@ -1192,7 +1192,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be an long. -1 is returned
+     * This is a convenience method that will get the dictionary object that is expected to be a long. -1 is returned
      * if there is no value.
      *
      * @param key The key to the item in the dictionary.
@@ -1258,7 +1258,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be an float. -1 is returned
+     * This is a convenience method that will get the dictionary object that is expected to be a float. -1 is returned
      * if there is no value.
      *
      * @param key The key to the item in the dictionary.
@@ -1270,7 +1270,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be an float. -1 is returned
+     * This is a convenience method that will get the dictionary object that is expected to be a float. -1 is returned
      * if there is no value.
      *
      * @param key The key to the item in the dictionary.
@@ -1295,7 +1295,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be an float. If the
+     * This is a convenience method that will get the dictionary object that is expected to be a float. If the
      * dictionary value is null then the default value will be returned.
      *
      * @param key The key to the item in the dictionary.
