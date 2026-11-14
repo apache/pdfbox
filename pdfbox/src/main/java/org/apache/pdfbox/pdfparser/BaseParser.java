@@ -611,7 +611,7 @@ public abstract class BaseParser
     }
 
     /**
-     * This will read an long from the stream.
+     * This will read a long from the stream.
      *
      * @return The long that was read from the stream.
      *
