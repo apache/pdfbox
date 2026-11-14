@@ -112,7 +112,7 @@ public final class Matrix implements Cloneable
 
     /**
      * Creates a matrix with the same elements as the given AffineTransform.
-     * @param at matrix elements will be initialize with the values from this affine transformation, as follows:
+     * @param at matrix elements will be initialized with the values from this affine transformation, as follows:
      *
      *           scaleX shearY 0
      *           shearX scaleY 0
