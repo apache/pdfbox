@@ -111,7 +111,7 @@ public class FDFAnnotationInk extends FDFAnnotation
     /**
      * Set the paths making up the freehand "scribble".
      * 
-     * The ink annotation is made up of one ore more disjoint paths. Each array entry is an array representing a stroked
+     * The ink annotation is made up of one or more disjoint paths. Each array entry is an array representing a stroked
      * path, being a series of alternating horizontal and vertical coordinates in default user space.
      * 
      * @param inklist the List of arrays representing the paths.
