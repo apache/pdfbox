@@ -41,6 +41,7 @@ public class CmapSubtable implements CmapLookup
 
     private static final long LEAD_OFFSET = 0xD800l - (0x10000 >> 10);
     private static final long SURROGATE_OFFSET = 0x10000l - (0xD800 << 10) - 0xDC00;
+    private static final long MAX_UCS4_VALUE = 0x0010FFFF;
 
     private int platformId;
     private int platformEncodingId;
@@ -150,6 +151,7 @@ public class CmapSubtable implements CmapLookup
             return;
         }
         // -- Read all sub header
+        long lastEndCode = 0;
         for (long i = 0; i < nbGroups; ++i)
         {
             long firstCode = data.readUnsignedInt();
@@ -161,6 +163,12 @@ public class CmapSubtable implements CmapLookup
             {
                 throw new IOException("Range invalid");
             }
+            if (endCode <= lastEndCode)
+            {
+                LOG.warn("Format 8 cmap unsorted mapping group was skipped");
+                continue;
+            }
+            lastEndCode = endCode;
 
             for (long j = firstCode; j <= endCode; ++j)
             {
@@ -222,7 +230,7 @@ public class CmapSubtable implements CmapLookup
             throw new IOException("Invalid number of Characters");
         }
 
-        if (startCode < 0 || startCode > 0x0010FFFF || (startCode + numChars) > 0x0010FFFF
+        if (startCode < 0 || startCode > MAX_UCS4_VALUE || (startCode + numChars) > MAX_UCS4_VALUE
                 || ((startCode + numChars) >= 0x0000D800 && (startCode + numChars) <= 0x0000DFFF))
         {
             throw new IOException("Invalid character codes, " + 
@@ -249,6 +257,12 @@ public class CmapSubtable implements CmapLookup
             LOG.warn("subtable has no glyphs");
             return;
         }
+        // --- nbGroups shouldn't be greater than 0x10FFFF
+        if (nbGroups > MAX_UCS4_VALUE)
+        {
+            throw new IOException("Format 12 cmap is invalid");
+        }
+        long lastEndCode = 0;
         for (long i = 0; i < nbGroups; ++i)
         {
             long firstCode = data.readUnsignedInt();
@@ -262,12 +276,18 @@ public class CmapSubtable implements CmapLookup
             }
 
             if (endCode > 0 && endCode < firstCode ||
-                endCode > 0x0010FFFF ||
+                    endCode > MAX_UCS4_VALUE ||
                 endCode >= 0x0000D800 && endCode <= 0x0000DFFF)
             {
                 throw new IOException("Invalid character code " + String.format("0x%X", endCode));
             }
 
+            if (endCode <= lastEndCode)
+            {
+                LOG.warn("Format 12 cmap unsorted mapping group was skipped");
+                continue;
+            }
+            lastEndCode = endCode;
             for (long j = 0; j <= endCode - firstCode; ++j)
             {
                 long glyphIndex = startGlyph + j;
@@ -312,23 +332,24 @@ public class CmapSubtable implements CmapLookup
             long endCode = data.readUnsignedInt();
             long glyphId = data.readUnsignedInt();
 
-            if (glyphId > numGlyphs)
+            if (glyphId >= numGlyphs)
             {
                 LOG.warn("Format 13 cmap contains an invalid glyph index");
                 break;
             }
 
-            if (firstCode < 0 || firstCode > 0x0010FFFF || (firstCode >= 0x0000D800 && firstCode <= 0x0000DFFF))
+            if (firstCode < 0 || firstCode > MAX_UCS4_VALUE
+                    || (firstCode >= 0x0000D800 && firstCode <= 0x0000DFFF))
             {
                 throw new IOException("Invalid character code " + String.format("0x%X", firstCode));
             }
 
-            if ((endCode > 0 && endCode < firstCode) || endCode > 0x0010FFFF
+            if ((endCode > 0 && endCode < firstCode) || endCode > MAX_UCS4_VALUE
                     || (endCode >= 0x0000D800 && endCode <= 0x0000DFFF))
             {
                 throw new IOException("Invalid character code " + String.format("0x%X", endCode));
             }
-
+            long lastEndCode = 0;
             for (long j = 0; j <= endCode - firstCode; ++j)
             {
                 if (firstCode + j > Integer.MAX_VALUE)
@@ -340,6 +361,12 @@ public class CmapSubtable implements CmapLookup
                 {
                     LOG.warn("Format 13 cmap contains character beyond UCS-4");
                 }
+                if (endCode <= lastEndCode)
+                {
+                    LOG.warn("Format 13 cmap unsorted mapping group was skipped");
+                    continue;
+                }
+                lastEndCode = endCode;
 
                 glyphIdToCharacterCode[(int) glyphId] = (int) (firstCode + j);
                 characterCodeToGlyphId.put((int) (firstCode + j), (int) glyphId);
