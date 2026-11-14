@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Drew Noakes
+ * @author Drew Noakes.
  *
- * code taken from https://github.com/drewnoakes/metadata-extractor
+ * Code taken from <a href="https://github.com/drewnoakes/metadata-extractor">the metadata-extractor repository</a>
  *
  * 2016-01-04
  *

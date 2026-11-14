@@ -21,7 +21,7 @@ import java.nio.CharBuffer;
 import java.text.Normalizer;
 
 /**
- * Copied from https://github.com/tombentley/saslprep/blob/master/src/main/java/SaslPrep.java on
+ * Copied from <a href="https://github.com/tombentley/saslprep/blob/master/src/main/java/SaslPrep.java">SaslPrep</a> on
  * 30.5.2019, commit 2e30daa.
  *
  * @author Tom Bentley
