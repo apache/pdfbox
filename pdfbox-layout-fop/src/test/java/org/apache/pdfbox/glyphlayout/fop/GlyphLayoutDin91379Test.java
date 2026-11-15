@@ -29,7 +29,6 @@ import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.apache.pdfbox.pdmodel.AbstractGlyphLayoutProcessor;
 import org.junit.jupiter.api.Test;
 
 import org.apache.pdfbox.Loader;
@@ -125,7 +124,7 @@ class GlyphLayoutDin91379Test extends TestBase
      */
     void testGlyphLayoutDin91379(boolean useActualText, String sActualText) throws IOException, URISyntaxException
     {
-        AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions options = new AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions();
+        GlyphLayoutProcessorFop.GlyphLayoutProcessorOptions options = new GlyphLayoutProcessorFop.GlyphLayoutProcessorOptions();
         if (useActualText)
         {
             options.useActualText();

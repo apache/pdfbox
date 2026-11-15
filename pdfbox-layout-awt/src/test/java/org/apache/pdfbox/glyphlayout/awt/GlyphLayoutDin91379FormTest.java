@@ -29,7 +29,6 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.AbstractGlyphLayoutProcessor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -132,7 +131,7 @@ class GlyphLayoutDin91379FormTest extends TestBase
      */
     void testGlyphLayoutDin91379Form(boolean useActualText, String sActualText) throws IOException, FontFormatException, URISyntaxException
     {
-        AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions options = new AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions();
+        GlyphLayoutProcessorAwt.GlyphLayoutProcessorOptions options = new GlyphLayoutProcessorAwt.GlyphLayoutProcessorOptions();
         if (useActualText)
         {
             options.useActualText();

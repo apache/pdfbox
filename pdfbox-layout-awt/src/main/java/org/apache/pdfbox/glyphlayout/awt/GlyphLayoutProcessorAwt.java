@@ -56,7 +56,7 @@ public class GlyphLayoutProcessorAwt extends AbstractGlyphLayoutProcessor implem
      *
      * @param options
      */
-    public GlyphLayoutProcessorAwt(AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions options)
+    public GlyphLayoutProcessorAwt(GlyphLayoutProcessorAwt.GlyphLayoutProcessorOptions options)
     {
         super(options);
     }
