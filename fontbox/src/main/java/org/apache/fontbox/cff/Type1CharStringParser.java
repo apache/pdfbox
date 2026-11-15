@@ -46,6 +46,10 @@ public class Type1CharStringParser
     static final int CALLOTHERSUBR = 16;
     static final int POP = 17;
 
+    // The format allows 10 nested subroutine calls, but fonts in use exceed that. This is only a
+    // safeguard against endless recursion.
+    protected static final int MAX_SUBR_NESTING = 20;
+
     private final String fontName;
     private final String glyphName;
 
@@ -71,10 +75,11 @@ public class Type1CharStringParser
      */
     public List<Object> parse(byte[] bytes, List<byte[]> subrs) throws IOException
     {
-        return parse(bytes, subrs, new ArrayList<Object>());
+        return parse(bytes, subrs, new ArrayList<Object>(), 0);
     }
 
-    private List<Object> parse(byte[] bytes, List<byte[]> subrs, List<Object> sequence) throws IOException
+    private List<Object> parse(byte[] bytes, List<byte[]> subrs, List<Object> sequence,
+            int subrNesting) throws IOException
     {
         DataInput input = new DataInput(bytes);
         while (input.hasRemaining())
@@ -94,8 +99,14 @@ public class Type1CharStringParser
 
                 if (operand >= 0 && operand < subrs.size())
                 {
+                    if (subrNesting >= MAX_SUBR_NESTING)
+                    {
+                        throw new IOException("Subroutines are nested more than " + MAX_SUBR_NESTING
+                                + " levels deep in glyph '" + glyphName + "' of font "
+                                + fontName);
+                    }
                     byte[] subrBytes = subrs.get(operand);
-                    parse(subrBytes, subrs, sequence);
+                    parse(subrBytes, subrs, sequence, subrNesting + 1);
                     Object lastItem = sequence.get(sequence.size()-1);
                     if (lastItem instanceof CharStringCommand &&
                           ((CharStringCommand)lastItem).getKey().getValue()[0] == RETURN)

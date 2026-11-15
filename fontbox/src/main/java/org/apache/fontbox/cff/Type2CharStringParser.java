@@ -30,10 +30,15 @@ public class Type2CharStringParser
     private int hstemCount = 0;
     private int vstemCount = 0;
     private List<Object> sequence = null;
+    private int subrNesting = 0;
     @SuppressWarnings("unused")
     private final String fontName;
     @SuppressWarnings("unused")
     private final String glyphName;
+
+    // The format allows 10 nested subroutine calls, but fonts in use exceed that. This is only a
+    // safeguard against endless recursion.
+    protected static final int MAX_SUBR_NESTING = 20;
 
     /**
      * Constructs a new Type1CharStringParser object for a Type 1-equivalent font.
@@ -79,7 +84,17 @@ public class Type2CharStringParser
         {
             hstemCount = 0;
             vstemCount = 0;
+            subrNesting = 0;
             sequence = new ArrayList<Object>();
+        }
+        else
+        {
+            if (subrNesting >= MAX_SUBR_NESTING)
+            {
+                throw new IOException("Subroutines are nested more than " + MAX_SUBR_NESTING
+                        + " levels deep in font " + fontName);
+            }
+            subrNesting++;
         }
         DataInput input = new DataInput(bytes);
         boolean localSubroutineIndexProvided = localSubrIndex != null && localSubrIndex.length > 0;
