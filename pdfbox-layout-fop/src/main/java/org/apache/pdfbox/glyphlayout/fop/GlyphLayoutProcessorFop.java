@@ -58,7 +58,7 @@ public class GlyphLayoutProcessorFop extends AbstractGlyphLayoutProcessor implem
      * Constructs a GlyphLayoutProcessorFop with options
      *
      */
-    public GlyphLayoutProcessorFop(AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions options)
+    public GlyphLayoutProcessorFop(GlyphLayoutProcessorFop.GlyphLayoutProcessorOptions options)
     {
         super(options);
     }
