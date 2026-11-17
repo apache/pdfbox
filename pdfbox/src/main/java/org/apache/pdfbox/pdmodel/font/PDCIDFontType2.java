@@ -61,6 +61,7 @@ public class PDCIDFontType2 extends PDCIDFont
     // PDFBOX-6293: substitute is CID-keyed with a different ROS: this font's CIDs are meaningless in it,
     // resolve glyphs via Unicode instead (only when ordering is identity)
     private final boolean isForeignCIDSubstitute;
+    private boolean hasEqualName = false;
     private Matrix fontMatrix;
     private BoundingBox fontBBox;
     private final Set<Integer> noMapping = new HashSet<>();
@@ -157,6 +158,31 @@ public class PDCIDFontType2 extends PDCIDFont
         cmap = ttf.getUnicodeCmapLookup(false);
         cid2gid = readCIDToGIDMap();
         isForeignCIDSubstitute = !isEmbedded && isForeignCIDFont(otf);
+        initNameEquality();
+    }
+
+    private void initNameEquality() throws IOException
+    {
+        String name = getBaseFont();
+        String ttfName = ttf.getName();
+        if (name == null || ttfName == null)
+        {
+            return;
+        }
+        if (name.equals(ttfName))
+        {
+            hasEqualName = true;
+            return;
+        }
+        if (ttfName.startsWith(name) || name.startsWith(ttfName)) // e.g. Arial/ArialMT, Tahoma,Italic/Tahoma
+        {
+            hasEqualName = true;
+            return;
+        }
+        if ("Tahoma,Bold".equals(name) && "Tahoma-Bold".equals(ttfName))
+        {
+            hasEqualName = true;
+        }
     }
 
     private boolean isForeignCIDFont(OpenTypeFont substitute) throws IOException
@@ -276,12 +302,17 @@ public class PDCIDFontType2 extends PDCIDFont
             // dependent.
             // omit the CID2GID mapping if the embedded font is replaced by an external font
             String name = getName();
-            if (cid2gid != null && !isDamaged && name != null && name.equals(ttf.getName()))
+            if (cid2gid == null && parent.getCMap() != null && "Identity".equals(parent.getCMap().getOrdering()) && hasEqualName)
+            {
+                // PDFBOX-6288, PDFBOX-5384: treat CID as GID for missing fonts if we have the correct font
+                //TODO warn only once
+                LOG.warn("Using non-embedded CID2GID identity for font " + name + " / " + ttf.getName());
+                return code < ttf.getNumberOfGlyphs() ? code : 0;
+            }
+            if (cid2gid != null && !isDamaged && name != null && hasEqualName)
             {
                 // Acrobat allows non-embedded GIDs - todo: can we find a test PDF for this?
                 // PDFBOX-5612: should happen only if it's really the same font
-                // this is not perfect, we may have to improve this because some identical fonts
-                // have different names
                 LOG.warn("Using non-embedded GIDs in font " + getName());
                 int cid = codeToCID(code);
                 if (cid < cid2gid.length)
@@ -531,7 +562,7 @@ public class PDCIDFontType2 extends PDCIDFont
     @Override
     public GeneralPath getNormalizedPath(int code) throws IOException
     {
-        GeneralPath path = null;
+        GeneralPath path;
         if (otf != null && otf.isPostScript())
         {
             path = getPathFromOutlines(code);
