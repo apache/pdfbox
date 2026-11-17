@@ -30,7 +30,6 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.pdfbox.Loader;
 
-import org.apache.pdfbox.pdmodel.AbstractGlyphLayoutProcessor;
 import org.junit.jupiter.api.Test;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -128,7 +127,7 @@ class GlyphLayoutDin91379Test extends TestBase
      */
     void testGlyphLayoutDin91379(boolean useActualText, String sActualText) throws IOException, FontFormatException, URISyntaxException
     {
-        AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions options = new AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions();
+        GlyphLayoutProcessorAwt.GlyphLayoutProcessorOptions options = new GlyphLayoutProcessorAwt.GlyphLayoutProcessorOptions();
         if (useActualText)
         {
             options.useActualText();

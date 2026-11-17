@@ -148,7 +148,7 @@ class GlyphLayoutSMPTest extends TestBase
      */
     void testGlyphLayoutSMP(boolean useActualText, String sActualText) throws IOException, FontFormatException, URISyntaxException
     {
-        AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions options = new AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions();
+        GlyphLayoutProcessorAwt.GlyphLayoutProcessorOptions options = new AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions();
         if (useActualText)
         {
             options.useActualText();

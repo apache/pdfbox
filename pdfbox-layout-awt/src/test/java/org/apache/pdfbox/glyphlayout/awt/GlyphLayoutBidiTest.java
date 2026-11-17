@@ -28,7 +28,6 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.AbstractGlyphLayoutProcessor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -124,7 +123,7 @@ public class GlyphLayoutBidiTest extends TestBase
      */
     void testGlyphLayoutBidi(boolean useActualText, String sActualText) throws IOException, FontFormatException, URISyntaxException
     {
-        AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions options = new AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions();
+        GlyphLayoutProcessorAwt.GlyphLayoutProcessorOptions options = new GlyphLayoutProcessorAwt.GlyphLayoutProcessorOptions();
         if (useActualText)
         {
             options.useActualText();

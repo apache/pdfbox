@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.AbstractGlyphLayoutProcessor;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 
@@ -130,7 +129,7 @@ class GlyphLayoutLigaturesAndKerningTest extends TestBase
      */
     void testLigaturesAndKerning(boolean useActualText, String sActualText) throws IOException, FontFormatException, URISyntaxException
     {
-        AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions options = new AbstractGlyphLayoutProcessor.GlyphLayoutProcessorOptions();
+        GlyphLayoutProcessorAwt.GlyphLayoutProcessorOptions options = new GlyphLayoutProcessorAwt.GlyphLayoutProcessorOptions();
         if (useActualText)
         {
             options.useActualText();
