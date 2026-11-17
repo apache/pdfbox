@@ -44,6 +44,7 @@ import java.io.Writer;
 import java.net.URISyntaxException;
 
 import java.nio.file.Files;
+import java.util.ArrayList;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -56,6 +57,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
@@ -64,6 +66,7 @@ import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
+import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -738,6 +741,51 @@ class TestTextStripper
             localStripper.setIgnoreContentStreamSpaceGlyphs(true);
             String text = localStripper.getText(doc);
             assertEquals("( overlap )\n", text);
+        }
+    }
+
+    /**
+     * Test that text in two articles (beads) on the same line doesn't cause an exception when the
+     * second article starts with a word separator.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testArticlesOnSameLine() throws IOException
+    {
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            float y = page.getMediaBox().getHeight() - 100;
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+            {
+                PDFont font = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+                cs.beginText();
+                cs.setFont(font, 12);
+                cs.newLineAtOffset(50, y);
+                cs.showText("LEFT");
+                cs.endText();
+                cs.beginText();
+                cs.setFont(font, 12);
+                cs.newLineAtOffset(350, y);
+                cs.showText("RIGHT");
+                cs.endText();
+            }
+            PDThreadBead leftBead = new PDThreadBead();
+            leftBead.setRectangle(new PDRectangle(40, y - 50, 200, 100));
+            PDThreadBead rightBead = new PDThreadBead();
+            rightBead.setRectangle(new PDRectangle(340, y - 50, 200, 100));
+            List<PDThreadBead> list = new ArrayList<>();
+            list.add(leftBead);
+            list.add(rightBead);
+            page.setThreadBeads(list);
+            doc.addPage(page);
+
+            PDFTextStripper localStripper = new PDFTextStripper();
+            localStripper.setLineSeparator("\n");
+            localStripper.setPageEnd("\n");
+            String text = localStripper.getText(doc);
+            assertEquals("LEFT RIGHT\n", text);
         }
     }
 }
