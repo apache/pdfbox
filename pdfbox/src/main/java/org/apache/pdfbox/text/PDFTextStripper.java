@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
@@ -2040,8 +2039,9 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     private WordWithTextPositions createWord(String word, List<TextPosition> wordPositions)
     {
         WordWithTextPositions wordWithTextPositions;
-        Objects.requireNonNull(wordPositions.get(0), "wordPositions should have one or more entries");
-        if (wordPositions.get(0).isFromActualText())
+        // wordPositions is empty if a word separator starts the line, e.g. when a new
+        // article continues on the same line as the previous one
+        if (!wordPositions.isEmpty() && wordPositions.get(0).isFromActualText())
         {
             wordWithTextPositions = new WordWithTextPositions(word, wordPositions);
         }
