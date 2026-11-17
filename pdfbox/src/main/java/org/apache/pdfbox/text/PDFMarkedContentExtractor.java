@@ -32,6 +32,13 @@ import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContent
 import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequenceWithProperties;
 import org.apache.pdfbox.contentstream.operator.markedcontent.DrawObject;
 import org.apache.pdfbox.contentstream.operator.markedcontent.EndMarkedContentSequence;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * This is an stream engine to extract the marked content of a pdf.
@@ -44,6 +51,7 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
     private final List<PDMarkedContent> markedContents = new ArrayList<PDMarkedContent>();
     private final Deque<PDMarkedContent> currentMarkedContents = new ArrayDeque<PDMarkedContent>();
     private final Map<String, List<TextPosition>> characterListMapping = new HashMap<String, List<TextPosition>>();
+    private int currentStructParent = -1;
 
     /**
      * Instantiate a new PDFTextStripper object.
@@ -106,6 +114,7 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
     public void beginMarkedContentSequence(COSName tag, COSDictionary properties)
     {
         PDMarkedContent markedContent = PDMarkedContent.create(tag, properties);
+        markedContent.setStructParent(currentStructParent);
         if (this.currentMarkedContents.isEmpty())
         {
             this.markedContents.add(markedContent);
@@ -209,5 +218,72 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
     public List<PDMarkedContent> getMarkedContents()
     {
         return this.markedContents;
+    }
+
+    @Override
+    public void showForm(PDFormXObject form) throws IOException
+    {
+        int savedStructParent = currentStructParent;
+        currentStructParent = form.getStructParents();
+        try
+        {
+            super.showForm(form);
+        }
+        finally
+        {
+            currentStructParent = savedStructParent;
+        }
+    }
+
+    @Override
+    public void showTransparencyGroup(PDTransparencyGroup form) throws IOException
+    {
+        int savedStructParent = currentStructParent;
+        currentStructParent = form.getStructParents();
+        try
+        {
+            super.showTransparencyGroup(form);
+        }
+        finally
+        {
+            currentStructParent = savedStructParent;
+        }
+    }
+
+    @Override
+    public void processPage(PDPage page) throws IOException
+    {
+        currentStructParent = page.getStructParents();
+        super.processPage(page);
+    }
+
+    @Override
+    protected void processAnnotation(PDAnnotation annotation, PDAppearanceStream appearance) throws IOException
+    {
+        int savedStructParent = -1;
+        currentStructParent = annotation.getStructParent();
+        try
+        {
+            super.processAnnotation(annotation, appearance);
+        }
+        finally
+        {
+            currentStructParent = savedStructParent;
+        }
+    }
+
+    @Override
+    protected void processType3Stream(PDType3CharProc charProc, Matrix textRenderingMatrix) throws IOException
+    {
+        int savedStructParent = currentStructParent;
+        currentStructParent = -1;
+        try
+        {
+            super.processType3Stream(charProc, textRenderingMatrix);
+        }
+        finally
+        {
+            currentStructParent = savedStructParent;
+        }
     }
 }

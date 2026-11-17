@@ -53,6 +53,7 @@ public class PDMarkedContent
     private final String tag;
     private final COSDictionary properties;
     private final List<Object> contents;
+    private int structParent = -1;
 
 
     /**
@@ -189,13 +190,35 @@ public class PDMarkedContent
         this.getContents().add(xobject);
     }
 
+    /**
+     * Return the StructParents key to which this content was associated (a page or form XObject),
+     * or -1 if none. Type 3 glyphs streams report -1; tiling patterns report the enclosing
+     * container value.
+     *
+     * @return the StructParents key of the page or form XObject, or -1 if none.
+     */
+    public int getStructParent()
+    {
+        return structParent;
+    }
+
+    /**
+     * Set the StructParents key to which this content was associated, or -1 if none.
+     *
+     * @param structParent the StructParents key of the page or form XObject, or -1 if none.
+     */
+    public void setStructParent(int structParent)
+    {
+        this.structParent = structParent;
+    }
 
     @Override
     public String toString()
     {
         return "tag=" + this.tag +
                 ", properties=" + this.properties +
-                ", contents=" + this.contents;
+                ", contents=" + this.contents +
+                ", structParent=" + this.structParent;
     }
 
 }
