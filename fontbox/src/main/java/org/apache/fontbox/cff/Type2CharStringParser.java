@@ -38,7 +38,7 @@ public class Type2CharStringParser
 
     // The format allows 10 nested subroutine calls, but fonts in use exceed that. This is only a
     // safeguard against endless recursion.
-    protected static final int MAX_SUBR_NESTING = 100;
+    protected static final int MAX_SUBR_NESTING = 150;
 
     /**
      * Constructs a new Type1CharStringParser object for a Type 1-equivalent font.
