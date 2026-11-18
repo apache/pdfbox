@@ -53,7 +53,7 @@ public class PDShadingType6 extends PDMeshBasedShadingType
     }
     
     @Override
-    protected Patch generatePatch(Point2D[] points, float[][] color)
+    Patch generatePatch(Point2D[] points, float[][] color)
     {
         return new CoonsPatch(points, color);
     }
