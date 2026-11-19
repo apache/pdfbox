@@ -2412,7 +2412,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         COSArray veArray = ocmd.getCOSObject().getCOSArray(COSName.VE);
         if (veArray != null && veArray.size() > 0)
         {
-            return isHiddenVisibilityExpression(veArray);
+            Set<COSArray> visited = new HashSet<COSArray>();
+            return isHiddenVisibilityExpression(veArray, visited);
         }
         List<PDPropertyList> oCGs = ocmd.getOCGs();
         if (oCGs.isEmpty())
@@ -2473,10 +2474,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         return true;
     }
 
-    private boolean isHiddenVisibilityExpression(COSArray veArray)
+    private boolean isHiddenVisibilityExpression(COSArray veArray, Set<COSArray> visited)
     {
         if (veArray.size() == 0)
         {
+            return false;
+        }
+        if (!visited.add(veArray))
+        {
+            LOG.warn("endless recursion detected in visibility expression");
             return false;
         }
         String op = veArray.getName(0);
@@ -2486,20 +2492,20 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         if ("And".equals(op))
         {
-            return isHiddenAndVisibilityExpression(veArray);
+            return isHiddenAndVisibilityExpression(veArray, visited);
         }
         if ("Or".equals(op))
         {
-            return isHiddenOrVisibilityExpression(veArray);
+            return isHiddenOrVisibilityExpression(veArray, visited);
         }
         if ("Not".equals(op))
         {
-            return isHiddenNotVisibilityExpression(veArray);
+            return isHiddenNotVisibilityExpression(veArray, visited);
         }
         return false;
     }
 
-    private boolean isHiddenAndVisibilityExpression(COSArray veArray)
+    private boolean isHiddenAndVisibilityExpression(COSArray veArray, Set<COSArray> visited)
     {
         // hidden if at least one isn't visible
         for (int i = 1; i < veArray.size(); ++i)
@@ -2508,7 +2514,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             if (base instanceof COSArray)
             {
                 // Another VE
-                boolean isHidden = isHiddenVisibilityExpression((COSArray) base);
+                boolean isHidden = isHiddenVisibilityExpression((COSArray) base, visited);
                 if (isHidden)
                 {
                     return true;
@@ -2528,7 +2534,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         return false;
     }
 
-    private boolean isHiddenOrVisibilityExpression(COSArray veArray)
+    private boolean isHiddenOrVisibilityExpression(COSArray veArray, Set<COSArray> visited)
     {
         // hidden only if all are hidden
         for (int i = 1; i < veArray.size(); ++i)
@@ -2537,7 +2543,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             if (base instanceof COSArray)
             {
                 // Another VE
-                boolean isHidden = isHiddenVisibilityExpression((COSArray) base);
+                boolean isHidden = isHiddenVisibilityExpression((COSArray) base, visited);
                 if (!isHidden)
                 {
                     return false;
@@ -2557,7 +2563,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         return true;
     }
 
-    private boolean isHiddenNotVisibilityExpression(COSArray veArray)
+    private boolean isHiddenNotVisibilityExpression(COSArray veArray, Set<COSArray> visited)
     {
         if (veArray.size() != 2)
         {
@@ -2567,7 +2573,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (base instanceof COSArray)
         {
             // Another VE
-            return !isHiddenVisibilityExpression((COSArray) base);
+            return !isHiddenVisibilityExpression((COSArray) base, visited);
         }
         else if (base instanceof COSDictionary)
         {
