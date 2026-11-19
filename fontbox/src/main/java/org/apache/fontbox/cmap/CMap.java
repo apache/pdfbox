@@ -457,7 +457,7 @@ public class CMap
         charToUnicodeOneByte.putAll(cmap.charToUnicodeOneByte);
         charToUnicodeTwoBytes.putAll(cmap.charToUnicodeTwoBytes);
         charToUnicodeMoreBytes.putAll(cmap.charToUnicodeMoreBytes);
-        cmap.charToUnicodeOneByte.forEach((k, v) -> unicodeToByteCodes.put(v, new byte[]{(byte) (k % 0xFF)}));
+        cmap.charToUnicodeOneByte.forEach((k, v) -> unicodeToByteCodes.put(v, new byte[]{(byte) (k & 0xFF)}));
         cmap.charToUnicodeTwoBytes.forEach((k, v) -> unicodeToByteCodes.put(v,
                 new byte[]{(byte) ((k >>> 8) & 0xFF), (byte) (k & 0xFF)})
         );
