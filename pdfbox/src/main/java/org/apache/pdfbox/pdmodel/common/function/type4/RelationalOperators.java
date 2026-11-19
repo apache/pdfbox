@@ -33,7 +33,7 @@ class RelationalOperators
     /** Implements the "eq" operator. */
     static class Eq implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();
@@ -45,12 +45,12 @@ class RelationalOperators
 
         protected boolean isEqual(Object op1, Object op2)
         {
-            boolean result = false;
+            boolean result;
             if (op1 instanceof Number && op2 instanceof Number)
             {
                 Number num1 = (Number)op1;
                 Number num2 = (Number)op2;
-                result = num1.floatValue() == num2.floatValue();
+                return Double.compare(num1.doubleValue(),num2.doubleValue()) == 0;
             }
             else
             {
@@ -64,7 +64,7 @@ class RelationalOperators
     /** Abstract base class for number comparison operators. */
     private abstract static class AbstractNumberComparisonOperator implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();
@@ -87,7 +87,7 @@ class RelationalOperators
         @Override
         protected boolean compare(Number num1, Number num2)
         {
-            return num1.floatValue() >= num2.floatValue();
+            return num1.doubleValue() >= num2.doubleValue();
         }
 
     }
@@ -99,7 +99,7 @@ class RelationalOperators
         @Override
         protected boolean compare(Number num1, Number num2)
         {
-            return num1.floatValue() > num2.floatValue();
+            return num1.doubleValue() > num2.doubleValue();
         }
 
     }
@@ -111,7 +111,7 @@ class RelationalOperators
         @Override
         protected boolean compare(Number num1, Number num2)
         {
-            return num1.floatValue() <= num2.floatValue();
+            return num1.doubleValue() <= num2.doubleValue();
         }
 
     }
