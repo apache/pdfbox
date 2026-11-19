@@ -205,6 +205,24 @@ public final class GlyphList
     }
 
     /**
+     * Maps each component of an underscore ligature name; null if any component is empty or unknown.
+     */
+    private String toUnicodeComponents(String[] components)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (String component : components)
+        {
+            String part = component.isEmpty() ? null : toUnicode(component);
+            if (part == null)
+            {
+                return null;
+            }
+            sb.append(part);
+        }
+        return sb.toString();
+    }
+
+    /**
      * Returns the Unicode character sequence for the given glyph name, or null if there isn't any.
      *
      * @param name PostScript glyph name
@@ -231,6 +249,11 @@ public final class GlyphList
             if (name.indexOf('.') > 0)
             {
                 unicode = toUnicode(name.substring(0, name.indexOf('.')));
+            }
+            else if (name.indexOf('_') >= 0)
+            {
+                // AGL specification: a ligature name maps component by component, e.g. f_f_i -> f f i
+                unicode = toUnicodeComponents(name.split("_", -1));
             }
             else if ((name.length() == 7 && name.startsWith("uni"))
                     || (name.length() == 5 && name.startsWith("u")))
