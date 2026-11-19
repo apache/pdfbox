@@ -174,6 +174,10 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         int dicPermissions = encryption.getPermissions();
         int dicRevision = encryption.getRevision();
         int dicLength = encryptionVersion == 1 ? 5 : encryption.getLength() / 8;
+        if (dicLength < 5)
+        {
+            throw new IOException("Invalid encryption dictionary length: " + encryption.getLength());
+        }
         
         if (encryptionVersion == REVISION_4 || encryptionVersion == REVISION_5)
         {
