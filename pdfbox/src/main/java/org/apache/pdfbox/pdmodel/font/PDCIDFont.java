@@ -192,7 +192,12 @@ public abstract class PDCIDFont implements COSObjectable
         {
             for (int i = 0; i < w2Array.size(); i++)
             {
-                COSNumber c = (COSNumber) w2Array.getObject(i);
+                COSBase base = w2Array.getObject(i);
+                if (!(base instanceof COSNumber))
+                {
+                    continue;
+                }
+                COSNumber c = (COSNumber) base;
                 COSBase next = w2Array.getObject(++i);
                 if (next instanceof COSArray)
                 {
@@ -207,7 +212,7 @@ public abstract class PDCIDFont implements COSObjectable
                         positionVectors.put(cid, new Vector(v1x.floatValue(), v1y.floatValue()));
                     }
                 }
-                else
+                else if (next instanceof COSNumber)
                 {
                     int first = c.intValue();
                     int last = ((COSNumber) next).intValue();
