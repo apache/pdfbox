@@ -175,14 +175,17 @@ public class PDCIDFontType2 extends PDCIDFont
             hasEqualName = true;
             return;
         }
+        name = name.replaceAll("[,-]", "");
+        ttfName = ttfName.replaceAll("[,-]", "");
         if (ttfName.startsWith(name) || name.startsWith(ttfName)) // e.g. Arial/ArialMT, Tahoma,Italic/Tahoma
         {
             hasEqualName = true;
             return;
         }
-        if ("Tahoma,Bold".equals(name) && "Tahoma-Bold".equals(ttfName))
+        
+        if (!isEmbedded && !hasEqualName && LOG.isDebugEnabled())
         {
-            hasEqualName = true;
+            LOG.debug("name: " + name + ", ttfName: " + ttfName + " + not equal");
         }
     }
 
