@@ -66,19 +66,22 @@ public class CMapStrings
 
     /**
      * Get the mapped string value for the given combination of bytes. The mapping is limited to one and two-byte
-     * mappings. Any longer byte sequence produces null as return value.
+     * mappings. Any other byte sequence produces null as return value.
      * 
      * @param bytes the given combination of bytes
      * @return the string representation for the given combination of bytes
      */
     public static String getMapping(byte[] bytes)
     {
-        if (bytes.length > 2)
+        switch (bytes.length)
         {
-            return null;
+            case 1:
+                return oneByteMappings.get(CMap.toInt(bytes));
+            case 2:
+                return twoByteMappings.get(CMap.toInt(bytes));
+            default:
+                return null;
         }
-        return bytes.length == 1 ? oneByteMappings.get(CMap.toInt(bytes))
-                : twoByteMappings.get(CMap.toInt(bytes));
     }
 
     /**
