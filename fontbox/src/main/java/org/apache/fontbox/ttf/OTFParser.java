@@ -62,7 +62,6 @@ public final class OTFParser extends TTFParser
         return new OpenTypeFont(raf);
     }
 
-    @Override
     protected TTFTable readTable(String tag)
     {
         // todo: this is a stub, a full implementation is needed
@@ -77,7 +76,7 @@ public final class OTFParser extends TTFParser
             case CFFTable.TAG:
                 return new CFFTable();
             default:
-                return super.readTable(tag);
+                return new TTFTable();
         }
     }
 

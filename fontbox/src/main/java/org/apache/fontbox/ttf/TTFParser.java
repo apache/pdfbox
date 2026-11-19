@@ -390,7 +390,7 @@ public class TTFParser
                 table = new GaspTable();
                 break;
             default:
-                table = readTable(tag);
+                table = new TTFTable();
                 break;
         }
         table.setTag(tag);
@@ -405,11 +405,5 @@ public class TTFParser
         }
 
         return table;
-    }
-
-    protected TTFTable readTable(String tag)
-    {
-        // unknown table type but read it anyway.
-        return new TTFTable();
     }
 }
