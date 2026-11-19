@@ -127,7 +127,7 @@ public class PDEncryption implements COSObjectable
      */
     public boolean hasSecurityHandler()
     {
-        return securityHandler == null;
+        return securityHandler != null;
     }
 
     /**
