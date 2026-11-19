@@ -163,6 +163,8 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     // to replace the unicode of the first TextPosition and empty the others
     private boolean firstActualTextPosition = false; 
     private String actualText = null;
+    // the marked content that set actualText, so that only its end resets it
+    private PDMarkedContent actualTextMarkedContent = null;
 
     /**
      * The charactersByArticle is used to extract text by article divisions. For example a PDF that has two columns like
@@ -862,11 +864,16 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     {
         PDMarkedContent markedContent = PDMarkedContent.create(tag, properties);
         currentMarkedContents.push(markedContent);
-        actualText = markedContent.getActualText();
-        if (actualText != null)
+        // the outermost /ActualText replaces all nested content, so ignore any nested one
+        if (actualText == null)
         {
-            actualText = actualText.replace("\u00ad", ""); // remove soft hyphens
-            firstActualTextPosition = true;
+            String markedContentActualText = markedContent.getActualText();
+            if (markedContentActualText != null)
+            {
+                actualText = markedContentActualText.replace("\u00ad", ""); // remove soft hyphens
+                actualTextMarkedContent = markedContent;
+                firstActualTextPosition = true;
+            }
         }
         super.beginMarkedContentSequence(tag, properties);
     }
@@ -877,9 +884,10 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         PDMarkedContent markedContent = currentMarkedContents.peek();
         if (markedContent != null)
         {
-            if (markedContent.getActualText() != null)
+            if (markedContent == actualTextMarkedContent)
             {
                 actualText = null;
+                actualTextMarkedContent = null;
             }
             currentMarkedContents.pop();
         }
