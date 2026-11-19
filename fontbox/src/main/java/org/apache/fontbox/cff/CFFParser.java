@@ -711,7 +711,7 @@ public class CFFParser
         return font;
     }
 
-    private void concatenateMatrix(List<Number> matrixDest, List<Number> matrixConcat)
+    void concatenateMatrix(List<Number> matrixDest, List<Number> matrixConcat)
     {
         // concatenate matrices
         // (a b 0)
