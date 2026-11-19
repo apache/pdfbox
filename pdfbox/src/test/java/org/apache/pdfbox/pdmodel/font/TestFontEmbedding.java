@@ -651,8 +651,8 @@ public class TestFontEmbedding extends TestCase
 
         // check that we're using the correct font version. The newer font has a different glyph ordering.
         byte[] encoded = font.encode("A\u200c");
-        int val1 = (encoded[0] << 8) + (encoded[1] & 0xff);
-        int val2 = (encoded[2] << 8) + (encoded[3] & 0xff);
+        int val1 = ((encoded[0] & 0xff) << 8) | (encoded[1] & 0xff);
+        int val2 = ((encoded[2] & 0xff) << 8) | (encoded[3] & 0xff);
         assertEquals(960, val1);
         assertEquals(132, val2);
 
