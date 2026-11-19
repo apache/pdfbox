@@ -48,11 +48,14 @@ import junit.framework.TestSuite;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.util.BoundingBox;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.TestPDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
@@ -835,5 +838,74 @@ public class TestTextStripper extends TestCase
         String text = localStripper.getText(doc);
         assertEquals("LEFT RIGHT\n", text);
         doc.close();
+    }
+
+    /**
+     * Test that marked content nested in an /ActualText sequence doesn't end the replacement.
+     *
+     * @throws IOException
+     */
+    public void testActualTextWithNestedMarkedContent() throws IOException
+    {
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage();
+        PDPageContentStream cs = new PDPageContentStream(doc, page);
+        cs.beginText();
+        cs.setFont(PDType1Font.HELVETICA, 12);
+        cs.newLineAtOffset(50, 700);
+        cs.beginMarkedContent(COSName.SPAN, createActualText("XYZ"));
+        cs.beginMarkedContent(COSName.getPDFName("Foo"));
+        cs.showText("abc");
+        cs.endMarkedContent();
+        cs.showText("def");
+        cs.endMarkedContent();
+        cs.endText();
+        cs.close();
+        doc.addPage(page);
+
+        PDFTextStripper localStripper = new PDFTextStripper();
+        localStripper.setLineSeparator("\n");
+        localStripper.setPageEnd("\n");
+        assertEquals("XYZ\n", localStripper.getText(doc));
+        doc.close();
+    }
+
+    /**
+     * Test that an /ActualText sequence nested in another one is ignored, because the outer one
+     * replaces all of its content.
+     *
+     * @throws IOException
+     */
+    public void testNestedActualText() throws IOException
+    {
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage();
+        PDPageContentStream cs = new PDPageContentStream(doc, page);
+        cs.beginText();
+        cs.setFont(PDType1Font.HELVETICA, 12);
+        cs.newLineAtOffset(50, 700);
+        cs.beginMarkedContent(COSName.SPAN, createActualText("X"));
+        cs.showText("a");
+        cs.beginMarkedContent(COSName.SPAN, createActualText("Y"));
+        cs.showText("b");
+        cs.endMarkedContent();
+        cs.showText("tail");
+        cs.endMarkedContent();
+        cs.endText();
+        cs.close();
+        doc.addPage(page);
+
+        PDFTextStripper localStripper = new PDFTextStripper();
+        localStripper.setLineSeparator("\n");
+        localStripper.setPageEnd("\n");
+        assertEquals("X\n", localStripper.getText(doc));
+        doc.close();
+    }
+
+    private static PDPropertyList createActualText(String actualText)
+    {
+        COSDictionary dict = new COSDictionary();
+        dict.setString(COSName.ACTUAL_TEXT, actualText);
+        return PDPropertyList.create(dict);
     }
 }
