@@ -225,6 +225,14 @@ public final class StandardSecurityHandler extends SecurityHandler
         
         byte[] userKey = encryption.getUserKey();
         byte[] ownerKey = encryption.getOwnerKey();
+        if (userKey == null)
+        {
+            throw new IOException("/Encrypt/U entry is missing");
+        }
+        if (ownerKey == null)
+        {
+            throw new IOException("/Encrypt/O entry is missing");
+        }
         byte[] ue = null, oe = null;
 
         Charset passwordCharset = Charsets.ISO_8859_1;
