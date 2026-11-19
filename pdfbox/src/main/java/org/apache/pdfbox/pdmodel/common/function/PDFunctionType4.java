@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.common.function;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.EmptyStackException;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.common.PDRange;
@@ -78,7 +79,14 @@ public class PDFunctionType4 extends PDFunction
         }
 
         //Execute the type 4 function.
-        instructions.execute(context);
+        try
+        {
+            instructions.execute(context);
+        }
+        catch (EmptyStackException | ClassCastException ex)
+        {
+            throw new IOException(ex);
+        }
 
         //Extract the output values
         int numberOfOutputValues = getNumberOfOutputParameters();
