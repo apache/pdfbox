@@ -185,6 +185,11 @@ public class PDCIDFontType2 extends PDCIDFont
         if ("Tahoma,Bold".equals(name) && "Tahoma-Bold".equals(ttfName))
         {
             hasEqualName = true;
+            return;
+        }
+        if (!isEmbedded && !hasEqualName)
+        {
+            LOG.debug("name: {}, ttfName: {} not equal", name, ttfName);
         }
     }
 
