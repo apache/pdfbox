@@ -119,6 +119,6 @@ public class PDMarkInfo implements COSObjectable
      */
     public void setSuspect( boolean suspect )
     {
-        dictionary.setBoolean( "Suspects", false );
+        dictionary.setBoolean("Suspects", suspect);
     }
 }
