@@ -145,8 +145,8 @@ class SaslPrep
      */
     static boolean prohibited(int codepoint)
     {
-        return nonAsciiSpace((char)codepoint)
-                || asciiControl((char)codepoint)
+        return (codepoint <= Character.MAX_VALUE
+            && (nonAsciiSpace((char) codepoint) || asciiControl((char) codepoint)))
                 || nonAsciiControl(codepoint)
                 || privateUse(codepoint)
                 || nonCharacterCodePoint(codepoint)
