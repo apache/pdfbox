@@ -135,7 +135,7 @@ class BitwiseOperators
             else if (op1 instanceof Integer)
             {
                 int int1 = (Integer)op1;
-                int result = -int1;
+                int result = ~int1;
                 stack.push(result);
             }
             else
