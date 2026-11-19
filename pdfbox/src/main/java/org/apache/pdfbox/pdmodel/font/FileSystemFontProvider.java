@@ -762,7 +762,7 @@ final class FileSystemFontProvider extends FontProvider
                         String registryName = reg.substring(0, reg.indexOf('\0'));
                         String ord = new String(bytes, 76, 64, StandardCharsets.US_ASCII);
                         String orderName = ord.substring(0, ord.indexOf('\0'));
-                        int supplementVersion = bytes[140] << 8 & (bytes[141] & 0xFF);
+                        int supplementVersion = (bytes[140] & 0xFF) << 8 | (bytes[141] & 0xFF);
                         ros = new CIDSystemInfo(registryName, orderName, supplementVersion);
                     }
                     format = FontFormat.TTF;
