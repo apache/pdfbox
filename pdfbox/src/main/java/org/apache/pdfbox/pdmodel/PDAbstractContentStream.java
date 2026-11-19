@@ -566,10 +566,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void drawImage(PDImageXObject image, float x, float y, float width, float height) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: drawImage is not allowed within a text block.");
-        }
+        assertNotInTextMode("drawImage");
 
         saveGraphicsState();
 
@@ -593,10 +590,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void drawImage(PDImageXObject image, Matrix matrix) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: drawImage is not allowed within a text block.");
-        }
+        assertNotInTextMode("drawImage");
 
         saveGraphicsState();
 
@@ -637,10 +631,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void drawImage(PDInlineImage inlineImage, float x, float y, float width, float height) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: drawImage is not allowed within a text block.");
-        }
+        assertNotInTextMode("drawImage");
 
         saveGraphicsState();
         transform(new Matrix(width, 0, 0, height, x, y));
@@ -702,10 +693,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void drawForm(PDFormXObject form) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: drawForm is not allowed within a text block.");
-        }
+        assertNotInTextMode("drawForm");
 
         writeOperand(resources.add(form));
         writeOperator(OperatorName.DRAW_OBJECT);
@@ -1048,10 +1036,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void addRect(float x, float y, float width, float height) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: addRect is not allowed within a text block.");
-        }
+        assertNotInTextMode("addRect");
         writeOperand(x);
         writeOperand(y);
         writeOperand(width);
@@ -1074,10 +1059,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: curveTo is not allowed within a text block.");
-        }
+        assertNotInTextMode("curveTo");
         writeOperand(x1);
         writeOperand(y1);
         writeOperand(x2);
@@ -1100,10 +1082,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void curveTo2(float x2, float y2, float x3, float y3) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: curveTo2 is not allowed within a text block.");
-        }
+        assertNotInTextMode("curveTo2");
         writeOperand(x2);
         writeOperand(y2);
         writeOperand(x3);
@@ -1124,10 +1103,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void curveTo1(float x1, float y1, float x3, float y3) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: curveTo1 is not allowed within a text block.");
-        }
+        assertNotInTextMode("curveTo1");
         writeOperand(x1);
         writeOperand(y1);
         writeOperand(x3);
@@ -1145,10 +1121,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void moveTo(float x, float y) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: moveTo is not allowed within a text block.");
-        }
+        assertNotInTextMode("moveTo");
         writeOperand(x);
         writeOperand(y);
         writeOperator(OperatorName.MOVE_TO);
@@ -1164,10 +1137,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void lineTo(float x, float y) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: lineTo is not allowed within a text block.");
-        }
+        assertNotInTextMode("lineTo");
         writeOperand(x);
         writeOperand(y);
         writeOperator(OperatorName.LINE_TO);
@@ -1181,10 +1151,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void stroke() throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: stroke is not allowed within a text block.");
-        }
+        assertNotInTextMode("stroke");
         writeOperator(OperatorName.STROKE_PATH);
     }
 
@@ -1196,10 +1163,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void closeAndStroke() throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: closeAndStroke is not allowed within a text block.");
-        }
+        assertNotInTextMode("closeAndStroke");
         writeOperator(OperatorName.CLOSE_AND_STROKE);
     }
 
@@ -1211,10 +1175,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void fill() throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: fill is not allowed within a text block.");
-        }
+        assertNotInTextMode("fill");
         writeOperator(OperatorName.FILL_NON_ZERO);
     }
 
@@ -1226,10 +1187,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void fillEvenOdd() throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: fillEvenOdd is not allowed within a text block.");
-        }
+        assertNotInTextMode("fillEvenOdd");
         writeOperator(OperatorName.FILL_EVEN_ODD);
     }
 
@@ -1243,10 +1201,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void fillAndStroke() throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: fillAndStroke is not allowed within a text block.");
-        }
+        assertNotInTextMode("fillAndStroke");
         writeOperator(OperatorName.FILL_NON_ZERO_AND_STROKE);
     }
 
@@ -1260,10 +1215,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void fillAndStrokeEvenOdd() throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: fillAndStrokeEvenOdd is not allowed within a text block.");
-        }
+        assertNotInTextMode("fillAndStrokeEvenOdd");
         writeOperator(OperatorName.FILL_EVEN_ODD_AND_STROKE);
     }
 
@@ -1277,10 +1229,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void closeAndFillAndStroke() throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: closeAndFillAndStroke is not allowed within a text block.");
-        }
+        assertNotInTextMode("closeAndFillAndStroke");
         writeOperator(OperatorName.CLOSE_FILL_NON_ZERO_AND_STROKE);
     }
 
@@ -1294,10 +1243,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void closeAndFillAndStrokeEvenOdd() throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: closeAndFillAndStrokeEvenOdd is not allowed within a text block.");
-        }
+        assertNotInTextMode("closeAndFillAndStrokeEvenOdd");
         writeOperator(OperatorName.CLOSE_FILL_EVEN_ODD_AND_STROKE);
     }
 
@@ -1310,10 +1256,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void shadingFill(PDShading shading) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: shadingFill is not allowed within a text block.");
-        }
+        assertNotInTextMode("shadingFill");
 
         writeOperand(resources.add(shading));
         writeOperator(OperatorName.SHADING_FILL);
@@ -1327,10 +1270,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void closePath() throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: closePath is not allowed within a text block.");
-        }
+        assertNotInTextMode("closePath");
         writeOperator(OperatorName.CLOSE_PATH);
     }
 
@@ -1342,10 +1282,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void clip() throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: clip is not allowed within a text block.");
-        }
+        assertNotInTextMode("clip");
         writeOperator(OperatorName.CLIP_NON_ZERO);
         
         // end path without filling or stroking
@@ -1360,10 +1297,7 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
      */
     public void clipEvenOdd() throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IllegalStateException("Error: clipEvenOdd is not allowed within a text block.");
-        }
+        assertNotInTextMode("clipEvenOdd");
         writeOperator(OperatorName.CLIP_EVEN_ODD);
         
         // end path without filling or stroking
@@ -1734,6 +1668,15 @@ abstract class PDAbstractContentStream implements ContentStreamForGlyphLayoutInt
     private boolean isOutsideOneInterval(double val)
     {
         return val < 0 || val > 1;
+    }
+
+    private void assertNotInTextMode(String operation)
+    {
+        if (inTextMode)
+        {
+            throw new IllegalStateException(
+                    "Error: " + operation + " is not allowed within a text block.");
+        }
     }
 
     protected void setStrokingColorSpaceStack(PDColorSpace colorSpace)
