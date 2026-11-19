@@ -236,4 +236,29 @@ class RandomAccessReadBufferDataStreamTest
         Files.delete(path);
     }
 
+    /**
+     * A sub stream reads its part of the data with its own position, and stays readable after the
+     * parent is closed.
+     *
+     * @throws IOException If something went wrong
+     */
+    @Test
+    void testCreateSubStream() throws IOException
+    {
+        byte[] byteArray = "0123456789".getBytes(StandardCharsets.US_ASCII);
+        TTFDataStream subStream;
+        try (RandomAccessReadDataStream dataStream = new RandomAccessReadDataStream(
+                new RandomAccessReadBuffer(byteArray)))
+        {
+            dataStream.seek(2);
+            subStream = dataStream.createSubStream(5);
+            assertEquals(7, dataStream.getCurrentPosition());
+            assertThrows(IOException.class, () -> dataStream.createSubStream(4));
+        }
+        assertEquals(5, subStream.getOriginalDataSize());
+        assertEquals("23456", subStream.readString(5, StandardCharsets.US_ASCII));
+        assertEquals(-1, subStream.read());
+        subStream.seek(1);
+        assertEquals('3', subStream.read());
+    }
 }
