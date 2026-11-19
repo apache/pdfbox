@@ -50,7 +50,7 @@ class RelationalOperators
             {
                 Number num1 = (Number)op1;
                 Number num2 = (Number)op2;
-                result = Float.compare(num1.floatValue(),num2.floatValue()) == 0;
+                return Double.compare(num1.doubleValue(),num2.doubleValue()) == 0;
             }
             else
             {
@@ -87,7 +87,7 @@ class RelationalOperators
         @Override
         protected boolean compare(Number num1, Number num2)
         {
-            return num1.floatValue() >= num2.floatValue();
+            return num1.doubleValue() >= num2.doubleValue();
         }
 
     }
@@ -99,7 +99,7 @@ class RelationalOperators
         @Override
         protected boolean compare(Number num1, Number num2)
         {
-            return num1.floatValue() > num2.floatValue();
+            return num1.doubleValue() > num2.doubleValue();
         }
 
     }
@@ -111,7 +111,7 @@ class RelationalOperators
         @Override
         protected boolean compare(Number num1, Number num2)
         {
-            return num1.floatValue() <= num2.floatValue();
+            return num1.doubleValue() <= num2.doubleValue();
         }
 
     }

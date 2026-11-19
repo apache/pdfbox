@@ -126,6 +126,16 @@ class StackOperators
             {
                 throw new IllegalArgumentException("rangecheck: " + n);
             }
+            if (n == 0)
+            {
+                return;
+            }
+            // rolling by j is the same as rolling by j mod n
+            j %= n;
+            if (j == 0)
+            {
+                return;
+            }
 
             LinkedList<Object> rolled = new LinkedList<>();
             LinkedList<Object> moved = new LinkedList<>();
