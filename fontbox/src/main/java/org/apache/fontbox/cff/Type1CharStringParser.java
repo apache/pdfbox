@@ -48,7 +48,7 @@ public class Type1CharStringParser
 
     // The format allows 10 nested subroutine calls, but fonts in use exceed that. This is only a
     // safeguard against endless recursion.
-    protected static final int MAX_SUBR_NESTING = 150;
+    protected static final int MAX_SUBR_NESTING = 106;
 
     private final String fontName;
     private String currentGlyph;
