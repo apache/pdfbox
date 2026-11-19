@@ -177,12 +177,9 @@ public class PDCIDFontType2 extends PDCIDFont
             hasEqualName = true;
             return;
         }
+        name = name.replaceAll("[,-]", "");
+        ttfName = ttfName.replaceAll("[,-]", "");
         if (ttfName.startsWith(name) || name.startsWith(ttfName)) // e.g. Arial/ArialMT, Tahoma,Italic/Tahoma
-        {
-            hasEqualName = true;
-            return;
-        }
-        if ("Tahoma,Bold".equals(name) && "Tahoma-Bold".equals(ttfName))
         {
             hasEqualName = true;
             return;
