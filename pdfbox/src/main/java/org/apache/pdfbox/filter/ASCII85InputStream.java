@@ -254,7 +254,7 @@ public class ASCII85InputStream extends FilterInputStream //TH
      * @param readlimit ignored.
      */
     @Override
-    public synchronized void mark(int readlimit)
+    public void mark(int readlimit)
     {
     }
 
@@ -264,7 +264,7 @@ public class ASCII85InputStream extends FilterInputStream //TH
      * @throws IOException telling that this is an unsupported action.
      */
     @Override
-    public synchronized void reset() throws IOException
+    public void reset() throws IOException
     {
         throw new IOException("Reset is not supported");
     }
