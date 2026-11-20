@@ -88,7 +88,7 @@ final class ASCII85InputStream extends FilterInputStream
                 }
                 z = (byte) zz;
             }
-            while (z == NEWLINE || z == RETURN || z == SPACE);
+            while (isWhitespace(z));
 
             if (z == TERMINATOR)
             {
@@ -112,7 +112,8 @@ final class ASCII85InputStream extends FilterInputStream
                         int zz = in.read();
                         // PDFBOX-6317: a missing end-of-data marker ends the last group like ~>
                         z = zz == -1 ? (byte) TERMINATOR : (byte) zz;
-                    } while (z == NEWLINE || z == RETURN || z == SPACE);
+                    }
+                    while (isWhitespace(z));
                     ascii[k] = z;
                     if (z == TERMINATOR)
                     {
@@ -268,5 +269,11 @@ final class ASCII85InputStream extends FilterInputStream
     public synchronized void reset() throws IOException
     {
         throw new IOException("Reset is not supported");
+    }
+
+    // PDF white-space characters: NUL, HT, LF, FF, CR and SP
+    private static boolean isWhitespace(byte c)
+    {
+        return c == 0 || c == '\t' || c == NEWLINE || c == '\f' || c == RETURN || c == SPACE;
     }
 }

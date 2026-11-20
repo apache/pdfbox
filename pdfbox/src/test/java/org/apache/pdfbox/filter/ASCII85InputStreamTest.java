@@ -40,6 +40,13 @@ public class ASCII85InputStreamTest
         assertEquals("\000\000\000\000", decodeString(s3));
     }
 
+    @Test
+    public void testPDFBox6330() throws IOException
+    {
+        String s1 = "6<#'\\7PQ#@\t1a#b0+?)%u\t2_Zp.<+I+\"\t87cURD]hkE\t7RD$<.3MT)\t+@T6:~>";
+        assertEquals("BT /F1 24 Tf 72 700 Td (Hello PDFBox) Tj ET\n", decodeString(s1));
+    }
+
     private String decodeString(String inputString) throws IOException
     {
         ByteArrayInputStream bais = new ByteArrayInputStream(inputString.getBytes(Charsets.US_ASCII));
