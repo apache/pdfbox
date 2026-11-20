@@ -157,7 +157,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
     {
         PDRange retval = null;
         COSArray decodeValues = getDecodeValues();
-        if (decodeValues != null && decodeValues.size() >= paramNum * 2 + 1)
+        if (decodeValues != null && decodeValues.size() >= paramNum * 2 + 2)
         {
             retval = new PDRange(decodeValues, paramNum);
         }
