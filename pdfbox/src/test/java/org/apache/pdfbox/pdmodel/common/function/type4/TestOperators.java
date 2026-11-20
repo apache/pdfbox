@@ -392,7 +392,7 @@ public class TestOperators extends TestCase
             .pop(true).pop(false).isEmpty();
 
         Type4Tester.create("52 not -37 not")
-            .pop(37).pop(-52).isEmpty();
+            .pop(~-37).pop(~52).isEmpty();
     }
 
     /**
