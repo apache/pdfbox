@@ -19,8 +19,8 @@ package org.apache.pdfbox.filter;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.util.Charsets;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -42,8 +42,8 @@ public class ASCII85InputStreamTest
 
     private String decodeString(String inputString) throws IOException
     {
-        ByteArrayInputStream bais = new ByteArrayInputStream(inputString.getBytes(StandardCharsets.US_ASCII));
+        ByteArrayInputStream bais = new ByteArrayInputStream(inputString.getBytes(Charsets.US_ASCII));
         InputStream in = new ASCII85InputStream(bais);
-        return new String(IOUtils.toByteArray(in), StandardCharsets.US_ASCII);
+        return new String(IOUtils.toByteArray(in), Charsets.US_ASCII);
     }
 }
