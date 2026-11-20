@@ -76,6 +76,10 @@ public class PDFunctionType3 extends PDFunction
             // This doesn't make sense but it may happen ...
             function = functionsArray[0];
             PDRange encRange = getEncodeForParameter(0);
+            if (encRange == null)
+            {
+                throw new IOException("Encoding range is missing for index 0");
+            }
             x = interpolate(x, domain.getMin(), domain.getMax(), encRange.getMin(), encRange.getMax());
         }
         else 
@@ -100,6 +104,10 @@ public class PDFunctionType3 extends PDFunction
                 {
                     function = functionsArray[i];
                     PDRange encRange = getEncodeForParameter(i);
+                    if (encRange == null)
+                    {
+                        throw new IOException("Encoding range is missing for index " + i);
+                    }
                     x = interpolate(x, partitionValues[i], partitionValues[i+1], encRange.getMin(), encRange.getMax());
                     break;
                 }
@@ -161,14 +169,19 @@ public class PDFunctionType3 extends PDFunction
     /**
      * Get the encode for the input parameter.
      *
-     * @param n The function parameter number.
+     * @param paramNum The function parameter number.
      *
      * @return The encode parameter range or null if none is set.
      */
-    private PDRange getEncodeForParameter(int n) 
+    private PDRange getEncodeForParameter(int paramNum) 
     {
+        PDRange retval = null;
         COSArray encodeValues = getEncode();
-        return new PDRange( encodeValues, n );
+        if (encodeValues != null && encodeValues.size() >= paramNum * 2 + 2)
+        {
+            retval = new PDRange(encodeValues, paramNum);
+        }
+        return retval;
     }
 
 }
