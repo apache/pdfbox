@@ -32,7 +32,7 @@ public class CMapStringsTest extends TestCase
 
     public void testMappingZeroByte()
     {
-        byte[] minValueZeroByte = new byte[] {};
+        byte[] minValueZeroByte = {};
         assertNull(CMapStrings.getMapping(minValueZeroByte));
     }
 
