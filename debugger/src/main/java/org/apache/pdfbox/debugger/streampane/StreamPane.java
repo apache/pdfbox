@@ -267,13 +267,15 @@ public class StreamPane implements ActionListener
         }
         synchronized (stream)
         {
-            InputStream is = stream.getStream(command);
-            if (is == null)
+            try (InputStream is = stream.getStream(command))
             {
-                JOptionPane.showMessageDialog(panel, command + " text not available (filter missing?)");
-                return;
+                if (is == null)
+                {
+                    JOptionPane.showMessageDialog(panel, command + " text not available (filter missing?)");
+                    return;
+                }
+                hexView.changeData(IOUtils.toByteArray(is));
             }
-            hexView.changeData(IOUtils.toByteArray(is));
         }
     }
 
@@ -296,7 +298,7 @@ public class StreamPane implements ActionListener
         }
 
         @Override
-        protected StyledDocument doInBackground()
+        protected StyledDocument doInBackground() throws IOException
         {
             // default encoding to use when reading text base content
             String encoding = "ISO-8859-1";
@@ -306,25 +308,26 @@ public class StreamPane implements ActionListener
                 {
                     encoding = "UTF-8";
                 }
-                InputStream inputStream = stream.getStream(filterKey);
-                if (inputStream == null)
+                try (InputStream inputStream = stream.getStream(filterKey))
                 {
-                    return new DefaultStyledDocument();
-                }
-                if (nice && Stream.DECODED.equals(filterKey))
-                {
-                    if (stream.isXmlMetadata())
+                    if (inputStream == null)
                     {
-                        return getXMLDocument(inputStream);
+                        return new DefaultStyledDocument();
                     }
-                    StyledDocument document = getContentStreamDocument(inputStream);
-                    if (document != null)
+                    if (nice && Stream.DECODED.equals(filterKey))
                     {
-                        return document;
+                        if (stream.isXmlMetadata())
+                        {
+                            return getXMLDocument(inputStream);
+                        }
+                        StyledDocument document = getContentStreamDocument(inputStream);
+                        if (document != null)
+                        {
+                            return document;
+                        }
                     }
                     return getDocument(inputStream, encoding);
                 }
-                return getDocument(inputStream, encoding);
             }
         }
 
