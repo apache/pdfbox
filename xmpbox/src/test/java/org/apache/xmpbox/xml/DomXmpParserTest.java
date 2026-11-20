@@ -707,7 +707,7 @@ class DomXmpParserTest
         XmpParsingException ex = assertThrows(
                 XmpParsingException.class,
                 () -> xmpParser.parse(s.getBytes(StandardCharsets.UTF_8)));
-        assertEquals("Expected xpacket 'end' attribute with value 'r' or 'w' ", ex.getMessage());
+        assertEquals("Expected xpacket 'end' attribute with value 'r' or 'w'", ex.getMessage());
     }
 
     @Test
@@ -1756,5 +1756,19 @@ class DomXmpParserTest
         XMPMetadata xmp = xmpParser.parse(s.getBytes(StandardCharsets.UTF_8));
         XMPSchema uaSchema = xmp.getSchema("http://www.aiim.org/pdfua/ns/id/");
         assertEquals((Integer) 1, uaSchema.getIntegerPropertyValueAsSimple("part"));
+    }
+    
+    @Test
+    void testPDFBox6334() throws XmpParsingException
+    {
+        String s = "<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n" +
+            "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" +
+            "	<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"/>\n" +
+            "</x:xmpmeta><?xpacket end=?>";
+        final DomXmpParser xmpParser = new DomXmpParser();
+        XmpParsingException ex = assertThrows(
+                XmpParsingException.class,
+                () -> xmpParser.parse(s.getBytes(StandardCharsets.UTF_8)));
+        assertEquals("Expected xpacket 'end' attribute with value 'r' or 'w'", ex.getMessage());
     }
 }
