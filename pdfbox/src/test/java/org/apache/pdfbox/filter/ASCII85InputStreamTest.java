@@ -24,10 +24,10 @@ import org.apache.pdfbox.io.IOUtils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
-public class ASCII85InputStreamTest
+class ASCII85InputStreamTest
 {
     @Test
-    public void testPDFBOX6317() throws IOException
+    void testPDFBOX6317() throws IOException
     {
         String endMarker = "~>";
         String s1 = "87cURD]i,\"Ebo80";
