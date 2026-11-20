@@ -897,12 +897,17 @@ public class DomXmpParser
         // should be ignored
         if (xpackData.startsWith("end="))
         {
+            if (xpackData.length() < 7)
+            {
+                throw new XmpParsingException(ErrorType.XpacketBadEnd,
+                        "Expected xpacket 'end' attribute with value 'r' or 'w'");
+            }
             char end = xpackData.charAt(5);
             // check value (5 for end='X')
             if (end != 'r' && end != 'w')
             {
                 throw new XmpParsingException(ErrorType.XpacketBadEnd,
-                        "Expected xpacket 'end' attribute with value 'r' or 'w' ");
+                        "Expected xpacket 'end' attribute with value 'r' or 'w'");
             }
             else
             {
