@@ -490,20 +490,38 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     {
         // remove from parent's kids
         COSDictionary parent = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
+        if (parent == null)
+        {
+            throw new IllegalArgumentException("attempted to romove an orphan page");
+        }
         COSArray kids = parent.getCOSArray(COSName.KIDS);
+        if (kids == null)
+        {
+            throw new IllegalArgumentException("parent node has no kids array");
+        }
         if (kids.removeObject(node))
         {
-            // update ancestor counts
-            do
-            {
-                node = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
-                if (node != null)
-                {
-                    node.setInt(COSName.COUNT, node.getInt(COSName.COUNT) - 1);
-                }
-            }
-            while (node != null);
+            updateAncestorCounts(node, -1);
         }
+    }
+
+    private void updateAncestorCounts(COSDictionary node, int delta)
+    {
+        Set<COSDictionary> visited = new HashSet<COSDictionary>();
+        do
+        {
+            node = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
+            if (!visited.add(node))
+            {
+                LOG.warn("aborting page count update because of cycle");
+                break;
+            }
+            if (node != null)
+            {
+                node.setInt(COSName.COUNT, node.getInt(COSName.COUNT) + delta);
+            }
+        }
+        while (node != null);
     }
 
     /**
@@ -523,16 +541,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         COSArray kids = root.getCOSArray(COSName.KIDS);
         kids.add(node);
 
-        // update ancestor counts
-        do
-        {
-            node = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
-            if (node != null)
-            {
-                node.setInt(COSName.COUNT, node.getInt(COSName.COUNT) + 1);
-            }
-        }
-        while (node != null);
+        updateAncestorCounts(node, 1);
     }
     
     /**
@@ -601,8 +610,14 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
 
     private void increaseParents(COSDictionary parentDict)
     {
+        Set<COSDictionary> visited = new HashSet<COSDictionary>();
         do
         {
+            if (!visited.add(parentDict))
+            {
+                LOG.warn("aborting page count update because of cycle");
+                break;
+            }
             int cnt = parentDict.getInt(COSName.COUNT);
             parentDict.setInt(COSName.COUNT, cnt + 1);
             parentDict = parentDict.getCOSDictionary(COSName.PARENT);

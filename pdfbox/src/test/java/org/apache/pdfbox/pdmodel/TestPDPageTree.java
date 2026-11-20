@@ -150,4 +150,30 @@ public class TestPDPageTree
         assertEquals("Page tree count should be 1", 1, pageTree.getCount());
         assertSame("Page tree count should be 1", root, page.getCOSObject().getDictionaryObject(COSName.PARENT));
     }
+    
+    /**
+     * PDFBOX-6318: test behavior when root is its own parent.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testModifyLoop() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        document.addPage(new PDPage());
+        document.addPage(new PDPage());
+        assertEquals(2, document.getNumberOfPages());
+        PDPageTree pageTree = document.getPages();
+        pageTree.getCOSObject().setItem(COSName.PARENT, pageTree); // 😮
+        PDPage page = new PDPage();
+        document.addPage(page);
+        assertEquals(3, document.getNumberOfPages());
+        document.removePage(page);
+        assertEquals(2, document.getNumberOfPages());
+        document.getPages().insertBefore(new PDPage(), document.getPage(0));
+        assertEquals(3, document.getNumberOfPages());
+        document.getPages().insertAfter(new PDPage(), document.getPage(0));
+        assertEquals(4, document.getNumberOfPages());
+        document.close();
+    }
 }
