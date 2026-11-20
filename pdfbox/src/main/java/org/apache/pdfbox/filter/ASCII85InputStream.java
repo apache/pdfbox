@@ -79,14 +79,16 @@ final class ASCII85InputStream extends FilterInputStream
             byte z;
             do
             {
-                int zz = (byte) in.read();
+                int zz = in.read();
                 if (zz == -1)
                 {
+                    n = 0;
                     eof = true;
                     return -1;
                 }
                 z = (byte) zz;
-            } while (z == NEWLINE || z == RETURN || z == SPACE);
+            }
+            while (z == NEWLINE || z == RETURN || z == SPACE);
 
             if (z == TERMINATOR)
             {
@@ -107,13 +109,9 @@ final class ASCII85InputStream extends FilterInputStream
                 {
                     do
                     {
-                        int zz = (byte) in.read();
-                        if (zz == -1)
-                        {
-                            eof = true;
-                            return -1;
-                        }
-                        z = (byte) zz;
+                        int zz = in.read();
+                        // PDFBOX-6317: a missing end-of-data marker ends the last group like ~>
+                        z = zz == -1 ? (byte) TERMINATOR : (byte) zz;
                     } while (z == NEWLINE || z == RETURN || z == SPACE);
                     ascii[k] = z;
                     if (z == TERMINATOR)
