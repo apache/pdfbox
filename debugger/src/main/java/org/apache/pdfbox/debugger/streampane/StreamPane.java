@@ -266,13 +266,15 @@ public class StreamPane implements ActionListener
         }
         synchronized (stream)
         {
-            InputStream is = stream.getStream(command);
-            if (is == null)
+            try (InputStream is = stream.getStream(command))
             {
-                JOptionPane.showMessageDialog(panel, command + " text not available (filter missing?)");
-                return;
+                if (is == null)
+                {
+                    JOptionPane.showMessageDialog(panel, command + " text not available (filter missing?)");
+                    return;
+                }
+                hexView.changeData(is.readAllBytes());
             }
-            hexView.changeData(is.readAllBytes());
         }
     }
 
@@ -305,25 +307,32 @@ public class StreamPane implements ActionListener
                 {
                     encoding = "UTF-8";
                 }
-                InputStream inputStream = stream.getStream(filterKey);
-                if (inputStream == null)
+                try (InputStream inputStream = stream.getStream(filterKey))
                 {
-                    return new DefaultStyledDocument();
-                }
-                if (nice && Stream.DECODED.equals(filterKey))
-                {
-                    if (stream.isXmlMetadata())
+                    if (inputStream == null)
                     {
-                        return getXMLDocument(inputStream);
+                        return new DefaultStyledDocument();
                     }
-                    StyledDocument document = getContentStreamDocument(inputStream);
-                    if (document != null)
+                    if (nice && Stream.DECODED.equals(filterKey))
                     {
-                        return document;
+                        if (stream.isXmlMetadata())
+                        {
+                            return getXMLDocument(inputStream);
+                        }
+                        StyledDocument document = getContentStreamDocument(inputStream);
+                        if (document != null)
+                        {
+                            return document;
+                        }
+                        return getDocument(inputStream, encoding);
                     }
                     return getDocument(inputStream, encoding);
                 }
-                return getDocument(inputStream, encoding);
+                catch (IOException e)
+                {
+                    LOG.error(e.getMessage(), e);
+                    return new DefaultStyledDocument();
+                }
             }
         }
 
