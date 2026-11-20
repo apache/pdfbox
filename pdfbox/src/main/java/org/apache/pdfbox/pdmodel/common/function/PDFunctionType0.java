@@ -194,7 +194,7 @@ public class PDFunctionType0 extends PDFunction
     {
         PDRange retval = null;
         COSArray encodeValues = getEncodeValues();
-        if (encodeValues != null && encodeValues.size() >= paramNum * 2 + 1)
+        if (encodeValues != null && encodeValues.size() >= paramNum * 2 + 2)
         {
             retval = new PDRange(encodeValues, paramNum);
         }
@@ -223,7 +223,7 @@ public class PDFunctionType0 extends PDFunction
     {
         PDRange retval = null;
         COSArray decodeValues = getDecodeValues();
-        if (decodeValues != null && decodeValues.size() >= paramNum * 2 + 1)
+        if (decodeValues != null && decodeValues.size() >= paramNum * 2 + 2)
         {
             retval = new PDRange(decodeValues, paramNum);
         }
