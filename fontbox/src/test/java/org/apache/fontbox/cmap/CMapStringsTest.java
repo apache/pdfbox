@@ -39,7 +39,7 @@ class CMapStringsTest
     @Test
     void testMappingZeroByte()
     {
-        byte[] minValueZeroByte = new byte[] {};
+        byte[] minValueZeroByte = {};
         assertNull(CMapStrings.getMapping(minValueZeroByte));
     }
 
