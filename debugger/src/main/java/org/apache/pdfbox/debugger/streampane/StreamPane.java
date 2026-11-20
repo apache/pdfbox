@@ -296,6 +296,7 @@ public class StreamPane implements ActionListener
                 return;
             }
             hexView.changeData(IOUtils.toByteArray(is));
+            is.close();
         }
     }
 
@@ -318,7 +319,7 @@ public class StreamPane implements ActionListener
         }
 
         @Override
-        protected StyledDocument doInBackground()
+        protected StyledDocument doInBackground() throws IOException
         {
             // default encoding to use when reading text base content
             String encoding = "ISO-8859-1";
@@ -344,9 +345,10 @@ public class StreamPane implements ActionListener
                     {
                         return document;
                     }
-                    return getDocument(inputStream, encoding);
                 }
-                return getDocument(inputStream, encoding);
+                StyledDocument document = getDocument(inputStream, encoding);
+                IOUtils.closeQuietly(inputStream);
+                return document;
             }
         }
 
