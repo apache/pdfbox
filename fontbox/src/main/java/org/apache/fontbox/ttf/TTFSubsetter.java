@@ -431,7 +431,9 @@ public final class TTFSubsetter
         ByteArrayOutputStream bos = new ByteArrayOutputStream(78);
         DataOutputStream out = new DataOutputStream(bos);
 
-        writeUint16(out, os2.getVersion());
+        // only the version 0 fields are written below
+        // https://learn.microsoft.com/en-us/typography/opentype/spec/os2
+        writeUint16(out, 0);
         writeSInt16(out, os2.getAverageCharWidth());
         writeUint16(out, os2.getWeightClass());
         writeUint16(out, os2.getWidthClass());
