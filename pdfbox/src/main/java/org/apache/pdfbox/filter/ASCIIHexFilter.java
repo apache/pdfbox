@@ -86,6 +86,10 @@ final class ASCIIHexFilter extends Filter
             }
             int value = REVERSE_HEX[firstByte] * 16;
             int secondByte = encoded.read();
+            while (isWhitespace(secondByte))
+            {
+                secondByte = encoded.read();
+            }
        
             if (secondByte == -1 || isEOD(secondByte)) 
             {
