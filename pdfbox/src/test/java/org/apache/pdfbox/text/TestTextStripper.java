@@ -860,6 +860,55 @@ class TestTextStripper
         }
     }
 
+    /**
+     * Test that an /ActualText sequence that isn't closed on a page doesn't replace the text of the
+     * following pages or of the next document processed by the same stripper.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testUnclosedActualText() throws IOException
+    {
+        PDFTextStripper localStripper = new PDFTextStripper();
+        localStripper.setLineSeparator("\n");
+        localStripper.setPageEnd("\n");
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page1 = new PDPage();
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page1))
+            {
+                cs.beginText();
+                cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+                cs.newLineAtOffset(50, 700);
+                cs.beginMarkedContent(COSName.SPAN, createActualText("X"));
+                cs.showText("one");
+                cs.endText();
+            }
+            doc.addPage(page1);
+            doc.addPage(createPageWithText(doc, "two"));
+            assertEquals("X\ntwo\n", localStripper.getText(doc));
+        }
+        try (PDDocument doc = new PDDocument())
+        {
+            doc.addPage(createPageWithText(doc, "three"));
+            assertEquals("three\n", localStripper.getText(doc));
+        }
+    }
+
+    private static PDPage createPageWithText(PDDocument doc, String text) throws IOException
+    {
+        PDPage page = new PDPage();
+        try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+        {
+            cs.beginText();
+            cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+            cs.newLineAtOffset(50, 700);
+            cs.showText(text);
+            cs.endText();
+        }
+        return page;
+    }
+
     private static PDPropertyList createActualText(String actualText)
     {
         COSDictionary dict = new COSDictionary();
