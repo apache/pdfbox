@@ -89,6 +89,11 @@ public class PDFunctionType3 extends PDFunction
                 boundsValues = getBounds().toFloatArray();
             }
             int boundsSize = boundsValues.length;
+            if (boundsSize >= functionsArray.length)
+            {
+                throw new IOException("Type 3 function has " + boundsSize + " bounds for " +
+                        functionsArray.length + " functions");
+            }
             // create a combined array containing the domain and the bounds values
             // domain.min, bounds[0], bounds[1], ...., bounds[boundsSize-1], domain.max
             float[] partitionValues = new float[boundsSize+2];
