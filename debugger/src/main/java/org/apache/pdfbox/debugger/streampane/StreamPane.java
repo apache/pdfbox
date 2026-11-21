@@ -346,34 +346,31 @@ public class StreamPane implements ActionListener
         private StyledDocument getDocument(InputStream inputStream, String encoding)
         {
             StyledDocument docu = new DefaultStyledDocument();
-            if (inputStream != null)
+            String data;
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try
             {
-                String data;
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                try
-                {
-                    inputStream.transferTo(baos);
-                    data = baos.toString(encoding);
-                }
-                catch (IOException e)
-                {
-                    LOG.error(e.getMessage(), e);
-                    return docu;
-                }
+                inputStream.transferTo(baos);
+                data = baos.toString(encoding);
+            }
+            catch (IOException e)
+            {
+                LOG.error(e.getMessage(), e);
+                return docu;
+            }
 
-                // CR is not displayed in the raw view (see file from PDFBOX-4964),
-                // but LF is displayed, so lets first replace CR LF with LF and then
-                // replace the remaining CRs with LF
-                data = data.replaceAll("\\R", "\n");
+            // CR is not displayed in the raw view (see file from PDFBOX-4964),
+            // but LF is displayed, so lets first replace CR LF with LF and then
+            // replace the remaining CRs with LF
+            data = data.replaceAll("\\R", "\n");
 
-                try
-                {
-                    docu.insertString(0, data, null);
-                }
-                catch (BadLocationException e)
-                {
-                    LOG.error(e.getMessage(), e);
-                }
+            try
+            {
+                docu.insertString(0, data, null);
+            }
+            catch (BadLocationException e)
+            {
+                LOG.error(e.getMessage(), e);
             }
             return docu;
         }
