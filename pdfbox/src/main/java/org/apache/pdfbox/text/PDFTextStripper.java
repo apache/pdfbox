@@ -376,6 +376,11 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 }
             }
             characterListMapping.clear();
+            // marked content can't span pages, so drop anything left unclosed on a previous page
+            currentMarkedContents.clear();
+            actualText = null;
+            actualTextMarkedContent = null;
+            firstActualTextPosition = false;
             super.processPage(page);
             writePage();
             endPage(page);
