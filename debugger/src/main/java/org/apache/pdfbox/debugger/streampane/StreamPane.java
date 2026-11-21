@@ -23,7 +23,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -334,19 +334,22 @@ public class StreamPane implements ActionListener
                 {
                     return new DefaultStyledDocument();
                 }
+                // read the data only once, so that it is still available for the
+                // plain text fallback if parsing as a content stream 
+                byte[] data = IOUtils.toByteArray(inputStream);
                 if (nice && Stream.UNFILTERED.equals(filterKey))
                 {
                     if (stream.isXmlMetadata())
                     {
-                        return getXMLDocument(inputStream, encoding);
+                        return getXMLDocument(new ByteArrayInputStream(data));
                     }
-                    StyledDocument document = getContentStreamDocument(inputStream);
+                    StyledDocument document = getContentStreamDocument(data);
                     if (document != null)
                     {
                         return document;
                     }
                 }
-                StyledDocument document = getDocument(inputStream, encoding);
+                StyledDocument document = getDocument(data, encoding);
                 IOUtils.closeQuietly(inputStream);
                 return document;
             }
@@ -369,15 +372,13 @@ public class StreamPane implements ActionListener
             }
         }
 
-        private StyledDocument getDocument(InputStream inputStream, String encoding)
+        private StyledDocument getDocument(byte[] data, String encoding)
         {
             StyledDocument docu = new DefaultStyledDocument();
-            String data;
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            String str;
             try
             {
-                IOUtils.copy(inputStream, baos);
-                data = baos.toString(encoding);
+                str = new String(data, encoding);
             }
             catch (IOException e)
             {
@@ -388,11 +389,11 @@ public class StreamPane implements ActionListener
             // CR is not displayed in the raw view (see file from PDFBOX-4964),
             // but LF is displayed, so lets first replace CR LF with LF and then
             // replace the remaining CRs with LF
-            data = data.replace("\r\n", "\n").replace('\r', '\n');
+            str = str.replace("\r\n", "\n").replace('\r', '\n');
 
             try
             {
-                docu.insertString(0, data, null);
+                docu.insertString(0, str, null);
             }
             catch (BadLocationException e)
             {
@@ -401,7 +402,7 @@ public class StreamPane implements ActionListener
             return docu;
         }
 
-        private StyledDocument getXMLDocument(InputStream inputStream, String encoding)
+        private StyledDocument getXMLDocument(InputStream inputStream)
         {
             StyledDocument docu = new DefaultStyledDocument();
                 try
@@ -446,14 +447,14 @@ public class StreamPane implements ActionListener
             return docu;
         }
 
-        private StyledDocument getContentStreamDocument(InputStream inputStream)
+        private StyledDocument getContentStreamDocument(byte[] data)
         {
             StyledDocument docu = new DefaultStyledDocument();
 
             PDFStreamParser parser;
             try
             {
-                parser = new PDFStreamParser(IOUtils.toByteArray(inputStream));
+                parser = new PDFStreamParser(data);
                 parser.parse();
             }
             catch (IOException e)
