@@ -378,30 +378,27 @@ public class StreamPane implements ActionListener
         private StyledDocument getXMLDocument(InputStream inputStream)
         {
             StyledDocument docu = new DefaultStyledDocument();
-            if (inputStream != null)
+            try
             {
-                try
-                {
-                    Document doc = XMLUtil.parse(inputStream);
-                    TransformerFactory transformerFactory = TransformerFactory.newInstance();
-                    transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-                    transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-                    transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-                    Transformer transformer = transformerFactory.newTransformer();
-                    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-                    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-                    StringWriter sw = new StringWriter();
-                    StreamResult result = new StreamResult(sw);
-                    DOMSource source = new DOMSource(doc);
-                    transformer.transform(source, result);
-                    // replaceAll because of JDK-8262285. Alternatively pass an XSLT to newTransformer()
-                    docu.insertString(0, sw.toString().replaceAll("(\\r\\n|\\r|\\n) +(\\r\\n|\\r|\\n)","\n"), null);
-                }
-                catch (IOException | TransformerFactoryConfigurationError | IllegalArgumentException |
-                       TransformerException | BadLocationException ex)
-                {
-                    LOG.error(ex.getMessage(), ex);
-                }
+                Document doc = XMLUtil.parse(inputStream);
+                TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+                transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+                transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+                Transformer transformer = transformerFactory.newTransformer();
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+                StringWriter sw = new StringWriter();
+                StreamResult result = new StreamResult(sw);
+                DOMSource source = new DOMSource(doc);
+                transformer.transform(source, result);
+                // replaceAll because of JDK-8262285. Alternatively pass an XSLT to newTransformer()
+                docu.insertString(0, sw.toString().replaceAll("(\\r\\n|\\r|\\n) +(\\r\\n|\\r|\\n)", "\n"), null);
+            }
+            catch (IOException | TransformerFactoryConfigurationError | IllegalArgumentException
+                    | TransformerException | BadLocationException ex)
+            {
+                LOG.error(ex.getMessage(), ex);
             }
             return docu;
         }
