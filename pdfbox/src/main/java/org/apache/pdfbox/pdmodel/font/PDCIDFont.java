@@ -221,7 +221,7 @@ public abstract class PDCIDFont implements COSObjectable
                 {
                     if (i + 3 >= w2Array.size())
                     {
-                        LOG.warn("Aborting read of 3 elements of /W2 table at index " + i + " with size " + w2Array.size());
+                        LOG.warn("Aborting read of 3 elements of /W2 table at index {} with size {}", i, w2Array.size());
                         break;
                     }
                     int first = c.intValue();
