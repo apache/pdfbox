@@ -23,6 +23,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -319,11 +320,15 @@ public class StreamPane implements ActionListener
                         {
                             return getXMLDocument(inputStream);
                         }
-                        StyledDocument document = getContentStreamDocument(inputStream);
+                        // read the data only once, so that it is still available for the
+                        // plain text fallback if parsing as a content stream fails
+                        byte[] data = inputStream.readAllBytes();
+                        StyledDocument document = getContentStreamDocument(data);
                         if (document != null)
                         {
                             return document;
                         }
+                        return getDocument(new ByteArrayInputStream(data), encoding);
                     }
                     return getDocument(inputStream, encoding);
                 }
@@ -403,14 +408,14 @@ public class StreamPane implements ActionListener
             return docu;
         }
 
-        private StyledDocument getContentStreamDocument(InputStream inputStream)
+        private StyledDocument getContentStreamDocument(byte[] data)
         {
             StyledDocument docu = new DefaultStyledDocument();
 
             PDFStreamParser parser;
             try
             {
-                parser = new PDFStreamParser(inputStream.readAllBytes());
+                parser = new PDFStreamParser(data);
                 parser.parse().forEach(obj -> writeToken(obj, docu));
             }
             catch (IOException e)
