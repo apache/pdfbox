@@ -171,7 +171,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
                 if (next instanceof COSArray)
                 {
                     COSArray array = (COSArray)next;
-                    for (int j = 0; j < array.size(); j++)
+                    for (int j = 0; j < array.size() - 2; j++)
                     {
                         int cid = c.intValue() + j / 3;
                         COSNumber w1y = (COSNumber) array.getObject(j);
@@ -183,6 +183,11 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
                 }
                 else if (next instanceof COSNumber)
                 {
+                    if (i + 3 >= w2Array.size())
+                    {
+                        LOG.warn("Aborting read of 3 elements of /W2 table at index " + i + " with size " + w2Array.size());
+                        break;
+                    }
                     int first = c.intValue();
                     int last = ((COSNumber) next).intValue();
                     COSNumber w1y = (COSNumber) w2Array.getObject(++i);
