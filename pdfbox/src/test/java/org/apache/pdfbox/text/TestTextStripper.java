@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -43,6 +44,7 @@ import java.io.Writer;
 
 import java.net.URISyntaxException;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import java.util.Iterator;
@@ -55,6 +57,7 @@ import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -885,6 +888,64 @@ class TestTextStripper
         {
             doc.addPage(createPageWithText(doc, "three"));
             assertEquals("three\n", localStripper.getText(doc));
+        }
+    }
+
+    /**
+     * Test that a surrogate pair (here an emoji) in a right-to-left run keeps the order of its
+     * high and low surrogate when the run is reversed.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testSurrogatePairInRightToLeftText() throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PDDocument doc = new PDDocument())
+        {
+            PDType1Font font = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+            PDPage page = new PDPage();
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+            {
+                cs.beginText();
+                cs.setFont(font, 12);
+                cs.newLineAtOffset(50, 700);
+                cs.showText("abc");
+                cs.endText();
+            }
+            doc.addPage(page);
+
+            // map "abc" to Hebrew alef, an emoji (U+1F600) and Hebrew bet, in visual order
+            String cmap = "/CIDInit /ProcSet findresource begin\n"
+                    + "12 dict begin\n"
+                    + "begincmap\n"
+                    + "/CMapName /Test def\n"
+                    + "1 begincodespacerange <00> <FF> endcodespacerange\n"
+                    + "3 beginbfchar\n"
+                    + "<61> <05D0>\n"
+                    + "<62> <D83DDE00>\n"
+                    + "<63> <05D1>\n"
+                    + "endbfchar\n"
+                    + "endcmap\n"
+                    + "CMapName currentdict /CMap defineresource pop\n"
+                    + "end\n"
+                    + "end\n";
+            COSStream toUnicode = doc.getDocument().createCOSStream();
+            try (OutputStream os = toUnicode.createOutputStream())
+            {
+                os.write(cmap.getBytes(StandardCharsets.US_ASCII));
+            }
+            font.getCOSObject().setItem(COSName.TO_UNICODE, toUnicode);
+            doc.save(baos);
+        }
+
+        // reload so that the font reads the ToUnicode CMap
+        try (PDDocument doc = Loader.loadPDF(baos.toByteArray()))
+        {
+            PDFTextStripper localStripper = new PDFTextStripper();
+            localStripper.setLineSeparator("\n");
+            localStripper.setPageEnd("\n");
+            assertEquals("ב😀א\n", localStripper.getText(doc));
         }
     }
 

@@ -1954,23 +1954,20 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
             if ((level & 1) != 0)
             {
-                while (--end >= start)
+                while (end > start)
                 {
-                    char character = word.charAt(end);
-                    if (Character.isMirrored(word.codePointAt(end)))
+                    // step back by code point to keep the order of surrogate pairs
+                    int codePoint = word.codePointBefore(end);
+                    end -= Character.charCount(codePoint);
+                    // MIRRORING_CHAR_MAP has only BMP characters
+                    if (Character.isBmpCodePoint(codePoint) && Character.isMirrored(codePoint)
+                            && MIRRORING_CHAR_MAP.containsKey((char) codePoint))
                     {
-                        if (MIRRORING_CHAR_MAP.containsKey(character))
-                        {
-                            result.append(MIRRORING_CHAR_MAP.get(character));
-                        }
-                        else
-                        {
-                            result.append(character);
-                        }
+                        result.append(MIRRORING_CHAR_MAP.get((char) codePoint));
                     }
                     else
                     {
-                        result.append(character);
+                        result.appendCodePoint(codePoint);
                     }
                 }
             }
