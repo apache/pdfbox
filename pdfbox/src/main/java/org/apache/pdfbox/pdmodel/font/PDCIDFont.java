@@ -125,7 +125,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
                     }
                     COSBase secondCodeBase = next;
                     COSBase rangeWidthBase = wArray.getObject(counter++);
-                    if (!(secondCodeBase instanceof COSNumber) || !(rangeWidthBase instanceof COSNumber))
+                    if (!(secondCodeBase instanceof COSNumber && rangeWidthBase instanceof COSNumber))
                     {
                         LOG.warn("Expected two numbers, got " + secondCodeBase + " and " + rangeWidthBase);
                         continue;
@@ -178,11 +178,16 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
                     for (int j = 0; j < array.size() - 2; j++)
                     {
                         int cid = c.intValue() + j / 3;
-                        COSNumber w1y = (COSNumber) array.getObject(j);
-                        COSNumber v1x = (COSNumber) array.getObject(++j);
-                        COSNumber v1y = (COSNumber) array.getObject(++j);
-                        verticalDisplacementY.put(cid, w1y.floatValue());
-                        positionVectors.put(cid, new Vector(v1x.floatValue(), v1y.floatValue()));
+                        COSBase w1y = array.getObject(j);
+                        COSBase v1x = array.getObject(++j);
+                        COSBase v1y = array.getObject(++j);
+                        if (!(w1y instanceof COSNumber && v1x instanceof COSNumber && v1y instanceof COSNumber))
+                        {
+                            LOG.warn("Expected three numbers, got " + w1y + ", " + v1x + ", " + v1y);
+                            break;
+                        }
+                        verticalDisplacementY.put(cid, ((COSNumber) w1y).floatValue());
+                        positionVectors.put(cid, new Vector(((COSNumber) v1x).floatValue(), ((COSNumber) v1y).floatValue()));
                     }
                 }
                 else if (next instanceof COSNumber)
@@ -194,11 +199,17 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
                     }
                     int first = c.intValue();
                     int last = ((COSNumber) next).intValue();
-                    COSNumber w1y = (COSNumber) w2Array.getObject(++i);
-                    COSNumber v1x = (COSNumber) w2Array.getObject(++i);
-                    COSNumber v1y = (COSNumber) w2Array.getObject(++i);
+                    COSBase w1y = w2Array.getObject(++i);
+                    COSBase v1x = w2Array.getObject(++i);
+                    COSBase v1y = w2Array.getObject(++i);
+                    if (!(w1y instanceof COSNumber && v1x instanceof COSNumber && v1y instanceof COSNumber))
+                    {
+                        LOG.warn("Expected three numbers, got " + w1y + ", " + v1x + ", " + v1y);
+                        break;
+                    }
                     displacementRanges.add(new VerticalDisplacementRange(first, last,
-                            new Vector(v1x.floatValue(), v1y.floatValue()), w1y.floatValue()));
+                            new Vector(((COSNumber) v1x).floatValue(), ((COSNumber) v1y).floatValue()),
+                            ((COSNumber) w1y).floatValue()));
                 }
             }
         }
