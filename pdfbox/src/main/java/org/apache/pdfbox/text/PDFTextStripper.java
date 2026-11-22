@@ -1960,7 +1960,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                     int codePoint = word.codePointBefore(end);
                     end -= Character.charCount(codePoint);
                     // MIRRORING_CHAR_MAP has only BMP characters
-                    if (Character.isBmpCodePoint(codePoint) && Character.isMirrored(codePoint)
+                    if (codePoint >>> 16 == 0 && Character.isMirrored(codePoint)
                             && MIRRORING_CHAR_MAP.containsKey((char) codePoint))
                     {
                         result.append(MIRRORING_CHAR_MAP.get((char) codePoint));
