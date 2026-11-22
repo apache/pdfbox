@@ -113,6 +113,15 @@ public class CFFParser
             throw new IOException("Name index missing in CFF font");
         }
         byte[][] topDictIndex = readIndexData(input);
+        if (topDictIndex.length == 0)
+        {
+            throw new IOException("Top DICT INDEX missing in CFF font");
+        }
+        if (topDictIndex.length < nameIndex.length)
+        {
+            throw new IOException("Top DICT INDEX has " + topDictIndex.length + " entries for " +
+                    nameIndex.length + " fonts in the Name INDEX");
+        }
         stringIndex = readStringIndexData(input);
         byte[][] globalSubrIndex = readIndexData(input);
 
