@@ -136,6 +136,12 @@ public class CFFParser
             outHeaders.setError("Top DICT INDEX missing in CFF font");
             return;
         }
+        if (topDictIndex.length < nameIndex.length)
+        {
+            outHeaders.setError("Top DICT INDEX has " + topDictIndex.length + " entries for " +
+                    nameIndex.length + " fonts in the Name INDEX");
+            return;
+        }
 
         // 'stringIndex' is required by 'parseROS() > readString()'
         stringIndex = readStringIndexData(input);
@@ -203,6 +209,11 @@ public class CFFParser
         if (topDictIndex.length == 0)
         {
             throw new IOException("Top DICT INDEX missing in CFF font");
+        }
+        if (topDictIndex.length < nameIndex.length)
+        {
+            throw new IOException("Top DICT INDEX has " + topDictIndex.length + " entries for " +
+                    nameIndex.length + " fonts in the Name INDEX");
         }
         
         stringIndex = readStringIndexData(input);
