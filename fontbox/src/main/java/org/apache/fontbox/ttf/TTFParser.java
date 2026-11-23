@@ -19,6 +19,7 @@ package org.apache.fontbox.ttf;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -64,6 +65,21 @@ public class TTFParser
     public TrueTypeFont parse(RandomAccessRead randomAccessRead) throws IOException
     {
         return parse(randomAccessRead, new RandomAccessReadDataStream(randomAccessRead));
+    }
+
+    /**
+     * Parse a buffer and return a TrueType font. The buffer is not copied, so many fonts can be
+     * parsed from one buffer, e.g. a font file read once or mapped into memory. Each font reads
+     * the buffer with its own position, so they can be used in different threads.
+     *
+     * @param buffer The font data from its position to its limit. It must not be changed while
+     * the font is in use. Its position is not changed.
+     * @return A TrueType font.
+     * @throws IOException If there is an error parsing the TrueType font.
+     */
+    public TrueTypeFont parse(ByteBuffer buffer) throws IOException
+    {
+        return parse(new RandomAccessReadDataStream(buffer));
     }
 
     /**
