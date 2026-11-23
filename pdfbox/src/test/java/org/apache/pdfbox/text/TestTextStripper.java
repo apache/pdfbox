@@ -949,6 +949,46 @@ class TestTextStripper
         }
     }
 
+    /**
+     * Test that text inside a bead belongs to the bead's article when the cropbox differs from the
+     * media box and the page is rotated.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testBeadWithCropBoxAndRotation() throws IOException
+    {
+        for (int rotation : new int[] { 0, 90, 180, 270 })
+        {
+            try (PDDocument doc = new PDDocument())
+            {
+                PDPage page = new PDPage(new PDRectangle(600, 800));
+                page.setCropBox(new PDRectangle(20, 10, 560, 700));
+                page.setRotation(rotation);
+                try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+                {
+                    cs.beginText();
+                    cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+                    cs.newLineAtOffset(60, 650);
+                    cs.showText("IN");
+                    cs.endText();
+                }
+                PDThreadBead bead = new PDThreadBead();
+                bead.setRectangle(new PDRectangle(40, 600, 200, 80));
+                page.setThreadBeads(List.of(bead));
+                doc.addPage(page);
+
+                PDFTextStripper localStripper = new PDFTextStripper();
+                localStripper.setLineSeparator("\n");
+                localStripper.setPageEnd("\n");
+                localStripper.setArticleStart("[");
+                localStripper.setArticleEnd("]");
+                // articles: before the bead, the bead, after the bead
+                assertEquals("[][IN][]\n", localStripper.getText(doc), "rotation " + rotation);
+            }
+        }
+    }
+
     private static PDPage createPageWithText(PDDocument doc, String text) throws IOException
     {
         PDPage page = new PDPage();
