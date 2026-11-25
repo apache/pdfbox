@@ -106,8 +106,8 @@ final class DebugTextOverlay
                         continue;
                     }
                     PDRectangle r = bead.getRectangle();
-                    Shape s = r.toGeneralPath().createTransformedShape(transAT);
-                    s = flipAT.createTransformedShape(s);
+                    Shape s = r.toGeneralPath().createTransformedShape(flipAT);
+                    s = transAT.createTransformedShape(s);
                     graphics.setColor(Color.green);
                     graphics.draw(s);
                 }
