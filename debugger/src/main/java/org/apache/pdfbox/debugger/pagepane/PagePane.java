@@ -431,7 +431,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                 break;
             case 180:
                 x1 = (int) (width - x + offsetX);
-                y1 = (int) (y - offsetY);
+                y1 = (int) (y + offsetY);
                 break;
             case 270:
                 x1 = (int) (width - y + offsetX);
