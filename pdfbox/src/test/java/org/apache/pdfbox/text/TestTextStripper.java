@@ -72,6 +72,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
+import org.apache.pdfbox.util.Matrix;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -947,6 +948,65 @@ class TestTextStripper
             localStripper.setPageEnd("\n");
             assertEquals("ב😀א\n", localStripper.getText(doc));
         }
+    }
+
+    /**
+     * Test that text inside a bead belongs to the bead's article when the cropbox differs from the
+     * media box and the page is rotated.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testBeadWithCropBoxAndRotation() throws IOException
+    {
+        // points next to the bead (200 300 400 400), in the order in which they are displayed at
+        // the top for the rotations 0, 90, 180 and 270, e.g. a page rotated by 90 degrees shows
+        // its left side at the top
+        float[][] sides = { { 250, 600 }, { 40, 350 }, { 250, 100 }, { 450, 350 } };
+        for (int rotation : new int[] { 0, 90, 180, 270 })
+        {
+            float[] above = sides[rotation / 90];
+            float[] below = sides[(rotation / 90 + 2) % 4];
+            try (PDDocument doc = new PDDocument())
+            {
+                PDPage page = new PDPage(new PDRectangle(600, 800));
+                page.setCropBox(new PDRectangle(20, 10, 560, 700));
+                page.setRotation(rotation);
+                try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+                {
+                    PDFont font = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+                    showRotatedText(cs, font, "BEFORE", rotation, above[0], above[1]);
+                    showRotatedText(cs, font, "IN", rotation, 250, 350);
+                    showRotatedText(cs, font, "AFTER", rotation, below[0], below[1]);
+                }
+                PDThreadBead bead = new PDThreadBead();
+                bead.setRectangle(new PDRectangle(200, 300, 200, 100));
+                page.setThreadBeads(List.of(bead));
+                doc.addPage(page);
+
+                PDFTextStripper localStripper = new PDFTextStripper();
+                localStripper.setLineSeparator("\n");
+                localStripper.setPageEnd("\n");
+                localStripper.setArticleStart("[");
+                localStripper.setArticleEnd("]");
+                String actual = localStripper.getText(doc);
+                // articles: before the bead, the bead, after the bead
+                assertEquals("[BEFORE][IN][AFTER]\n", actual, "failure at rotation " + rotation);
+            }
+        }
+    }
+
+    /**
+     * Show text rotated like the page, so that it is upright when the page is displayed.
+     */
+    private static void showRotatedText(PDPageContentStream cs, PDFont font, String text,
+            int rotation, float x, float y) throws IOException
+    {
+        cs.beginText();
+        cs.setFont(font, 12);
+        cs.setTextMatrix(Matrix.getRotateInstance(Math.toRadians(rotation), x, y));
+        cs.showText(text);
+        cs.endText();
     }
 
     private static PDPage createPageWithText(PDDocument doc, String text) throws IOException
