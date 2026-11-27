@@ -282,7 +282,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
             this.fontContainer.push(new ValidationError(ERROR_FONTS_CID_CMAP_DAMAGED, font.getName() + ": The CMap type is damaged", e));
         }
 
-        COSDictionary cmapUsed = (COSDictionary) aCMap.getDictionaryObject(COSName.USE_CMAP);
+        COSBase cmapUsed = aCMap.getDictionaryObject(COSName.USE_CMAP);
         if (cmapUsed != null)
         {
             checkCMapEncoding(cmapUsed);
