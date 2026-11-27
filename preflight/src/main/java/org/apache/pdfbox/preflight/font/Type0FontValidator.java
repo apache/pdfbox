@@ -28,9 +28,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CID_DAM
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CID_CMAP_DAMAGED;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_DICTIONARY_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_DEFAULT_CMAP_WMODE;
-import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_CMAP_NAME;
-import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_CMAP_USECMAP;
-import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_CMAP_WMODE;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_CMAP_IDENTITY_H;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_CMAP_IDENTITY_V;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_TYPE0;
@@ -270,10 +267,9 @@ public class Type0FontValidator extends FontValidator<Type0Container>
              * According to the getInt javadoc, -1 is returned if there is no result. In the PDF Reference v1.7 p449,
              * we can read that the default value is 0.
              */
-            int wmode = aCMap.getInt(COSName.getPDFName(FONT_DICTIONARY_KEY_CMAP_WMODE),
-                    FONT_DICTIONARY_DEFAULT_CMAP_WMODE);
+            int wmode = aCMap.getInt(COSName.WMODE, FONT_DICTIONARY_DEFAULT_CMAP_WMODE);
             String type = aCMap.getNameAsString(COSName.TYPE);
-            String cmapName = aCMap.getNameAsString(COSName.getPDFName(FONT_DICTIONARY_KEY_CMAP_NAME));
+            String cmapName = aCMap.getNameAsString(COSName.CMAPNAME);
 
             if (cmapName == null || "".equals(cmapName) || wmode > 1)
             {
@@ -300,8 +296,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
             IOUtils.closeQuietly(cmapStream);
         }
 
-        COSDictionary cmapUsed = (COSDictionary) aCMap.getDictionaryObject(COSName
-                .getPDFName(FONT_DICTIONARY_KEY_CMAP_USECMAP));
+        COSBase cmapUsed = aCMap.getDictionaryObject(COSName.USE_CMAP);
         if (cmapUsed != null)
         {
             checkCMapEncoding(cmapUsed);

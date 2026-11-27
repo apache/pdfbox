@@ -610,6 +610,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName URI = new COSName("URI");
     public static final COSName URL = new COSName("URL");
     public static final COSName URL_TYPE = new COSName("URLType");
+    public static final COSName USE_CMAP = new COSName("UseCMap");
     public static final COSName USER_UNIT = new COSName("UserUnit");
     // V
     public static final COSName V = new COSName("V");
@@ -633,6 +634,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName WIDTH = new COSName("Width");
     public static final COSName WIDTHS = new COSName("Widths");
     public static final COSName WIN_ANSI_ENCODING = new COSName("WinAnsiEncoding");
+    public static final COSName WMODE = new COSName("WMode");
     // X
     public static final COSName XFA = new COSName("XFA");
     public static final COSName X_STEP = new COSName("XStep");
