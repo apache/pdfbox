@@ -402,26 +402,48 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
             
             PDRectangle rect = bead.getRectangle();
             
-            // bead rectangle is in PDF coordinates (y=0 is bottom),
-            // glyphs are in image coordinates (y=0 is top),
-            // so we must flip
-            PDRectangle mediaBox = page.getMediaBox();
-            float upperRightY = mediaBox.getUpperRightY() - rect.getLowerLeftY();
-            float lowerLeftY = mediaBox.getUpperRightY() - rect.getUpperRightY();
-            rect.setLowerLeftY(lowerLeftY);
-            rect.setUpperRightY(upperRightY);
-            
-            // adjust for cropbox
+            // bead rectangle is in PDF coordinates (y=0 is bottom), glyphs are in the coordinates
+            // of TextPosition.getX() and getY() (relative to the cropbox, rotated like the page,
+            // y=0 is top), so we must transform both corners
             PDRectangle cropBox = page.getCropBox();
-            if (Float.compare(cropBox.getLowerLeftX(), 0) != 0 || Float.compare(cropBox.getLowerLeftY(), 0) != 0)
-            {
-                rect.setLowerLeftX(rect.getLowerLeftX() - cropBox.getLowerLeftX());
-                rect.setLowerLeftY(rect.getLowerLeftY() - cropBox.getLowerLeftY());
-                rect.setUpperRightX(rect.getUpperRightX() - cropBox.getLowerLeftX());
-                rect.setUpperRightY(rect.getUpperRightY() - cropBox.getLowerLeftY());
-            }
-            
+            int rotation = page.getRotation();
+            float[] lowerLeft = toGlyphCoordinates(rect.getLowerLeftX(), rect.getLowerLeftY(),
+                    cropBox, rotation);
+            float[] upperRight = toGlyphCoordinates(rect.getUpperRightX(), rect.getUpperRightY(),
+                    cropBox, rotation);
+            rect.setLowerLeftX(Math.min(lowerLeft[0], upperRight[0]));
+            rect.setLowerLeftY(Math.min(lowerLeft[1], upperRight[1]));
+            rect.setUpperRightX(Math.max(lowerLeft[0], upperRight[0]));
+            rect.setUpperRightY(Math.max(lowerLeft[1], upperRight[1]));
+
             beadRectangles.add(rect);
+        }
+    }
+
+    /**
+     * Transforms a point from PDF coordinates to the coordinates of {@link TextPosition#getX()} and
+     * {@link TextPosition#getY()}.
+     *
+     * @param x x coordinate in PDF coordinates
+     * @param y y coordinate in PDF coordinates
+     * @param cropBox the cropbox of the page
+     * @param rotation the rotation of the page
+     * @return the transformed point as {x, y}
+     */
+    private static float[] toGlyphCoordinates(float x, float y, PDRectangle cropBox, int rotation)
+    {
+        float cropX = x - cropBox.getLowerLeftX();
+        float cropY = y - cropBox.getLowerLeftY();
+        switch (rotation)
+        {
+            case 90:
+                return new float[] { cropY, cropX };
+            case 180:
+                return new float[] { cropBox.getWidth() - cropX, cropY };
+            case 270:
+                return new float[] { cropBox.getHeight() - cropY, cropBox.getWidth() - cropX };
+            default:
+                return new float[] { cropX, cropBox.getHeight() - cropY };
         }
     }
 
