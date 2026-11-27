@@ -240,14 +240,14 @@ public class DrawPrintTextLocations extends PDFTextStripper
         List<PDThreadBead> pageArticles = pdPage.getThreadBeads();
         for (PDThreadBead bead : pageArticles)
         {
-            if (bead == null)
+            if (bead == null || bead.getRectangle() == null)
             {
                 continue;
             }
             PDRectangle r = bead.getRectangle();
-            Shape s = r.toGeneralPath().createTransformedShape(transAT);
-            s = flipAT.createTransformedShape(s);
+            Shape s = flipAT.createTransformedShape(r.toGeneralPath());
             s = rotateAT.createTransformedShape(s);
+            s = transAT.createTransformedShape(s);
             g2d.setColor(Color.green);
             g2d.draw(s);
         }
@@ -260,9 +260,6 @@ public class DrawPrintTextLocations extends PDFTextStripper
         ImageIO.write(image, "png", new File(imageFilename));
     }
 
-    /**
-     * Override the default functionality of PDFTextStripper.
-     */
     @Override
     protected void writeString(String string, List<TextPosition> textPositions) throws IOException
     {
