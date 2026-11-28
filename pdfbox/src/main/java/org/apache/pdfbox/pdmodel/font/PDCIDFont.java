@@ -62,7 +62,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
     // The code changes result in different behavior if ranges overlap, or
     // if ranges and individual widths overlap, and individual widths are considered first.
 
-    private float[] dw2 = new float[] { 880, -1000 };
+    private final float[] dw2 = new float[] { 880, -1000 };
 
     protected final COSDictionary dict;
     private PDFontDescriptor fontDescriptor;
