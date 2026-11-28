@@ -216,8 +216,8 @@ public class Type2CharStringParser
         if (b0 == 255)
         {
             short value = input.readShort();
-            // The lower bytes are representing the digits after the decimal point
-            double fraction = input.readUnsignedShort() / 65535d;
+            // 16.16 fixed point: the lower bytes are the fraction in units of 1/65536
+            double fraction = input.readUnsignedShort() / 65536d;
             return value + fraction;
         }
         throw new IllegalArgumentException();
