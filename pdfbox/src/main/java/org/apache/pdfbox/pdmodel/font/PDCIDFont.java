@@ -60,6 +60,12 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
     private final Map<Integer, Vector> positionVectors = new HashMap<>();
     // cid-ranges for verticalDisplacements and positionVectors
     private final List<VerticalDisplacementRange> displacementRanges = new ArrayList<>();
+    // cid-ranges for horizontal widths
+    private final List<WidthRange> widthRanges = new ArrayList<>();
+    // Using ranges instead of just storing the widths was done because of OOM conditions
+    // in PDFBOX-6319 and PDFBOX-6175.
+    // The code changes result in different behavior if ranges overlap, or
+    // if ranges and individual widths overlap), and individual widths are considered first.
 
     private final float[] dw2 = new float[] { 880, -1000 };
 
@@ -135,9 +141,9 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
                     int startRange = firstCode.intValue();
                     int endRange = secondCode.intValue();
                     float width = rangeWidth.floatValue();
-                    for (int i = startRange; i <= endRange; i++)
+                    if (endRange >= startRange)
                     {
-                        widths.put(i, width);
+                        widthRanges.add(new WidthRange(startRange, endRange, width));
                     }
                 }
             }
@@ -300,7 +306,17 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
         Float width = widths.get(cid);
         if (width == null)
         {
-            width = getDefaultWidth();
+            WidthRange widthRange = widthRanges.stream() //
+                    .filter(wr -> wr.rangeMatches(cid)) //
+                    .findFirst().orElse(null);
+            if (widthRange != null)
+            {
+                width = widthRange.getWidth();
+            }
+            else
+            {
+                width = getDefaultWidth();
+            }
         }
         return width;
     }
@@ -308,7 +324,8 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
     @Override
     public boolean hasExplicitWidth(int code) throws IOException
     {
-        return widths.get(codeToCID(code)) != null;
+        int cid = codeToCID(code);
+        return widths.containsKey(cid) || widthRanges.stream().anyMatch(wr -> wr.rangeMatches(cid));
     }
 
     @Override
@@ -376,7 +393,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
         if (Float.compare(averageWidth, 0) == 0)
         {
             float totalWidths = 0.0f;
-            int characterCount = 0;
+            long characterCount = 0;
             if (!widths.isEmpty())
             {
                 for (Float width : widths.values())
@@ -386,6 +403,15 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
                         totalWidths += width;
                         ++characterCount;
                     }
+                }
+            }
+            for (WidthRange widthRange : widthRanges)
+            {
+                if (widthRange.width > 0)
+                {
+                    long rangeSize = widthRange.rangeEnd - widthRange.rangeStart + 1;
+                    totalWidths += rangeSize * widthRange.width;
+                    characterCount += rangeSize;
                 }
             }
             if (characterCount != 0)
@@ -494,6 +520,30 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
         public float getVerticalDisplacement()
         {
             return verticalDisplacment;
+        }
+    }
+
+    private static class WidthRange
+    {
+        final int rangeStart;
+        final int rangeEnd;
+        final float width;
+
+        public WidthRange(int start, int end, float width)
+        {
+            rangeStart = start;
+            rangeEnd = end;
+            this.width = width;
+        }
+
+        public boolean rangeMatches(int value)
+        {
+            return value >= rangeStart && value <= rangeEnd;
+        }
+
+        public float getWidth()
+        {
+            return width;
         }
     }
 }
