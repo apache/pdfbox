@@ -68,6 +68,10 @@ public abstract class PDCIDFont implements COSObjectable
     // in PDFBOX-6319 and PDFBOX-6175.
     // The code changes result in different behavior if ranges overlap, or
     // if ranges and individual widths overlap, and individual widths are considered first.
+    // The new behavior may be slightly slower. Claude suggests to use a TreeMap keyed by range
+    // and use floorEntry() to find the match, but it needs to trim or split ranges on insert
+    // which adds complexity to our code.
+    // Another alternative would be to use the old behavior for small ranges.
 
     private final float[] dw2 = { 880, -1000 };
 
