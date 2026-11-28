@@ -43,6 +43,18 @@ public class Type2CharStringParserTest extends TestCase
     private CharStringCommand COMMAND_RMOVETO = new CharStringCommand(RMOVETO);
     private CharStringCommand COMMAND_ENDCHAR = new CharStringCommand(ENDCHAR);
 
+    public void testFixedPointOperand() throws IOException
+    {
+        // 255 followed by a 16.16 fixed point number: 0x00018000 = 1.5, 0xFFFE8000 = -1.5
+        byte[] charString = { (byte) 255, 0x00, 0x01, (byte) 0x80, 0x00,
+                (byte) 255, (byte) 0xFF, (byte) 0xFE, (byte) 0x80, 0x00, RMOVETO, ENDCHAR };
+
+        List<Object> sequence = new Type2CharStringParser("test", "test").parse(charString, new byte[0][], null);
+
+        assertEquals(1.5, ((Number) sequence.get(0)).doubleValue());
+        assertEquals(-1.5, ((Number) sequence.get(1)).doubleValue());
+    }
+
     public void testLocalSubrCallingItself()
     {
         final byte[] loop = { SUBR_0, CALLSUBR };
