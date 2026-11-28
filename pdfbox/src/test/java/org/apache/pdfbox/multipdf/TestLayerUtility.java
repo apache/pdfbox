@@ -30,7 +30,6 @@ import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
@@ -117,13 +116,6 @@ class TestLayerUtility
             //Create new page
             PDPage page = new PDPage();
             doc.addPage(page);
-            PDResources resources = page.getResources();
-            if( resources == null )
-            {
-                resources = new PDResources();
-                page.setResources( resources );
-            }
-
             final String[] text = {
                     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer fermentum lacus in eros",
                     "condimentum eget tristique risus viverra. Sed ac sem et lectus ultrices placerat. Nam",
@@ -168,13 +160,6 @@ class TestLayerUtility
             //Create new page
             PDPage page = new PDPage();
             doc.addPage(page);
-            PDResources resources = page.getResources();
-            if( resources == null )
-            {
-                resources = new PDResources();
-                page.setResources( resources );
-            }
-
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false))
             {
                 //Setup page content stream and paint background/title
