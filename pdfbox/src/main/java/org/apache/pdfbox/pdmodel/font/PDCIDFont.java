@@ -60,7 +60,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
     // Using ranges instead of just storing the widths was done because of OOM conditions
     // in PDFBOX-6319 and PDFBOX-6175.
     // The code changes result in different behavior if ranges overlap, or
-    // if ranges and individual widths overlap), and individual widths are considered first.
+    // if ranges and individual widths overlap, and individual widths are considered first.
 
     private float[] dw2 = new float[] { 880, -1000 };
 
@@ -84,10 +84,9 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
     {
         // see 9.7.4.3, "Glyph Metrics in CIDFonts"
         widths = new HashMap<Integer, Float>();
-        COSBase wBase = dict.getDictionaryObject(COSName.W);
-        if (wBase instanceof COSArray)
+        COSArray wArray = dict.getCOSArray(COSName.W);
+        if (wArray != null)
         {
-            COSArray wArray = (COSArray) wBase;
             int size = wArray.size();
             int counter = 0;
             while (counter < size - 1)
@@ -150,10 +149,9 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
     private void readVerticalDisplacements()
     {
         // default position vector and vertical displacement vector
-        COSBase dw2Base = dict.getDictionaryObject(COSName.DW2);
-        if (dw2Base instanceof COSArray)
+        COSArray dw2Array = dict.getCOSArray(COSName.DW2);
+        if (dw2Array != null && dw2Array.size() >= 2)
         {
-            COSArray dw2Array = (COSArray) dw2Base;
             COSBase base0 = dw2Array.getObject(0);
             COSBase base1 = dw2Array.getObject(1);
             if (base0 instanceof COSNumber && base1 instanceof COSNumber)
@@ -164,11 +162,10 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
         }
 
         // vertical metrics for individual CIDs.
-        COSBase w2Base = dict.getDictionaryObject(COSName.W2);
-        if (w2Base instanceof COSArray)
+        COSArray w2Array = dict.getCOSArray(COSName.W2);
+        if (w2Array != null)
         {
-            COSArray w2Array = (COSArray) w2Base;
-            for (int i = 0; i < w2Array.size(); i++)
+            for (int i = 0; i < w2Array.size() - 1; i++)
             {
                 COSBase base = w2Array.getObject(i);
                 if (!(base instanceof COSNumber))
@@ -396,7 +393,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
             {
                 if (widthRange.width > 0)
                 {
-                    long rangeSize = widthRange.rangeEnd - widthRange.rangeStart + 1;
+                    long rangeSize = (long) widthRange.rangeEnd - widthRange.rangeStart + 1;
                     totalWidths += rangeSize * widthRange.width;
                     characterCount += rangeSize;
                 }
